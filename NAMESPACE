@@ -1,0 +1,76 @@
+import(methods)
+importFrom(stats, setNames)
+import(BiocGenerics)
+import(IRanges)
+import(GenomicRanges)
+import(Biostrings)
+import(Rsamtools)
+
+
+exportClasses(
+    GappedReads
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Export S3 methods
+###
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Export S4 methods for generics not defined in GenomicAlignments
+###
+
+exportMethods(
+    c,
+
+    ## Generics defined in IRanges:
+    narrow,
+    coverage,
+
+    ## Generics defined in GenomicRanges:
+    qwidth, qnarrow,
+    summarizeOverlaps,
+    findSpliceOverlaps
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Export non-generic functions
+###
+
+export(
+    readGAlignments,
+    readGAlignmentPairs,
+    readGAlignmentsList,
+    readGappedReads,
+
+    sequenceLayer, stackStringsFromBam
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Export S4 generics defined in GenomicAlignments + export corresponding
+### methods
+###
+
+export(
+    ## GappedReads-class.R:
+    qseq,
+
+    ## readGAlignments.R:
+    readGAlignmentsFromBam,
+    readGAlignmentPairsFromBam,
+    readGAlignmentsListFromBam,
+    readGappedReadsFromBam
+)
+
+### Exactly the same list as above.
+exportMethods(
+    qseq,
+    readGAlignmentsFromBam,
+    readGAlignmentPairsFromBam,
+    readGAlignmentsListFromBam,
+    readGappedReadsFromBam
+)
+
