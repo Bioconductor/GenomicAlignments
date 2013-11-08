@@ -314,6 +314,8 @@ gal6 <- readGAlignmentsFromBam(bamfile, param=param)
 mcols(gal6)  # "tag" cols always after "what" cols
 
 ## With a BamViews object:
+fls <- system.file("extdata", "ex1.bam", package="Rsamtools",
+                   mustWork=TRUE)
 bv <- BamViews(fls,
                bamSamples=DataFrame(info="test", row.names="ex1"),
                auto.range=TRUE)
