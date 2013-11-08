@@ -63,16 +63,26 @@ readGappedReadsFromBam(file, index=file, use.names=FALSE,
 }
 
 \arguments{
-  \item{file, index}{The path to the BAM file to read, and to the index
-    file of the BAM file to read, respectively. The latter is given
-    \emph{without} the '.bai' extension. See \code{\link{scanBam}} for more
-    information.}
+  \item{file}{
+    The path to the file to read or a \link[Rsamtools]{BamFile} object.
+    Can also be a \link[Rsamtools]{BamViews} object for
+    \code{readGAlignmentsFromBam}.
+  }
 
-  \item{\dots}{Arguments passed to other methods.}
+  \item{format}{
+    Only \code{"BAM"} (the default) is supported for now.
+  }
 
   \item{use.names}{Use the query template names (QNAME field) as the
     names of the returned object? If not (the default), then the returned
     object has no names.}
+
+  \item{...}{Arguments passed to other methods.}
+
+  \item{index}{The path to the index file of the BAM file to read.
+    Must be given \emph{without} the '.bai' extension.
+    See \code{\link[Rsamtools]{scanBam}} in the \pkg{Rsamtools} packages
+    for more information.}
 
   \item{param}{\code{NULL} or a \link[Rsamtools]{ScanBamParam} object.
     Like for \code{\link[Rsamtools]{scanBam}}, this influences what fields
@@ -125,32 +135,34 @@ readGappedReadsFromBam(file, index=file, use.names=FALSE,
   description of \link{GappedReads} objects.
 
   \subsection{Front-ends}{
-      \code{readGAlignments} reads a file containing aligned reads as a
-      \link[GenomicRanges]{GAlignments} object.
+    \code{readGAlignments} reads a file containing aligned reads as a
+    \link[GenomicRanges]{GAlignments} object.
 
-      \code{readGAlignmentPairs} reads a file containing paired-end reads as a
-      \link[GenomicRanges]{GAlignmentPairs} object.
+    \code{readGAlignmentPairs} reads a file containing aligned paired-end
+    reads as a \link[GenomicRanges]{GAlignmentPairs} object.
 
-      \code{readGAlignmentsList} reads a file containing aligned reads as a
-      \link[GenomicRanges]{GAlignmentsList} object.
+    \code{readGAlignmentsList} reads a file containing aligned reads as a
+    \link[GenomicRanges]{GAlignmentsList} object.
 
-      By default (i.e. \code{use.names=FALSE}), the resulting object has no
-      names. If \code{use.names} is \code{TRUE}, then the names are
-      constructed from the query template names (QNAME field in a SAM/BAM
-      file). Note that the 2 records in a pair (when using
-      \code{readGAlignmentPairs} or the records in a group (when using
-      \code{readGAlignmentsList}) have the same QNAME.
+    \code{readGappedReads} reads a file containing aligned reads as a
+    \link{GappedReads} object.
 
-      These functions are just front-ends that delegate to a
-      format-specific back-end function depending on the supplied \code{format}
-      argument. The \code{use.names} argument and any extra argument are
-      passed to the back-end function.
-      Only the BAM format is supported for now via the \code{read*FromBam}
-      back-end functions.
+    By default (i.e. \code{use.names=FALSE}), the resulting object has no
+    names. If \code{use.names} is \code{TRUE}, then the names are
+    constructed from the query template names (QNAME field in a SAM/BAM
+    file). Note that the 2 records in a pair (when using
+    \code{readGAlignmentPairs} or the records in a group (when using
+    \code{readGAlignmentsList}) have the same QNAME.
+
+    These functions are just front-ends that delegate to a
+    format-specific back-end function depending on the supplied \code{format}
+    argument. The \code{use.names} argument and any extra argument are
+    passed to the back-end function.
+    Only the BAM format is supported for now via the \code{read*FromBam}
+    back-end functions.
   }
 
   \subsection{BAM specific back-ends}{
-
     When \code{file} is \link[Rsamtools]{BamViews} object
     \code{readGAlignmentsFromBam} visits each path in \code{bamPaths(file)},
     returning the result of \code{readGAlignmentsFromBam} applied to the
@@ -262,6 +274,7 @@ readGappedReadsFromBam(file, index=file, use.names=FALSE,
 ## ---------------------------------------------------------------------
 
 ## Simple use:
+library(Rsamtools)  # for the ex1.bam file
 bamfile <- system.file("extdata", "ex1.bam", package="Rsamtools",
                        mustWork=TRUE)
 gal1 <- readGAlignmentsFromBam(bamfile)
