@@ -8,17 +8,17 @@ test_readGAlignmentsListFromBam_construction <- function()
     galist <- readGAlignmentsListFromBam(fl)
     checkTrue(is.null(names(galist)))
     galist <- readGAlignmentsListFromBam(fl, use.names=TRUE)
-    target <- c("EAS54_61:4:143:69:578", "EAS219_FC30151:7:51:1429:1043")
+    target <- c("B7_589:1:101:825:28", "B7_589:1:110:543:934")
     checkIdentical(names(galist)[1:2], target)
 
     ## first segment first
     param <- ScanBamParam(what="flag")
     galist <- readGAlignmentsListFromBam(fl, param=param)
-    mates <- galist[unlist(mcols(galist)$mates)]
+    mates <- galist[mcols(galist)$mates == "mated"]
     flagBit <- bamFlagAsBitMatrix(mcols(unlist(mates))$flag,
                                   bitnames="isFirstMateRead") 
     m <- matrix(flagBit, nrow=2)
-    checkTrue(rowSums(m)[2] == 0L)
+    checkIdentical(c(1572L, 0), rowSums(m))
 }
 
 test_readGAlignmentsListFromBam_noYieldSize <- function()
@@ -51,9 +51,7 @@ test_readGAlignmentsListFromBam_mcols <- function()
     bf <- BamFile(chr4, asMates=TRUE, yieldSize=100)
     param <- ScanBamParam(tag=("NM"))
     galist <- readGAlignmentsListFromBam(bf, param=param)
-    current <- colnames(mcols(unlist(galist)))
-    target <- c("mates", "NM")
-    checkTrue(all(current %in% target))
+    checkIdentical(colnames(mcols(unlist(galist))), "NM")
     checkTrue(names(mcols(galist)) == "mates")
 
     param <- ScanBamParam(tag=("FO"))

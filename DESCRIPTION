@@ -7,9 +7,9 @@ Author: Herv\'e Pag\`es, Valerie Obenchain, Martin Morgan
 Maintainer: Bioconductor Package Maintainer <maintainer@bioconductor.org>
 biocViews: Genetics, Sequencing, HighThroughputSequencing
 Depends: R (>= 2.10), methods, BiocGenerics (>= 0.7.7),
-	IRanges, GenomicRanges, Biostrings, Rsamtools
+	IRanges, GenomicRanges, Biostrings, Rsamtools (>= 1.15.6)
 Imports: methods, stats, BiocGenerics, IRanges, GenomicRanges,
-	Biostrings, Rsamtools
+	Biostrings, Rsamtools (>= 1.15.6)
 Suggests: RNAseqData.HNRNPC.bam.chr14, pasillaBamSubset,
 	BSgenome.Hsapiens.UCSC.hg19,
 	RUnit, BiocStyle

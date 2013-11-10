@@ -117,8 +117,9 @@ setGeneric("readGappedReadsFromBam", signature="file",
     gal <- .bindExtraData(gal, use.names=FALSE, param, bamcols,
                           with.which_label=with.which_label)
     if (asMates(file)) {
-        gal <- unname(split(gal, bamcols$groupid))
-        mcols(gal)$mates <- unique(splitAsList(bamcols$mates, bamcols$groupid))
+        f <- factor(bamcols$groupid)
+        gal <- unname(split(gal, f))
+        mcols(gal)$mates <- bamcols$mates[match(levels(f), bamcols$groupid)]
     } else {
         ## groupid=NULL when asMates=FALSE
         gal <- unname(split(gal, seq_along(gal)))
@@ -188,15 +189,11 @@ setMethod("readGAlignmentsListFromBam", "BamFile",
     function(file, index=file, ..., use.names=FALSE, param=ScanBamParam(),
                    with.which_label=FALSE)
     {
-        if (!asMates(file)) {
-            bamWhat(param) <- setdiff(bamWhat(param), c("groupid", "mates"))
-        } else {
-            bamWhat(param) <- union("mates", bamWhat(param))
-        }
         if (!isTRUEorFALSE(use.names))
             stop("'use.names' must be TRUE or FALSE")
-
-        what0 <- c("rname", "strand", "pos", "cigar", "groupid")
+        if (!asMates(file))
+            bamWhat(param) <- setdiff(bamWhat(param), c("groupid", "mates"))
+        what0 <- c("rname", "strand", "pos", "cigar", "groupid", "mates")
         if (use.names)
             what0 <- c(what0, "qname")
         .matesFromBam(file, use.names, param, what0, with.which_label)
