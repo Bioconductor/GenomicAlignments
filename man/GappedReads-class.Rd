@@ -61,7 +61,6 @@
 }
 
 \examples{
-library(Rsamtools)  # for the ex1.bam file
 greads_file <- system.file("extdata", "ex1.bam", package="Rsamtools")
 greads <- readGappedReads(greads_file)
 greads

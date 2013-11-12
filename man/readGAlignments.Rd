@@ -274,7 +274,6 @@ readGappedReadsFromBam(file, index=file, use.names=FALSE,
 ## ---------------------------------------------------------------------
 
 ## Simple use:
-library(Rsamtools)  # for the ex1.bam file
 bamfile <- system.file("extdata", "ex1.bam", package="Rsamtools",
                        mustWork=TRUE)
 gal1 <- readGAlignmentsFromBam(bamfile)
