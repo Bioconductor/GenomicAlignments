@@ -170,7 +170,7 @@ IntersectionNotEmpty(features, reads, ignore.strand=FALSE, inter.feature=TRUE)
     \pkg{GenomicAlignments} package for the algorithm details.
   }
   \item{param}{An optional \code{\link[Rsamtools]{ScanBamParam}} instance to
-     further influence scanning, counting, or filtering.
+    further influence scanning, counting, or filtering.
   }
 }
 
