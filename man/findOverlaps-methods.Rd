@@ -68,14 +68,17 @@
     type = c("any", "start", "end", "within"),
     select = c("all", "first"),
     ignore.strand = FALSE)
+
 \S4method{countOverlaps}{GAlignments,GAlignments}(query, subject,
     maxgap = 0L, minoverlap = 1L,
     type = c("any", "start", "end", "within"),
     ignore.strand = FALSE)
+
 \S4method{overlapsAny}{GAlignments,GAlignments}(query, subject,
     maxgap = 0L, minoverlap = 1L,
     type = c("any", "start", "end", "within"),
     ignore.strand = FALSE)
+
 \S4method{subsetByOverlaps}{GAlignments,GAlignments}(query, subject,
     maxgap = 0L, minoverlap = 1L,
     type = c("any", "start", "end", "within"),
