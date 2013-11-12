@@ -19,6 +19,7 @@ Collate: GappedReads-class.R
 	readGAlignments.R
 	sequenceLayer.R
 	stackStringsFromBam.R
+	findOverlaps-methods.R
 	coverage-methods.R
 	summarizeOverlaps-methods.R
 	findSpliceOverlaps-methods.R

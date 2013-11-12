@@ -26,6 +26,7 @@ exportMethods(
 
     ## Generics defined in IRanges:
     narrow,
+    findOverlaps, countOverlaps, overlapsAny, subsetByOverlaps,
     coverage,
 
     ## Generics defined in GenomicRanges:
