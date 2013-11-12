@@ -31,7 +31,6 @@ exportMethods(
 
     ## Generics defined in GenomicRanges:
     qwidth, qnarrow,
-    summarizeOverlaps,
     findSpliceOverlaps
 )
 
@@ -51,6 +50,8 @@ export(
     readGappedReads,
 
     sequenceLayer, stackStringsFromBam,
+
+    Union, IntersectionNotEmpty, IntersectionStrict,
 
     ## old stuff (deprecated or defunct):
     makeGappedAlignmentPairs,
@@ -74,7 +75,10 @@ export(
     readGAlignmentsFromBam,
     readGAlignmentPairsFromBam,
     readGAlignmentsListFromBam,
-    readGappedReadsFromBam
+    readGappedReadsFromBam,
+
+    ## summarizeOverlaps-methods.R:
+    summarizeOverlaps
 )
 
 ### Exactly the same list as above.
@@ -83,6 +87,7 @@ exportMethods(
     readGAlignmentsFromBam,
     readGAlignmentPairsFromBam,
     readGAlignmentsListFromBam,
-    readGappedReadsFromBam
+    readGappedReadsFromBam,
+    summarizeOverlaps
 )
 
