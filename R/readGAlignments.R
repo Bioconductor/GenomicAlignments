@@ -65,8 +65,8 @@ setGeneric("readGappedReadsFromBam", signature="file",
     res <- scanBam(bamfile, ..., param=param)
     if (length(res) == 0L)  # should never happen
         stop("scanBam() returned a list of length zero")
-    Rsamtools:::load_bamcols_from_scanBam_res(res, param,
-                                              with.which_label=with.which_label)
+    Rsamtools:::.load_bamcols_from_scanBam_res(res, param,
+                    with.which_label=with.which_label)
 }
 
 .load_seqlengths_from_bamfile <- function(file, seqlevels)
