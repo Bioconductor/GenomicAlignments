@@ -40,12 +40,23 @@ exportMethods(
 ###
 
 export(
+    findMateAlignment, findMateAlignment2,
+    makeGAlignmentPairs,
+    getDumpedAlignments, countDumpedAlignments, flushDumpedAlignments,
+
     readGAlignments,
     readGAlignmentPairs,
     readGAlignmentsList,
     readGappedReads,
 
-    sequenceLayer, stackStringsFromBam
+    sequenceLayer, stackStringsFromBam,
+
+    ## old stuff (deprecated or defunct):
+    makeGappedAlignmentPairs,
+    readBamGappedAlignments,
+    readBamGappedAlignmentPairs,
+    readBamGAlignmentsList,
+    readBamGappedReads
 )
 
 
