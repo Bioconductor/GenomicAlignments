@@ -190,9 +190,19 @@ readGappedReadsFromBam(file, index=file, use.names=FALSE,
 
     \code{readGAlignmentsListFromBam} pairs records into \sQuote{mates}
     acording to the criteria below. A \code{GAlignmentsList} is 
-    returned with a \sQuote{mates} metadata column which indicates mate 
-    status. The mates are returned first followed by non-mates. When
-    the \sQuote{file} argument is a BamFile, \sQuote{asMates=TRUE}
+    returned with a \sQuote{mates} metadata column on the outer list
+    elements. \code{mates} is a factor with 3 levels indicating
+    mate status, \sQuote{mated}, \sQuote{ambiguous} or \code{unmated}.
+
+      Mate status:
+      \itemize{
+        \item{mated:} primary or non-primary proper pairs 
+        \item{ambiguous:} multiple segments matching to the
+                          same location (indistinguishable) 
+        \item{unmated:} mate does not exist or is unmapped
+      }
+
+    When the \sQuote{file} argument is a BamFile, \sQuote{asMates=TRUE}
     must be set, otherwise the data are treated as single-end reads. 
     See the \sQuote{asMates} section of \code{?\link{BamFile}} for details. 
 
