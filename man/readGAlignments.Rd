@@ -188,10 +188,10 @@ readGappedReadsFromBam(file, index=file, use.names=FALSE,
     and \code{?\link{findMateAlignment}} for a description of the
     pairing algorithm (including timing and memory requirement).
 
-    \code{readGAlignmentsListFromBam} pairs records into \sQuote{mates}
+    \code{readGAlignmentsListFromBam} pairs records into mates
     acording to the criteria below. A \code{GAlignmentsList} is 
-    returned with a \sQuote{mates} metadata column on the outer list
-    elements. \code{mates} is a factor with 3 levels indicating
+    returned with a \sQuote{mate_status} metadata column on the outer list
+    elements. \code{mate_status} is a factor with 3 levels indicating
     mate status, \sQuote{mated}, \sQuote{ambiguous} or \code{unmated}.
 
       Mate status:

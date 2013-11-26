@@ -14,7 +14,7 @@ test_readGAlignmentsListFromBam_construction <- function()
     ## first segment first
     param <- ScanBamParam(what="flag")
     galist <- readGAlignmentsListFromBam(fl, param=param)
-    mates <- galist[mcols(galist)$mates == "mated"]
+    mates <- galist[mcols(galist)$mate_status == "mated"]
     flagBit <- bamFlagAsBitMatrix(mcols(unlist(mates))$flag,
                                   bitnames="isFirstMateRead") 
     m <- matrix(flagBit, nrow=2)
@@ -52,7 +52,7 @@ test_readGAlignmentsListFromBam_mcols <- function()
     param <- ScanBamParam(tag=("NM"))
     galist <- readGAlignmentsListFromBam(bf, param=param)
     checkIdentical(colnames(mcols(unlist(galist))), "NM")
-    checkTrue(names(mcols(galist)) == "mates")
+    checkTrue(names(mcols(galist)) == "mate_status")
 
     param <- ScanBamParam(tag=("FO"))
     galist <- readGAlignmentsListFromBam(bf, param=param)
@@ -102,21 +102,21 @@ test_readGAlignmentsListFromBam <- function()
     galist <- readGAlignmentsListFromBam(bf, use.names=TRUE, param=param)
 
     ## 'mated' 
-    mated_galist <- unlist(galist[mcols(galist)$mates == "mated"]) 
+    mated_galist <- unlist(galist[mcols(galist)$mate_status == "mated"]) 
     pi_target <- c("p001", "p002", "p003a", "p003b", "p004a", "p004b",
                    "p005a", "p005b", "p006a", "p006b", "p006c",
                    "p007a", "p007b", "p008a", "p008b", "p008c", "p009a")
     checkTrue(all(mcols(mated_galist)$pi %in% pi_target))
 
     ## 'ambiguous' GAList match 'dumped' GAPairs
-    ambig_galist <- unlist(galist[mcols(galist)$mates == "ambiguous"]) 
+    ambig_galist <- unlist(galist[mcols(galist)$mate_status == "ambiguous"]) 
     dumped_galp <- getDumpedAlignments()
     pi_target <- rep(c("p009b", "p009c"), each=2)
     checkIdentical(pi_target, sort(mcols(dumped_galp)$pi))
     checkIdentical(pi_target, sort(mcols(ambig_galist)$pi))
 
     ## 'unmated':
-    unmated_galist <- unlist(galist[mcols(galist)$mates == "unmated"]) 
+    unmated_galist <- unlist(galist[mcols(galist)$mate_status == "unmated"]) 
     ## unmated single-end, paired-end or multi-segment (no pi tags) 
     name_target <- c("m001", "m002", "p991", "p992", "s001", "s002")
     unmated <- names(unmated_galist)[is.na(mcols(unmated_galist)$pi)] 
@@ -134,7 +134,7 @@ test_readGAlignmentsListFromBam <- function()
                                   isUnmappedQuery=FALSE,
                                   isPaired=TRUE)
     galist <- readGAlignmentsListFromBam(bf, use.names=TRUE, param=param)
-    unmated_galist <- unlist(galist[mcols(galist)$mates == "unmated"]) 
+    unmated_galist <- unlist(galist[mcols(galist)$mate_status == "unmated"]) 
     unmated <- names(unmated_galist)[is.na(mcols(unmated_galist)$pi)] 
     name_target <- c("m001", "m002", "p991")
     checkTrue(all(unmated %in% name_target))
@@ -152,7 +152,7 @@ test_readGAlignmentsListFromBam_which <- function()
                                           param=param, with.which_label=TRUE)
     ## Duplicate results with distinct 'which_label'
     checkIdentical(2L, length(target1))
-    checkIdentical(as.vector(mcols(target1)$mates), c("mated", "mated"))
+    checkIdentical(as.vector(mcols(target1)$mate_status), c("mated", "mated"))
     rng1 <- as.vector(mcols(unlist(target1[1]))$which_label)
     checkTrue(all(rng1 %in% my_ROI_labels[1]))
     rng2 <- as.vector(mcols(unlist(target1[2]))$which_label)

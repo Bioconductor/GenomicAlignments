@@ -119,7 +119,8 @@ setGeneric("readGappedReadsFromBam", signature="file",
     if (asMates(file)) {
         f <- factor(bamcols$groupid)
         gal <- unname(split(gal, f))
-        mcols(gal)$mates <- bamcols$mates[match(levels(f), bamcols$groupid)]
+        mcols(gal)$mate_status <- 
+            bamcols$mate_status[match(levels(f), bamcols$groupid)]
     } else {
         ## groupid=NULL when asMates=FALSE
         gal <- unname(split(gal, seq_along(gal)))
@@ -139,7 +140,8 @@ setMethod("readGAlignmentsFromBam", "BamFile",
         if (is.null(param))
             param <- ScanBamParam()
         if (!asMates(file))
-            bamWhat(param) <- setdiff(bamWhat(param), c("groupid", "mates"))
+            bamWhat(param) <- setdiff(bamWhat(param), 
+                                      c("groupid", "mate_status"))
         what0 <- c("rname", "strand", "pos", "cigar")
         if (use.names)
             what0 <- c(what0, "qname")
@@ -164,7 +166,8 @@ setMethod("readGAlignmentPairsFromBam", "BamFile",
         if (is.null(param))
             param <- ScanBamParam()
         if (!asMates(file))
-            bamWhat(param) <- setdiff(bamWhat(param), c("groupid", "mates"))
+            bamWhat(param) <- setdiff(bamWhat(param), 
+                                      c("groupid", "mate_status"))
         if (!is.na(yieldSize(file))) {
             warning("'yieldSize' set to 'NA'", immediate.=TRUE)
             yieldSize(file) <- NA_integer_
@@ -192,8 +195,9 @@ setMethod("readGAlignmentsListFromBam", "BamFile",
         if (!isTRUEorFALSE(use.names))
             stop("'use.names' must be TRUE or FALSE")
         if (!asMates(file))
-            bamWhat(param) <- setdiff(bamWhat(param), c("groupid", "mates"))
-        what0 <- c("rname", "strand", "pos", "cigar", "groupid", "mates")
+            bamWhat(param) <- setdiff(bamWhat(param), 
+                                      c("groupid", "mate_status"))
+        what0 <- c("rname", "strand", "pos", "cigar", "groupid", "mate_status")
         if (use.names)
             what0 <- c(what0, "qname")
         .matesFromBam(file, use.names, param, what0, with.which_label)
@@ -209,7 +213,8 @@ setMethod("readGappedReadsFromBam", "BamFile",
         if (is.null(param))
             param <- ScanBamParam()
         if (!asMates(file))
-            bamWhat(param) <- setdiff(bamWhat(param), c("groupid", "mates"))
+            bamWhat(param) <- setdiff(bamWhat(param), 
+                                      c("groupid", "mate_status"))
         what0 <- c("rname", "strand", "pos", "cigar", "seq")
         if (use.names)
             what0 <- c(what0, "qname")
