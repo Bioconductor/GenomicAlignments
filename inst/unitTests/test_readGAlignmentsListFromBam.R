@@ -60,6 +60,26 @@ test_readGAlignmentsListFromBam_mcols <- function()
                    mcols(unlist(galist))[["FO"]])
 }
 
+test_readGAlignmentsListFromBam_compare_pairs <- function()
+{
+    bamfile <- BamFile(untreated3_chr4(), asMates=TRUE)
+    galist <- readGAlignmentsListFromBam(bamfile)
+    mates <- galist[mcols(galist)$mate_status == "mated"]
+    galp <- readGAlignmentPairsFromBam(bamfile)
+    checkIdentical(length(galp), length(mates)) 
+}
+
+test_readGAlignmentsListFromBam_flags <- function()
+{
+    bamfile <- BamFile(untreated3_chr4(), asMates=TRUE)
+    param <- ScanBamParam(flag=scanBamFlag(isProperPair=TRUE))
+    galist <- readGAlignmentsListFromBam(bamfile, param=param)
+    status <- table(mcols(galist)$mate_status)
+    checkIdentical(status[["mated"]], 45828L)
+    checkIdentical(status[["ambiguous"]], 0L)
+    checkIdentical(status[["unmated"]], 0L)
+}
+
 ## toy_bamfile read summary: 
 ## --------------------------
 
@@ -95,7 +115,7 @@ source(system.file("unitTests", "test_readGAlignmentPairsFromBam.R",
                    package="GenomicAlignments"))
 bf <- BamFile(toy_bamfile, asMates=TRUE)
 
-test_readGAlignmentsListFromBam <- function()
+test_readGAlignmentsListFromBam_toybamfile <- function()
 {
     param <- ScanBamParam(tag="pi")
     galp <- readGAlignmentPairsFromBam(toy_bamfile, use.names=TRUE, param=param)
