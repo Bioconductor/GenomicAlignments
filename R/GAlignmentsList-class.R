@@ -144,11 +144,17 @@ setReplaceMethod("elementMetadata", "GAlignmentsList",
     GenomicRanges:::replaceElementMetadataList
 )
 
-setReplaceMethod("strand", "GAlignmentsList", .replaceStrandList)
+setReplaceMethod("strand", "GAlignmentsList",
+    GenomicRanges:::replaceStrandList
+)
 
-setReplaceMethod("seqinfo", "GAlignmentsList", .replaceSeqinfoList)
+setReplaceMethod("seqinfo", "GAlignmentsList",
+    GenomicRanges:::replaceSeqinfoList
+)
 
-setReplaceMethod("seqnames", "GAlignmentsList", .replaceSeqnamesList)
+setReplaceMethod("seqnames", "GAlignmentsList",
+    GenomicRanges:::replaceSeqnamesList
+)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Validity.
