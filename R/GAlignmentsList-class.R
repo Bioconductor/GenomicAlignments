@@ -343,7 +343,9 @@ setAs("GAlignmentsList", "RangesList",
 setAs("GAlignmentsList", "Ranges", 
     function(from) ranges(from)
 )
-setMethod("as.data.frame", "GAlignmentsList", .GRangesListAsdataframe)
+setMethod("as.data.frame", "GAlignmentsList",
+    GenomicRanges:::GRangesListAsdataframe
+)
 
 setAs("GAlignmentPairs", "GAlignmentsList", 
     function(from) 
