@@ -95,7 +95,7 @@ stackStringsFromBam(file, index=file, param,
   \itemize{
     \item The \code{\link{readGAlignmentsFromBam}} function for loading read
           sequences (or their quality strings) from a BAM file (via a
-          \link[GenomicRanges]{GAlignments} object).
+          \link{GAlignments} object).
 
     \item The \code{\link{sequenceLayer}} function for laying read sequences
           alongside the reference space, using their CIGARs.

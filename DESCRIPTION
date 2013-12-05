@@ -16,7 +16,8 @@ Suggests: RNAseqData.HNRNPC.bam.chr14, pasillaBamSubset,
 	DESeq, edgeR,
 	RUnit, BiocStyle
 License: Artistic-2.0
-Collate: GAlignmentsList-class.R
+Collate: GAlignmentPairs-class.R
+	GAlignmentsList-class.R
 	GappedReads-class.R
 	findMateAlignment.R
 	readGAlignments.R

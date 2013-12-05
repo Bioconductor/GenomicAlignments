@@ -17,12 +17,11 @@
 \title{(Legacy) GappedReads objects}
 
 \description{
-  The GappedReads class extends the \link[GenomicRanges]{GAlignments}
-  class defined in the GenomicRanges package.
+  The GappedReads class extends the \link{GAlignments} class.
+
   A GappedReads object contains all the information contained in a
-  \link[GenomicRanges]{GAlignments} object plus the sequences
-  of the queries. Those sequences can be accessed via the \code{qseq}
-  accessor.
+  \link{GAlignments} object plus the sequences of the queries.
+  Those sequences can be accessed via the \code{qseq} accessor.
 }
 
 \section{Constructor}{
@@ -52,8 +51,11 @@
 }
 
 \seealso{
-  \link[GenomicRanges]{GAlignments-class},
-  \code{\link{readGappedReads}}
+  \itemize{
+    \item \link{GAlignments} objects.
+
+    \item \code{\link{readGappedReads}}.
+  }
 }
 
 \examples{

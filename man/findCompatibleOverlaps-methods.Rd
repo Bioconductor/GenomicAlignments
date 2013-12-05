@@ -24,13 +24,11 @@ countCompatibleOverlaps(query, subject)
 
 \arguments{
   \item{query}{
-    A \link[GenomicRanges]{GAlignments} or
-    \link[GenomicRanges]{GAlignmentPairs} object representing the aligned
-    reads.
+    A \link{GAlignments} or \link{GAlignmentPairs} object representing
+    the aligned reads.
   }
   \item{subject}{
-    A \link[GenomicRanges]{GRangesList} object representing the
-    transcripts.
+    A \link{GRangesList} object representing the transcripts.
   }
 }
 
@@ -66,9 +64,10 @@ countCompatibleOverlaps(query, subject)
 
     \item The "Overlap encodings" vignette in the \pkg{GenomicRanges} package.
 
-    \item \link[GenomicRanges]{GAlignments},
-          \link[GenomicRanges]{GAlignmentPairs},
-          and \link[GenomicRanges]{GRangesList} objects.
+    \item \link{GAlignments} and \link{GAlignmentPairs} objects.
+
+    \item \link[GenomicRanges]{GRangesList} objects in the
+          \pkg{GenomicRanges} package.
   }
 }
 

@@ -14,8 +14,7 @@
 \title{Pairing the elements of a GAlignments object}
 
 \description{
-Utilities for pairing the elements of a \link[GenomicRanges]{GAlignments}
-object.
+  Utilities for pairing the elements of a \link{GAlignments} object.
 }
 
 \usage{
@@ -30,9 +29,9 @@ flushDumpedAlignments()
 
 \arguments{
   \item{x}{
-    A named \link[GenomicRanges]{GAlignments} object with metadata
-    columns \code{flag}, \code{mrnm}, and \code{mpos}. Typically obtained
-    by loading aligned paired-end reads from a BAM file with:
+    A named \link{GAlignments} object with metadata columns \code{flag},
+    \code{mrnm}, and \code{mpos}. Typically obtained by loading aligned
+    paired-end reads from a BAM file with:
     \preformatted{
     param <- ScanBamParam(what=c("flag", "mrnm", "mpos"))
     x <- readGAlignmentsFromBam(..., use.names=TRUE, param=param)
@@ -44,7 +43,7 @@ flushDumpedAlignments()
   }
   \item{use.mcols}{
     Names of the metadata columns to propagate to the returned
-    \link[GenomicRanges]{GAlignmentPairs} object.
+    \link{GAlignmentPairs} object.
   }
 }
 
@@ -187,7 +186,7 @@ retrieved later (i.e. after \code{findMateAlignment} has returned) for
 further examination (see "Dumped alignments" subsection below for the details).
 In other words, alignments that cannot be paired unambiguously are not paired
 at all. Concretely, this means that \code{\link{readGAlignmentPairs}} is
-guaranteed to return a \link[GenomicRanges]{GAlignmentPairs} object
+guaranteed to return a \link{GAlignmentPairs} object
 where every pair was formed in an non-ambiguous way. Note that, in practice,
 this approach doesn't seem to leave aside a lot of records because ambiguous
 pairing events seem pretty rare.
@@ -216,14 +215,12 @@ automatically flushed at the beginning of a call to \code{findMateAlignment}.
     \item A non-NA value j gives the index in \code{x} of \code{x[i]}'s mate.
   }
 
-  For \code{makeGAlignmentPairs}: A
-  \link[GenomicRanges]{GAlignmentPairs} object where the pairs
-  are formed internally by calling \code{findMateAlignment} on \code{x}.
+  For \code{makeGAlignmentPairs}: A \link{GAlignmentPairs} object where the
+  pairs are formed internally by calling \code{findMateAlignment} on \code{x}.
 
-  For \code{getDumpedAlignments}: \code{NULL} or a
-  \link[GenomicRanges]{GAlignments} object containing the dumped
-  alignments. See "Dumped alignments" subsection in the "Details" section
-  above for the details.
+  For \code{getDumpedAlignments}: \code{NULL} or a \link{GAlignments} object
+  containing the dumped alignments. See "Dumped alignments" subsection in
+  the "Details" section above for the details.
 
   For \code{countDumpedAlignments}: The number of dumped alignments.
 
@@ -233,10 +230,12 @@ automatically flushed at the beginning of a call to \code{findMateAlignment}.
 \author{H. Pages}
 
 \seealso{
-  \link[GenomicRanges]{GAlignments-class},
-  \link[GenomicRanges]{GAlignmentPairs-class},
-  \code{\link{readGAlignmentsFromBam}},
-  \code{\link{readGAlignmentPairsFromBam}}
+  \itemize{
+    \item \link{GAlignments} and \link{GAlignmentPairs} objects.
+
+    \item \code{\link{readGAlignmentsFromBam}} and
+          \code{\link{readGAlignmentPairsFromBam}}.
+  }
 }
 
 \examples{

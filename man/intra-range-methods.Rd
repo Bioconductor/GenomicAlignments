@@ -15,8 +15,7 @@
 
 \description{
   This man page documents intra range transformations of a
-  \link[GenomicRanges]{GAlignments} or \link{GAlignmentsList}
-  object.
+  \link{GAlignments} or \link{GAlignmentsList} object.
 
   See \code{?`\link[IRanges]{intra-range-methods}`} and
   \code{?`\link[IRanges]{inter-range-methods}`} in the \pkg{IRanges}
@@ -37,7 +36,7 @@
 
 \arguments{
   \item{x}{
-    A \link[GenomicRanges]{GAlignments} or \link{GAlignmentsList} object.
+    A \link{GAlignments} or \link{GAlignmentsList} object.
   }
   \item{start, end, width}{
     Vectors of integers.
@@ -57,23 +56,21 @@
 \details{
   \itemize{
     \item(){
-      \code{narrow} on a \link[GenomicRanges]{GAlignments} object behaves
+      \code{narrow} on a \link{GAlignments} object behaves
       like on a \link[IRanges]{Ranges} object. See
       \code{?`\link[IRanges]{intra-range-methods}`} for the details.
 
-      A major difference though is that it returns a
-      \link[GenomicRanges]{GAlignments} object instead of a
-      \link[IRanges]{Ranges} object.
+      A major difference though is that it returns a \link{GAlignments}
+      object instead of a \link[IRanges]{Ranges} object.
 
       Unlike with \code{qnarrow} (see below), the
       \code{start}/\code{end}/\code{width} arguments here describe
       the narrowing on the reference side, not the query side.
     }
     \item(){
-      \code{qnarrow} on a \link[GenomicRanges]{GAlignments} object
-      behaves like \code{narrow} except that the
-      \code{start}/\code{end}/\code{width} arguments here specify
-      the narrowing with respect to the query sequences.
+      \code{qnarrow} on a \link{GAlignments} object behaves like \code{narrow}
+      except that the \code{start}/\code{end}/\code{width} arguments here
+      specify the narrowing with respect to the query sequences.
 
       \code{qnarrow} on a \link{GAlignmentsList} object
       returns a \link{GAlignmentsList} object.
@@ -95,10 +92,11 @@
 
 \seealso{
   \itemize{
-    \item \link[GenomicRanges]{GAlignments} and
-          \link{GAlignmentsList} objects.
+    \item \link{GAlignments} and \link{GAlignmentsList} objects.
+
     \item The \link[IRanges]{intra-range-methods} man page in the
           \pkg{IRanges} package.
+
     \item The \link[GenomicRanges]{intra-range-methods} man page in the
           \pkg{GenomicRanges} package.
   }

@@ -115,8 +115,7 @@ sequenceLayer(x, cigar, from="query", to="reference",
           stored in a BAM file on a region of interest.
 
     \item The \code{\link{readGAlignmentsFromBam}} function for loading read
-          sequences from a BAM file (via a \link[GenomicRanges]{GAlignments}
-          object).
+          sequences from a BAM file (via a \link{GAlignments} object).
 
     \item The \code{\link[Biostrings]{extractAt}} and
           \code{\link[Biostrings]{replaceAt}} functions in the \pkg{Biostrings}

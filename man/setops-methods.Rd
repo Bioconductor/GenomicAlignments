@@ -8,7 +8,7 @@
 \title{Set operations on GAlignments objects}
 
 \description{
-  Performs set operations on \link[GenomicRanges]{GAlignments} objects.
+  Performs set operations on \link{GAlignments} objects.
 }
 
 \usage{
@@ -18,9 +18,8 @@
 
 \arguments{
   \item{x, y}{
-    A \link[GenomicRanges]{GAlignments} object and a
-    \link[GenomicRanges]{GRanges} object. They must have the
-    same length.
+    A \link{GAlignments} object and a \link[GenomicRanges]{GRanges} object.
+    They must have the same length.
   }
   \item{...}{
     Further arguments to be passed to or from other methods.
@@ -28,8 +27,8 @@
 }
 
 \value{
-  A \link[GenomicRanges]{GAlignments} object \emph{parallel} to (i.e. same
-  length as) \code{x} and \code{y}.
+  A \link{GAlignments} object \emph{parallel} to (i.e. same length as)
+  \code{x} and \code{y}.
 }
 
 \seealso{

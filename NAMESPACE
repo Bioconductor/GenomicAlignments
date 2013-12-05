@@ -8,8 +8,12 @@ import(Rsamtools)
 
 
 exportClasses(
+    GAlignmentPairs,
     GAlignmentsList,
-    GappedReads
+    GappedReads,
+
+    ## Old names:
+    GappedAlignmentPairs
 )
 
 
@@ -42,6 +46,7 @@ exportMethods(
 ###
 
 export(
+    GAlignmentPairs,
     GAlignmentsList,
     makeGAlignmentsListFromFeatureFragments,
 
@@ -61,6 +66,7 @@ export(
     Union, IntersectionNotEmpty, IntersectionStrict,
 
     ## old stuff (deprecated or defunct):
+    GappedAlignmentPairs,
     makeGappedAlignmentPairs,
     readBamGappedAlignments,
     readBamGappedAlignmentPairs,
@@ -75,6 +81,9 @@ export(
 ###
 
 export(
+    ## GAlignmentPairs-class.R:
+    first, last, left, right, isProperPair,
+
     ## GappedReads-class.R:
     qseq,
 
@@ -96,6 +105,7 @@ export(
 
 ### Exactly the same list as above.
 exportMethods(
+    first, last, left, right, isProperPair,
     qseq,
     readGAlignmentsFromBam,
     readGAlignmentPairsFromBam,

@@ -36,9 +36,8 @@
 
 \description{
   Read alignments from a file (typically a BAM file) into a
-  \link[GenomicRanges]{GAlignments}, \link[GenomicRanges]{GAlignmentPairs},
-  \link{GAlignmentsList}, or \link{GappedReads}
-  object.
+  \link{GAlignments}, \link{GAlignmentPairs}, \link{GAlignmentsList},
+  or \link{GappedReads} object.
 }
 
 \usage{
@@ -89,8 +88,8 @@ readGappedReadsFromBam(file, index=file, use.names=FALSE,
     and which records are imported. However, note that the fields specified
     thru this \link[Rsamtools]{ScanBamParam} object will be loaded
     \emph{in addition} to any field required for generating the returned
-    object (\link[GenomicRanges]{GAlignments},
-    \link{GappedReads}, or \link[GenomicRanges]{GAlignmentPairs} object),
+    object (\link{GAlignments}, \link{GAlignmentPairs},
+    or \link{GappedReads} object),
     but only the fields requested by the user will actually be kept as
     metadata columns of the object.
 
@@ -108,12 +107,12 @@ readGappedReadsFromBam(file, index=file, use.names=FALSE,
   \item{with.which_label}{\code{TRUE} or \code{FALSE} (the default).
     If \code{TRUE} and if \code{param} has a \code{which} component,
     a \code{"which_label"} metadata column is added to the returned
-    \link[GenomicRanges]{GAlignments} or \link{GappedReads} object,
+    \link{GAlignments} or \link{GappedReads} object,
     or to the \code{\link{first}} and \code{\link{last}} components
-    of the returned \link[GenomicRanges]{GAlignmentPairs} object.
+    of the returned \link{GAlignmentPairs} object.
     In the case of \code{readGAlignmentsListFromBam}, it's added as an
     \emph{inner} metadata column, that is, the metadata column is placed
-    on the \link[GenomicRanges]{GAlignments} object obtained by unlisting
+    on the \link{GAlignments} object obtained by unlisting
     the returned \link{GAlignmentsList} object.
 
     The purpose of this metadata column is to unambiguously identify
@@ -128,18 +127,18 @@ readGappedReadsFromBam(file, index=file, use.names=FALSE,
 }
 
 \details{
-  See \code{?\link[GenomicRanges]{GAlignments}} for a
-  description of \link[GenomicRanges]{GAlignments} objects.
+  See \code{?\link{GAlignments}} for a description of \link{GAlignments}
+  objects.
 
-  See \code{?\link{GappedReads}} for a
-  description of \link{GappedReads} objects.
+  See \code{?\link{GappedReads}} for a description of \link{GappedReads}
+  objects.
 
   \subsection{Front-ends}{
     \code{readGAlignments} reads a file containing aligned reads as a
-    \link[GenomicRanges]{GAlignments} object.
+    \link{GAlignments} object.
 
     \code{readGAlignmentPairs} reads a file containing aligned paired-end
-    reads as a \link[GenomicRanges]{GAlignmentPairs} object.
+    reads as a \link{GAlignmentPairs} object.
 
     \code{readGAlignmentsList} reads a file containing aligned reads as a
     \link{GAlignmentsList} object.
@@ -177,16 +176,15 @@ readGappedReadsFromBam(file, index=file, use.names=FALSE,
 
     \code{readGAlignmentPairsFromBam} proceeds in 2 steps:
     \enumerate{
-      \item Load the BAM file into a \link[GenomicRanges]{GAlignments}
+      \item Load the BAM file into a \link{GAlignments}
             object with \code{readGAlignmentsFromBam};
-      \item Turn this \link[GenomicRanges]{GAlignments} object into a
-            \link[GenomicRanges]{GAlignmentPairs} object by pairing
-            its elements.
+      \item Turn this \link{GAlignments} object into a \link{GAlignmentPairs}
+            object by pairing its elements.
     }
-    See \code{?\link[GenomicRanges]{GAlignmentPairs-class}} for a
-    description of \link[GenomicRanges]{GAlignmentPairs} objects,
-    and \code{?\link{findMateAlignment}} for a description of the
-    pairing algorithm (including timing and memory requirement).
+    See \code{?\link{GAlignmentPairs}} for a description of
+    \link{GAlignmentPairs} objects, and \code{?\link{findMateAlignment}}
+    for a description of the pairing algorithm (including timing and memory
+    requirement).
 
     \code{readGAlignmentsListFromBam} pairs records into mates
     acording to the criteria below. A \code{GAlignmentsList} is 
@@ -234,26 +232,24 @@ readGappedReadsFromBam(file, index=file, use.names=FALSE,
 }
 
 \value{
-  A \link[GenomicRanges]{GAlignments} object for
-  \code{readGAlignmentsFromBam}.
+  A \link{GAlignments} object for \code{readGAlignmentsFromBam}.
 
-  A \link{GappedReads} object for \code{readGappedReadsFromBam}.
-
-  A \link[GenomicRanges]{GAlignmentPairs} object for
-  \code{readGAlignmentPairsFromBam}.
+  A \link{GAlignmentPairs} object for \code{readGAlignmentPairsFromBam}.
   Note that a BAM (or SAM) file can in theory contain a mix of single-end
   and paired-end reads, but in practise it seems that single-end and
   paired-end are not mixed. In other words, the value of flag bit 0x1
   (\code{isPaired}) is the same for all the records in a file.
   So if \code{readGAlignmentPairsFromBam} returns a
-  \link[GenomicRanges]{GAlignmentPairs} object of length zero,
+  \link{GAlignmentPairs} object of length zero,
   this almost certainly means that the BAM (or SAM) file contains
   alignments for single-end reads (although it could also mean that the
   user-supplied \code{\linkS4class{ScanBamParam}} is filtering out everything,
   or that the file is empty, or that all the records in the file correspond
   to unmapped reads).
 
-  A \link{GAlignmentsList} object for \code{readGAlignmentsListFromBam}. 
+  A \link{GAlignmentsList} object for \code{readGAlignmentsListFromBam}.
+
+  A \link{GappedReads} object for \code{readGappedReadsFromBam}.
 }
 
 \note{
@@ -268,13 +264,16 @@ readGappedReadsFromBam(file, index=file, use.names=FALSE,
         Valerie Obenchain <vobencha@fhcrc.org>}
 
 \seealso{
-  \link[GenomicRanges]{GAlignments-class},
-  \link{GAlignmentsList-class},
-  \link{GappedReads-class},
-  \link[GenomicRanges]{GAlignmentPairs-class},
-  \code{\link{findMateAlignment}},
-  \code{\link{scanBam}},
-  \code{\link{ScanBamParam}}
+  \itemize{
+    \item \code{\link[Rsamtools]{scanBam}} and
+          \code{\link[Rsamtools]{ScanBamParam}} in the \pkg{Rsamtools}
+          package.
+
+    \item \link{GAlignments}, \link{GAlignmentPairs}, \link{GAlignmentsList},
+          and \link{GappedReads} objects.
+
+    \item \code{\link{findMateAlignment}}.
+  }
 }
 
 \examples{

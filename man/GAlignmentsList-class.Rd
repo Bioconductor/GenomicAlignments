@@ -8,7 +8,6 @@
 
 % Constructors:
 \alias{GAlignmentsList}
-\alias{makeGAlignmentsListFromFeatureFragments}
 \alias{updateObject,GAlignmentsList-method}
 
 % Accessors:
@@ -50,6 +49,8 @@
 % show:
 \alias{show,GAlignmentsList-method}
 
+% Old stuff (deprecated & defunct):
+\alias{makeGAlignmentsListFromFeatureFragments}
 
 \title{GAlignmentsList objects}
 
@@ -64,19 +65,11 @@
   on the GAlignments man page, see ?\code{GAlignments}.
 } 
 
-\section{Constructors}{
+\section{Constructor}{
   \describe{
     \item{}{
       \code{GAlignmentsList(...)}:
       Creates a GAlignmentsList from a list of \link{GAlignments} objects.
-    }
-    \item{}{
-      \code{makeGAlignmentsListFromFeatureFragments(seqnames=Rle(factor()), 
-                                                    fragmentPos=list(),
-                                                    fragmentCigar=list(),
-                                                    strand=character(0),
-                                                    sep=",")}:
-      Constructs a GAlignmentsList from a list of fragmented features.
     }
   }
 }
@@ -257,8 +250,8 @@
   \itemize{
     \item \link{GAlignments-class}.
     \item \link{GAlignmentPairs-class}.
-    \item \code{\link[GenomicAlignments]{readGAlignmentsFromBam}}.
-    \item \code{\link[GenomicAlignments]{readGAlignmentPairsFromBam}}.
+    \item \code{\link{readGAlignmentsFromBam}}.
+    \item \code{\link{readGAlignmentPairsFromBam}}.
     \item \link{findOverlaps-methods}.
   }
 }

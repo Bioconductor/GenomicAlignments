@@ -132,17 +132,17 @@ IntersectionNotEmpty(features, reads, ignore.strand=FALSE, inter.feature=TRUE)
     of the annotation are removed before counting.
   }
   \item{...}{
-    Additional arguments for Bam file methods such as \code{singleEnd},
+    Additional arguments for BAM file methods such as \code{singleEnd},
     \code{fragments} or \code{param} (see below). Providing
     \code{count.mapped.reads=TRUE} include additional passes through the
     BAM file to collect statistics like those from \code{countBam}.
     If using multiple cores, arguments can be passed through to
-    \code{mclapply} used when counting Bam files.
+    \code{mclapply} used when counting BAM files.
   }
   \item{singleEnd}{
     (Default TRUE) A logical value indicating if reads are single or 
     paired-end. In Bioconductor > 2.12 it is not necessary to sort
-    paired-end Bam files by \code{qname}. When counting with 
+    paired-end BAM files by \code{qname}. When counting with 
     \code{summarizeOverlaps}, setting \code{singleEnd=FALSE} will trigger 
     paired-end reading and counting. It is fine to also set 
     \code{asMates=TRUE} in the \code{BamFile} but is not necessary when
@@ -155,10 +155,10 @@ IntersectionNotEmpty(features, reads, ignore.strand=FALSE, inter.feature=TRUE)
     \code{fragments} is a logical value indicating if singletons, reads 
     with unmapped pairs and other fragments should be included in counting. 
     When \code{fragments=FALSE} the
-    \code{\link[GenomicAlignments]{readGAlignmentPairs}} function
+    \code{\link{readGAlignmentPairs}} function
     from the \pkg{GenomicAlignments} package is used to 
     read in the data, when \code{fragments=TRUE} the
-    \code{\link[GenomicAlignments]{readGAlignmentsList}}
+    \code{\link{readGAlignmentsList}}
     is used.
 
     \code{readGAlignmentPairs} keeps only the read pairs mated by the 
@@ -166,8 +166,8 @@ IntersectionNotEmpty(features, reads, ignore.strand=FALSE, inter.feature=TRUE)
     all singletons, reads with unmapped pairs and other fragments. When 
     \code{fragments=TRUE} counts will generally be higher because all 
     records are included in the counting, not just the primary alignment 
-    pairs. See ?\code{readGAlignmentsListFromBam} in the
-    \pkg{GenomicAlignments} package for the algorithm details.
+    pairs. See \code{?\link{readGAlignmentsListFromBam}} for the algorithm
+    details.
   }
   \item{param}{An optional \code{\link[Rsamtools]{ScanBamParam}} instance to
     further influence scanning, counting, or filtering.
@@ -211,12 +211,12 @@ IntersectionNotEmpty(features, reads, ignore.strand=FALSE, inter.feature=TRUE)
     \item{paired-end reads :}{
       Paired-end reads are counted the same as single-end reads with gaps; 
       each pair registers as a single hit. Paired-end records can be counted 
-      in a \link[GenomicRanges]{GAlignmentPairs} container or Bam file. 
+      in a \link{GAlignmentPairs} container or BAM file. 
 
-      When counting Bam files the method has an additional argument,
+      When counting BAM files the method has an additional argument,
       \code{singleEnd}, which should be FALSE for paired-end data.
       See ?\code{summarizeOverlaps,GRanges,BamFileList-method} for details
-      on additional arguments when counting Bam files.
+      on additional arguments when counting BAM files.
     }
   }
 }
@@ -248,14 +248,13 @@ IntersectionNotEmpty(features, reads, ignore.strand=FALSE, inter.feature=TRUE)
 \seealso{
   \itemize{
     \item The \pkg{DESeq}, \pkg{DEXSeq} and \pkg{edgeR} packages.
-    \item The \link[GenomicRanges]{GAlignments} and
-          \link[GenomicRanges]{GAlignmentPairs} classes in the
-          \pkg{GenomicRanges} package.
+
+    \item The \link{GAlignments} and \link{GAlignmentPairs} classes.
+
     \item The \link[Rsamtools]{BamFileList} and \link[Rsamtools]{BamViews}
           classes in the \pkg{Rsamtools} package.
-    \item The \link[GenomicAlignments]{readGAlignments} and
-          \link[GenomicAlignments]{readGAlignmentPairs} functions in
-          the \pkg{GenomicAlignments} package.
+
+    \item The \link{readGAlignments} and \link{readGAlignmentPairs} functions.
   }
 }
 
@@ -348,12 +347,11 @@ se2 <- summarizeOverlaps(gr, reads, mode="Union", inter.feature=FALSE)
 assays(se2)$counts
 
 ## ---------------------------------------------------------------------
-## Counting Bam files.
+## Counting BAM files.
 ## ---------------------------------------------------------------------
 
-library(Rsamtools)
 library(pasillaBamSubset)
-library("TxDb.Dmelanogaster.UCSC.dm3.ensGene")
+library(TxDb.Dmelanogaster.UCSC.dm3.ensGene)
 exbygene <- exonsBy(TxDb.Dmelanogaster.UCSC.dm3.ensGene, "gene")
 
 ## (i) Single-end :
@@ -412,7 +410,7 @@ genes <- GRanges(
                              300, 500, 500))) 
 se <- summarizeOverlaps(genes, bf)
 
-## When the reads are Bam files, the 'colData' contains summary 
+## When the reads are BAM files, the 'colData' contains summary 
 ## information from a call to countBam().
 colData(se)
 

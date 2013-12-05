@@ -33,15 +33,15 @@
 
 \arguments{
   \item{query}{
-    A \link[GenomicRanges]{GAlignments}, \link[GenomicRanges]{GAlignmentPairs},
-    or \link[Rsamtools]{BamFile} object containing the reads.
+    A \link{GAlignments}, \link{GAlignmentPairs}, or \link[Rsamtools]{BamFile}
+    object containing the reads.
     Can also be a single string containing the path to a BAM file.
 
     Single or paired-end reads are specified with the \code{singleEnd} 
     argument (default FALSE). Paired-end reads can be supplied in a BAM
-    file or \linkS4class{GAlignmentPairs} object. Single-end are
-    expected to be in a BAM file, \linkS4class{GAlignments} or 
-    \linkS4class{GRanges} object.
+    file or \link{GAlignmentPairs} object. Single-end are
+    expected to be in a BAM file, \link{GAlignments} or 
+    \link[GenomicRanges]{GRanges} object.
   }
   \item{subject}{
     A \link{GRangesList} containing the annotations. This list is
@@ -87,9 +87,11 @@
   \itemize{
     \item \link[GenomicRanges]{findSpliceOverlaps} in the
           \pkg{GenomicRanges} package.
-    \item The \link[GenomicRanges]{GRangesList},
-          \link[GenomicRanges]{GAlignments}, and
-          \link[GenomicRanges]{GAlignmentPairs} classes.
+
+    \item \link[GenomicRanges]{GRangesList} objects in the
+          \pkg{GenomicRanges} package.
+
+    \item \link{GAlignments} and \link{GAlignmentPairs} objects.
   }
 }
 
