@@ -15,7 +15,7 @@
 
 \description{
   This man page documents intra range transformations of a
-  \link[GenomicRanges]{GAlignments} or \link[GenomicRanges]{GAlignmentsList}
+  \link[GenomicRanges]{GAlignments} or \link{GAlignmentsList}
   object.
 
   See \code{?`\link[IRanges]{intra-range-methods}`} and
@@ -37,8 +37,7 @@
 
 \arguments{
   \item{x}{
-    A \link[GenomicRanges]{GAlignments} or
-    \link[GenomicRanges]{GAlignmentsList} object.
+    A \link[GenomicRanges]{GAlignments} or \link{GAlignmentsList} object.
   }
   \item{start, end, width}{
     Vectors of integers.
@@ -76,8 +75,8 @@
       \code{start}/\code{end}/\code{width} arguments here specify
       the narrowing with respect to the query sequences.
 
-      \code{qnarrow} on a \link[GenomicRanges]{GAlignmentsList} object
-      returns a \link[GenomicRanges]{GAlignmentsList} object.
+      \code{qnarrow} on a \link{GAlignmentsList} object
+      returns a \link{GAlignmentsList} object.
     }
   }
 }
@@ -97,7 +96,7 @@
 \seealso{
   \itemize{
     \item \link[GenomicRanges]{GAlignments} and
-          \link[GenomicRanges]{GAlignmentsList} objects.
+          \link{GAlignmentsList} objects.
     \item The \link[IRanges]{intra-range-methods} man page in the
           \pkg{IRanges} package.
     \item The \link[GenomicRanges]{intra-range-methods} man page in the

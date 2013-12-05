@@ -8,6 +8,7 @@ import(Rsamtools)
 
 
 exportClasses(
+    GAlignmentsList,
     GappedReads
 )
 
@@ -41,6 +42,9 @@ exportMethods(
 ###
 
 export(
+    GAlignmentsList,
+    makeGAlignmentsListFromFeatureFragments,
+
     findMateAlignment, findMateAlignment2,
     makeGAlignmentPairs,
     getDumpedAlignments, countDumpedAlignments, flushDumpedAlignments,

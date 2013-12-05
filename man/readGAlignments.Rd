@@ -37,7 +37,7 @@
 \description{
   Read alignments from a file (typically a BAM file) into a
   \link[GenomicRanges]{GAlignments}, \link[GenomicRanges]{GAlignmentPairs},
-  \link[GenomicRanges]{GAlignmentsList}, or \link{GappedReads}
+  \link{GAlignmentsList}, or \link{GappedReads}
   object.
 }
 
@@ -114,7 +114,7 @@ readGappedReadsFromBam(file, index=file, use.names=FALSE,
     In the case of \code{readGAlignmentsListFromBam}, it's added as an
     \emph{inner} metadata column, that is, the metadata column is placed
     on the \link[GenomicRanges]{GAlignments} object obtained by unlisting
-    the returned \link[GenomicRanges]{GAlignmentsList} object.
+    the returned \link{GAlignmentsList} object.
 
     The purpose of this metadata column is to unambiguously identify
     the range in \code{which} where each element in the returned object
@@ -142,7 +142,7 @@ readGappedReadsFromBam(file, index=file, use.names=FALSE,
     reads as a \link[GenomicRanges]{GAlignmentPairs} object.
 
     \code{readGAlignmentsList} reads a file containing aligned reads as a
-    \link[GenomicRanges]{GAlignmentsList} object.
+    \link{GAlignmentsList} object.
 
     \code{readGappedReads} reads a file containing aligned reads as a
     \link{GappedReads} object.
@@ -228,8 +228,8 @@ readGappedReadsFromBam(file, index=file, use.names=FALSE,
       FALSE. Flags, tags and ranges may be specified in the
       \code{ScanBamParam} for fine tuning of results.
 
-    See \code{?\link[GenomicRanges]{GAlignmentsList-class}} for a 
-    description of \link[GenomicRanges]{GAlignmentsList} objects.
+    See \code{?\link{GAlignmentsList-class}} for a 
+    description of \link{GAlignmentsList} objects.
   }
 }
 
@@ -253,8 +253,7 @@ readGappedReadsFromBam(file, index=file, use.names=FALSE,
   or that the file is empty, or that all the records in the file correspond
   to unmapped reads).
 
-  A \link[GenomicRanges]{GAlignmentsList} object for
-  \code{readGAlignmentsListFromBam}. 
+  A \link{GAlignmentsList} object for \code{readGAlignmentsListFromBam}. 
 }
 
 \note{
@@ -270,7 +269,7 @@ readGappedReadsFromBam(file, index=file, use.names=FALSE,
 
 \seealso{
   \link[GenomicRanges]{GAlignments-class},
-  \link[GenomicRanges]{GAlignmentsList-class},
+  \link{GAlignmentsList-class},
   \link{GappedReads-class},
   \link[GenomicRanges]{GAlignmentPairs-class},
   \code{\link{findMateAlignment}},
