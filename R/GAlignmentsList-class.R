@@ -128,7 +128,9 @@ setMethod("width", "GAlignmentsList",
 
 setMethod("seqinfo", "GAlignmentsList", function(x) seqinfo(x@unlistData))
 
-setMethod("elementMetadata", "GAlignmentsList", .getElementMetadataList)
+setMethod("elementMetadata", "GAlignmentsList",
+    GenomicRanges:::getElementMetadataList
+)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Setters.
