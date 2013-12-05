@@ -1,0 +1,43 @@
+\name{setops-methods}
+\alias{setops-methods}
+
+\alias{pintersect,GAlignments,GRanges-method}
+\alias{pintersect,GRanges,GAlignments-method}
+
+
+\title{Set operations on GAlignments objects}
+
+\description{
+  Performs set operations on \link[GenomicRanges]{GAlignments} objects.
+}
+
+\usage{
+\S4method{pintersect}{GAlignments,GRanges}(x, y, ...)
+\S4method{pintersect}{GRanges,GAlignments}(x, y, ...)
+}
+
+\arguments{
+  \item{x, y}{
+    A \link[GenomicRanges]{GAlignments} object and a
+    \link[GenomicRanges]{GRanges} object. They must have the
+    same length.
+  }
+  \item{...}{
+    Further arguments to be passed to or from other methods.
+  }
+}
+
+\value{
+  A \link[GenomicRanges]{GAlignments} object \emph{parallel} to (i.e. same
+  length as) \code{x} and \code{y}.
+}
+
+\seealso{
+  \itemize{
+    \item The \link[GenomicRanges]{setops-methods} man page in the
+          \pkg{GenomicRanges} package.
+  }
+}
+
+\keyword{methods}
+\keyword{utilities}

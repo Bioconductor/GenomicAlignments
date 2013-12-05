@@ -13,10 +13,6 @@
 % Combining:
 \alias{c,GappedReads-method}
 
-% Other methods:
-\alias{qnarrow,GappedReads-method}
-\alias{narrow,GappedReads-method}
-
 
 \title{(Legacy) GappedReads objects}
 

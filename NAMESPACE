@@ -26,8 +26,9 @@ exportMethods(
 
     ## Generics defined in IRanges:
     narrow,
-    findOverlaps, countOverlaps, overlapsAny, subsetByOverlaps,
     coverage,
+    pintersect,
+    findOverlaps, countOverlaps, overlapsAny, subsetByOverlaps,
 
     ## Generics defined in GenomicRanges:
     qwidth, qnarrow,
@@ -50,6 +51,8 @@ export(
     readGappedReads,
 
     sequenceLayer, stackStringsFromBam,
+
+    countCompatibleOverlaps,
 
     Union, IntersectionNotEmpty, IntersectionStrict,
 
@@ -77,6 +80,12 @@ export(
     readGAlignmentsListFromBam,
     readGappedReadsFromBam,
 
+    ## intra-range-methods.R:
+    qnarrow,
+
+    ## findCompatibleOverlaps-methods.R:
+    findCompatibleOverlaps,
+
     ## summarizeOverlaps-methods.R:
     summarizeOverlaps
 )
@@ -88,6 +97,8 @@ exportMethods(
     readGAlignmentPairsFromBam,
     readGAlignmentsListFromBam,
     readGappedReadsFromBam,
+    qnarrow,
+    findCompatibleOverlaps,
     summarizeOverlaps
 )
 
