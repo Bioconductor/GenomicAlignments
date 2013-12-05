@@ -141,7 +141,7 @@ setReplaceMethod("rname", "GAlignmentsList",
 )
 
 setReplaceMethod("elementMetadata", "GAlignmentsList", 
-    .replaceElementMetadataList
+    GenomicRanges:::replaceElementMetadataList
 )
 
 setReplaceMethod("strand", "GAlignmentsList", .replaceStrandList)
