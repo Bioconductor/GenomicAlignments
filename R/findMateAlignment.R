@@ -154,10 +154,9 @@
     cat("\n!! Found more than 1 mate for the following elements in 'x': ",
         paste(idx, collapse=", "),
         ".\n!! Details:\n!! ", sep="")
-    GenomicRanges:::showGAlignments(x[idx],
-                                         margin="!! ",
-                                         with.classinfo=TRUE,
-                                         print.seqlengths=FALSE)
+    showGAlignments(x[idx], margin="!! ",
+                            with.classinfo=TRUE,
+                            print.seqlengths=FALSE)
     cat("!! ==> won't assign a mate to them!\n")
 }
 

@@ -329,7 +329,7 @@ setAs("GAlignmentPairs", "GAlignmentsList",
 
 setMethod("show", "GAlignmentsList",
     function(object)
-        GenomicRanges:::showList(object, GenomicRanges:::showGAlignments, FALSE)
+        GenomicRanges:::showList(object, showGAlignments, FALSE)
 )
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
