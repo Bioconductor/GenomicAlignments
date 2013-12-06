@@ -19,9 +19,9 @@ setMethod("map", c("GenomicRanges", "GAlignments"), function(from, to) {
 
 setMethod("pmap", c("Ranges", "GAlignments"), function(from, to) {
   starts <- .Call("ref_locs_to_query_locs", start(from),
-                  cigar(to), start(to), FALSE, PACKAGE="GenomicRanges")
+                  cigar(to), start(to), FALSE, PACKAGE="GenomicAlignments")
   ends <- .Call("ref_locs_to_query_locs", end(from),
-                cigar(to), start(to), TRUE, PACKAGE="GenomicRanges")
+                cigar(to), start(to), TRUE, PACKAGE="GenomicAlignments")
   ends <- pmax(ends, starts - 1L)
   IRanges(starts, ends)
 })
@@ -31,9 +31,9 @@ setGeneric("prmap", function(from, to) standardGeneric("prmap")) # not exported
 setMethod("prmap", c("Ranges", "GAlignments"), # not exported
   function(from, to) {
   starts <- .Call("query_locs_to_ref_locs", start(from),
-                  cigar(to), start(to), FALSE, PACKAGE="GenomicRanges")
+                  cigar(to), start(to), FALSE, PACKAGE="GenomicAlignments")
   ends <- .Call("query_locs_to_ref_locs", end(from),
-                cigar(to), start(to), TRUE, PACKAGE="GenomicRanges")
+                cigar(to), start(to), TRUE, PACKAGE="GenomicAlignments")
   ends <- pmax(ends, starts - 1L)
   IRanges(starts, ends)
 })

@@ -122,9 +122,8 @@ sequenceLayer(x, cigar, from="query", to="reference",
           package for extracting/replacing arbitrary substrings from/in a
           string or set of strings.
 
-    \item \link[GenomicRanges]{cigar-utils} in the \pkg{GenomicRanges}
-          package for the CIGAR utility functions used internally by
-          \code{sequenceLayer}.
+    \item \link{cigar-utils} for the CIGAR utility functions used internally
+          by \code{sequenceLayer}.
   }
 }
 

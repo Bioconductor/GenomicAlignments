@@ -1,9 +1,11 @@
+useDynLib(GenomicAlignments)
+
 import(methods)
 importFrom(stats, setNames)
 import(BiocGenerics)
 import(IRanges)
-import(GenomicRanges)
 import(Biostrings)
+import(GenomicRanges)
 import(Rsamtools)
 
 
@@ -51,6 +53,25 @@ exportMethods(
 ###
 
 export(
+    validCigar,
+    CIGAR_OPS,
+    explodeCigarOps, explodeCigarOpLengths,
+    cigarToRleList,
+    splitCigar,
+    cigarRangesAlongReferenceSpace,
+    cigarRangesAlongQuerySpace,
+    cigarRangesAlongPairwiseSpace,
+    extractAlignmentRangesOnReference,
+    cigarToIRanges,
+    cigarToIRangesListByAlignment, cigarToIRangesListByRName,
+    cigarWidthAlongReferenceSpace,
+    cigarWidthAlongQuerySpace,
+    cigarWidthAlongPairwiseSpace,
+    cigarToWidth, cigarToQWidth,
+    cigarNarrow, cigarQNarrow,
+    cigarOpTable, cigarToCigarTable, summarizeCigarTable,
+    queryLoc2refLoc, queryLocs2refLocs,
+
     GAlignments,
     GAlignmentPairs,
     GAlignmentsList,

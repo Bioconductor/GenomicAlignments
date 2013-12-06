@@ -38,5 +38,12 @@
   }
 }
 
+\examples{
+## Parallel intersection of a GAlignments and a GRanges object:
+bamfile <- system.file("extdata", "ex1.bam", package="Rsamtools")
+gal <- readGAlignments(bamfile)
+pintersect(gal, shift(as(gal, "GRanges"), 6L))
+}
+
 \keyword{methods}
 \keyword{utilities}
