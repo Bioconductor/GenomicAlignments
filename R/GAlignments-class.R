@@ -624,69 +624,77 @@ setMethod("show", "GAlignments",
 ### Combining and splitting.
 ###
 
-### TODO: Support 'use.names=TRUE'.
-unlist_list_of_GAlignments <- function(x, use.names=TRUE, ignore.mcols=FALSE)
+### 'Class' must be "GAlignments" or the name of a concrete subclass of
+### GAlignments.
+### 'objects' must be a list of GAlignments objects.
+### Returns an instance of class 'Class'.
+combine_GAlignments_objects <- function(Class, objects,
+                                        use.names=TRUE, ignore.mcols=FALSE)
 {
-    if (!is.list(x))
-        stop("'x' must be a list")
+    if (!isSingleString(Class))
+        stop("'Class' must be a single character string")
+    if (!extends(Class, "GAlignments"))
+        stop("'Class' must be the name of a class that extends GAlignments")
+    if (!is.list(objects))
+        stop("'objects' must be a list")
     if (!isTRUEorFALSE(use.names))
         stop("'use.names' must be TRUE or FALSE")
+    ### TODO: Support 'use.names=TRUE'.
     if (use.names)
         stop("'use.names=TRUE' is not supported yet")
     if (!isTRUEorFALSE(ignore.mcols))
         stop("'ignore.mcols' must be TRUE or FALSE")
 
-    ## TODO: Implement (in C) fast elementIsNull(x) in IRanges, that does
-    ## 'sapply(x, is.null)' on list 'x', and use it here.
-    null_idx <- which(sapply(x, is.null))
-    if (length(null_idx) != 0L)
-        x <- x[-null_idx]
-    if (length(x) == 0L)
-        return(new("GAlignments"))
-    x1 <- x[[1L]]
-    if (!is(x1, "GAlignments"))
-        stop("first non-NULL element in 'x' must be a GAlignments object")
-    if (length(x) == 1L)
-        return(x1)
-    ## TODO: Implement (in C) fast elementIs(x, class) in IRanges, that does
-    ## 'sapply(x, is, class)' on list 'x', and use it here.
-    ## 'elementIs(x, "NULL")' should work and be equivalent to
-    ## 'elementIsNull(x)'.
-    class1 <- class(x1)
-    if (!all(sapply(x, is, class1)))
-        stop("all elements in 'x' must be ", class1, " objects (or NULLs)")
-    x_names <- names(x)
-    names(x) <- NULL
+    if (length(objects) != 0L) {
+        ## TODO: Implement (in C) fast 'elementIsNull(objects)' in IRanges,
+        ## that does 'sapply(objects, is.null, USE.NAMES=FALSE)', and use it
+        ## here.
+        null_idx <- which(sapply(objects, is.null, USE.NAMES=FALSE))
+        if (length(null_idx) != 0L)
+            objects <- objects[-null_idx]
+    }
+    if (length(objects) == 0L)
+        return(new(Class))
+
+    ## TODO: Implement (in C) fast 'elementIs(objects, class)' in IRanges, that
+    ## does 'sapply(objects, is, class, USE.NAMES=FALSE)', and use it here.
+    ## 'elementIs(objects, "NULL")' should work and be equivalent to
+    ## 'elementIsNull(objects)'.
+    if (!all(sapply(objects, is, Class, USE.NAMES=FALSE)))
+        stop("the objects to combine must be ", Class, " objects (or NULLs)")
+    objects_names <- names(objects)
+    names(objects) <- NULL  # so lapply(objects, ...) below returns an
+                            # unnamed list
 
     ## Combine "NAMES" slots.
-    NAMES_slots <- lapply(x, function(xi) xi@NAMES)
+    NAMES_slots <- lapply(objects, function(x) x@NAMES)
     ## TODO: Use elementIsNull() here when it becomes available.
-    has_no_names <- sapply(NAMES_slots, is.null)
+    has_no_names <- sapply(NAMES_slots, is.null, USE.NAMES=FALSE)
     if (all(has_no_names)) {
         ans_NAMES <- NULL
     } else {
         noname_idx <- which(has_no_names)
         if (length(noname_idx) != 0L)
-            NAMES_slots[noname_idx] <- lapply(elementLengths(x[noname_idx]),
-                                              character)
+            NAMES_slots[noname_idx] <-
+                lapply(elementLengths(objects[noname_idx]), character)
         ans_NAMES <- unlist(NAMES_slots, use.names=FALSE)
     }
 
     ## Combine "seqnames" slots.
-    seqnames_slots <- lapply(x, function(xi) xi@seqnames)
+    seqnames_slots <- lapply(objects, function(x) x@seqnames)
     ## TODO: Implement unlist_list_of_Rle() in IRanges and use it here.
     ans_seqnames <- do.call(c, seqnames_slots)
 
     ## Combine "start" slots.
-    start_slots <- lapply(x, function(xi) xi@start)
+    start_slots <- lapply(objects, function(x) x@start)
     ans_start <- unlist(start_slots, use.names=FALSE)
 
     ## Combine "cigar" slots.
-    cigar_slots <- lapply(x, function(xi) xi@cigar)
+    cigar_slots <- lapply(objects, function(x) x@cigar)
     ans_cigar <- unlist(cigar_slots, use.names=FALSE)
 
     ## Combine "strand" slots.
-    strand_slots <- lapply(x, function(xi) xi@strand)
+    strand_slots <- lapply(objects, function(x) x@strand)
     ## TODO: Implement unlist_list_of_Rle() in IRanges and use it here.
     ans_strand <- do.call(c, strand_slots)
 
@@ -696,24 +704,24 @@ unlist_list_of_GAlignments <- function(x, use.names=TRUE, ignore.mcols=FALSE)
     if (ignore.mcols) {
         ans_mcols <- new("DataFrame", nrows=length(ans_start))
     } else  {
-        mcols_slots <- lapply(x, function(xi) xi@elementMetadata)
-        ## Will fail if not all the GAlignments objects in 'x' have exactly
-        ## the same metadata cols.
+        mcols_slots <- lapply(objects, function(x) x@elementMetadata)
+        ## Will fail if not all the GAlignments objects in 'objects' have
+        ## exactly the same metadata cols.
         ans_mcols <- do.call(rbind, mcols_slots)
     }
 
     ## Combine "seqinfo" slots.
-    seqinfo_slots <- lapply(x, function(xi) xi@seqinfo)
+    seqinfo_slots <- lapply(objects, function(x) x@seqinfo)
     ans_seqinfo <- do.call(merge, seqinfo_slots)
 
     ## Make 'ans' and return it.
-    new(class(x1), NAMES=ans_NAMES,
-                   seqnames=ans_seqnames,
-                   start=ans_start,
-                   cigar=ans_cigar,
-                   strand=ans_strand,
-                   elementMetadata=ans_mcols,
-                   seqinfo=ans_seqinfo)
+    new(Class, NAMES=ans_NAMES,
+               seqnames=ans_seqnames,
+               start=ans_start,
+               cigar=ans_cigar,
+               strand=ans_strand,
+               elementMetadata=ans_mcols,
+               seqinfo=ans_seqinfo)
 }
 
 setMethod("c", "GAlignments",
@@ -723,12 +731,14 @@ setMethod("c", "GAlignments",
             stop("\"c\" method for GAlignments objects ",
                  "does not support the 'recursive' argument")
         if (missing(x)) {
-            args <- unname(list(...))
+            objects <- list(...)
+            x <- objects[[1L]]
         } else {
-            args <- unname(list(x, ...))
+            objects <- list(x, ...)
         }
-        unlist_list_of_GAlignments(args, use.names=FALSE,
-                                         ignore.mcols=ignore.mcols)
+        combine_GAlignments_objects(class(x), objects,
+                                    use.names=FALSE,
+                                    ignore.mcols=ignore.mcols)
     }
 )
 
