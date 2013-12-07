@@ -85,6 +85,9 @@ stackStringsFromBam(file, index=file, param,
 
   Specifying a big genomic region, say >= 100000 bp, can require a lot of
   memory (especially with high coverage reads) and is not recommended.
+  See the \code{\link{pileLettersAt}} function for piling the read letters
+  on top of a set of individual genomic positions, which is more
+  flexible and more memory efficient.
 
   Paired-end reads are treated as single-end reads (i.e. they're not paired).
 }
@@ -93,6 +96,10 @@ stackStringsFromBam(file, index=file, param,
 
 \seealso{
   \itemize{
+    \item The \code{\link{pileLettersAt}} function for piling the letters
+          of a set of aligned reads on top of a set of individual genomic
+          positions.
+
     \item The \code{\link{readGAlignmentsFromBam}} function for loading read
           sequences (or their quality strings) from a BAM file (via a
           \link{GAlignments} object).

@@ -86,7 +86,9 @@ export(
     readGAlignmentsList,
     readGappedReads,
 
-    sequenceLayer, stackStringsFromBam,
+    sequenceLayer,
+    stackStringsFromBam,
+    pileLettersAt,
 
     countCompatibleOverlaps,
 
