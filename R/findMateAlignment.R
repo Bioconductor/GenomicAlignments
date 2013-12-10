@@ -169,7 +169,7 @@ flushDumpedAlignments <- function()
     rm(list=objnames, envir=.dumpEnvir())
 }
 
-.dumpAlignments <- function(x, idx)
+dumpAlignments <- function(gal)
 {
     objnames <- ls(envir=.dumpEnvir())
     nobj <- length(objnames)
@@ -179,7 +179,7 @@ flushDumpedAlignments <- function()
         new_objname <- as.integer(objnames[nobj]) + 1L
     }
     new_objname <- sprintf("%08d", new_objname)
-    assign(new_objname, x[idx], envir=.dumpEnvir())
+    assign(new_objname, gal, envir=.dumpEnvir())
 }
 
 countDumpedAlignments <- function()
@@ -226,7 +226,7 @@ findMateAlignment <- function(x)
                            x_start[xo], x_mrnm[xo], x_mpos[xo])
     dumpme_idx <- which(ans <= 0L)
     if (length(dumpme_idx) != 0L) {
-        .dumpAlignments(x, xo[dumpme_idx])
+        dumpAlignments(x[xo[dumpme_idx]])
         ans[dumpme_idx] <- NA_integer_
     }
     ans[xo] <- xo[ans]  # isn't that cute!

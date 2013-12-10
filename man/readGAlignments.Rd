@@ -346,18 +346,7 @@ aln[colnames(bv)]
 mcols(aln)
 
 ## ---------------------------------------------------------------------
-## B. readGappedReadsFromBam()
-## ---------------------------------------------------------------------
-greads1 <- readGappedReadsFromBam(bamfile)
-greads1
-names(greads1)
-qseq(greads1)
-greads2 <- readGappedReadsFromBam(bamfile, use.names=TRUE)
-head(greads2)
-head(names(greads2))
-
-## ---------------------------------------------------------------------
-## C. readGAlignmentPairsFromBam()
+## B. readGAlignmentPairsFromBam()
 ## ---------------------------------------------------------------------
 galp1 <- readGAlignmentPairsFromBam(bamfile)
 head(galp1)
@@ -373,9 +362,8 @@ head(galp2)
 head(names(galp2))
 
 ## ---------------------------------------------------------------------
-## D. readGAlignmentsListFromBam()
+## C. readGAlignmentsListFromBam()
 ## ---------------------------------------------------------------------
-
 library(pasillaBamSubset)
 
 ## 'file' as character.
@@ -396,6 +384,17 @@ readGAlignmentsList(bf)
 param <- ScanBamParam(flag=scanBamFlag(isProperPair=TRUE))
 galist2 <- readGAlignmentsListFromBam(fl, param=param)
 length(galist2)
+
+## ---------------------------------------------------------------------
+## D. readGappedReadsFromBam()
+## ---------------------------------------------------------------------
+greads1 <- readGappedReadsFromBam(bamfile)
+greads1
+names(greads1)
+qseq(greads1)
+greads2 <- readGappedReadsFromBam(bamfile, use.names=TRUE)
+head(greads2)
+head(names(greads2))
 }
 
 \keyword{manip}

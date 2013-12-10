@@ -157,34 +157,131 @@ setMethod("readGAlignmentsFromBam", "BamFile",
     }
 )
 
+### 'use.mcols' can be TRUE, FALSE, or a character vector specifying the
+### *inner* metadata columns to return, i.e., the metadata columns to set on
+### the 2 halves of the returned GAlignmentPairs object.
+.make_GAlignmentPairs_from_GAlignmentsList <- function(galist, use.mcols=FALSE)
+{
+    ## Dump "ambiguous" groups.
+    flushDumpedAlignments()
+    dumped_gal <- unlist(galist[mcols(galist)$mate_status == "ambiguous"])
+    dumped_count <- length(dumped_gal)
+    if (dumped_count != 0L) {
+        dumpAlignments(dumped_gal)
+        warning("  ", dumped_count, " alignments with ambiguous pairing ",
+                "were dumped.\n    Use 'getDumpedAlignments()' to retrieve ",
+                "them from the dump environment.")
+    }
+
+    ## Only keep "mated" groups.
+    mate_status <- mcols(galist)[ , "mate_status"]
+    galist <- galist[which(mate_status %in% "mated")]
+
+    unlisted_galist <- unlist(galist, use.names=FALSE)
+
+    ## Extract indices into 'unlisted_galist' of the 1st and 2nd elements
+    ## of each pair.
+    galist_partitioning <- PartitioningByEnd(galist)
+    is_a_pair <- width(galist_partitioning) == 2L
+    mate2_idx <- end(galist_partitioning)[is_a_pair]
+    mate1_idx <- mate2_idx - 1L
+
+    ## Check "flag" metadata column.
+    flag <- mcols(unlisted_galist)[ , "flag"]
+    flag1 <- flag[mate1_idx]
+    flag2 <- flag[mate2_idx]
+
+    is_first_mate1 <- bamFlagAsBitMatrix(flag1, bitnames="isFirstMateRead")
+    is_last_mate1 <- bamFlagAsBitMatrix(flag1, bitnames="isSecondMateRead")
+    is_first_mate2 <- bamFlagAsBitMatrix(flag2, bitnames="isFirstMateRead")
+    is_last_mate2 <- bamFlagAsBitMatrix(flag2, bitnames="isSecondMateRead")
+    stopifnot(all(is_first_mate1))
+    stopifnot(all(is_first_mate1 != is_last_mate1))
+    stopifnot(all(is_first_mate2 != is_last_mate2))
+    stopifnot(all(is_first_mate1 == is_last_mate2))
+    #switch_mates_idx <- which(is_last_mate1 != 0L)
+    #mate1_idx[switch_mates_idx] <- mate1_idx[switch_mates_idx] + 1L
+    #mate2_idx[switch_mates_idx] <- mate2_idx[switch_mates_idx] - 1L
+
+    is_proper1 <- bamFlagAsBitMatrix(flag1, bitnames="isProperPair")
+    is_proper2 <- bamFlagAsBitMatrix(flag2, bitnames="isProperPair")
+    stopifnot(identical(is_proper1, is_proper2))
+
+    is_secondary1 <- bamFlagAsBitMatrix(flag1, bitnames="isNotPrimaryRead")
+    is_secondary2 <- bamFlagAsBitMatrix(flag2, bitnames="isNotPrimaryRead")
+    stopifnot(identical(is_secondary1, is_secondary2))
+
+    ## Split 'unlisted_galist' in 2 parallel GAlignments objects: 'ans_first'
+    ## and 'ans_last'.
+    ans_first <- unlisted_galist[mate1_idx]
+    ans_last <- unlisted_galist[mate2_idx]
+    ans_names <- names(galist)[is_a_pair]
+
+    ## Drop pairs with discordant seqnames or strand. Right now the pairs in
+    ## a GAlignmentPairs object are assumed to be concordant but maybe this
+    ## should be revisited.
+    is_discordant <- (as.character(seqnames(ans_first)) !=
+                      as.character(seqnames(ans_last))) |
+                     (as.character(strand(ans_first)) ==
+                      as.character(strand(ans_last)))
+    discordant_idx <- which(is_discordant)
+    if (length(discordant_idx) != 0L) {
+        nb_discordant_proper <- sum(is_proper1[discordant_idx])
+        if (nb_discordant_proper != 0L) {
+            ratio <- 100.0 * nb_discordant_proper / length(discordant_idx)
+            warning(ratio, "% of the pairs with discordant seqnames or ",
+                    "strand were flagged\n",
+                    "  as proper pairs by the aligner. Dropping them anyway.")
+        }
+        concordant_idx <- which(!is_discordant)
+        ans_first <- ans_first[concordant_idx]
+        ans_last <- ans_last[concordant_idx]
+        ans_names <- ans_names[concordant_idx]
+        is_proper1 <- is_proper1[concordant_idx]
+    }
+
+    ## Order the pairs by ascending start position of the first mate.
+    oo <- IRanges:::orderIntegerPairs(as.integer(ans_first@seqnames),
+                                      ans_first@start)
+    ans_first <- ans_first[oo]
+    ans_last <- ans_last[oo]
+    ans_names <- ans_names[oo]
+    is_proper1 <- is_proper1[oo]
+
+    ## Make the GAlignmentPairs object and return it.
+    names(ans_first) <- names(ans_last) <- NULL
+    if (is.character(use.mcols)) {
+        mcols(ans_first) <- mcols(ans_first)[use.mcols]
+        mcols(ans_last) <- mcols(ans_last)[use.mcols]
+    } else if (!use.mcols) {
+        mcols(ans_first) <- mcols(ans_last) <- NULL
+    }
+    GAlignmentPairs(ans_first, ans_last, as.logical(is_proper1),
+                    names=ans_names)
+}
+
 setMethod("readGAlignmentPairsFromBam", "BamFile",
     function(file, index=file, use.names=FALSE, param=NULL,
                    with.which_label=FALSE)
     {
-        if (!isTRUEorFALSE(use.names))
-            stop("'use.names' must be TRUE or FALSE")
+        if (!asMates(file)) {
+            asMates(file) <- TRUE
+            ## This is required because BamFile objects have a pass-by-address
+            ## semantic.
+            on.exit(asMates(file) <- FALSE)
+        }
         if (is.null(param))
             param <- ScanBamParam()
-        if (!asMates(file))
-            bamWhat(param) <- setdiff(bamWhat(param), 
-                                      c("groupid", "mate_status"))
-        if (!is.na(yieldSize(file))) {
-            warning("'yieldSize' set to 'NA'", immediate.=TRUE)
-            yieldSize(file) <- NA_integer_
-        }
         flag0 <- scanBamFlag(isPaired=TRUE, hasUnmappedMate=FALSE)
-        what0 <- c("flag", "mrnm", "mpos")
+        what0 <- "flag"
         param2 <- .normargParam(param, flag0, what0)
-        galn <- readGAlignmentsFromBam(file, use.names=TRUE, param=param2,
-                                       with.which_label=with.which_label)
-        if (is.null(param)) {
-            use.mcols <- FALSE
-        } else {
-            use.mcols <- c(bamWhat(param), bamTag(param))
-            if (with.which_label)
-                use.mcols <- c(use.mcols, "which_label")
-        }
-        makeGAlignmentPairs(galn, use.names=use.names, use.mcols=use.mcols)
+        galist <- readGAlignmentsListFromBam(file, use.names=use.names,
+                                             param=param2,
+                                             with.which_label=with.which_label)
+        use.mcols <- c(bamWhat(param), bamTag(param))
+        if (with.which_label)
+            use.mcols <- c(use.mcols, "which_label")
+        .make_GAlignmentPairs_from_GAlignmentsList(galist, use.mcols=use.mcols)
     }
 )
 
@@ -269,7 +366,7 @@ setMethod("readGAlignmentPairsFromBam", "character",
     {
         if (missing(index) && (is.null(param) || 0L == length(bamWhich(param))))
             index <- character(0)
-        bam <- open(BamFile(file, index), "rb")
+        bam <- open(BamFile(file, index, asMates=TRUE), "rb")
         on.exit(close(bam))
         readGAlignmentPairsFromBam(bam, character(), use.names=use.names,
                                    param=param,
@@ -393,4 +490,3 @@ readBamGappedAlignmentPairs <- function(...)
 
 readBamGAlignmentsList <- function(...)
     .Defunct("readGAlignmentsListFromBam")
-
