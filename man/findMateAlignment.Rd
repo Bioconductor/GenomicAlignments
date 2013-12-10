@@ -15,6 +15,14 @@
 
 \description{
   Utilities for pairing the elements of a \link{GAlignments} object.
+
+  NOTE: Until BioC 2.13, \code{findMateAlignment} was the power horse used
+  by \code{\link{readGAlignmentPairsFromBam}} for pairing the records loaded
+  from a BAM file containing aligned paired-end reads.
+  Starting with BioC 2.14, \code{\link{readGAlignmentPairsFromBam}} relies
+  on \code{\link{readGAlignmentsListFromBam}} which itself relies on
+  \code{\link[Rsamtools]{scanBam}(BamFile(asMates=TRUE), ...)} for the
+  pairing.
 }
 
 \usage{
@@ -49,18 +57,18 @@ flushDumpedAlignments()
 
 \details{
 \subsection{Pairing algorithm used by findMateAlignment}{
-\code{findMateAlignment} is the power horse used by higher-level
-functions like \code{makeGAlignmentPairs} and
-\code{\link{readGAlignmentPairsFromBam}} for pairing
-the records loaded from a BAM file containing aligned paired-end reads.
+\code{findMateAlignment} is the power horse used by \code{makeGAlignmentPairs}
+for pairing the records loaded from a BAM file containing aligned paired-end
+reads.
 
 It implements the following pairing algorithm:
 \itemize{
-  \item First only records with flag bit 0x1 set to 1, flag bit 0x4 set to 0,
-        and flag bit 0x8 set to 0 are candidates for pairing (see the SAM
-        Spec for a description of flag bits and fields).
+  \item First, only records with flag bit 0x1 (multiple segments) set to 1,
+        flag bit 0x4 (segment unmapped) set to 0, and flag bit 0x8 (next
+        segment in the template unmapped) set to 0, are candidates for
+        pairing (see the SAM Spec for a description of flag bits and fields).
         \code{findMateAlignment} will ignore any other record. That is,
-        records that correspond to single-end reads, and records that
+        records that correspond to single-end reads, or records that
         correspond to paired-end reads where one or both ends are unmapped,
         are discarded.
 
@@ -69,25 +77,27 @@ It implements the following pairing algorithm:
           \item (A) QNAME
           \item (B) RNAME, RNEXT
           \item (C) POS, PNEXT
-          \item (D) Flag bits Ox10 and 0x20
-          \item (E) Flag bits 0x40 and 0x80
-          \item (F) Flag bit 0x2
-          \item (G) Flag bit 0x100
+          \item (D) Flag bits Ox10 (segment aligned to minus strand)
+                    and 0x20 (next segment aligned to minus strand)
+          \item (E) Flag bits 0x40 (first segment in template) and 0x80 (last
+                    segment in template)
+          \item (F) Flag bit 0x2 (proper pair)
+          \item (G) Flag bit 0x100 (secondary alignment)
         }
-        2 records rec(i) and rec(j) are considered mates iff all the following
+        2 records rec1 and rec2 are considered mates iff all the following
         conditions are satisfied:
         \itemize{
-          \item (A) They have the same QNAME
-          \item (B) RNEXT(i) == RNAME(j) and RNEXT(j) == RNAME(i)
-          \item (C) PNEXT(i) == POS(j) and PNEXT(j) == POS(i)
-          \item (D) Flag bit 0x20 of rec(i) == Flag bit 0x10 of rec(j) and
-                    Flag bit 0x20 of rec(j) == Flag bit 0x10 of rec(i)
-          \item (E) rec(i) corresponds to the first segment in the template and
-                    rec(j) corresponds to the last segment in the template, OR,
-                    rec(j) corresponds to the first segment in the template and
-                    rec(i) corresponds to the last segment in the template
-          \item (F) rec(i) and rec(j) have same flag bit 0x2
-          \item (G) rec(i) and rec(j) have same flag bit 0x100
+          \item (A) QNAME(rec1) == QNAME(rec2)
+          \item (B) RNEXT(rec1) == RNAME(rec2) and RNEXT(rec2) == RNAME(rec1)
+          \item (C) PNEXT(rec1) == POS(rec2) and PNEXT(rec2) == POS(rec1)
+          \item (D) Flag bit 0x20 of rec1 == Flag bit 0x10 of rec2 and
+                    Flag bit 0x20 of rec2 == Flag bit 0x10 of rec1
+          \item (E) rec1 corresponds to the first segment in the template and
+                    rec2 corresponds to the last segment in the template, OR,
+                    rec2 corresponds to the first segment in the template and
+                    rec1 corresponds to the last segment in the template
+          \item (F) rec1 and rec2 have same flag bit 0x2
+          \item (G) rec1 and rec2 have same flag bit 0x100
         }
 }
 }

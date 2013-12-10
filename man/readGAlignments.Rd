@@ -176,25 +176,26 @@ readGappedReadsFromBam(file, index=file, use.names=FALSE,
 
     \code{readGAlignmentPairsFromBam} proceeds in 2 steps:
     \enumerate{
-      \item Load the BAM file into a \link{GAlignments}
-            object with \code{readGAlignmentsFromBam};
-      \item Turn this \link{GAlignments} object into a \link{GAlignmentPairs}
-            object by pairing its elements.
+      \item Load the BAM file into a \link{GAlignmentsList}
+            object with \code{readGAlignmentsListFromBam} (see below);
+      \item Turn this \link{GAlignmentsList} object into a
+            \link{GAlignmentPairs} object. Only list elements marked with
+            mate status \code{"mated"} go into the returned
+            \link{GAlignmentPairs} object.
     }
     See \code{?\link{GAlignmentPairs}} for a description of
-    \link{GAlignmentPairs} objects, and \code{?\link{findMateAlignment}}
-    for a description of the pairing algorithm (including timing and memory
-    requirement).
+    \link{GAlignmentPairs} objects.
 
     \code{readGAlignmentsListFromBam} pairs records into mates
-    acording to the criteria below. A \code{GAlignmentsList} is 
-    returned with a \sQuote{mate_status} metadata column on the outer list
-    elements. \code{mate_status} is a factor with 3 levels indicating
-    mate status, \sQuote{mated}, \sQuote{ambiguous} or \code{unmated}.
+    according to the pairing criteria described below.
+    A \code{GAlignmentsList} is returned with a \sQuote{mate_status}
+    metadata column on the outer list elements. \code{mate_status} is a
+    factor with 3 levels indicating mate status, \sQuote{mated},
+    \sQuote{ambiguous} or \code{unmated}.
 
       Mate status:
       \itemize{
-        \item{mated:} primary or non-primary proper pairs 
+        \item{mated:} primary or non-primary pairs 
         \item{ambiguous:} multiple segments matching to the
                           same location (indistinguishable) 
         \item{unmated:} mate does not exist or is unmapped
@@ -204,30 +205,59 @@ readGappedReadsFromBam(file, index=file, use.names=FALSE,
     must be set, otherwise the data are treated as single-end reads. 
     See the \sQuote{asMates} section of \code{?\link{BamFile}} for details. 
 
-      Mate criteria:
-      \itemize{
-        \item Bit 0x1 (multiple segments) is 1.
-        \item Bit 0x4 (segment unmapped) is 0.
-        \item Bit 0x8 (next segment unmapped) is 0.
-        \item Bit 0x40 and 0x80 (first/last segment): 
-               Segments are a pair of first/last OR
-               neither segment is marked first/last.
-        \item Bit 0x100 (secondary alignment): 
-              Both segments are secondary OR both not secondary
-        \item Bit 0x2 (properly aligned):
-              Both segments are properly aligned 
-        \item \sQuote{qname} match.
-        \item \sQuote{tid} match.
-        \item segment1 \sQuote{mpos} matches segment2 \sQuote{pos} AND
-               segment2 \sQuote{mpos} matches segment1 \sQuote{pos}
-      } 
-
-      Records not passing these criteria are returned with mate status
-      FALSE. Flags, tags and ranges may be specified in the
-      \code{ScanBamParam} for fine tuning of results.
+    Flags, tags and ranges may be specified in the \code{ScanBamParam}
+    for fine tuning of results.
 
     See \code{?\link{GAlignmentsList-class}} for a 
     description of \link{GAlignmentsList} objects.
+  }
+
+  \subsection{Pairing criteria}{
+    This section describes the pairing criteria used by
+    \code{readGAlignmentsListFromBam} and \code{readGAlignmentPairsFromBam}.
+    \itemize{
+    \item First, only records with flag bit 0x1 (multiple segments) set to 1,
+          flag bit 0x4 (segment unmapped) set to 0, and flag bit 0x8 (next
+          segment in the template unmapped) set to 0, are candidates for
+          pairing (see the SAM Spec for a description of flag bits and fields).
+          Records that correspond to single-end reads, or records that
+          correspond to paired-end reads where one or both ends are unmapped,
+          will remain unmated.
+
+    \item Then the following fields and flag bits are considered:
+          \itemize{
+            \item (A) QNAME
+            \item (B) RNAME, RNEXT
+            \item (C) POS, PNEXT
+            \item (D) Flag bits Ox10 (segment aligned to minus strand)
+                      and 0x20 (next segment aligned to minus strand)
+            \item (E) Flag bits 0x40 (first segment in template) and 0x80 (last
+                      segment in template)
+            \item (F) Flag bit 0x2 (proper pair)
+            \item (G) Flag bit 0x100 (secondary alignment)
+          }
+          2 records rec1 and rec2 are considered mates iff all the following
+          conditions are satisfied:
+          \itemize{
+            \item (A) QNAME(rec1) == QNAME(rec2)
+            \item (B) RNEXT(rec1) == RNAME(rec2) and RNEXT(rec2) == RNAME(rec1)
+            \item (C) PNEXT(rec1) == POS(rec2) and PNEXT(rec2) == POS(rec1)
+            \item (D) Flag bit 0x20 of rec1 == Flag bit 0x10 of rec2 and
+                      Flag bit 0x20 of rec2 == Flag bit 0x10 of rec1
+            \item (E) rec1 corresponds to the first segment in the template and
+                      rec2 corresponds to the last segment in the template, OR,
+                      rec2 corresponds to the first segment in the template and
+                      rec1 corresponds to the last segment in the template
+            \item (F) rec1 and rec2 have same flag bit 0x2
+            \item (G) rec1 and rec2 have same flag bit 0x100
+          }
+    }
+    Note that this is actually the pairing criteria used by
+    \code{\link[Rsamtools]{scanBam}} (when the \link[Rsamtools]{BamFile}
+    passed to it has the \code{asMates} toggle set to \code{TRUE}), which
+    \code{readGAlignmentsListFromBam} and \code{readGAlignmentPairsFromBam}
+    call behind the scene. It is also the pairing criteria used by
+    \code{\link{findMateAlignment}}.
   }
 }
 
