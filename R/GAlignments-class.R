@@ -742,10 +742,6 @@ setMethod("c", "GAlignments",
     }
 )
 
-setMethod("splitAsListReturnedClass", "GAlignments", 
-    function(x) "GAlignmentsList"
-)
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Old stuff (deprecated & defunct)

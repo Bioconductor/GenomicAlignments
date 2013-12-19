@@ -33,6 +33,7 @@ exportMethods(
     c,
 
     ## Generics defined in IRanges:
+    relistReturnedClass,
     narrow,
     coverage,
     pintersect,

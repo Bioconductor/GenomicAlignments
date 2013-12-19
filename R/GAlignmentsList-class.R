@@ -317,11 +317,26 @@ setAs("GAlignmentPairs", "GAlignmentsList",
         }
 )
 
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Subsetting.
 ###
 
 ## "[", "[<-" and "[[", "[[<-" from CompressedList
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Going from GAlignments to GAlignmentsList with extractList() and family.
+###
+
+setMethod("relistReturnedClass", "GAlignments",
+    function(x) "GAlignmentsList"
+)
+
+setMethod("splitAsListReturnedClass", "GAlignments",
+    function(x) {.Deprecated("relistReturnedClass"); "GAlignmentsList"}
+)
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### show method.
