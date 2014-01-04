@@ -136,8 +136,6 @@ IntersectionNotEmpty(features, reads, ignore.strand=FALSE, inter.feature=TRUE)
     \code{fragments} or \code{param} (see below). Providing
     \code{count.mapped.reads=TRUE} include additional passes through the
     BAM file to collect statistics like those from \code{countBam}.
-    If using multiple cores, arguments can be passed through to
-    \code{mclapply} used when counting BAM files.
   }
   \item{singleEnd}{
     (Default TRUE) A logical value indicating if reads are single or 
@@ -191,6 +189,12 @@ IntersectionNotEmpty(features, reads, ignore.strand=FALSE, inter.feature=TRUE)
       \sQuote{IntersectionNotEmpty} is not reduced to a derivative of
       \code{countOverlaps} because the shared regions are removed before 
       counting.
+
+      The \code{BamViews}, \code{BamFile} and \code{BamFileList} methods
+      summarize overlaps across one or several files. The latter uses
+      \code{mclapply} when the \pkg{parallel} package is attached;
+      control the number of cores used by setting the global
+      \code{mc.cores} option, e.g., \code{options(mc.cores=8)}.
     }
     \item{features :}{
       A \sQuote{feature} can be any portion of a genomic region such as a gene, 
