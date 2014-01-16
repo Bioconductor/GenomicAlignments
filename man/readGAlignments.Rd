@@ -277,7 +277,10 @@ readGappedReadsFromBam(file, index=file, use.names=FALSE,
   or that the file is empty, or that all the records in the file correspond
   to unmapped reads).
 
-  A \link{GAlignmentsList} object for \code{readGAlignmentsListFromBam}.
+  A \link{GAlignmentsList} object for \code{readGAlignmentsListFromBam}. 
+  When the list contains paired-end reads a metadata data column of
+  \code{mate_status} is added to the object. See details in the 
+  `Bam specific back-ends' section on this man page. 
 
   A \link{GappedReads} object for \code{readGappedReadsFromBam}.
 }
