@@ -497,17 +497,16 @@ fillGaps <- function(x)
     pair_cols <- cbind(seqnames=as.character(seqnames(x)),
                        strand=as.character(strand(x)))
     x_first <- x@first
-    first_cols <- cbind(ranges=IRanges:::showAsCell(ranges(x_first)))
+    first_cols <- cbind(ranges=showAsCell(ranges(x_first)))
     x_last <- x@last
-    last_cols <- cbind(ranges=IRanges:::showAsCell(ranges(x_last)))
+    last_cols <- cbind(ranges=showAsCell(ranges(x_last)))
     ans <- cbind(pair_cols,
                  `:`=rep.int(":", lx),
                  first_cols,
                  `--`=rep.int("--", lx),
                  last_cols)
     if (nc > 0L) {
-        tmp <- do.call(data.frame, lapply(mcols(x),
-                                          IRanges:::showAsCell))
+        tmp <- do.call(data.frame, lapply(mcols(x), showAsCell))
         ans <- cbind(ans, `|`=rep.int("|", lx), as.matrix(tmp))
     }
     ans

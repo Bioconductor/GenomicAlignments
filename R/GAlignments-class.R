@@ -568,8 +568,7 @@ setMethod(IRanges:::extractROWS, "GAlignments",
                  width=width(x),
                  ngap=ngap(x))
     if (nc > 0L) {
-        tmp <- do.call(data.frame, lapply(mcols(x),
-                                          IRanges:::showAsCell))
+        tmp <- do.call(data.frame, lapply(mcols(x), showAsCell))
         ans <- cbind(ans, `|`=rep.int("|", lx), as.matrix(tmp))
     }
     ans
