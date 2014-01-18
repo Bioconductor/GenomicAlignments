@@ -40,7 +40,9 @@ countCompatibleOverlaps(query, subject)
   with the splicing of the transcript.
 
   The topic of working with overlap encodings is covered in details
-  in the "Overlap encodings" vignette in the \pkg{GenomicRanges} package.
+  in the "OverlapEncodings" vignette located this package
+  (\pkg{GenomicAlignments}) and accessible with
+  \code{vignette("OverlapEncodings")}.
 }
 
 \value{
@@ -62,7 +64,7 @@ countCompatibleOverlaps(query, subject)
           \link[IRanges]{OverlapEncodings} class defined in the \pkg{IRanges} 
           package.
 
-    \item The "Overlap encodings" vignette in the \pkg{GenomicRanges} package.
+    \item The "OverlapEncodings" vignette in this package.
 
     \item \link{GAlignments} and \link{GAlignmentPairs} objects.
 
@@ -74,8 +76,8 @@ countCompatibleOverlaps(query, subject)
 \examples{
 ## Here we only show a simple example illustrating the use of
 ## countCompatibleOverlaps() on a very small data set. Please
-## refer to the "Overlap encodings" vignette in the GenomicRanges
-## package for a more comprehensive presentation of "overlap
+## refer to the "OverlapEncodings" vignette in the GenomicAlignments
+## package for a comprehensive presentation of "overlap
 ## encodings" and related tools/concepts (e.g. "compatible"
 ## overlaps, "almost compatible" overlaps etc...), and for more
 ## examples.
@@ -86,7 +88,7 @@ countCompatibleOverlaps(query, subject)
 ## and aligned to reference genome BDGP Release 5 (aka dm3 genome on
 ## the UCSC Genome Browser):
 sm_treated1 <- system.file("extdata", "sm_treated1.bam",
-                           package="GenomicRanges", mustWork=TRUE)
+                           package="GenomicAlignments", mustWork=TRUE)
 
 ## Load the alignments:
 flag0 <- scanBamFlag(isDuplicate=FALSE, isNotPassingQualityControls=FALSE)

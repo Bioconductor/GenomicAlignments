@@ -39,6 +39,7 @@ exportMethods(
     pintersect,
     findOverlaps, countOverlaps, overlapsAny, subsetByOverlaps,
     map,
+    encodeOverlaps,
 
     ## Generics defined in GenomicRanges:
     seqinfo, "seqinfo<-",
@@ -90,6 +91,10 @@ export(
     stackStringsFromBam,
     pileLettersAt,
 
+    flipQuery,
+    selectEncodingWithCompatibleStrand,
+    extractQueryStartInTranscript,
+
     countCompatibleOverlaps,
 
     Union, IntersectionNotEmpty, IntersectionStrict,
@@ -130,6 +135,13 @@ export(
     ## intra-range-methods.R:
     qnarrow,
 
+    ## encodeOverlaps-methods.R:
+    isCompatibleWithSplicing,
+    isCompatibleWithSkippedExons,
+    extractSteppedExonRanks,
+    extractSpannedExonRanks,
+    extractSkippedExonRanks,
+
     ## findCompatibleOverlaps-methods.R:
     findCompatibleOverlaps,
 
@@ -151,6 +163,11 @@ exportMethods(
     readGAlignmentsListFromBam,
     readGappedReadsFromBam,
     qnarrow,
+    isCompatibleWithSplicing,
+    isCompatibleWithSkippedExons,
+    extractSteppedExonRanks,
+    extractSpannedExonRanks,
+    extractSkippedExonRanks,
     findCompatibleOverlaps,
     summarizeOverlaps,
     findSpliceOverlaps

@@ -1,7 +1,7 @@
 %\VignetteIndexEntry{Counting reads with summarizeOverlaps}
 %\VignetteDepends{}
 %\VignetteKeywords{sequence, sequencing, alignments}
-%\VignettePackage{GenomicRanges}
+%\VignettePackage{GenomicAlignments}
 
 \documentclass{article}
 
@@ -44,7 +44,7 @@ library(GenomicAlignments)
 library(DESeq)
 library(edgeR)
 
-fls <- list.files(system.file("extdata",package="GenomicRanges"),
+fls <- list.files(system.file("extdata", package="GenomicAlignments"),
     recursive=TRUE, pattern="*bam$", full=TRUE)
 bfl <- BamFileList(fls, index=character())
 

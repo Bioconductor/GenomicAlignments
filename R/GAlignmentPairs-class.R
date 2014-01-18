@@ -75,7 +75,7 @@ setMethod("first", "GAlignmentPairs",
             stop("'invert.strand' must be TRUE or FALSE")
         ans <- setNames(x@first, names(x))
         if (invert.strand)
-            ans <- GenomicRanges:::invertRleStrand(ans)
+            ans <- invertRleStrand(ans)
         ans
     }
 )
@@ -87,7 +87,7 @@ setMethod("last", "GAlignmentPairs",
             stop("'invert.strand' must be TRUE or FALSE")
         ans <- setNames(x@last, names(x))
         if (invert.strand)
-            ans <- GenomicRanges:::invertRleStrand(ans)
+            ans <- invertRleStrand(ans)
         ans
     }
 )
@@ -96,7 +96,7 @@ setMethod("left", "GAlignmentPairs",
     function(x, ...)
     {
         x_first <- x@first
-        x_last <- GenomicRanges:::invertRleStrand(x@last)
+        x_last <- invertRleStrand(x@last)
 
         left_is_last <- which(strand(x_first) == "-")
         idx <- seq_len(length(x))
@@ -111,7 +111,7 @@ setMethod("right", "GAlignmentPairs",
     function(x, ...)
     {
         x_first <- x@first
-        x_last <- GenomicRanges:::invertRleStrand(x@last)
+        x_last <- invertRleStrand(x@last)
 
         right_is_first <- which(strand(x_first) == "-")
         idx <- seq_len(length(x))
@@ -395,7 +395,7 @@ setMethod("grglist", "GAlignmentPairs",
         if ("query.break" %in% colnames(x_mcols))
             stop("'mcols(x)' cannot have reserved column \"query.break\"")
         x_first <- x@first
-        x_last <- GenomicRanges:::invertRleStrand(x@last)
+        x_last <- invertRleStrand(x@last)
         ## Not the same as doing 'unlist(x, use.names=FALSE)'.
         collate_subscript <-
             IRanges:::make_XYZxyz_to_XxYyZz_subscript(length(x))
@@ -435,7 +435,7 @@ setMethod("introns", "GAlignmentPairs",
     function(x)
     {
         first_introns <- introns(x@first)
-        last_introns <- introns(GenomicRanges:::invertRleStrand(x@last))
+        last_introns <- introns(invertRleStrand(x@last))
         ## Fast way of doing mendoapply(c, first_introns, last_introns)
         ## on 2 CompressedList objects.
         ans <- c(first_introns, last_introns)

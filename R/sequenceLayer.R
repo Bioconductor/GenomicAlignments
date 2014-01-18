@@ -113,7 +113,7 @@ sequenceLayer <- function(x, cigar, from="query", to="reference",
     if (!is(x, "XStringSet"))
         stop("'x' must be an XStringSet object")
     ## The 8 spaces below are also defined at the top of the src/cigar_utils.c
-    ## file in the GenomicRanges package.
+    ## file in the GenomicAlignments package.
     SPACES <- c("reference",
                 "reference-N-regions-removed",
                 "query",
