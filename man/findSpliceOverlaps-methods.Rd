@@ -2,39 +2,41 @@
 
 \alias{findSpliceOverlaps-methods}
 
+\alias{findSpliceOverlaps}
+\alias{findSpliceOverlaps,GRangesList,GRangesList-method}
 \alias{findSpliceOverlaps,GAlignments,GRangesList-method}
 \alias{findSpliceOverlaps,GAlignmentPairs,GRangesList-method}
 \alias{findSpliceOverlaps,character,ANY-method}
 \alias{findSpliceOverlaps,BamFile,ANY-method}
 
 
-\title{findSpliceOverlaps methods for GAlignments and GAlignmentPairs objects}
+\title{Classify ranges (reads) as compatible with existing genomic annotations
+       or as having novel splice events}
 
 \description{
-  The \code{findSpliceOverlaps} function identifies ranges (reads) that are 
+  The \code{findSpliceOverlaps} function identifies ranges (reads) that are
   compatible with a specific transcript isoform. The non-compatible ranges are
   analyzed for the presence of novel splice events.
-
-  NOTE: The \code{\link[GenomicRanges]{findSpliceOverlaps}} generic function
-  and method for \link[GenomicRanges]{GRangesList} objects are defined and
-  documented in the \pkg{GenomicRanges} package.
-  Methods for \link[GenomicFeatures]{TranscriptDb} objects are defined and
-  documented in the \pkg{GenomicFeatures} package.
 }
 
 \usage{
+findSpliceOverlaps(query, subject, ignore.strand=FALSE, ...)
+
+\S4method{findSpliceOverlaps}{GRangesList,GRangesList}(query, subject, ignore.strand=FALSE, ..., cds=NULL)
+
 \S4method{findSpliceOverlaps}{GAlignments,GRangesList}(query, subject, ignore.strand=FALSE, ..., cds=NULL)
 
 \S4method{findSpliceOverlaps}{GAlignmentPairs,GRangesList}(query, subject, ignore.strand=FALSE, ..., cds=NULL)
 
 \S4method{findSpliceOverlaps}{BamFile,ANY}(query, subject, ignore.strand=FALSE, ...,
-    param=ScanBamParam(), singleEnd=TRUE)
+                   param=ScanBamParam(), singleEnd=TRUE)
 }
 
 \arguments{
   \item{query}{
-    A \link{GAlignments}, \link{GAlignmentPairs}, or \link[Rsamtools]{BamFile}
-    object containing the reads.
+    A \link[GenomicRanges]{GRangesList}, \link{GAlignments},
+    \link{GAlignmentPairs}, or \link[Rsamtools]{BamFile} object
+    containing the reads.
     Can also be a single string containing the path to a BAM file.
 
     Single or paired-end reads are specified with the \code{singleEnd} 
@@ -44,8 +46,8 @@
     \link[GenomicRanges]{GRanges} object.
   }
   \item{subject}{
-    A \link{GRangesList} containing the annotations. This list is
-    expected to be exons by transcripts. 
+    A \link[GenomicRanges]{GRangesList} containing the annotations.
+    This list is expected to contain exons grouped by transcripts. 
   }
   \item{ignore.strand}{
     When set to \code{TRUE}, strand information is ignored in the
@@ -56,8 +58,11 @@
     in the method for \link[Rsamtools]{BamFile} objects. See below.
   }
   \item{cds}{
-    See \code{\link[GenomicRanges]{findSpliceOverlaps}} in the
-    \pkg{GenomicRanges} package.
+    Optional \link[GenomicRanges]{GRangesList} of coding regions for
+    each transcript in the \code{subject}. If provided, the "coding"
+    output column will be a \code{logical} vector indicating if the
+    read falls in a coding region. When not provided, the "coding"
+    output is \code{NA}.
   }
   \item{param}{
     An optional \code{\link[Rsamtools]{ScanBamParam}} instance to
@@ -70,13 +75,37 @@
 }
 
 \details{
-  See \code{\link[GenomicRanges]{findSpliceOverlaps}} in the
-  \pkg{GenomicRanges} package for the details.
+  When a read maps compatibly and uniquely to a transcript isoform we
+  can quantify the expression and look for shifts in the balance of
+  isoform expression. If a read does not map in compatible way, novel
+  splice events such as splice junctions, novel exons or retentions
+  can be quantified and compared across samples.
+
+  \code{findSpliceOverlaps} detects which reads (query) match to
+  transcripts (subject) in a compatible fashion. Compatibility is based
+  on both the transcript bounds and splicing pattern. Assessing the
+  splicing pattern involves comparision of the read splices (i.e., the
+  "N" gaps in the cigar) with the transcript introns. For paired-end
+  reads, the inter-read gap is not considered a splice. The analysis
+  of non-compatible reads for novel splice events is under construction.
 }
 
 \value{
-  See \code{\link[GenomicRanges]{findSpliceOverlaps}} in the
-  \pkg{GenomicRanges} package for the returned value.
+  The output is a \link[IRanges]{Hits} object with
+  the metadata columns defined below. Each column is a \code{logical}
+  indicating if the read (query) met the criteria.
+
+  \itemize{
+    \item{compatible: }{Every splice (N) in a read alignment matches
+      an intron in an annotated transcript. The read does not
+      extend into an intron or outside the transcript bounds.
+    }
+    \item{unique: }{The read is compatible with only one annotated
+      transcript.
+    }
+    \item{strandSpecific: }{The query (read) was stranded.
+    }
+  }
 }
 
 \author{
@@ -85,13 +114,12 @@
  
 \seealso{
   \itemize{
-    \item \link[GenomicRanges]{findSpliceOverlaps} in the
-          \pkg{GenomicRanges} package.
-
     \item \link[GenomicRanges]{GRangesList} objects in the
           \pkg{GenomicRanges} package.
 
     \item \link{GAlignments} and \link{GAlignmentPairs} objects.
+
+    \item \link[Rsamtools]{BamFile} objects in the \pkg{Rsamtools} package.
   }
 }
 

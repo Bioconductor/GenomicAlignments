@@ -44,8 +44,7 @@ exportMethods(
     seqinfo, "seqinfo<-",
     seqnames, "seqnames<-",
     seqlevelsInUse,
-    granges, grglist, rglist,
-    findSpliceOverlaps
+    granges, grglist, rglist
 )
 
 
@@ -135,7 +134,10 @@ export(
     findCompatibleOverlaps,
 
     ## summarizeOverlaps-methods.R:
-    summarizeOverlaps
+    summarizeOverlaps,
+
+    ## findSpliceOverlaps-methods.R:
+    findSpliceOverlaps
 )
 
 ### Exactly the same list as above.
@@ -150,6 +152,7 @@ exportMethods(
     readGappedReadsFromBam,
     qnarrow,
     findCompatibleOverlaps,
-    summarizeOverlaps
+    summarizeOverlaps,
+    findSpliceOverlaps
 )
 
