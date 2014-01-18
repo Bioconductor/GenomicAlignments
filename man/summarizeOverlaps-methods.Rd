@@ -402,7 +402,7 @@ sum(assays(frag)$counts)
 ## Count tables for DESeq or edgeR.
 ## ---------------------------------------------------------------------
 
-fls <- list.files(system.file("extdata",package="GenomicRanges"),
+fls <- list.files(system.file("extdata", package="GenomicAlignments"),
                   recursive=TRUE, pattern="*bam$", full=TRUE)
 names(fls) <- basename(fls)
 bf <- BamFileList(fls, index=character(), yieldSize=1000)
