@@ -192,9 +192,9 @@ IntersectionNotEmpty(features, reads, ignore.strand=FALSE, inter.feature=TRUE)
 
       The \code{BamViews}, \code{BamFile} and \code{BamFileList} methods
       summarize overlaps across one or several files. The latter uses
-      \code{mclapply} when the \pkg{parallel} package is attached;
-      control the number of cores used by setting the global
-      \code{mc.cores} option, e.g., \code{options(mc.cores=8)}.
+      \code{bplapply}; control parallel evaluation using the
+      \code{\link{register}} interface in the \pkg{BiocParallel} package.
+
     }
     \item{features :}{
       A \sQuote{feature} can be any portion of a genomic region such as a gene, 

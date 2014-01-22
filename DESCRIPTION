@@ -2,7 +2,7 @@ Package: GenomicAlignments
 Title: Representation and manipulation of short genomic alignments
 Description: Provides efficient containers for storing and manipulating
 	short alignments against a reference genome.
-Version: 0.99.14
+Version: 0.99.15
 Author: Herv\'e Pag\`es, Valerie Obenchain, Martin Morgan
 Maintainer: Bioconductor Package Maintainer <maintainer@bioconductor.org>
 biocViews: Genetics, Sequencing, HighThroughputSequencing
@@ -10,7 +10,7 @@ Depends: R (>= 2.10), methods, BiocGenerics (>= 0.7.7),
 	IRanges (>= 1.21.16), GenomicRanges (>= 1.15.22), Biostrings,
 	Rsamtools (>= 1.15.13)
 Imports: methods, stats, BiocGenerics, IRanges, GenomicRanges,
-	Biostrings, Rsamtools
+	Biostrings, Rsamtools, BiocParallel
 LinkingTo: IRanges
 Suggests: RNAseqData.HNRNPC.bam.chr14, pasillaBamSubset,
 	GenomicFeatures, TxDb.Dmelanogaster.UCSC.dm3.ensGene,

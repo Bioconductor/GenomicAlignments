@@ -232,10 +232,7 @@ IntersectionNotEmpty <-  function(features, reads, ignore.strand=FALSE,
 {
     FUN <- .getReadFunction(singleEnd, fragments)
 
-    if ("package:parallel" %in% search() & .Platform$OS.type != "windows")
-        lapply <- parallel::mclapply
-
-    cts <- lapply(setNames(seq_along(reads), names(reads)),
+    cts <- bplapply(setNames(seq_along(reads), names(reads)),
                function(i, FUN, reads, features, mode, ignore.strand,
                         inter.feature, param) {
                    bf <- reads[[i]]
