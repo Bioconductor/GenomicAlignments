@@ -46,7 +46,7 @@ library(edgeR)
 
 fls <- list.files(system.file("extdata", package="GenomicAlignments"),
     recursive=TRUE, pattern="*bam$", full=TRUE)
-bfl <- BamFileList(fls, index=character())
+bfl <- BamFileList(fls)
 
 features <- GRanges(
     seqnames = c(rep("chr2L", 4), rep("chr2R", 5), rep("chr3L", 2)),
@@ -279,7 +279,7 @@ counted.
 <<pasilla_count, eval=FALSE>>=
 fls <- c("treated1.bam", "untreated1.bam", "untreated2.bam")
 path <- "pathToBAMFiles"
-bamlst <- BamFileList(fls, index=character()) 
+bamlst <- BamFileList(fls)
 genehits <- summarizeOverlaps(chr4genes, bamlst, mode="Union")
 @
 
