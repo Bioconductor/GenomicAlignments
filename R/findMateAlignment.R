@@ -267,7 +267,7 @@ findMateAlignment <- function(x)
         query_hits <- subject_hits <- integer(0)
     } else {
         subject_hits0 <- m0[query_hits0]
-        subject_low2high <- IRanges:::.makeLow2highFromHigh2low(
+        subject_low2high <- IRanges:::makeLow2highFromHigh2low(
                                 high2low(subject))
         extra_hits <- subject_low2high[subject_hits0]
         query_nhits <- 1L + elementLengths(extra_hits)

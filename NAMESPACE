@@ -15,6 +15,7 @@ exportClasses(
     GAlignmentPairs,
     GAlignmentsList,
     GappedReads,
+    OverlapEncodings,
 
     ## Old names:
     GappedAlignments, GappedAlignmentPairs
@@ -24,6 +25,20 @@ exportClasses(
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Export S3 methods
 ###
+
+S3method(as.data.frame, OverlapEncodings)
+
+S3method(levels, OverlapEncodings)
+
+### We also export them thru the export() directive so that (a) they can be
+### called directly, (b) tab-completion on the name of the generic shows them,
+### (but ?generic.<tab> shows all documented methods) and (c) methods()
+### doesn't asterisk them.
+export(
+    as.data.frame.OverlapEncodings,
+
+    levels.OverlapEncodings
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -40,13 +55,15 @@ exportMethods(
     pintersect,
     findOverlaps, countOverlaps, overlapsAny, subsetByOverlaps,
     map,
-    encodeOverlaps,
 
     ## Generics defined in GenomicRanges:
     seqinfo, "seqinfo<-",
     seqnames, "seqnames<-",
     seqlevelsInUse,
-    granges, grglist, rglist
+    granges, grglist, rglist,
+
+    ## Generics defined in Biostrings:
+    encoding
 )
 
 
@@ -92,6 +109,7 @@ export(
     stackStringsFromBam,
     pileLettersAt,
 
+    encodeOverlaps1,
     flipQuery,
     selectEncodingWithCompatibleStrand,
     extractQueryStartInTranscript,
@@ -127,6 +145,10 @@ export(
     ## GappedReads-class.R:
     qseq,
 
+    ## OverlapEncodings-class.R:
+    Loffset, Roffset, flippedQuery,
+    Lencoding, Rencoding, Lngap, Rngap,
+
     ## readGAlignments.R:
     readGAlignmentsFromBam,
     readGAlignmentPairsFromBam,
@@ -137,6 +159,7 @@ export(
     qnarrow,
 
     ## encodeOverlaps-methods.R:
+    encodeOverlaps,
     isCompatibleWithSplicing,
     isCompatibleWithSkippedExons,
     extractSteppedExonRanks,
@@ -159,11 +182,14 @@ exportMethods(
     introns,
     first, last, left, right, isProperPair,
     qseq,
+    Loffset, Roffset, flippedQuery,
+    Lencoding, Rencoding, Lngap, Rngap,
     readGAlignmentsFromBam,
     readGAlignmentPairsFromBam,
     readGAlignmentsListFromBam,
     readGappedReadsFromBam,
     qnarrow,
+    encodeOverlaps,
     isCompatibleWithSplicing,
     isCompatibleWithSkippedExons,
     extractSteppedExonRanks,
