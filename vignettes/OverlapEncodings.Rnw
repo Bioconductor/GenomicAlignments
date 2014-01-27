@@ -11,7 +11,7 @@ BiocStyle::latex()
 
 \title{Overlap encodings}
 \author{Herv\'e Pag\`es}
-\date{Last modified: September 2013; Compiled: \today}
+\date{Last modified: January 2014; Compiled: \today}
 
 \begin{document}
 
@@ -236,298 +236,6 @@ not allowed/supported during the alignment process:
 colSums(cigarOpTable(cigar(first(U3.GALP))))
 colSums(cigarOpTable(cigar(last(U3.GALP))))
 @
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Validate the alignments produced by the aligner}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-In this section we show how to validate the alignments produced by the
-aligner by comparing the {\it original query sequences} (aka ``true'' or
-``real'' query sequences, or query sequences {\bf before} alignment) with
-the {\it reference query sequences} (i.e. the query sequences {\bf after}
-alignment).
-
-Note that even though this step is not strictly required for computing
-the {\it overlap encodings}, some of the concepts and string-based
-computations described in this section are slightly related to some ideas
-introduced later in this document.
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Validate the single-end alignments}
-
-\subsubsection{Load the {\it original query sequences}}
-
-To load the {\it original query sequences}, we reload the BAM file but now
-we explicitely request the SEQ field by using \Rcode{what="seq"} in our call
-to \Rfunction{ScanBamParam}. To further validate the alignments produced
-by the aligner, we also need to load the NM tag which is a predefined tag
-described in the SAM Spec as the ``Edit distance to the reference, including
-ambiguous bases but excluding clipping'' (note that tags are optional fields
-i.e. not all BAM files have them):
-
-<<U1.GAL_qseq>>=
-param1 <- ScanBamParam(flag=flag0, what="seq", tag="NM")
-U1.GAL <- readGAlignments(untreated1_chr4(), use.names=TRUE, param=param1)
-U1.GAL_qseq <- mcols(U1.GAL)$seq
-names(U1.GAL_qseq) <- names(U1.GAL)
-head(U1.GAL_qseq)
-@
-
-Because the BAM format imposes that the read sequence is ``reverse
-complemented'' when the read is aligned to the minus strand, we ``reverse
-complement'' it again to get the {\it original query sequences}:
-
-<<U1-original-query-sequences>>=
-U1.GAL_oqseq <- U1.GAL_qseq
-U1.GAL_is_on_minus <- as.logical(strand(U1.GAL) == "-")
-U1.GAL_oqseq[U1.GAL_is_on_minus] <- reverseComplement(U1.GAL_oqseq[U1.GAL_is_on_minus])
-head(U1.GAL_oqseq)
-@
-
-Note that sequences with the same {\it query name} correspond to the same
-{\it original query} and therefore must be the same. Let's do a quick sanity
-check:
-
-<<same-name-implies-same-seq-in-U1-oqseq>>=
-stopifnot(all(U1.GAL_oqseq == U1.GAL_oqseq[U1.GAL_dup2unq]))
-@
-
-Finally, let's reduce \Rcode{U1.GAL\_oqseq} to one {\it original query sequence}
-per unique {\it query name}:
-
-<<U1.oqseq>>=
-U1.oqseq <- U1.GAL_oqseq[!U1.GAL_names_is_dup]
-@
-
-If we had access to the FASTQ file used as input to the aligner,
-\Rcode{U1.oqseq} would be the subset of this file made of the sequences with
-at least 1 alignment reported in BAM file {\tt untreated1\_chr4.bam}.
-
-\subsubsection{Compute the {\it reference query sequences}}
-
-The {\it reference query sequences} can easily be computed by extracting
-the nucleotides mapped to each read from the reference genome. This of
-course requires that we have access to the reference genome used by the
-aligner. In Bioconductor, the full genome sequence for the dm3 assembly
-is stored in the \Rpackage{BSgenome.Dmelanogaster.UCSC.dm3} data package
-\footnote{See \url{http://bioconductor.org/packages/release/data/annotation/}
-for the full list of annotation packages available in the current release
-of Bioconductor.}:
-
-<<Dmelanogaster>>=
-library(BSgenome.Dmelanogaster.UCSC.dm3)
-Dmelanogaster
-@
-
-Let's start by converting our \Rclass{GAlignments} object \Rcode{U1.GAL}
-into a \Rclass{GRangesList} object:
-
-<<U1.grl>>=
-U1.grl <- grglist(U1.GAL, order.as.in.query=TRUE)
-@
-
-To extract the portions of the reference genome corresponding to the ranges
-in \Rcode{U1.grl}, we can use the \Rfunction{extractTranscriptsFromGenome}
-function defined in the \Rpackage{GenomicFeatures} package:
-
-<<U1-reference-query-sequences>>=
-library(GenomicFeatures)
-U1.GAL_rqseq <- extractTranscriptsFromGenome(Dmelanogaster, U1.grl)
-head(U1.GAL_rqseq)
-@
-
-\subsubsection{Compare the {\it original query sequences} with the
-               {\it reference query sequences}}
-
-We can use the \Rfunction{neditAt} function defined in the
-\Rpackage{Biostrings} package to compute the edit distance between
-2 strings. Because the aligned reads have no indels, we should only
-see mismatches (typically a small number) during that comparison so
-we don't need to call \Rfunction{neditAt} with \Rcode{with.indels=TRUE}.
-And because calling \Rfunction{neditAt} in a loop is inefficient, we only
-do this comparison for the first 500 sequences in \Rcode{U1.GAL\_oqseq}:
-
-<<U1-oqseq-vs-U1-rqseq>>=
-U1.GAL_nedit500 <- sapply(1:500, function(i) neditAt(U1.GAL_oqseq[[i]], U1.GAL_rqseq[[i]]))
-table(U1.GAL_nedit500)
-@
-
-Yes, the first 500 sequences in \Rcode{U1.GAL\_oqseq} are ``close'' to the first
-500 sequences in \Rcode{U1.GAL\_rqseq}.
-
-Now let's compare the edit distance reported by \Rfunction{neditAt} with the
-edit distance reported by the aligner (NM tag). Because the latter excludes
-the N CIGAR operations, it should actually be the same as the former.
-We confirm this for the 500 edit distances computed in \Rcode{U1.GAL\_nedit500}:
-
-<<U1.GAL-nedit-vs-NM>>=
-U1.GAL_NM <- mcols(U1.GAL)$NM
-stopifnot(all(U1.GAL_NM[1:500] == U1.GAL_nedit500))
-@
-
-Note that the maximum observed number of mismatches tells us how many
-mismatches per read were tolerated by the aligner:
-
-<<up-to-6-mismatches>>=
-table(U1.GAL_NM)
-@
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Validate the paired-end alignments}
-
-\subsubsection{Load the {\it original query sequences}}
-
-To load the {\it original query sequences}, we reload the BAM file and
-request the SEQ field (and also the NM tag). Since we've removed the improper
-pairs from our current \Rcode{U3.GALP} object, we need to do this again but
-now we do it at load time which is equivalent to doing it afterward (i.e.
-not only do we have the guarantee to end up with the same elements in
-\Rcode{U3.GALP}, but also to have them in the same order):
-
-<<reload-U3.GALP>>=
-flag2 <- scanBamFlag(isDuplicate=FALSE,
-                     isNotPassingQualityControls=FALSE,
-                     isProperPair=TRUE)
-param2 <- ScanBamParam(flag=flag2, what="seq", tag="NM")
-U3.GALP <- readGAlignmentPairs(untreated3_chr4(), use.names=TRUE, param=param2)
-@
-
-Let's extract the {\it first} and {\it last} sequences from \Rcode{U3.GALP}:
-
-<<U3.GALP-qseq1-and-qseq2>>=
-U3.GALP_qseq1 <- mcols(first(U3.GALP))$seq
-U3.GALP_qseq2 <- mcols(last(U3.GALP))$seq
-names(U3.GALP_qseq1) <- names(U3.GALP_qseq2) <- names(U3.GALP)
-head(U3.GALP_qseq1)
-head(U3.GALP_qseq2)
-@
-
-To obtain the {\it original query sequences} we ``reverse complement''
-the sequences that are aligned to the minus strand:
-
-<<U3-original-query-sequences>>=
-U3.GALP_oqseq1 <- U3.GALP_qseq1
-U3.GALP_first_is_on_minus <- as.logical(strand(first(U3.GALP)) == "-")
-U3.GALP_oqseq1[U3.GALP_first_is_on_minus] <- reverseComplement(U3.GALP_oqseq1[U3.GALP_first_is_on_minus])
-
-U3.GALP_oqseq2 <- U3.GALP_qseq2
-U3.GALP_last_is_on_minus <- as.logical(strand(last(U3.GALP)) == "-")
-U3.GALP_oqseq2[U3.GALP_last_is_on_minus] <- reverseComplement(U3.GALP_oqseq2[U3.GALP_last_is_on_minus])
-@
-
-Note that sequence pairs with the same {\it query template name} correspond
-to the same {\it original query pairs} and therefore should be the same.
-Let's do a quick sanity check:
-
-<<same-name-implies-same-seq-pair-in-U3-oqseq>>=
-stopifnot(all(U3.GALP_oqseq1 == U3.GALP_oqseq1[U3.GALP_dup2unq]))
-stopifnot(all(U3.GALP_oqseq2 == U3.GALP_oqseq2[U3.GALP_dup2unq]))
-@
-
-Finally, let's reduce \Rcode{U3.GALP\_oqseq1} and \Rcode{U3.GALP\_oqseq2}
-to one {\it original query sequence} per unique {\it query template name}:
-
-<<U3.oqseq>>=
-U3.oqseq1 <- U3.GALP_oqseq1[!U3.GALP_names_is_dup]
-U3.oqseq2 <- U3.GALP_oqseq2[!U3.GALP_names_is_dup]
-@
-
-If we had access to the 2 FASTQ files used as input to the aligner,
-\Rcode{U3.oqseq1} and \Rcode{U3.oqseq2} would be the subsets of those files
-made of the sequence pairs with at least 1 alignment pair reported in
-BAM file {\tt untreated3\_chr4.bam}.
-
-\subsubsection{Compute the {\it reference query sequences}}
-
-Because our reads are paired-end, we extract separately the ranges
-corresponding to their {\it first} ends (aka {\it first} segments in BAM
-jargon) and those corresponding to their {\it last} ends (aka {\it last}
-segments in BAM jargon):
-
-<<U3.grl_first-and-U3.grl_last>>=
-U3.grl_first <- grglist(first(U3.GALP), order.as.in.query=TRUE)
-U3.grl_last <- grglist(last(U3.GALP, invert.strand=TRUE), order.as.in.query=TRUE)
-@
-
-Then we extract the portions of the reference genome corresponding to the
-ranges in \Rclass{GRangesList} objects \Rcode{U3.grl\_first} and
-\Rcode{U3.grl\_last}:
-
-<<U3-reference-query-sequences>>=
-U3.GALP_rqseq1 <- extractTranscriptsFromGenome(Dmelanogaster, U3.grl_first)
-U3.GALP_rqseq2 <- extractTranscriptsFromGenome(Dmelanogaster, U3.grl_last)
-@
-
-\subsubsection{Compare the {\it original query sequences} with the
-               {\it reference query sequences}}
-
-Because the aligned reads have no indels, we should only see mismatches
-(typically a small number) during that comparison so we don't need to
-call \Rfunction{neditAt} with \Rcode{with.indels=TRUE}.
-Let's do this comparison for the first 500 sequences in
-\Rcode{U3.GALP\_oqseq1} and in \Rcode{reverseComplement(U3.GALP\_oqseq2)}:
-
-<<U3-oqseq-vs-U3-rqseq>>=
-U3.GALP_first_nedit500 <- sapply(1:500, function(i)
-    neditAt(U3.GALP_oqseq1[[i]], U3.GALP_rqseq1[[i]])
-)
-table(U3.GALP_first_nedit500)
-
-U3.GALP_last_nedit500 <- sapply(1:500, function(i)
-    neditAt(reverseComplement(U3.GALP_oqseq2[[i]]), U3.GALP_rqseq2[[i]])
-)
-table(U3.GALP_last_nedit500)
-@
-
-Yes, the first 500 sequences in \Rcode{U3.GALP\_oqseq1} and in
-\Rcode{reverseComplement(U3.GALP\_oqseq2)} are ``close'' to the first 500
-sequences in \Rcode{U3.GALP\_rqseq1} and in \Rcode{U3.GALP\_rqseq2},
-respectively.
-
-Now let's compare the edit distance reported by \Rfunction{neditAt} with the
-edit distance reported by the aligner (NM tag). Because the latter excludes
-the N CIGAR operations, it should actually be the same as the former.
-We confirm this for the 500 edit distances computed in
-\Rcode{U3.GALP\_first\_nedit500} and \Rcode{U3.GALP\_last\_nedit500}:
-
-<<U3.GALP-nedit-vs-NM>>=
-U3.GALP_first_NM <- mcols(first(U3.GALP))$NM
-stopifnot(all(U3.GALP_first_NM[1:500] == U3.GALP_first_nedit500))
-
-U3.GALP_last_NM <- mcols(last(U3.GALP))$NM
-stopifnot(all(U3.GALP_last_NM[1:500] == U3.GALP_last_nedit500))
-@
-
-Note that the following table tells us how many mismatches per read were
-tolerated by the aligner:
-
-<<up-to-2-mismatches-per-end>>=
-table(U3.GALP_first_NM, U3.GALP_last_NM)
-@
-
-Up to 2 mismatches per end.
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Conclusion}
-
-In addition to validate the alignments produced by the aligner, the
-validation described in this section is also an efficient and accurate way
-to make sure that the reference genome we've picked up is the same as the
-reference genome used by the aligner, at least for the regions covered by
-the reads.
-
-In other words, if it's known that the 2 reference genomes are different,
-then this validation could still be performed, and, if successful, would
-indicate that the 2 genomes are probably substitutable for most analysis
-happening downstream of the BAM file.
 
 
 
@@ -795,7 +503,8 @@ twice, once for the ``original alignments'' (i.e. the alignments of the
 the ranges of the ``original'' and ``flipped'' alignments in 2
 \Rclass{GRangesList} objects with:
 
-<<U1.grlf>>=
+<<U1.grl_and_U1.grlf>>=
+U1.grl <- grglist(U1.GAL, order.as.in.query=TRUE)
 U1.grlf <- flipQuery(U1.grl)  # flipped
 @
 
@@ -1175,9 +884,62 @@ obtained earlier when we counted {\bf all} the paired-end overlaps.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Project the alignments on the transcriptome}
+\section{Compute the {\it reference query sequences} and project them on
+         the transcriptome}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Compute the {\it reference query sequences}}
+
+The {\it reference query sequences} are the query sequences {\bf after}
+alignment, by opposition to the {\it original query sequences} (aka ``true''
+or ``real'' query sequences) which are the query sequences {\bf before}
+alignment.
+
+The {\it reference query sequences} can easily be computed by extracting
+the nucleotides mapped to each read from the reference genome. This of
+course requires that we have access to the reference genome used by the
+aligner. In Bioconductor, the full genome sequence for the dm3 assembly
+is stored in the \Rpackage{BSgenome.Dmelanogaster.UCSC.dm3} data package
+\footnote{See \url{http://bioconductor.org/packages/release/data/annotation/}
+for the full list of annotation packages available in the current release
+of Bioconductor.}:
+
+<<Dmelanogaster>>=
+library(BSgenome.Dmelanogaster.UCSC.dm3)
+Dmelanogaster
+@
+
+To extract the portions of the reference genome corresponding to the ranges
+in \Rcode{U1.grl}, we can use the \Rfunction{extractTranscriptsFromGenome}
+function defined in the \Rpackage{GenomicFeatures} package:
+
+<<U1-reference-query-sequences>>=
+library(GenomicFeatures)
+U1.GAL_rqseq <- extractTranscriptsFromGenome(Dmelanogaster, U1.grl)
+head(U1.GAL_rqseq)
+@
+
+When reads are paired-end, we need to extract separately the ranges
+corresponding to their {\it first} ends (aka {\it first} segments in BAM
+jargon) and those corresponding to their {\it last} ends (aka {\it last}
+segments in BAM jargon):
+
+<<U3.grl_first-and-U3.grl_last>>=
+U3.grl_first <- grglist(first(U3.GALP), order.as.in.query=TRUE)
+U3.grl_last <- grglist(last(U3.GALP, invert.strand=TRUE), order.as.in.query=TRUE)
+@
+
+Then we extract the portions of the reference genome corresponding to the
+ranges in \Rclass{GRangesList} objects \Rcode{U3.grl\_first} and
+\Rcode{U3.grl\_last}:
+
+<<U3-reference-query-sequences>>=
+U3.GALP_rqseq1 <- extractTranscriptsFromGenome(Dmelanogaster, U3.grl_first)
+U3.GALP_rqseq2 <- extractTranscriptsFromGenome(Dmelanogaster, U3.grl_last)
+@
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1210,7 +972,7 @@ If we use the {\it reference query sequence} instead of the {\it original
 query sequence} for this comparison, then it should match {\bf exactly}
 the sequence found at the {\it query start} in the transcript.
 
-Let's start by using the \Rfunction{extractTranscriptsFromGenome}
+Let's start by using \Rfunction{extractTranscriptsFromGenome} again
 to extract the transcript sequences (aka transcriptome) from the dm3
 reference genome:
 
