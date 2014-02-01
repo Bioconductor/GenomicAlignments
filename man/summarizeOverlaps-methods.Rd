@@ -232,7 +232,8 @@ IntersectionNotEmpty(features, reads, ignore.strand=FALSE, inter.feature=TRUE)
 
   \code{colData} is a DataFrame with columns of \sQuote{object} (class of 
   \code{reads}) and \sQuote{records} (length of \code{reads}). When \code{reads}
-  is a BamFile or BamFileList the \code{colData} holds the output of a call
+  is a BamFile or BamFileList and \code{count.mapped.reads=TRUE},
+  the \code{colData} holds the output of a call
   to \code{countBam} with columns of \sQuote{records} (total records in file), 
   \sQuote{nucleotides} and \sQuote{mapped}. The number in \sQuote{mapped} is
   the number of records returned when \code{isUnmappedQuery=FALSE} in the 
