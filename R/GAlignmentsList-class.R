@@ -329,12 +329,12 @@ setAs("GAlignmentPairs", "GAlignmentsList",
 ### Going from GAlignments to GAlignmentsList with extractList() and family.
 ###
 
-setMethod("relistReturnedClass", "GAlignments",
+setMethod("relistToClass", "GAlignments",
     function(x) "GAlignmentsList"
 )
 
 setMethod("splitAsListReturnedClass", "GAlignments",
-    function(x) {.Deprecated("relistReturnedClass"); "GAlignmentsList"}
+    function(x) {.Deprecated("relistToClass"); "GAlignmentsList"}
 )
 
 

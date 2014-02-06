@@ -47,7 +47,7 @@
 \alias{c,GAlignmentsList-method}
 
 % extractList() and family:
-\alias{relistReturnedClass,GAlignments-method}
+\alias{relistToClass,GAlignments-method}
 
 % show:
 \alias{show,GAlignmentsList-method}

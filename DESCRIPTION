@@ -5,12 +5,12 @@ Description: Provides efficient containers for storing and manipulating
 	to a reference genome). This includes read counting, computing the
 	coverage, junction detection, and working with the nucleotide content
 	of the alignments.
-Version: 0.99.19
+Version: 0.99.20
 Author: Herv\'e Pag\`es, Valerie Obenchain, Martin Morgan
 Maintainer: Bioconductor Package Maintainer <maintainer@bioconductor.org>
 biocViews: Genetics, Infrastructure, Sequencing, HighThroughputSequencing, SNP
 Depends: R (>= 2.10), methods, BiocGenerics (>= 0.7.7),
-	IRanges (>= 1.21.22), GenomicRanges (>= 1.15.22),
+	IRanges (>= 1.21.25), GenomicRanges (>= 1.15.22),
 	Biostrings (>= 2.31.10), Rsamtools (>= 1.15.26)
 Imports: methods, stats, BiocGenerics, IRanges, GenomicRanges,
 	Biostrings, Rsamtools, BiocParallel
