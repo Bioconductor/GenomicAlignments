@@ -426,18 +426,25 @@ library(edgeR)
 edger <- DGEList(assays(se)$counts, group=rownames(colData(se)))
 
 ## ---------------------------------------------------------------------
-## User supplied 'mode'. 
+## Filter records by map quality before counting. 
 ## ---------------------------------------------------------------------
 
-## A user defined count function must have the same arguments as 
-## the current counting modes.
-\dontrun{
-counter <- function(x, y,  ignore.strand, inter.feature) {
-   ## count ...
+## The 'mode' argument can take a custom count function whose
+## arguments are the same as those in the current counting modes
+## (i.e., Union, IntersectionNotEmpty, IntersectionStrict). 
+## In this example records are filtered by map quality before counting.
+
+mapq_filter <- function(x, y,  ignore.strand, inter.feature) { 
+    Union(x, y[mcols(y)$mapq >= 20], 
+          ignore.strand=ignore.strand, 
+          inter.feature=inter.feature) 
 }
 
-se <- summarizeOverlaps(gr, reads, mode=counter) 
-}
+genes <- GRanges("seq1", IRanges(seq(1, 1500, by=200), width=100))
+param <- ScanBamParam(what="mapq")
+fl <- system.file("extdata", "ex1.bam", package="Rsamtools")
+se <- summarizeOverlaps(genes, fl, mode=mapq_filter, param=param) 
+assays(se)$counts 
 
 ## ---------------------------------------------------------------------
 ## summarizeOverlaps() with BamViews

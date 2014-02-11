@@ -225,9 +225,9 @@ IntersectionNotEmpty <-  function(features, reads, ignore.strand=FALSE,
 }
 
 .dispatchBamFiles <-
-    function(features, reads, mode, ignore.strand, ...,
-             count.mapped.reads=FALSE,
-             inter.feature=TRUE, singleEnd=TRUE, fragments=FALSE,
+    function(features, reads, mode, ignore.strand, ..., 
+             count.mapped.reads=FALSE, inter.feature=TRUE, 
+             singleEnd=TRUE, fragments=FALSE,
              param=ScanBamParam())
 {
     FUN <- .getReadFunction(singleEnd, fragments)
@@ -239,7 +239,7 @@ IntersectionNotEmpty <-  function(features, reads, ignore.strand=FALSE,
                    .countWithYieldSize(FUN, features, bf, mode, ignore.strand,
                                        inter.feature, param)
                }, FUN, reads, features, mode=match.fun(mode), ignore.strand,
-               inter.feature, param
+               inter.feature=inter.feature, param=param
            )
 
     counts <- as.matrix(do.call(cbind, cts))
@@ -263,9 +263,9 @@ setMethod("summarizeOverlaps", c("GRanges", "BamFile"),
              param=ScanBamParam())
 {
     .checkArgs(reads, singleEnd, fragments)
-    .dispatchBamFiles(features, BamFileList(reads), mode, ignore.strand, ...,
+    .dispatchBamFiles(features, BamFileList(reads), mode, ignore.strand,
                       inter.feature=inter.feature, singleEnd=singleEnd,
-                      fragments=fragments, param=param)
+                      fragments=fragments, param=param, ...)
 })
 
 setMethod("summarizeOverlaps", c("GRangesList", "BamFile"),
@@ -274,9 +274,9 @@ setMethod("summarizeOverlaps", c("GRangesList", "BamFile"),
              param=ScanBamParam())
 {
     .checkArgs(reads, singleEnd, fragments)
-    .dispatchBamFiles(features, BamFileList(reads), mode, ignore.strand, ...,
+    .dispatchBamFiles(features, BamFileList(reads), mode, ignore.strand,
                       inter.feature=inter.feature, singleEnd=singleEnd,
-                      fragments=fragments, param=param)
+                      fragments=fragments, param=param, ...)
 })
 
 .summarizeOverlaps_character <-
@@ -293,14 +293,28 @@ setMethod("summarizeOverlaps", c("GRangesList", "BamFile"),
                          asMates=!singleEnd)
     summarizeOverlaps(features, reads, mode, ignore.strand, ...,
                       inter.feature=inter.feature, singleEnd=singleEnd,
-                      fragments=fragments)
+                      param=param, fragments=fragments)
 }
 
 setMethod("summarizeOverlaps", c("GRanges", "character"),
-    .summarizeOverlaps_character)
+    function(features, reads, mode, ignore.strand=FALSE, ...,
+             yieldSize=1000000L, inter.feature=TRUE, singleEnd=TRUE,
+             fragments=FALSE, param=ScanBamParam())
+{
+    .summarizeOverlaps_character(features, reads, mode, ignore.strand,
+        yieldSize=yieldSize, inter.feature=inter.feature, 
+        singleEnd=singleEnd, fragments=fragments, param=param, ...)
+})
 
 setMethod("summarizeOverlaps", c("GRangesList", "character"),
-    .summarizeOverlaps_character)
+    function(features, reads, mode, ignore.strand=FALSE, ...,
+             yieldSize=1000000L, inter.feature=TRUE, singleEnd=TRUE,
+             fragments=FALSE, param=ScanBamParam())
+{
+    .summarizeOverlaps_character(features, reads, mode, ignore.strand,
+        yieldSize=yieldSize, inter.feature=inter.feature, 
+        singleEnd=singleEnd, fragments=fragments, param=param, ...)
+})
 
 .summarizeOverlaps_BamFileList <-
     function(features, reads, mode, ignore.strand=FALSE, ...,
@@ -310,21 +324,35 @@ setMethod("summarizeOverlaps", c("GRangesList", "character"),
     if (any(duplicated(names(reads))))
         stop("duplicate 'names(reads)' not allowed")
     .checkArgs(reads, singleEnd, fragments)
-    .dispatchBamFiles(features, reads, mode, ignore.strand, ...,
+    .dispatchBamFiles(features, reads, mode, ignore.strand,
                       inter.feature=inter.feature, singleEnd=singleEnd,
-                      fragments=fragments, param=param)
+                      fragments=fragments, param=param, ...)
 }
 
 setMethod("summarizeOverlaps", c("GRanges", "BamFileList"),
-    .summarizeOverlaps_BamFileList)
+    function(features, reads, mode, ignore.strand=FALSE, ...,
+             inter.feature=TRUE, singleEnd=TRUE, fragments=FALSE,
+             param=ScanBamParam())
+{
+    .summarizeOverlaps_BamFileList(features, reads, mode, 
+        ignore.strand=ignore.strand, inter.feature=inter.feature, 
+        singleEnd=singleEnd, fragments=fragments, param=param, ...)
+})
 
 setMethod("summarizeOverlaps", c("GRangesList", "BamFileList"),
-    .summarizeOverlaps_BamFileList)
+    function(features, reads, mode, ignore.strand=FALSE, ...,
+             inter.feature=TRUE, singleEnd=TRUE, fragments=FALSE,
+             param=ScanBamParam())
+{
+    .summarizeOverlaps_BamFileList(features, reads, mode, 
+        ignore.strand=ignore.strand, inter.feature=inter.feature, 
+        singleEnd=singleEnd, fragments=fragments, param=param, ...)
+})
 
 setMethod("summarizeOverlaps", c("BamViews", "missing"),
-function(features, reads, mode, ignore.strand=FALSE,
-         ..., inter.feature=TRUE, singleEnd=TRUE, fragments=FALSE,
-         param=ScanBamParam())
+    function(features, reads, mode, ignore.strand=FALSE,
+             ..., inter.feature=TRUE, singleEnd=TRUE, fragments=FALSE,
+             param=ScanBamParam())
 {
     se <- callGeneric(bamRanges(features), BamFileList(bamPaths(features)),
                       mode, ignore.strand, ..., inter.feature=inter.feature,
