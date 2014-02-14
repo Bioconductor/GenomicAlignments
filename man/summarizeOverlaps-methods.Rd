@@ -85,11 +85,16 @@ IntersectionNotEmpty(features, reads, ignore.strand=FALSE, inter.feature=TRUE)
     \link[Rsamtools]{BamViews} object.
   }
   \item{mode}{
-    A function that defines the method to be used when a read overlaps
-    more than one feature. Pre-defined options are "Union",
-    "IntersectionStrict", or "IntersectionNotEmpty" and are designed
-    after the counting modes available in the HTSeq package by Simon
-    Anders (see references).
+    \code{mode} can be one of the pre-defined count methods such as
+    "Union", "IntersectionStrict", or "IntersectionNotEmpty" or
+    it can be a user supplied count function. For a custom count
+    funtion, the input arguments must match those of the pre-defined 
+    options and the function must return a vector of counts the same
+    length as the annotation ('features' argument). See examples for
+    details.
+
+    The pre-defined options are designed after the counting modes 
+    available in the HTSeq package by Simon Anders (see references).
 
     \itemize{
       \item "Union" : (Default) Reads that overlap any portion of exactly one
@@ -288,9 +293,9 @@ names(grl) <- LETTERS[seq_along(grl)]
 ## Counting modes. 
 ## ---------------------------------------------------------------------
 
-## First we count with a GRanges as the 'features'. Note that
-## 'Union' is the most conservative counting mode followed by 
-## 'IntersectionStrict' then 'IntersectionNotEmpty'.
+## First count with a GRanges as the 'features'. 'Union' is the
+## most conservative counting mode followed by 'IntersectionStrict' 
+## then 'IntersectionNotEmpty'.
 counts1 <- 
     data.frame(union=assays(summarizeOverlaps(gr, reads))$counts, 
                intStrict=assays(summarizeOverlaps(gr, reads, 
@@ -427,6 +432,7 @@ edger <- DGEList(assays(se)$counts, group=rownames(colData(se)))
 
 ## ---------------------------------------------------------------------
 ## Filter records by map quality before counting. 
+## (user-supplied count function) 
 ## ---------------------------------------------------------------------
 
 ## The 'mode' argument can take a custom count function whose
@@ -434,8 +440,8 @@ edger <- DGEList(assays(se)$counts, group=rownames(colData(se)))
 ## (i.e., Union, IntersectionNotEmpty, IntersectionStrict). 
 ## In this example records are filtered by map quality before counting.
 
-mapq_filter <- function(x, y,  ignore.strand, inter.feature) { 
-    Union(x, y[mcols(y)$mapq >= 20], 
+mapq_filter <- function(features, reads,  ignore.strand, inter.feature) { 
+    Union(features, reads[mcols(reads)$mapq >= 20], 
           ignore.strand=ignore.strand, 
           inter.feature=inter.feature) 
 }
@@ -444,7 +450,17 @@ genes <- GRanges("seq1", IRanges(seq(1, 1500, by=200), width=100))
 param <- ScanBamParam(what="mapq")
 fl <- system.file("extdata", "ex1.bam", package="Rsamtools")
 se <- summarizeOverlaps(genes, fl, mode=mapq_filter, param=param) 
-assays(se)$counts 
+assays(se)$counts
+
+## The count function can be completely custom (i.e., not use the
+## pre-defined count functions at all). Requirements are that
+## the input arguments match the pre-defined modes and the output
+## is a vector of counts the same length as 'features'. 
+ 
+my_count <- function(features, reads,  ignore.strand, inter.feature) { 
+    ## perform filtering, or subsetting etc. 
+    countOverlaps(features, reads)
+}
 
 ## ---------------------------------------------------------------------
 ## summarizeOverlaps() with BamViews
