@@ -4,6 +4,7 @@
 \alias{coverage,GAlignments-method}
 \alias{coverage,GAlignmentPairs-method}
 \alias{coverage,BamFile-method}
+\alias{coverage,character-method}
 
 
 \title{Coverage of a GAlignments or GAlignmentPairs object}
@@ -27,14 +28,17 @@
 \S4method{coverage}{GAlignmentPairs}(x, shift=0L, width=NULL, weight=1L,
          method=c("auto", "sort", "hash"), drop.D.ranges=FALSE)
 
-\S4method{coverage}{BamFile}(x, shift=0L, width=NULL, weight=1L,
-         ..., param=ScanBamParam())
+\S4method{coverage}{BamFile}(x, shift=0L, width=NULL, weight=1L, ...,
+         param=ScanBamParam())
+
+\S4method{coverage}{character}(x, shift=0L, width=NULL, weight=1L, ...,
+         yieldSize=2500000L)
 }
 
 \arguments{
   \item{x}{
-    A \link{GAlignments}, \link{GAlignmentPairs}, or \link[Rsamtools]{BamFile}
-    object.
+    A \link{GAlignments}, \link{GAlignmentPairs}, \link[Rsamtools]{BamFile}
+    or \code{character(1)} object.
   }
   \item{shift, width, weight}{
     See \code{coverage} method for \link[GenomicRanges]{GRanges} objects
@@ -56,18 +60,30 @@
     An optional \link[Rsamtools]{ScanBamParam} object passed to
     \code{\link{readGAlignmentsFromBam}}.
   }
+  \item{yieldSize}{
+    An optional argument controlling how many records are input
+    when iterating through a \link[Rsamtools]{BamFile}.
+  }
 }
 
 \details{
-  The methods for \link{GAlignments} and \link{GAlignmentPairs} objects do:
-\preformatted{
-  coverage(grglist(x), ...)
+
+  The methods for \link{GAlignments} and \link{GAlignmentPairs} objects
+  do:
+\preformatted{  coverage(grglist(x), ...)
 }
-  The method for \link[Rsamtools]{BamFile} objects does:
-\preformatted{
-  coverage(readGAlignmentsFromBam(x, param=param),
-           shift=shift, width=width, weight=weight, ...)
+
+  The method for \link[Rsamtools]{BamFile} objects iterates through a
+  BAM file, reading \code{yieldSize(x)} records (or all records, if
+  \code{is.na(yieldSize(x))}) and calculating:
+\preformatted{  aln <- readGAlignmentsFromBam(x, param=param)
+  coverage(aln, shift=shift, width=width, weight=weight, ...)
 }
+
+  The method for \code{character} vectors of length 1 creates a
+  \link[Rsamtools]{BamFile} object from \code{x} and performs the
+  calculation for \code{coverage,BamFile-method}.
+
 }
 
 \value{

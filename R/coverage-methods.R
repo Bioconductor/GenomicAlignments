@@ -19,7 +19,31 @@ setMethod("coverage", "GAlignmentPairs",
 
 setMethod("coverage", "BamFile",
     function(x, shift=0L, width=NULL, weight=1L, ..., param=ScanBamParam())
-        coverage(readGAlignmentsFromBam(x, param=param),
-                 shift=shift, width=width, weight=weight, ...)
-)
+{
+    if (!isOpen(x)) {
+        open(x)
+        on.exit(close(x))
+    }
 
+    cvg <- NULL
+    repeat {
+        aln <- readGAlignmentsFromBam(x, param=param)
+        if (length(aln) == 0L)
+            break
+        cvg0 <- coverage(aln, shift=shift, width=width, weight=weight, ...)
+        if (is.null(cvg))
+            cvg <- cvg0
+        else
+            cvg <- cvg + cvg0
+    }
+    cvg
+})
+
+setMethod("coverage", "character",
+    function(x, shift=0L, width=NULL, weight=1L, ..., yieldSize=2500000L)
+{
+    if (!isSingleString(x))
+        stop("'x' must be character(1) for coverage,character-method")
+    bf <- BamFile(x, yieldSize=yieldSize)
+    coverage(bf, shift=shift, width=width, weight=weight, ...)
+})
