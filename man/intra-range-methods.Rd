@@ -2,9 +2,11 @@
 
 \alias{intra-range-methods}
 
+\alias{narrow}
 \alias{narrow,GAlignments-method}
 \alias{narrow,GAlignmentsList-method}
 \alias{narrow,GappedReads-method}
+
 \alias{qnarrow}
 \alias{qnarrow,GAlignments-method}
 \alias{qnarrow,GAlignmentsList-method}
