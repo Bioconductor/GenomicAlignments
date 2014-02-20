@@ -1,6 +1,7 @@
 \name{findOverlaps-methods}
 \alias{findOverlaps-methods}
 
+\alias{findOverlaps}
 \alias{findOverlaps,GAlignments,Vector-method}
 \alias{findOverlaps,Vector,GAlignments-method}
 \alias{findOverlaps,GAlignments,GAlignments-method}
@@ -13,6 +14,7 @@
 \alias{findOverlaps,Vector,GAlignmentsList-method}
 \alias{findOverlaps,GAlignmentsList,GAlignmentsList-method}
 
+\alias{countOverlaps}
 \alias{countOverlaps,GAlignments,Vector-method}
 \alias{countOverlaps,Vector,GAlignments-method}
 \alias{countOverlaps,GAlignments,GAlignments-method}
@@ -27,6 +29,7 @@
 \alias{countOverlaps,Vector,GAlignmentsList-method}
 \alias{countOverlaps,GAlignmentsList,GAlignmentsList-method}
 
+\alias{overlapsAny}
 \alias{overlapsAny,GAlignments,Vector-method}
 \alias{overlapsAny,Vector,GAlignments-method}
 \alias{overlapsAny,GAlignments,GAlignments-method}
@@ -37,6 +40,7 @@
 \alias{overlapsAny,Vector,GAlignmentsList-method}
 \alias{overlapsAny,GAlignmentsList,GAlignmentsList-method}
 
+\alias{subsetByOverlaps}
 \alias{subsetByOverlaps,GAlignments,Vector-method}
 \alias{subsetByOverlaps,Vector,GAlignments-method}
 \alias{subsetByOverlaps,GAlignments,GAlignments-method}
