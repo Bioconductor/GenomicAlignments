@@ -441,6 +441,7 @@ edger <- DGEList(assays(se)$counts, group=rownames(colData(se)))
 ## In this example records are filtered by map quality before counting.
 
 mapq_filter <- function(features, reads,  ignore.strand, inter.feature) { 
+    require(GenomicAlignments) # needed for parallel evaluation
     Union(features, reads[mcols(reads)$mapq >= 20], 
           ignore.strand=ignore.strand, 
           inter.feature=inter.feature) 
@@ -459,6 +460,7 @@ assays(se)$counts
  
 my_count <- function(features, reads,  ignore.strand, inter.feature) { 
     ## perform filtering, or subsetting etc. 
+    require(GenomicAlignments) # needed for parallel evaluation
     countOverlaps(features, reads)
 }
 
