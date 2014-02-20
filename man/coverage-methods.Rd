@@ -1,6 +1,7 @@
 \name{coverage-methods}
 \alias{coverage-methods}
 
+\alias{coverage}
 \alias{coverage,GAlignments-method}
 \alias{coverage,GAlignmentPairs-method}
 \alias{coverage,BamFile-method}
