@@ -55,8 +55,8 @@
 \title{Finding overlapping genomic alignments}
 
 \description{
-  Finds interval overlaps between a \link{GAlignments}, \link{GAlignmentPairs}, 
-  or \link{GAlignmentsList} object, and another object containing ranges.
+  Finds range overlaps between a \link{GAlignments}, \link{GAlignmentPairs}, 
+  or \link{GAlignmentsList} object, and another range-based object.
 
   NOTE: The \code{\link[IRanges]{findOverlaps}} generic function and methods
   for \link[IRanges]{Ranges} and \link[IRanges]{RangesList} objects

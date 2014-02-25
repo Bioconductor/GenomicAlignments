@@ -128,7 +128,8 @@ export(
     readBamGappedAlignments,
     readBamGappedAlignmentPairs,
     readBamGAlignmentsList,
-    readBamGappedReads
+    readBamGappedReads,
+    introns
 )
 
 
@@ -140,7 +141,6 @@ export(
 export(
     ## GAlignments-class.R:
     rname, "rname<-", cigar, qwidth,
-    introns,
 
     ## GAlignmentPairs-class.R:
     first, last, left, right, isProperPair,
@@ -157,6 +157,9 @@ export(
     readGAlignmentPairsFromBam,
     readGAlignmentsListFromBam,
     readGappedReadsFromBam,
+
+    ## junctions-methods.R:
+    junctions,
 
     ## intra-range-methods.R:
     qnarrow,
@@ -182,7 +185,6 @@ export(
 ### Exactly the same list as above.
 exportMethods(
     rname, "rname<-", cigar, qwidth,
-    introns,
     first, last, left, right, isProperPair,
     qseq,
     Loffset, Roffset, flippedQuery,
@@ -191,6 +193,7 @@ exportMethods(
     readGAlignmentPairsFromBam,
     readGAlignmentsListFromBam,
     readGappedReadsFromBam,
+    junctions,
     qnarrow,
     encodeOverlaps,
     isCompatibleWithSplicing,

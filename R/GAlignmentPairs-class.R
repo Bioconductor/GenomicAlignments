@@ -41,8 +41,6 @@ setClass("GAlignmentPairs",
 ###   seqinfo(x)  - returns 'seqinfo(first(x))' (same as 'seqinfo(last(x))').
 ###   granges(x)  - GRanges object of the same length as 'x'.
 ###   grglist(x)  - GRangesList object of the same length as 'x'.
-###   introns(x)  - Extract the N gaps in a GRangesList object of the same
-###                 length as 'x'.
 ###   show(x)     - compact display in a data.frame-like fashion.
 ###   GAlignmentPairs(x) - constructor.
 ###   x[i]        - GAlignmentPairs object of the same class as 'x'
@@ -368,7 +366,7 @@ setMethod("unlist", "GAlignmentPairs",
 
 ### Shrink CompressedList 'x' (typically a GRangesList) by half by combining
 ### pairs of consecutive top-level elements.
-.shrinkByHalf <- function(x)
+shrinkByHalf <- function(x)
 {
     if (length(x) %% 2L != 0L)
         stop("'x' must have an even length")
@@ -403,7 +401,7 @@ setMethod("grglist", "GAlignmentPairs",
         grl <- grglist(x_unlisted,
                        order.as.in.query=TRUE,
                        drop.D.ranges=drop.D.ranges)
-        ans <- .shrinkByHalf(grl)
+        ans <- shrinkByHalf(grl)
         ans_nelt1 <- mcols(ans)$nelt1
         if (!order.as.in.query) {
             ans_nelt2 <- mcols(ans)$nelt2
@@ -428,23 +426,6 @@ setMethod("granges", "GAlignmentPairs",
                  "are not aligned to the same chromosome and strand. ",
                  "Cannot extract a single range for them.")
         unlist(rg)
-    }
-)
-
-setMethod("introns", "GAlignmentPairs",
-    function(x)
-    {
-        first_introns <- introns(x@first)
-        last_introns <- introns(invertRleStrand(x@last))
-        ## Fast way of doing mendoapply(c, first_introns, last_introns)
-        ## on 2 CompressedList objects.
-        ans <- c(first_introns, last_introns)
-        collate_subscript <-
-            IRanges:::make_XYZxyz_to_XxYyZz_subscript(length(x))
-        ans <- ans[collate_subscript]
-        ans <- .shrinkByHalf(ans)
-        mcols(ans) <- NULL
-        ans
     }
 )
 

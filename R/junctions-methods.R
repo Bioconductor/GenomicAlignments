@@ -1,10 +1,49 @@
 ### =========================================================================
-### junctions(), summarizeJunctions(), and related utilities
+### Extract junctions from genomic alignments
 ### -------------------------------------------------------------------------
 ###
 
 
+setGeneric("junctions", function(x, ...) standardGeneric("junctions"))
 
+setMethod("junctions", "GAlignments",
+    function(x)
+    {
+        grl <- grglist(x, order.as.in.query=TRUE)
+        psetdiff(granges(x), grl)
+    }
+)
+
+setMethod("junctions", "GAlignmentPairs",
+    function(x)
+    {
+        first_junctions <- junctions(x@first)
+        last_junctions <- junctions(invertRleStrand(x@last))
+        ## Fast way of doing mendoapply(c, first_junctions, last_junctions)
+        ## on 2 CompressedList objects.
+        ans <- c(first_junctions, last_junctions)
+        collate_subscript <-
+            IRanges:::make_XYZxyz_to_XxYyZz_subscript(length(x))
+        ans <- ans[collate_subscript]
+        ans <- shrinkByHalf(ans)
+        mcols(ans) <- NULL
+        ans
+    }
+)
+
+setMethod("junctions", "GAlignmentsList",
+    function(x, ignore.strand=FALSE)
+    {
+        if (!isTRUEorFALSE(ignore.strand))
+            stop("'ignore.strand' must be TRUE or FALSE")
+        if (ignore.strand)
+            strand(x@unlistData) <- "*"
+        grl <- junctions(x@unlistData)
+        ans_breakpoints <- end(grl@partitioning)[end(x@partitioning)]
+        ans_partitioning <- PartitioningByEnd(ans_breakpoints, names=names(x))
+        relist(grl@unlistData, ans_partitioning)
+    }
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -51,7 +90,7 @@
 ### by TopHat that describes a junction by the position of the nucleotide
 ### immediately before and after the intron. In the GRanges object returned
 ### by readTopHatJunctions(), a junction is considered to start at the
-### left-most and end at the right-most nucleotide of the intron.
+### left-most and to end at the right-most nucleotide of the intron.
 readTopHatJunctions <- function(file, file.is.bed_to_juncs.output=FALSE)
 {
     if (!isTRUEorFALSE(file.is.bed_to_juncs.output))
@@ -108,5 +147,16 @@ readSTARJunctions <- function(file)
             strand=strand(df[[4L]] == 2L),
             um_reads=df[[7L]],
             mm_reads=df[[8L]])
+}
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Old stuff (deprecated & defunct)
+###
+
+introns <- function(x)
+{
+    .Deprecated("junctions")
+    junctions(x)
 }
 

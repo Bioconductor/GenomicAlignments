@@ -32,10 +32,10 @@
 \alias{readBamGAlignmentsList}
 
 
-\title{Reading alignments from a file}
+\title{Reading genomic alignments from a file}
 
 \description{
-  Read alignments from a file (typically a BAM file) into a
+  Read genomic alignments from a file (typically a BAM file) into a
   \link{GAlignments}, \link{GAlignmentPairs}, \link{GAlignmentsList},
   or \link{GappedReads} object.
 }

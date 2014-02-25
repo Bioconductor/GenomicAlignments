@@ -29,8 +29,6 @@ setClass("GAlignmentsList",
 
 ###   grglist(x)  - GRangesList object of the same length as 'x'.
 ###   granges(x)  - GRanges object of the same length as 'x'.
-###   introns(x)  - Extract the N gaps in a GAlignmentsList object of the same
-###                 length as 'x'.
 ###   rglist(x)   - CompressedIRangesList object of the same length as 'x'.
 ###   ranges(x)   - IRanges object of the same length as 'x'.
 ###   as.data.frame(x) - data.frame with 1 row per alignment in 'x'.
@@ -206,6 +204,12 @@ setMethod("updateObject", "GAlignmentsList",
 ### Coercion.
 ###
 
+## FIXME (H.P. Feb 25, 2014):
+## This is broken if 'x' has empty elements:
+##     > grglist(GAlignmentsList(GAlignments("chr1", 20L, "10M", strand("+")),
+##                               GAlignments()))
+##     Error in relist(gr, .shiftPartition(...)) :
+##       shape of 'skeleton' is not compatible with 'NROW(flesh)'
 setMethod("grglist", "GAlignmentsList",
     function(x, order.as.in.query=FALSE, drop.D.ranges=FALSE,
              ignore.strand=FALSE) 
@@ -243,18 +247,12 @@ setMethod("granges", "GAlignmentsList",
     }
 )
 
-setMethod("introns", "GAlignmentsList",
-    function(x, ignore.strand=FALSE)
-    {
-        if (ignore.strand)
-            strand(x@unlistData) <- "*"
-        grl <- introns(x@unlistData)
-        f <- rep(seq_along(x@partitioning), width(x@partitioning))
-        relist(grl@unlistData, 
-               .shiftPartition(x@partitioning, grl@partitioning))
-    }
-)
-
+## FIXME (H.P. Feb 25, 2014):
+## This is broken if 'x' has empty elements:
+##     > rglist(GAlignmentsList(GAlignments("chr1", 20L, "10M", strand("+")),
+##                              GAlignments()))
+##     Error in relist(rgl@unlistData, partitioning) :
+##       shape of 'skeleton' is not compatible with 'NROW(flesh)'
 setMethod("rglist", "GAlignmentsList",
     function(x, order.as.in.query=FALSE, drop.D.ranges=FALSE)
     {
@@ -278,6 +276,13 @@ setMethod("rglist", "GAlignmentsList",
     PartitioningByEnd(end(partition1) + cumsum(wdiff), names=names(partition1))
 }
 
+## FIXME (H.P. Feb 25, 2014):
+## - This should be the "range" method, not the "ranges" method.
+## - It's broken if 'x' has empty elements:
+##     > ranges(GAlignmentsList(GAlignments("chr1", 20L, "10M", strand("+")),
+##                              GAlignments()))
+##     Error in relist(unlist(rgl), .shiftPartition(...)) : 
+##       shape of 'skeleton' is not compatible with 'NROW(flesh)'
 setMethod("ranges", "GAlignmentsList",
     function(x) 
     {

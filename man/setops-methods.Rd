@@ -33,6 +33,8 @@
 
 \seealso{
   \itemize{
+    \item The \link{GAlignments} class.
+
     \item The \link[GenomicRanges]{setops-methods} man page in the
           \pkg{GenomicRanges} package.
   }

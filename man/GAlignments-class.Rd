@@ -34,10 +34,8 @@
 \alias{seqinfo<-,GAlignments-method}
 
 % Coercion:
-\alias{introns}
 \alias{grglist,GAlignments-method}
 \alias{granges,GAlignments-method}
-\alias{introns,GAlignments-method}
 \alias{rglist,GAlignments-method}
 \alias{ranges,GAlignments-method}
 \alias{coerce,GAlignments,GRangesList-method}
@@ -319,14 +317,6 @@
       \code{ranges(x)} is an \link[IRanges]{IRanges} object.
     }
     \item{}{
-      \code{introns(x)}: Extract the gaps (i.e. N operations in the CIGAR)
-      as a \link{GRangesList} object of the same length as \code{x}.
-      Equivalent to:
-      \preformatted{
-    psetdiff(granges(x), grglist(x, order.as.in.query=TRUE))
-      }
-    }
-    \item{}{
       \code{as(x, "GRangesList")}, \code{as(x, "GRanges")},
       \code{as(x, "RangesList")}, \code{as(x, "Ranges")}:
       Alternate ways of doing \code{grglist(x)}, \code{granges(x)},
@@ -398,22 +388,36 @@
 
 \seealso{
   \itemize{
-    \item \link{GAlignmentPairs} objects.
-    \item \code{\link{readGAlignments}}.
-    \item \link[GenomicRanges]{GRangesList-class}.
-    \item \link[GenomicRanges]{GRanges-class}.
-    \item \link{findOverlaps-methods}.
-    \item \link{coverage-methods}.
-    \item \code{\link{seqinfo}}.
-    \item \link[IRanges]{CompressedIRangesList-class}.
-    \item \link{setops-methods}.
+    \item \code{\link{readGAlignments}} for reading genomic alignments
+          from a file (typically a BAM file) into a GAlignments object.
+
+    \item \link{GAlignmentPairs} objects for handling aligned paired-end
+          reads.
+
+    \item \link{junctions-methods} for extracting junctions from a
+          GAlignments object.
+
+    \item \link[GenomicAlignments]{coverage-methods} for computing the
+          coverage of a GAlignments object.
+
+    \item \link[GenomicAlignments]{findOverlaps-methods} for finding
+          overlapping genomic alignments.
+
+    \item \code{\link[GenomicRanges]{seqinfo}} in the \pkg{GenomicRanges}
+          package for getting/setting/modifying the sequence information
+          stored in an object.
+
+    \item The \link[GenomicRanges]{GRanges} and
+          \link[GenomicRanges]{GRangesList} classes defined and documented
+          in the \pkg{GenomicRanges} package.
+
+    \item The \link[IRanges]{CompressedIRangesList} class defined and
+          documented in the \pkg{IRanges} package.
   }
 }
 
 \examples{
 library(Rsamtools)  # for the ex1.bam file
-library(GenomicAlignments)  # for readGAlignments()
-
 ex1_file <- system.file("extdata", "ex1.bam", package="Rsamtools")
 gal <- readGAlignments(ex1_file, param=ScanBamParam(what="flag"))
 gal
@@ -445,8 +449,6 @@ granges(gal)  # a GRanges object
 rglist(gal)   # a CompressedIRangesList object
 stopifnot(identical(unname(elementLengths(rglist(gal))), ngap(gal) + 1L))
 ranges(gal)   # an IRanges object
-introns(gal)  # a GRangesList object
-stopifnot(identical(unname(elementLengths(introns(gal))), ngap(gal)))
 
 ## Modify the number of lines in 'show'
 options(showHeadLines=3)

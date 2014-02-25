@@ -35,8 +35,6 @@ setClass("GAlignments",
 ###   ngap(x)     - integer vector of the same length as 'x'.
 ###   grglist(x)  - GRangesList object of the same length as 'x'.
 ###   granges(x)  - GRanges object of the same length as 'x'.
-###   introns(x)  - Extract the N gaps in a GRangesList object of the same
-###                 length as 'x'.
 ###   rglist(x)   - CompressedIRangesList object of the same length as 'x'.
 ###   ranges(x)   - IRanges object of the same length as 'x'.
 ###   as.data.frame(x) - data.frame with 1 row per alignment in 'x'.
@@ -432,8 +430,6 @@ setMethod("update", "GAlignments",
 ### Coercion.
 ###
 
-setGeneric("introns", function(x, ...) standardGeneric("introns"))
-
 setMethod("grglist", "GAlignments",
     function(x, order.as.in.query=FALSE, drop.D.ranges=FALSE)
     {
@@ -449,14 +445,6 @@ setMethod("granges", "GAlignments",
     function(x)
         .GAlignmentsToGRanges(seqnames(x), start(x), width(x),
                                    strand(x), seqinfo(x), names(x))
-)
-
-setMethod("introns", "GAlignments",
-    function(x)
-    {
-        grl <- grglist(x, order.as.in.query=TRUE)
-        psetdiff(granges(x), grl)
-    }
 )
 
 setMethod("rglist", "GAlignments",

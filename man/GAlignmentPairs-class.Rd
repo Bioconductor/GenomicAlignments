@@ -38,7 +38,6 @@
 % Coercion:
 \alias{grglist,GAlignmentPairs-method}
 \alias{granges,GAlignmentPairs-method}
-\alias{introns,GAlignmentPairs-method}
 \alias{coerce,GAlignmentPairs,GRangesList-method}
 \alias{coerce,GAlignmentPairs,GRanges-method}
 \alias{coerce,GAlignmentPairs,GAlignments-method}
@@ -299,17 +298,6 @@
       ranges within the corresponding top-level element in \code{grglist(x)}.
     }
     \item{}{
-      \code{introns(x)}: Extract the gaps (i.e. N operations in the CIGAR)
-      of the "first" and "last" alignments of each pair as a
-      \link{GRangesList} object of the same length as \code{x}.
-      Equivalent to (but faster than):
-      \preformatted{
-    introns1 <- introns(first(x))
-    introns2 <- introns(last(x, invert.strand=TRUE))
-    mendoapply(c, introns1, introns2)
-      }
-    }
-    \item{}{
       \code{as(x, "GRangesList")}, \code{as(x, "GRanges")}:
       Alternate ways of doing \code{grglist(x)} and \code{granges(x)},
       respectively.
@@ -346,21 +334,37 @@
 
 \seealso{
   \itemize{
-    \item \link{GAlignments-class}.
-    \item \code{\link{readGAlignmentPairs}}.
-    \item \code{\link{makeGAlignmentPairs}}.
-    \item \link{GRangesList-class}.
-    \item \link{GRanges-class}.
-    \item \link{findOverlaps-methods}.
-    \item \link{coverage-methods}.
-    \item \code{\link{seqinfo}}.
+    \item \code{\link{readGAlignmentPairs}} for reading aligned paired-end
+          reads from a file (typically a BAM file) into a GAlignmentPairs
+          object.
+
+    \item \link{GAlignments} objects for handling aligned single-end reads.
+
+    \item \code{\link{makeGAlignmentPairs}} for pairing the elements of a
+          \link{GAlignments} object into a GAlignmentPairs object.
+
+    \item \link{junctions-methods} for extracting junctions from a
+          GAlignmentPairs object.
+
+    \item \link[GenomicAlignments]{coverage-methods} for computing the
+          coverage of a GAlignmentPairs object.
+
+    \item \link[GenomicAlignments]{findOverlaps-methods} for finding range
+          overlaps between a GAlignmentPairs object and another range-based
+          object.
+
+    \item \code{\link[GenomicRanges]{seqinfo}} in the \pkg{GenomicRanges}
+          package for getting/setting/modifying the sequence information
+          stored in an object.
+
+    \item The \link[GenomicRanges]{GRanges} and
+          \link[GenomicRanges]{GRangesList} classes defined and documented
+          in the \pkg{GenomicRanges} package.
   }
 }
 
 \examples{
 library(Rsamtools)  # for the ex1.bam file
-library(GenomicAlignments)  # for readGAlignments()
-
 ex1_file <- system.file("extdata", "ex1.bam", package="Rsamtools")
 galp <- readGAlignmentPairs(ex1_file, use.names=TRUE)
 galp
@@ -391,9 +395,6 @@ grglist(galp, order.as.in.query=TRUE)
 stopifnot(identical(unname(elementLengths(grglist(galp))), ngap(galp) + 2L))
 
 granges(galp)  # a GRanges object
-
-introns(galp)  # a GRangesList object
-stopifnot(identical(unname(elementLengths(introns(galp))), ngap(galp)))
 }
 
 \keyword{methods}

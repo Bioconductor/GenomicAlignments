@@ -41,7 +41,6 @@
 \alias{granges,GAlignmentsList-method}
 \alias{rglist,GAlignmentsList-method}
 \alias{ranges,GAlignmentsList-method}
-\alias{introns,GAlignmentsList-method}
 
 % Combining:
 \alias{c,GAlignmentsList-method}
@@ -251,11 +250,26 @@
 
 \seealso{
   \itemize{
-    \item \link{GAlignments-class}.
-    \item \link{GAlignmentPairs-class}.
-    \item \code{\link{readGAlignmentsFromBam}}.
-    \item \code{\link{readGAlignmentPairsFromBam}}.
-    \item \link{findOverlaps-methods}.
+    \item \code{\link{readGAlignmentsList}} for reading genomic alignments
+          from a file (typically a BAM file) into a GAlignmentsList object.
+
+    \item \link{GAlignments} and \link{GAlignmentPairs} objects for handling
+          aligned single- and paired-end reads, respectively.
+
+    \item \link{junctions-methods} for extracting junctions from a
+          GAlignmentsList object.
+
+    \item \link[GenomicAlignments]{findOverlaps-methods} for finding range
+          overlaps between a GAlignmentsList object and another range-based
+          object.
+
+    \item \code{\link[GenomicRanges]{seqinfo}} in the \pkg{GenomicRanges}
+          package for getting/setting/modifying the sequence information
+          stored in an object.
+
+    \item The \link[GenomicRanges]{GRanges} and
+          \link[GenomicRanges]{GRangesList} classes defined and documented
+          in the \pkg{GenomicRanges} package.
   }
 }
 
@@ -330,7 +344,6 @@ mcols(galist, level="within")
 ## D. readGAlignmentsList()
 ## ---------------------------------------------------------------------
 
-library(GenomicAlignments)  # for readGAlignmentsList()
 library(pasillaBamSubset)
 
 ## 'file' as character.
