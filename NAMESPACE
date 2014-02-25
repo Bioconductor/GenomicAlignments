@@ -105,6 +105,9 @@ export(
     readGAlignmentsList,
     readGappedReads,
 
+    readTopHatJunctions,
+    readSTARJunctions,
+
     sequenceLayer,
     stackStringsFromBam,
     pileLettersAt,
