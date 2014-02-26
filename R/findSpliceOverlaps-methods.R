@@ -308,7 +308,7 @@ setMethod("findSpliceOverlaps", c("GAlignmentPairs", "GRangesList"),
 ### FIXME:
 ### instead of relying on query.break column, maybe we should add a
 ### 'splice = .gaps(query)' argument to .findSpliceOverlaps that we
-### set to introns(query) here. The downside is that a GRangesList
+### set to junctions(query) here. The downside is that a GRangesList
 ### derived from GAlignmentPairs will no longer work.
     findSpliceOverlaps(grglist(query, order.as.in.query=FALSE), subject,
                        ignore.strand, ..., cds=cds)

@@ -66,7 +66,7 @@ test_GAlignmentsList_coercion <- function() {
 
     ## introns
     galist <- GAList
-    grl <- introns(galist)
+    grl <- junctions(galist)
     checkIdentical(names(galist), names(grl))
     checkTrue(length(galist) == length(grl))
     checkTrue(length(grl[[1]]) == 0L)
