@@ -144,7 +144,7 @@ GAlignments with 4 alignments and 2 metadata columns:
   SRR031714.2658602    chr2R      +  21M384N16M        37   6983850 6984270
   SRR031714.2658602    chr2R      -  13M372N24M        37   6983858 6984266
   SRR031714.2658602    chr2R      -  13M378N24M        37   6983858 6984272
-                        width      ngap |     mrnm      mpos
+                        width     njunc |     mrnm      mpos
                     <integer> <integer> | <factor> <integer>
   SRR031714.2658602       421         1 |    chr2R   6983858
   SRR031714.2658602       421         1 |    chr2R   6983858

@@ -33,11 +33,11 @@ test_findSpliceOverlaps_compatible <- function()
         GRanges("chr1", IRanges(5, 12), "+"),
         GRanges("chr1", IRanges(18, 23), "+"),
         GRanges("chr1", IRanges(c(4, 30), c(26, 36)), "+"))
-    res <- findSpliceOverlaps(reads[1], genes) ## no read gaps
+    res <- findSpliceOverlaps(reads[1], genes) ## not a junction read
     checkIdentical(FALSE, .extract(res, "compatible"))
-    res <- findSpliceOverlaps(reads[2], genes) ## no read gaps
+    res <- findSpliceOverlaps(reads[2], genes) ## not a junction read
     checkIdentical(FALSE, .extract(res, "compatible"))
-    res <- findSpliceOverlaps(reads[3], genes) ## read gaps
+    res <- findSpliceOverlaps(reads[3], genes) ## junction read
     checkIdentical(FALSE, .extract(res, "compatible"))
 }
 
@@ -69,7 +69,7 @@ test_findSpliceOverlaps_compatible <- function()
 #    res <- findSpliceOverlaps(reads, genes)
 #    checkIdentical(c(FALSE, FALSE, FALSE), .extract(res, "novelTSS"))
 #
-#    ## gaps 
+#    ## junctions
 #    genes <- GRangesList(
 #        GRanges("chr1", IRanges(c(5, 15), c(10, 20)), "+"))
 #    reads <- GRangesList(
@@ -108,7 +108,7 @@ test_findSpliceOverlaps_compatible <- function()
 #    res <- findSpliceOverlaps(reads, genes)
 #    checkIdentical(c(FALSE, FALSE, FALSE), .extract(res, "novelTSE"))
 #
-#    ## gaps 
+#    ## junctions
 #    genes <- GRangesList(
 #        GRanges("chr1", IRanges(c(5, 15), c(10, 20)), "+"))
 #    reads <- GRangesList(
@@ -172,9 +172,9 @@ test_findSpliceOverlaps_compatible <- function()
 #        GRanges("chr1", IRanges(5, 12), "+"), 
 #        GRanges("chr1", IRanges(18, 23), "+"),
 #        GRanges("chr1", IRanges(c(4, 30), c(26, 36)), "+"))
-#    res <- findSpliceOverlaps(reads[1], genes) ## no read gaps
+#    res <- findSpliceOverlaps(reads[1], genes) ## not a junction read
 #    checkIdentical(TRUE, .extract(res, "novelRetention"))
-#    res <- findSpliceOverlaps(reads[3], genes) ## read gaps
+#    res <- findSpliceOverlaps(reads[3], genes) ## junction read
 #    checkIdentical(TRUE, .extract(res, "novelRetention"))
 #
 #    ## FIXME : hits a portion of the intronic region

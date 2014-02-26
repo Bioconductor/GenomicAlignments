@@ -36,7 +36,7 @@ setClass("GAlignmentPairs",
 ###                 right(x).
 ###   seqnames(x) - same as 'seqnames(first(x))' or 'seqnames(last(x))'.
 ###   strand(x)   - same as 'strand(first(x))' (opposite of 'strand(last(x))').
-###   ngap(x)     - same as 'ngap(first(x)) + ngap(last(x))'.
+###   njunc(x)    - same as 'njunc(first(x)) + njunc(last(x))'.
 ###   isProperPair(x) - returns "isProperPair" slot.
 ###   seqinfo(x)  - returns 'seqinfo(first(x))' (same as 'seqinfo(last(x))').
 ###   granges(x)  - GRanges object of the same length as 'x'.
@@ -128,8 +128,8 @@ setMethod("strand", "GAlignmentPairs",
     function(x) strand(x@first)
 )
 
-setMethod("ngap", "GAlignmentPairs",
-    function(x) {ngap(x@first) + ngap(x@last)}
+setMethod("njunc", "GAlignmentPairs",
+    function(x) {njunc(x@first) + njunc(x@last)}
 )
 
 setMethod("isProperPair", "GAlignmentPairs",
@@ -685,4 +685,12 @@ GappedAlignmentPairs <- function(...)
 
 readGappedAlignmentPairs <- function(...)
     .Defunct(msg=.GappedAlignmentPairs_warning_msg())
+
+setMethod("ngap", "GAlignmentPairs",
+    function(x)
+    {
+        .Deprecated("njunc")
+        njunc(x)
+    }
+)
 

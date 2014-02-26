@@ -25,7 +25,7 @@ setClass("GAlignmentsList",
 ###   strand(x)   - 'factor' Rle of the same length as 'x' (levels: +, -, *).
 ###   qwidth(x)   - integer vector of the same length as 'x'.
 ###   start(x), end(x), width(x) - integer vectors of the same length as 'x'.
-###   ngap(x)     - integer vector of the same length as 'x'.
+###   njunc(x)    - integer vector of the same length as 'x'.
 
 ###   grglist(x)  - GRangesList object of the same length as 'x'.
 ###   granges(x)  - GRanges object of the same length as 'x'.
@@ -96,7 +96,7 @@ setMethod("qwidth", "GAlignmentsList",
              partitioning=x@partitioning, check=FALSE)
 )
 
-setMethod("ngap", "GAlignmentsList",
+setMethod("njunc", "GAlignmentsList",
     function(x)
         new2("CompressedIntegerList",
              unlistData=unname(elementLengths(rglist(x@unlistData))) - 1L,
@@ -402,4 +402,12 @@ makeGAlignmentsListFromFeatureFragments <- function(seqnames=Rle(factor()),
     partitioning <- PartitioningByEnd(cumsum(nfrag_per_feature), names=NULL)
     relist(unlistData, partitioning)
 }
+
+setMethod("ngap", "GAlignmentsList",
+    function(x)
+    {
+        .Deprecated("njunc")
+        njunc(x)
+    }
+)
 

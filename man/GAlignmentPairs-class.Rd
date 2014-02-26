@@ -23,7 +23,7 @@
 \alias{seqnames,GAlignmentPairs-method}
 \alias{strand,GAlignmentPairs-method}
 \alias{strand<-,GAlignmentPairs-method}
-\alias{ngap,GAlignmentPairs-method}
+\alias{njunc,GAlignmentPairs-method}
 \alias{isProperPair}
 \alias{isProperPair,GAlignmentPairs-method}
 \alias{elementMetadata<-,GAlignmentPairs-method}
@@ -53,6 +53,7 @@
 \alias{class:GappedAlignmentPairs}
 \alias{GappedAlignmentPairs-class}
 \alias{show,GappedAlignmentPairs-method}
+\alias{ngap,GAlignmentPairs-method}
 
 
 \title{GAlignmentPairs objects}
@@ -154,8 +155,8 @@
       but those pairs might be supported in the future.
     }
     \item{}{
-      \code{ngap(x)}:
-      Equivalent to \code{ngap(first(x)) + ngap(last(x))}.
+      \code{njunc(x)}:
+      Equivalent to \code{njunc(first(x)) + njunc(last(x))}.
     }
     \item{}{
       \code{isProperPair(x)}:
@@ -289,8 +290,8 @@
       defined by walking the "query template" from the beginning to the end.
 
       If \code{drop.D.ranges} is \code{TRUE}, then deletions (Ds in the
-      CIGAR) are treated like gaps (Ns in the CIGAR), that is, the ranges
-      corresponding to deletions are dropped.
+      CIGAR) are treated like junctions (Ns in the CIGAR), that is, the
+      ranges corresponding to deletions are dropped.
     }
     \item{}{
       \code{granges(x)}: Return a \link{GRanges} object of length
@@ -379,7 +380,7 @@ left(galp)
 right(galp)
 seqnames(galp)
 strand(galp)
-head(ngap(galp))
+head(njunc(galp))
 table(isProperPair(galp))
 seqlevels(galp)
 
@@ -392,7 +393,7 @@ unlist(galp)
 
 grglist(galp)  # a GRangesList object
 grglist(galp, order.as.in.query=TRUE)
-stopifnot(identical(unname(elementLengths(grglist(galp))), ngap(galp) + 2L))
+stopifnot(identical(unname(elementLengths(grglist(galp))), njunc(galp) + 2L))
 
 granges(galp)  # a GRanges object
 }

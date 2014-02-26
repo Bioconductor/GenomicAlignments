@@ -58,7 +58,7 @@ test_GAlignmentsList_coercion <- function() {
                      cigar=c("10M", "9M", "5M", "3M2N3M2N3M"),
                      qwidth=c(10, 9 , 5, 9), start=c(1, 2, 1, 2),
                      end=c(10, 10, 5, 14), width=c(10, 9, 5, 13),
-                     ngap=c(0, 0, 0, 2), score=c(1, 2, 1, 2), 
+                     njunc=c(0, 0, 0, 2), score=c(1, 2, 1, 2), 
                      row.names=c("a", "b", "t", "u"),
                      stringsAsFactors=FALSE)
     galist <- GAlignmentsList(a=.noGaps[1:2], b=.Gaps[1:2])

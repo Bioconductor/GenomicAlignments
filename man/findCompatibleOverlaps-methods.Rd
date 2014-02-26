@@ -36,8 +36,8 @@ countCompatibleOverlaps(query, subject)
   \code{findCompatibleOverlaps} is a specialized version of
   \code{\link[IRanges]{findOverlaps}} that uses
   \code{\link{encodeOverlaps}} internally to keep only
-  the hits where the gaps in the aligned read are \emph{compatible}
-  with the splicing of the transcript.
+  the hits where the junctions in the aligned read are \emph{compatible}
+  with the splicing of the annotated transcript.
 
   The topic of working with overlap encodings is covered in details
   in the "OverlapEncodings" vignette located this package

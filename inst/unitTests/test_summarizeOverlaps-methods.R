@@ -18,7 +18,7 @@ rds <- GAlignments(c(rep(c("chr1", "chr2"), 3), "chr1"),
 
 test_summarizeOverlaps_Union_single <- function()
 {
-    ## single-end no gaps
+    ## single-end no junctions
     mode <- "Union"
     ga <- GAlignments("chr1", 20L, "11M", strand("+")) 
     ann <- GRanges("chr1", IRanges(c(1, 10, 25, 22), c(50, 25, 40, 26)), "+")
@@ -37,7 +37,7 @@ test_summarizeOverlaps_Union_single <- function()
 
 test_summarizeOverlaps_Union_paired <- function()
 {
-    ## single-end with gaps behave like paired-end
+    ## single-end with a junction (behaves like paired-end)
     mode <- "Union"
     ga <- GAlignments("chr1", 1L, "10M4N11M", strand("+"))
     ga1 <- GAlignments("chr1", 1L, "10M", strand("+"))
@@ -70,7 +70,7 @@ test_summarizeOverlaps_Union_paired <- function()
 
 test_summarizeOverlaps_IntersectionStrict_single <- function()
 {
-    ## single-end, no gaps 
+    ## single-end, no junctions
     mode <- "IntersectionStrict"
     ga <- GAlignments("chr1", 7L, "6M", strand("+")) 
     ann <- GRanges("chr1", IRanges(c(1, 5, 10), width=10), "+") 
@@ -90,7 +90,7 @@ test_summarizeOverlaps_IntersectionStrict_single <- function()
 
 test_summarizeOverlaps_IntersectionStrict_paired <- function()
 {
-    ## single-end with gaps behave like paired-end
+    ## single-end with a junction (behaves like paired-end)
     mode <- "IntersectionStrict"
     ga <- GAlignments("chr1", 10L, "6M4N6M", strand("+"))
     ga1 <- GAlignments("chr1", 10L, "6M", strand("+"))
@@ -119,7 +119,7 @@ test_summarizeOverlaps_IntersectionStrict_paired <- function()
 
 test_summarizeOverlaps_IntersectionNotEmpty_single <- function()
 {
-    ## single-end, no gaps
+    ## single-end, no junctions
     mode <- "IntersectionNotEmpty"
     ga <- GAlignments("chr1", 10L, "11M", strand("+")) 
     ann <- GRanges("chr1", IRanges(c(1, 5, 12), c(15, 30, 15)), "+") 
@@ -158,7 +158,7 @@ test_summarizeOverlaps_IntersectionNotEmpty_single <- function()
 
 test_summarizeOverlaps_IntersectionNotEmpty_paired <- function()
 {
-    ## single-end with gaps behave like paired-end
+    ## single-end with a junction (behaves like paired-end)
     mode <- "IntersectionNotEmpty"
     ga <- GAlignments("chr1", 10L, "6M4N6M", strand("+"))
     ga1 <- GAlignments("chr1", 10L, "6M", strand("+"))
@@ -166,7 +166,7 @@ test_summarizeOverlaps_IntersectionNotEmpty_paired <- function()
     galp <- GAlignmentPairs(ga1, ga2, TRUE)
     ann <- GRanges("chr1", IRanges(c(1, 1, 20), c(30, 15, 30)), "+")
 
-    ## single-end, gaps 
+    ## single-end, junctions
     res_ga <- summarizeOverlaps(ann[1], ga, mode)
     res_galp <- summarizeOverlaps(ann[1], galp, mode)
     checkIdentical(1L, .getCounts(res_ga))

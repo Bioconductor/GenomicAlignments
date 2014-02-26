@@ -21,7 +21,7 @@
 \alias{strand<-,GAlignmentsList-method}
 \alias{cigar,GAlignmentsList-method}
 \alias{qwidth,GAlignmentsList-method}
-\alias{ngap,GAlignmentsList-method}
+\alias{njunc,GAlignmentsList-method}
 \alias{elementMetadata,GAlignmentsList-method}
 \alias{elementMetadata<-,GAlignmentsList-method}
 \alias{seqinfo,GAlignmentsList-method}
@@ -53,6 +53,7 @@
 
 % Old stuff (deprecated & defunct):
 \alias{makeGAlignmentsListFromFeatureFragments}
+\alias{ngap,GAlignmentsList-method}
 
 \title{GAlignmentsList objects}
 
@@ -127,9 +128,9 @@
       the "width" of the alignments in each element of \code{x}.
     }
     \item{}{
-      \code{ngap(x)}:
+      \code{njunc(x)}:
       Returns an integer list of length \code{x} containing the number
-      of gaps (i.e. N operations in the CIGAR) for the alignments
+      of junctions (i.e. N operations in the CIGAR) for the alignments
       in each element of \code{x}.
     }
     \item{}{
@@ -303,7 +304,7 @@ head(qwidth(galist))
 head(start(galist))
 head(end(galist))
 head(width(galist))
-head(ngap(galist))
+head(njunc(galist))
 seqlevels(galist)
 
 ## Rename the reference sequences:
@@ -318,8 +319,9 @@ rglist(galist)   # an IRangesList object
 ## ---------------------------------------------------------------------
 
 galist[strand(galist) == "-"]
-gaps <- sapply(galist, function(x) any(grepl("N", cigar(x), fixed=TRUE)))
-galist[gaps]
+has_junctions <- sapply(galist,
+                        function(x) any(grepl("N", cigar(x), fixed=TRUE)))
+galist[has_junctions]
 
 ## Different ways to subset:
 galist[2]             # a GAlignments object of length 1
@@ -375,7 +377,7 @@ length(galist2)
 ## allow ranges from different strand to be combined. In this example 
 ## paired-end reads aligned to opposite strands were read into a 
 ## GAlignmentsList. If the desired operation is to combine these ranges, 
-## reguardless of gaps or the space between pairs, 'ignore.strand' must be TRUE.
+## regardless of gaps or the space between pairs, 'ignore.strand' must be TRUE.
 granges(galist[1])
 granges(galist[1], ignore.strand=TRUE)
 

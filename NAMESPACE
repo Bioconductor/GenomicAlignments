@@ -50,6 +50,7 @@ exportMethods(
 
     ## Generics defined in IRanges:
     relistToClass,
+    ngap,
     narrow,
     coverage,
     pintersect,
@@ -129,6 +130,7 @@ export(
     readBamGappedAlignmentPairs,
     readBamGAlignmentsList,
     readBamGappedReads,
+    Lngap, Rngap,
     introns
 )
 
@@ -140,7 +142,7 @@ export(
 
 export(
     ## GAlignments-class.R:
-    rname, "rname<-", cigar, qwidth,
+    rname, "rname<-", cigar, qwidth, njunc,
 
     ## GAlignmentPairs-class.R:
     first, last, left, right, isProperPair,
@@ -150,7 +152,7 @@ export(
 
     ## OverlapEncodings-class.R:
     Loffset, Roffset, flippedQuery,
-    Lencoding, Rencoding, Lngap, Rngap,
+    Lencoding, Rencoding, Lnjunc, Rnjunc,
 
     ## readGAlignments.R:
     readGAlignmentsFromBam,
@@ -184,11 +186,11 @@ export(
 
 ### Exactly the same list as above.
 exportMethods(
-    rname, "rname<-", cigar, qwidth,
+    rname, "rname<-", cigar, qwidth, njunc,
     first, last, left, right, isProperPair,
     qseq,
     Loffset, Roffset, flippedQuery,
-    Lencoding, Rencoding, Lngap, Rngap,
+    Lencoding, Rencoding, Lnjunc, Rnjunc,
     readGAlignmentsFromBam,
     readGAlignmentPairsFromBam,
     readGAlignmentsListFromBam,

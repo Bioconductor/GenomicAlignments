@@ -85,8 +85,8 @@ findSpliceOverlaps(query, subject, ignore.strand=FALSE, ...)
   transcripts (subject) in a compatible fashion. Compatibility is based
   on both the transcript bounds and splicing pattern. Assessing the
   splicing pattern involves comparision of the read splices (i.e., the
-  "N" gaps in the cigar) with the transcript introns. For paired-end
-  reads, the inter-read gap is not considered a splice. The analysis
+  N operations in the CIGAR) with the transcript introns. For paired-end
+  reads, the inter-read gap is not considered a splice junction. The analysis
   of non-compatible reads for novel splice events is under construction.
 }
 

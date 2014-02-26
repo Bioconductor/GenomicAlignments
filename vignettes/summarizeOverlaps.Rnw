@@ -100,7 +100,7 @@ counts per gene.
 
 The combination of defining the features as either\Rclass{GRanges} or
 \Rclass{GRangesList} and choosing a counting mode controls how 
-\Rfunction{summarizeOverlaps} assigns hits. Reguardless of the mode chosen, 
+\Rfunction{summarizeOverlaps} assigns hits. Regardless of the mode chosen, 
 each read is assigned to at most a single feature. These options are intended 
 to provide flexibility in defining different biological problems.
 

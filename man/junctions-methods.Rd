@@ -84,11 +84,11 @@ ex1_file <- system.file("extdata", "ex1.bam", package="Rsamtools")
 
 gal <- readGAlignments(ex1_file, param=ScanBamParam(what="flag"))
 junctions(gal)
-stopifnot(identical(unname(elementLengths(junctions(gal))), ngap(gal)))
+stopifnot(identical(unname(elementLengths(junctions(gal))), njunc(gal)))
 
 galp <- readGAlignmentPairs(ex1_file, use.names=TRUE)
 junctions(galp)
-stopifnot(identical(unname(elementLengths(junctions(galp))), ngap(galp)))
+stopifnot(identical(unname(elementLengths(junctions(galp))), njunc(galp)))
 }
 
 \keyword{methods}

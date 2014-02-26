@@ -32,7 +32,7 @@ setClass("GAlignments",
 ###   strand(x)   - 'factor' Rle of the same length as 'x' (levels: +, -, *).
 ###   qwidth(x)   - integer vector of the same length as 'x'.
 ###   start(x), end(x), width(x) - integer vectors of the same length as 'x'.
-###   ngap(x)     - integer vector of the same length as 'x'.
+###   njunc(x)    - integer vector of the same length as 'x'.
 ###   grglist(x)  - GRangesList object of the same length as 'x'.
 ###   granges(x)  - GRanges object of the same length as 'x'.
 ###   rglist(x)   - CompressedIRangesList object of the same length as 'x'.
@@ -67,6 +67,8 @@ setGeneric("cigar", function(x) standardGeneric("cigar"))
 
 setGeneric("qwidth", function(x) standardGeneric("qwidth"))
 
+setGeneric("njunc", function(x) standardGeneric("njunc"))
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Getters.
@@ -94,7 +96,7 @@ setMethod("qwidth", "GAlignments",
     function(x) cigarWidthAlongQuerySpace(x@cigar)
 )
 
-setMethod("ngap", "GAlignments",
+setMethod("njunc", "GAlignments",
     function(x) {unname(elementLengths(rglist(x))) - 1L}
 )
 
@@ -485,7 +487,7 @@ setMethod("as.data.frame", "GAlignments",
                           start=start(x),
                           end=end(x),
                           width=width(x),
-                          ngap=ngap(x),
+                          njunc=njunc(x),
                           row.names=row.names,
                           check.rows=TRUE,
                           check.names=FALSE,
@@ -554,7 +556,7 @@ setMethod(IRanges:::extractROWS, "GAlignments",
                  start=start(x),
                  end=end(x),
                  width=width(x),
-                 ngap=ngap(x))
+                 njunc=njunc(x))
     if (nc > 0L) {
         tmp <- do.call(data.frame, lapply(mcols(x), showAsCell))
         ans <- cbind(ans, `|`=rep.int("|", lx), as.matrix(tmp))
@@ -583,7 +585,7 @@ showGAlignments <- function(x, margin="",
             start="integer",
             end="integer",
             width="integer",
-            ngap="integer"
+            njunc="integer"
         )
         classinfo <-
             GenomicRanges:::makeClassinfoRowForCompactPrinting(x, .COL2CLASS)
@@ -759,4 +761,12 @@ GappedAlignments <- function(...)
 
 readGappedAlignments <- function(...)
     .Defunct(msg=.GappedAlignments_warning_msg())
+
+setMethod("ngap", "GAlignments",
+    function(x)
+    {
+        .Deprecated("njunc")
+        njunc(x)
+    }
+)
 

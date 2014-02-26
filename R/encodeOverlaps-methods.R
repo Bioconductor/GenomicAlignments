@@ -364,11 +364,11 @@ selectEncodingWithCompatibleStrand <- function(ovencA, ovencB,
 ### isCompatibleWithSplicing().
 ###
 
-.build_compatible_encoding_patterns <- function(ngap)
+.build_compatible_encoding_patterns <- function(njunc)
 {
     ## Each "atom" must match exactly 1 code in the encoding.
     ATOM0 <- "[fgij]"
-    if (ngap == 0L)
+    if (njunc == 0L)
         return(ATOM0)
     #ntimes <- function(atom, n) rep.int(atom, n)
     ntimes <- function(atom, n) {
@@ -378,16 +378,16 @@ selectEncodingWithCompatibleStrand <- function(ovencA, ovencB,
     MIDDLE_ATOM <- "g"
     RIGHT_ATOM <- "[gf]"
     WILDCARD_ATOM <- "[^:-]"
-    sapply(seq_len(ngap + 1L),
+    sapply(seq_len(njunc + 1L),
            function(i) {
                if (i == 1L) {
-                   atoms <- c(LEFT_ATOM, ntimes(WILDCARD_ATOM, ngap))
-               } else if (i == ngap + 1L) {
-                   atoms <- c(ntimes(WILDCARD_ATOM, ngap), RIGHT_ATOM)
+                   atoms <- c(LEFT_ATOM, ntimes(WILDCARD_ATOM, njunc))
+               } else if (i == njunc + 1L) {
+                   atoms <- c(ntimes(WILDCARD_ATOM, njunc), RIGHT_ATOM)
                } else {
                    atoms <- c(ntimes(WILDCARD_ATOM, i-1L),
                               MIDDLE_ATOM,
-                              ntimes(WILDCARD_ATOM, ngap-i+1L))
+                              ntimes(WILDCARD_ATOM, njunc-i+1L))
                }
                paste0(atoms, collapse="")
            })
@@ -397,29 +397,29 @@ setGeneric("isCompatibleWithSplicing",
     function(x) standardGeneric("isCompatibleWithSplicing")
 )
 
-.build_CompatibleWithSplicing_pattern0 <- function(max.ngap1,
-                                                   max.Lngap, max.Rngap)
+.build_CompatibleWithSplicing_pattern0 <- function(max.njunc1,
+                                                   max.Lnjunc, max.Rnjunc)
 {
     ## Subpattern for single-end reads.
-    subpattern1 <- sapply(0:max.ngap1,
-                     function(ngap)
-                       paste0(.build_compatible_encoding_patterns(ngap),
+    subpattern1 <- sapply(0:max.njunc1,
+                     function(njunc)
+                       paste0(.build_compatible_encoding_patterns(njunc),
                               collapse=":"))
     subpattern1 <- paste0(":(", paste0(subpattern1, collapse="|"), "):")
 
     ## Subpattern for paired-end reads.
-    Lsubpattern <- sapply(0:max.Lngap,
-                     function(ngap)
+    Lsubpattern <- sapply(0:max.Lnjunc,
+                     function(njunc)
                        paste0(":",
-                              .build_compatible_encoding_patterns(ngap),
+                              .build_compatible_encoding_patterns(njunc),
                               "-",
                               collapse="-[^:-]*"))
     Lsubpattern <- paste0("(", paste0(Lsubpattern, collapse="|"), ")")
 
-    Rsubpattern <- sapply(0:max.Rngap,
-                     function(ngap)
+    Rsubpattern <- sapply(0:max.Rnjunc,
+                     function(njunc)
                        paste0("-",
-                              .build_compatible_encoding_patterns(ngap),
+                              .build_compatible_encoding_patterns(njunc),
                               ":",
                               collapse="[^:-]*-"))
     Rsubpattern <- paste0("(", paste0(Rsubpattern, collapse="|"), ")")
@@ -432,13 +432,13 @@ setGeneric("isCompatibleWithSplicing",
 
 .build_CompatibleWithSplicing_pattern <- function(x)
 {
-    ngap <- ngap(x)
-    Lngap <- Lngap(x)
-    Rngap <- Rngap(x)
-    max.ngap1 <- max(c(0L, ngap[is.na(Lngap)]))
-    max.Lngap <- max(c(0L, Lngap), na.rm=TRUE)
-    max.Rngap <- max(c(0L, Rngap), na.rm=TRUE)
-    .build_CompatibleWithSplicing_pattern0(max.ngap1, max.Lngap, max.Rngap)
+    njunc <- njunc(x)
+    Lnjunc <- Lnjunc(x)
+    Rnjunc <- Rnjunc(x)
+    max.njunc1 <- max(c(0L, njunc[is.na(Lnjunc)]))
+    max.Lnjunc <- max(c(0L, Lnjunc), na.rm=TRUE)
+    max.Rnjunc <- max(c(0L, Rnjunc), na.rm=TRUE)
+    .build_CompatibleWithSplicing_pattern0(max.njunc1, max.Lnjunc, max.Rnjunc)
 }
 
 .isCompatibleWithSplicing <- function(x)
@@ -483,8 +483,8 @@ setGeneric("isCompatibleWithSkippedExons", signature="x",
         standardGeneric("isCompatibleWithSkippedExons")
 )
 
-.build_CompatibleWithSkippedExons_pattern0 <- function(max.ngap1,
-                                                       max.Lngap, max.Rngap,
+.build_CompatibleWithSkippedExons_pattern0 <- function(max.njunc1,
+                                                       max.Lnjunc, max.Rnjunc,
                                                        max.skipped.exons=NA)
 {
     if (!identical(max.skipped.exons, NA))
@@ -493,25 +493,25 @@ setGeneric("isCompatibleWithSkippedExons", signature="x",
     ## Subpattern for single-end reads.
     skipped_exons_subpatterns <- c(":(.:)*", ":(..:)*",
                                    ":(...:)*", ":(....:)*")
-    subpattern1 <- sapply(0:max.ngap1,
-                     function(ngap)
-                       paste0(.build_compatible_encoding_patterns(ngap),
-                              collapse=skipped_exons_subpatterns[ngap+1L]))
+    subpattern1 <- sapply(0:max.njunc1,
+                     function(njunc)
+                       paste0(.build_compatible_encoding_patterns(njunc),
+                              collapse=skipped_exons_subpatterns[njunc+1L]))
     subpattern1 <- paste0(":(", paste0(subpattern1, collapse="|"), "):")
 
     ## Subpattern for paired-end reads.
-    Lsubpattern <- sapply(0:max.Lngap,
-                     function(ngap)
+    Lsubpattern <- sapply(0:max.Lnjunc,
+                     function(njunc)
                        paste0(":",
-                              .build_compatible_encoding_patterns(ngap),
+                              .build_compatible_encoding_patterns(njunc),
                               "-",
                               collapse=".*"))
     Lsubpattern <- paste0("(", paste0(Lsubpattern, collapse="|"), ")")
 
-    Rsubpattern <- sapply(0:max.Rngap,
-                     function(ngap)
+    Rsubpattern <- sapply(0:max.Rnjunc,
+                     function(njunc)
                        paste0("-",
-                              .build_compatible_encoding_patterns(ngap),
+                              .build_compatible_encoding_patterns(njunc),
                               ":",
                               collapse=".*"))
     Rsubpattern <- paste0("(", paste0(Rsubpattern, collapse="|"), ")")
@@ -524,13 +524,14 @@ setGeneric("isCompatibleWithSkippedExons", signature="x",
 
 .build_CompatibleWithSkippedExons_pattern <- function(x, max.skipped.exons=NA)
 {
-    ngap <- ngap(x)
-    Lngap <- Lngap(x)
-    Rngap <- Rngap(x)
-    max.ngap1 <- max(c(0L, ngap[is.na(Lngap)]))
-    max.Lngap <- max(c(0L, Lngap), na.rm=TRUE)
-    max.Rngap <- max(c(0L, Rngap), na.rm=TRUE)
-    .build_CompatibleWithSkippedExons_pattern0(max.ngap1, max.Lngap, max.Rngap,
+    njunc <- njunc(x)
+    Lnjunc <- Lnjunc(x)
+    Rnjunc <- Rnjunc(x)
+    max.njunc1 <- max(c(0L, njunc[is.na(Lnjunc)]))
+    max.Lnjunc <- max(c(0L, Lnjunc), na.rm=TRUE)
+    max.Rnjunc <- max(c(0L, Rnjunc), na.rm=TRUE)
+    .build_CompatibleWithSkippedExons_pattern0(max.njunc1,
+                    max.Lnjunc, max.Rnjunc,
                     max.skipped.exons=max.skipped.exons)
 }
 
@@ -580,7 +581,7 @@ setMethod("isCompatibleWithSkippedExons", "OverlapEncodings",
 ### extractSteppedExonRanks().
 ###
 
-.extract_ngap_from_encoding <- function(x)
+.extract_njunc_from_encoding <- function(x)
 {
     as.integer(unlist(strsplit(sub(":.*", "", x), "--", fixed=TRUE),
                       use.names=FALSE)) - 1L
@@ -614,28 +615,28 @@ setMethod("isCompatibleWithSkippedExons", "OverlapEncodings",
     if (!isTRUEorFALSE(for.query.right.end))
         stop("'for.query.right.end' must be TRUE or FALSE")
     encoding_blocks <- strsplit(encoding, ":", fixed=TRUE)[[1L]]
-    ngap <- .extract_ngap_from_encoding(encoding_blocks[1L])
+    njunc <- .extract_njunc_from_encoding(encoding_blocks[1L])
     encoding_blocks <- encoding_blocks[-1L]
-    if (length(ngap) == 1L) {
+    if (length(njunc) == 1L) {
         ## Single-end read.
         if (for.query.right.end)
             stop("cannot use 'for.query.right.end=TRUE' ",
                  "on single-end encoding: ", encoding)
-        encoding_patterns <- .build_compatible_encoding_patterns(ngap)
+        encoding_patterns <- .build_compatible_encoding_patterns(njunc)
         return(.extractSteppedExonRanksFromEncodingBlocks(encoding_blocks,
                                                           encoding_patterns))
     }
-    if (length(ngap) != 2L)  # should never happen
+    if (length(njunc) != 2L)  # should never happen
         stop(encoding, ": invalid encoding")
     ## Paired-end read.
     encoding_blocks <- strsplit(encoding_blocks, "--", fixed=TRUE)
     if (!all(elementLengths(encoding_blocks) == 2L))  # should never happen
         stop(encoding, ": invalid encoding")
     encoding_blocks <- matrix(unlist(encoding_blocks, use.names=FALSE), nrow=2L)
-    Lencoding_patterns <- .build_compatible_encoding_patterns(ngap[1L])
+    Lencoding_patterns <- .build_compatible_encoding_patterns(njunc[1L])
     Lranks <- .extractSteppedExonRanksFromEncodingBlocks(encoding_blocks[1L, ],
                                                          Lencoding_patterns)
-    Rencoding_patterns <- .build_compatible_encoding_patterns(ngap[2L])
+    Rencoding_patterns <- .build_compatible_encoding_patterns(njunc[2L])
     Rranks <- .extractSteppedExonRanksFromEncodingBlocks(encoding_blocks[2L, ],
                                                          Rencoding_patterns)
     if (length(Lranks) == 0L || length(Rranks) == 0L ||

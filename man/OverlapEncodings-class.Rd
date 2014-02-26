@@ -25,21 +25,28 @@
 \alias{Rencoding,factor-method}
 \alias{Rencoding,OverlapEncodings-method}
 
-\alias{ngap,character-method}
-\alias{ngap,factor-method}
-\alias{ngap,OverlapEncodings-method}
-\alias{Lngap}
-\alias{Lngap,character-method}
-\alias{Lngap,factor-method}
-\alias{Lngap,OverlapEncodings-method}
-\alias{Rngap}
-\alias{Rngap,character-method}
-\alias{Rngap,factor-method}
-\alias{Rngap,OverlapEncodings-method}
+\alias{njunc,character-method}
+\alias{njunc,factor-method}
+\alias{njunc,OverlapEncodings-method}
+\alias{Lnjunc}
+\alias{Lnjunc,character-method}
+\alias{Lnjunc,factor-method}
+\alias{Lnjunc,OverlapEncodings-method}
+\alias{Rnjunc}
+\alias{Rnjunc,character-method}
+\alias{Rnjunc,factor-method}
+\alias{Rnjunc,OverlapEncodings-method}
 
 \alias{as.data.frame.OverlapEncodings}
 \alias{as.data.frame,OverlapEncodings-method}
 \alias{show,OverlapEncodings-method}
+
+% Old stuff:
+\alias{ngap,character-method}
+\alias{ngap,factor-method}
+\alias{ngap,OverlapEncodings-method}
+\alias{Lngap}
+\alias{Rngap}
 
 
 \title{OverlapEncodings objects}
@@ -63,9 +70,9 @@
 \S4method{Lencoding}{OverlapEncodings}(x)
 \S4method{Rencoding}{OverlapEncodings}(x)
 
-\S4method{ngap}{OverlapEncodings}(x)
-\S4method{Lngap}{OverlapEncodings}(x)
-\S4method{Rngap}{OverlapEncodings}(x)
+\S4method{njunc}{OverlapEncodings}(x)
+\S4method{Lnjunc}{OverlapEncodings}(x)
+\S4method{Rnjunc}{OverlapEncodings}(x)
 
 ## Coercing an OverlapEncodings object:
 
@@ -75,15 +82,15 @@
 
 \S4method{Lencoding}{character}(x)
 \S4method{Rencoding}{character}(x)
-\S4method{ngap}{character}(x)
-\S4method{Lngap}{character}(x)
-\S4method{Rngap}{character}(x)
+\S4method{njunc}{character}(x)
+\S4method{Lnjunc}{character}(x)
+\S4method{Rnjunc}{character}(x)
 
 \S4method{Lencoding}{factor}(x)
 \S4method{Rencoding}{factor}(x)
-\S4method{ngap}{factor}(x)
-\S4method{Lngap}{factor}(x)
-\S4method{Rngap}{factor}(x)
+\S4method{njunc}{factor}(x)
+\S4method{Lnjunc}{factor}(x)
+\S4method{Rnjunc}{factor}(x)
 }
 
 \arguments{
@@ -199,13 +206,13 @@
       for examples of paired-end encodings.
     }
     \item{}{
-      \code{ngap(x)}, \code{Lngap(x)}, \code{Rngap(x)}:
-      Extract the number of gaps in each encoding by looking at their first
-      block (aka special block).
+      \code{njunc(x)}, \code{Lnjunc(x)}, \code{Rnjunc(x)}:
+      Extract the number of junctions in each encoding by looking at their
+      first block (aka special block).
       If an element \code{xi} in \code{x} is a paired-end encoding,
-      then \code{Lngap(xi)}, \code{Rngap(xi)}, and \code{ngap(xi)},
-      return \code{ngap(Lencoding(xi))}, \code{ngap(Rencoding(xi))},
-      and \code{Lngap(xi) + Rngap(xi)}, respectively.
+      then \code{Lnjunc(xi)}, \code{Rnjunc(xi)}, and \code{njunc(xi)},
+      return \code{njunc(Lencoding(xi))}, \code{njunc(Rencoding(xi))},
+      and \code{Lnjunc(xi) + Rnjunc(xi)}, respectively.
     }
   }
 }
@@ -250,10 +257,10 @@ encoding(ovenc)
 levels(ovenc)
 nlevels(ovenc)
 flippedQuery(ovenc)
-ngap(ovenc)
+njunc(ovenc)
 
 as.data.frame(ovenc)
-ngap(levels(ovenc))
+njunc(levels(ovenc))
 }
 
 \keyword{methods}

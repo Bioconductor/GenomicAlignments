@@ -87,7 +87,7 @@
 
 \note{
   There is no difference between \code{narrow} and \code{qnarrow} when
-  all the alignments have a simple CIGAR (i.e. no indels or gaps).
+  all the alignments have a simple CIGAR (i.e. no indels or junctions).
 }
 
 \author{H. Pages and V. Obenchain <vobencha@fhcrc.org>}

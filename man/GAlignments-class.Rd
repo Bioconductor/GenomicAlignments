@@ -28,7 +28,8 @@
 \alias{start,GAlignments-method}
 \alias{end,GAlignments-method}
 \alias{width,GAlignments-method}
-\alias{ngap,GAlignments-method}
+\alias{njunc}
+\alias{njunc,GAlignments-method}
 \alias{elementMetadata<-,GAlignments-method}
 \alias{seqinfo,GAlignments-method}
 \alias{seqinfo<-,GAlignments-method}
@@ -59,6 +60,7 @@
 \alias{class:GappedAlignments}
 \alias{GappedAlignments-class}
 \alias{show,GappedAlignments-method}
+\alias{ngap,GAlignments-method}
 
 
 \title{GAlignments objects}
@@ -115,10 +117,11 @@
     \item The genomic intervals between the "start" and "end" of the query
           that are "covered" by the alignment. Saying that the full
           [start,end] interval is covered is the same as saying that the
-          alignment has no gap (no N in the CIGAR). It is then considered
-          a simple alignment. Note that a simple alignment can have
-          mismatches or deletions (in the reference). In other words, a
-          deletion, encoded with a D, is NOT considered a gap.
+          alignment contains no junction (no N in the CIGAR). It is then
+          considered to be a simple alignment. Note that a simple alignment
+          can have mismatches or deletions (in the reference). In other words,
+          a deletion (encoded with a D in the CIGAR) is NOT considered to
+          introduce a gap in the coverage, but a junction is.
   }
 
   Note that the last 2 items are not expicitly stored in the GAlignments
@@ -214,10 +217,10 @@
       string of the form \code{"<n>M"} where <n> is a number).
     }
     \item{}{
-      \code{ngap(x)}:
+      \code{njunc(x)}:
       Returns an integer vector of the same length as \code{x} containing
-      the number of gaps (i.e. N operations in the CIGAR) for each alignment.
-      Equivalent to \code{unname(elementLengths(rglist(x))) - 1L}.
+      the number of junctions (i.e. N operations in the CIGAR) in each
+      alignment. Equivalent to \code{unname(elementLengths(rglist(x))) - 1L}.
     }
     \item{}{
       \code{seqinfo(x)}, \code{seqinfo(x) <- value}:
@@ -302,7 +305,7 @@
       beginning to the end.
  
       If \code{drop.D.ranges} is \code{TRUE}, then deletions (D operations
-      in the CIGAR) are treated like gaps (N operations in the CIGAR),
+      in the CIGAR) are treated like junctions (N operations in the CIGAR),
       that is, the ranges corresponding to deletions are dropped.
 
       See Details section above for more information.
@@ -436,7 +439,7 @@ table(qwidth(gal))
 head(start(gal))
 head(end(gal))
 head(width(gal))
-head(ngap(gal))
+head(njunc(gal))
 seqlevels(gal)
 
 ## Rename the reference sequences:
@@ -444,10 +447,10 @@ seqlevels(gal) <- sub("seq", "chr", seqlevels(gal))
 seqlevels(gal)
 
 grglist(gal)  # a GRangesList object
-stopifnot(identical(unname(elementLengths(grglist(gal))), ngap(gal) + 1L))
+stopifnot(identical(unname(elementLengths(grglist(gal))), njunc(gal) + 1L))
 granges(gal)  # a GRanges object
 rglist(gal)   # a CompressedIRangesList object
-stopifnot(identical(unname(elementLengths(rglist(gal))), ngap(gal) + 1L))
+stopifnot(identical(unname(elementLengths(rglist(gal))), njunc(gal) + 1L))
 ranges(gal)   # an IRanges object
 
 ## Modify the number of lines in 'show'
@@ -464,21 +467,22 @@ options(showTailLines=NULL)
 ## ---------------------------------------------------------------------
 gal[strand(gal) == "-"]
 gal[grep("I", cigar(gal), fixed=TRUE)]
-gal[grep("N", cigar(gal), fixed=TRUE)]  # no gaps
+gal[grep("N", cigar(gal), fixed=TRUE)]  # no junctions
 
-## A confirmation that all the queries map to the reference with no
-## gaps:
-stopifnot(all(ngap(gal) == 0))
+## A confirmation that none of the alignments contains junctions (in
+## other words, each alignment can be represented by a single genomic
+## range on the reference):
+stopifnot(all(njunc(gal) == 0))
 
 ## Different ways to subset:
 gal[6]             # a GAlignments object of length 1
 grglist(gal)[[6]]  # a GRanges object of length 1
 rglist(gal)[[6]]   # a NormalIRanges object of length 1
 
-## D operations are NOT gaps:
+## Unlike N operations, D operations don't introduce gaps:
 ii <- grep("D", cigar(gal), fixed=TRUE)
 gal[ii]
-ngap(gal[ii])
+njunc(gal[ii])
 grglist(gal[ii])
 
 ## qwidth() vs width():

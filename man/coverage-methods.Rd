@@ -68,7 +68,6 @@
 }
 
 \details{
-
   The methods for \link{GAlignments} and \link{GAlignmentPairs} objects
   do:
 \preformatted{  coverage(grglist(x), ...)
@@ -84,7 +83,6 @@
   The method for \code{character} vectors of length 1 creates a
   \link[Rsamtools]{BamFile} object from \code{x} and performs the
   calculation for \code{coverage,BamFile-method}.
-
 }
 
 \value{

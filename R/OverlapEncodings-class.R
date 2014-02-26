@@ -115,10 +115,10 @@ setMethod("Rencoding", "OverlapEncodings", function(x) Rencoding(encoding(x)))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The ngap(), Lngap(), and Rngap() getters.
+### The njunc(), Lnjunc(), and Rnjunc() getters.
 ###
 
-.extract_ngap_from_encoding_levels <- function(x, L.or.R=NA)
+.extract_njunc_from_encoding_levels <- function(x, L.or.R=NA)
 {
     if (!is.character(x))
         stop("'x' must be a character vector")
@@ -138,79 +138,83 @@ setMethod("Rencoding", "OverlapEncodings", function(x) Rencoding(encoding(x)))
     if (any_single_end) {
         if (identical(L.or.R, NA)) {
             tmp1 <- tmp[is_single_end_encoding]
-            ngap1 <- suppressWarnings(as.integer(unlist(tmp1, use.names=FALSE)))
-            if (any(is.na(ngap1)))
+            njunc1 <- suppressWarnings(
+                          as.integer(unlist(tmp1, use.names=FALSE))
+                      )
+            if (any(is.na(njunc1)))
                 stop("'x' contains ill-formed encodings")
-            ngap1 <- ngap1 - 1L
-            if (min(ngap1) < 0L)
-                warning("some encodings in 'x' have a negative number of gaps")
+            njunc1 <- njunc1 - 1L
+            if (min(njunc1) < 0L)
+                warning("some encodings in 'x' have a negative number ",
+                        "of junctions")
         } else {
-            ngap1 <- NA_integer_
+            njunc1 <- NA_integer_
         }
-        ans[is_single_end_encoding] <- ngap1
+        ans[is_single_end_encoding] <- njunc1
     }
     if (any_paired_end) {
         tmp2 <- tmp[is_paired_end_encoding]
-        ngap2 <- suppressWarnings(as.integer(unlist(tmp2, use.names=FALSE)))
-        if (any(is.na(ngap2)))
+        njunc2 <- suppressWarnings(as.integer(unlist(tmp2, use.names=FALSE)))
+        if (any(is.na(njunc2)))
             stop("'x' contains ill-formed encodings")
-        ngap2 <- ngap2 - 1L
-        if (min(ngap2) < 0L)
-            warning("some encodings in 'x' have a negative number of gaps")
-        Lngap2 <- ngap2[c(TRUE, FALSE)]
-        Rngap2 <- ngap2[c(FALSE, TRUE)]
+        njunc2 <- njunc2 - 1L
+        if (min(njunc2) < 0L)
+            warning("some encodings in 'x' have a negative number ",
+                    "of junctions")
+        Lnjunc2 <- njunc2[c(TRUE, FALSE)]
+        Rnjunc2 <- njunc2[c(FALSE, TRUE)]
         if (identical(L.or.R, NA)) {
-            ngap2 <- Lngap2 + Rngap2
+            njunc2 <- Lnjunc2 + Rnjunc2
         } else if (identical(L.or.R, "L")) {
-            ngap2 <- Lngap2
+            njunc2 <- Lnjunc2
         } else if (identical(L.or.R, "R")) {
-            ngap2 <- Rngap2
+            njunc2 <- Rnjunc2
         } else {
             stop("invalid supplied 'L.or.R' argument")
         }
-        ans[is_paired_end_encoding] <- ngap2
+        ans[is_paired_end_encoding] <- njunc2
     }
     ans
 }
 
-setGeneric("Lngap", function(x) standardGeneric("Lngap"))
-setGeneric("Rngap", function(x) standardGeneric("Rngap"))
+setGeneric("Lnjunc", function(x) standardGeneric("Lnjunc"))
+setGeneric("Rnjunc", function(x) standardGeneric("Rnjunc"))
 
-setMethod("ngap", "character",
-    function(x) .extract_ngap_from_encoding_levels(x)
+setMethod("njunc", "character",
+    function(x) .extract_njunc_from_encoding_levels(x)
 )
-setMethod("Lngap", "character",
-    function(x) .extract_ngap_from_encoding_levels(x, L.or.R="L")
+setMethod("Lnjunc", "character",
+    function(x) .extract_njunc_from_encoding_levels(x, L.or.R="L")
 )
-setMethod("Rngap", "character",
-    function(x) .extract_ngap_from_encoding_levels(x, L.or.R="R")
-)
-
-setMethod("ngap", "factor",
-    function(x)
-    {
-        levels_ngap <- ngap(levels(x))
-        levels_ngap[as.integer(x)]
-    }
-)
-setMethod("Lngap", "factor",
-    function(x)
-    {
-        levels_Lngap <- Lngap(levels(x))
-        levels_Lngap[as.integer(x)]
-    }
-)
-setMethod("Rngap", "factor",
-    function(x)
-    {
-        levels_Rngap <- Rngap(levels(x))
-        levels_Rngap[as.integer(x)]
-    }
+setMethod("Rnjunc", "character",
+    function(x) .extract_njunc_from_encoding_levels(x, L.or.R="R")
 )
 
-setMethod("ngap", "OverlapEncodings", function(x) ngap(encoding(x)))
-setMethod("Lngap", "OverlapEncodings", function(x) Lngap(encoding(x)))
-setMethod("Rngap", "OverlapEncodings", function(x) Rngap(encoding(x)))
+setMethod("njunc", "factor",
+    function(x)
+    {
+        levels_njunc <- njunc(levels(x))
+        levels_njunc[as.integer(x)]
+    }
+)
+setMethod("Lnjunc", "factor",
+    function(x)
+    {
+        levels_Lnjunc <- Lnjunc(levels(x))
+        levels_Lnjunc[as.integer(x)]
+    }
+)
+setMethod("Rnjunc", "factor",
+    function(x)
+    {
+        levels_Rnjunc <- Rnjunc(levels(x))
+        levels_Rnjunc[as.integer(x)]
+    }
+)
+
+setMethod("njunc", "OverlapEncodings", function(x) njunc(encoding(x)))
+setMethod("Lnjunc", "OverlapEncodings", function(x) Lnjunc(encoding(x)))
+setMethod("Rnjunc", "OverlapEncodings", function(x) Rnjunc(encoding(x)))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -269,4 +273,45 @@ setMethod("show", "OverlapEncodings",
         show(showme)
     }
 )
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Old stuff (deprecated & defunct)
+###
+
+setMethod("ngap", "character",
+    function(x)
+    {
+        .Deprecated("njunc")
+        njunc(x)
+    }
+)
+
+setMethod("ngap", "factor",
+    function(x)
+    {
+        .Deprecated("njunc")
+        njunc(x)
+    }
+)
+
+setMethod("ngap", "OverlapEncodings",
+    function(x)
+    {
+        .Deprecated("njunc")
+        njunc(x)
+    }
+)
+
+Lngap <- function(x)
+{
+    .Deprecated("Lnjunc")
+    Lnjunc(x)
+}
+
+Rngap <- function(x)
+{
+    .Deprecated("Rnjunc")
+    Rnjunc(x)
+}
 

@@ -199,8 +199,8 @@ extractQueryStartInTranscript(query, subject, hits=NULL, ovenc=NULL,
     \item \code{\link{findCompatibleOverlaps}} for a specialized version
           of \code{\link[IRanges]{findOverlaps}} that uses
           \code{encodeOverlaps} internally to keep only the hits where
-          the gaps in the aligned read are \emph{compatible} with the
-          splicing of the transcript.
+          the junctions in the aligned read are \emph{compatible} with
+          the splicing of the annotated transcript.
 
     \item The \link[GenomicRanges]{GRangesList} class defined and documented
           in the \pkg{GenomicRanges} package.
@@ -222,10 +222,10 @@ extractQueryStartInTranscript(query, subject, hits=NULL, ovenc=NULL,
 ## RangesList objects, in order to keep things simple:
 
 ## 4 aligned reads in the query:
-read1 <- IRanges(c(7, 15, 22), c(9, 19, 23))  # 2 gaps
-read2 <- IRanges(c(5, 15), c(9, 17))  # 1 gap
-read3 <- IRanges(c(16, 22), c(19, 24))  # 1 gap
-read4 <- IRanges(c(16, 23), c(19, 24))  # 1 gap
+read1 <- IRanges(c(7, 15, 22), c(9, 19, 23))  # 2 junctions
+read2 <- IRanges(c(5, 15), c(9, 17))  # 1 junction
+read3 <- IRanges(c(16, 22), c(19, 24))  # 1 junction
+read4 <- IRanges(c(16, 23), c(19, 24))  # 1 junction
 query <- IRangesList(read1, read2, read3, read4)
 
 ## 1 transcript in the subject:
@@ -239,7 +239,7 @@ encoding(ovenc)
 
 ## Reads that are "compatible" with the transcript can be detected with
 ## a regular expression (the regular expression below assumes that
-## reads have at most 2 gaps):
+## reads have at most 2 junctions):
 regex0 <- "(:[fgij]:|:[jg].:.[gf]:|:[jg]..:.g.:..[gf]:)"
 grepl(regex0, encoding(ovenc))  # read4 is NOT "compatible"
 

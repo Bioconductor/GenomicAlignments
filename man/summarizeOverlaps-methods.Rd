@@ -218,9 +218,10 @@ IntersectionNotEmpty(features, reads, ignore.strand=FALSE, inter.feature=TRUE)
       \link[GenomicRanges]{GRanges} would be appropriate. 
     }
     \item{paired-end reads :}{
-      Paired-end reads are counted the same as single-end reads with gaps; 
-      each pair registers as a single hit. Paired-end records can be counted 
-      in a \link{GAlignmentPairs} container or BAM file. 
+      Paired-end reads are counted the same as single-end reads with a
+      junction (N operation in the CIGAR); each pair registers as a single
+      hit. Paired-end records can be counted in a \link{GAlignmentPairs}
+      container or BAM file. 
 
       When counting BAM files the method has an additional argument,
       \code{singleEnd}, which should be FALSE for paired-end data.
