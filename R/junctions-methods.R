@@ -4,6 +4,10 @@
 ###
 
 
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### junctions() generic and methods.
+###
+
 setGeneric("junctions", function(x, ...) standardGeneric("junctions"))
 
 setMethod("junctions", "GAlignments",
@@ -44,6 +48,31 @@ setMethod("junctions", "GAlignmentsList",
         relist(grl@unlistData, ans_partitioning)
     }
 )
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### summarizeJunctions()
+###
+
+summarizeJunctions <- function(x, with.mapping=FALSE, genome=NULL)
+{
+    if (!isTRUEorFALSE(with.mapping))
+        stop("'with.mapping' must be TRUE or FALSE")
+    if (!is.null(genome))
+        genome <- getBSgenome(genome)
+
+    x_junctions <- junctions(x)
+    unlisted_junctions <- unstrand(unlist(x_junctions, use.names=FALSE))
+    ans <- sort(unique(unlisted_junctions))
+    unq2dups <- as(findMatches(ans, unlisted_junctions), "List")
+    ans_mcols <- DataFrame(score=elementLengths(unq2dups))
+    if (with.mapping) {
+        supported_by <- togroup(x_junctions)
+        ans_mcols$mapping <- extractList(supported_by, unq2dups)
+    }
+    mcols(ans) <- ans_mcols
+    ans
+}
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

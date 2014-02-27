@@ -79,16 +79,26 @@ junctions(x, ...)
 }
 
 \examples{
-library(Rsamtools)  # for the ex1.bam file
-ex1_file <- system.file("extdata", "ex1.bam", package="Rsamtools")
+library(RNAseqData.HNRNPC.bam.chr14)
+bamfile <- RNAseqData.HNRNPC.bam.chr14_BAMFILES[1]
 
-gal <- readGAlignments(ex1_file, param=ScanBamParam(what="flag"))
+## ---------------------------------------------------------------------
+## junctions()
+## ---------------------------------------------------------------------
+
+gal <- readGAlignments(bamfile, param=ScanBamParam(what="flag"))
+table(njunc(gal))  # some alignments have 3 junctions!
 junctions(gal)
 stopifnot(identical(unname(elementLengths(junctions(gal))), njunc(gal)))
 
-galp <- readGAlignmentPairs(ex1_file, use.names=TRUE)
+galp <- readGAlignmentPairs(bamfile)
 junctions(galp)
 stopifnot(identical(unname(elementLengths(junctions(galp))), njunc(galp)))
+
+## ---------------------------------------------------------------------
+## summarizeJunctions()
+## ---------------------------------------------------------------------
+
 }
 
 \keyword{methods}
