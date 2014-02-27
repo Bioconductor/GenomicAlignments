@@ -7,6 +7,7 @@ import(IRanges)
 import(Biostrings)
 import(GenomicRanges)
 import(Rsamtools)
+import(BSgenome)
 importFrom(BiocParallel, bplapply)
 
 
