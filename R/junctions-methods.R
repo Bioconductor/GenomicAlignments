@@ -8,19 +8,28 @@
 ### junctions() generic and methods.
 ###
 
-setGeneric("junctions", function(x, ...) standardGeneric("junctions"))
+setGeneric("junctions", signature="x",
+    function(x, use.mcols=FALSE, ...) standardGeneric("junctions")
+)
 
 setMethod("junctions", "GAlignments",
-    function(x)
+    function(x, use.mcols=FALSE)
     {
+        if (!isTRUEorFALSE(use.mcols))
+            stop("'use.mcols' must be TRUE or FALSE")
         grl <- grglist(x, order.as.in.query=TRUE)
-        psetdiff(granges(x), grl)
+        ans <- psetdiff(granges(x), grl)
+        if (use.mcols)
+            mcols(ans) <- mcols(x)
+        ans
     }
 )
 
 setMethod("junctions", "GAlignmentPairs",
-    function(x)
+    function(x, use.mcols=FALSE)
     {
+        if (!isTRUEorFALSE(use.mcols))
+            stop("'use.mcols' must be TRUE or FALSE")
         first_junctions <- junctions(x@first)
         last_junctions <- junctions(invertRleStrand(x@last))
         ## Fast way of doing mendoapply(c, first_junctions, last_junctions)
@@ -30,14 +39,21 @@ setMethod("junctions", "GAlignmentPairs",
             IRanges:::make_XYZxyz_to_XxYyZz_subscript(length(x))
         ans <- ans[collate_subscript]
         ans <- shrinkByHalf(ans)
-        mcols(ans) <- NULL
+        names(ans) <- names(x)
+        if (use.mcols) {
+            mcols(ans) <- mcols(x)
+        } else {
+            mcols(ans) <- NULL
+        }
         ans
     }
 )
 
 setMethod("junctions", "GAlignmentsList",
-    function(x, ignore.strand=FALSE)
+    function(x, use.mcols=FALSE, ignore.strand=FALSE)
     {
+        if (!isTRUEorFALSE(use.mcols))
+            stop("'use.mcols' must be TRUE or FALSE")
         if (!isTRUEorFALSE(ignore.strand))
             stop("'ignore.strand' must be TRUE or FALSE")
         if (ignore.strand)
@@ -45,7 +61,10 @@ setMethod("junctions", "GAlignmentsList",
         grl <- junctions(x@unlistData)
         ans_breakpoints <- end(grl@partitioning)[end(x@partitioning)]
         ans_partitioning <- PartitioningByEnd(ans_breakpoints, names=names(x))
-        relist(grl@unlistData, ans_partitioning)
+        ans <- relist(grl@unlistData, ans_partitioning)
+        if (use.mcols)
+            mcols(ans) <- mcols(x)
+        ans
     }
 )
 
@@ -183,9 +202,9 @@ readSTARJunctions <- function(file)
 ### Old stuff (deprecated & defunct)
 ###
 
-introns <- function(x)
+introns <- function(...)
 {
     .Deprecated("junctions")
-    junctions(x)
+    junctions(...)
 }
 

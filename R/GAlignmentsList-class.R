@@ -206,14 +206,16 @@ setMethod("updateObject", "GAlignmentsList",
 
 ## FIXME (H.P. Feb 25, 2014):
 ## This is broken if 'x' has empty elements:
-##     > grglist(GAlignmentsList(GAlignments("chr1", 20L, "10M", strand("+")),
-##                               GAlignments()))
-##     Error in relist(gr, .shiftPartition(...)) :
-##       shape of 'skeleton' is not compatible with 'NROW(flesh)'
+##   > grglist(GAlignmentsList(GAlignments("chr1", 20L, "10M", strand("+")),
+##                             GAlignments()))
+##   Error in relist(gr, .shiftPartition(...)) :
+##     shape of 'skeleton' is not compatible with 'NROW(flesh)'
 setMethod("grglist", "GAlignmentsList",
-    function(x, order.as.in.query=FALSE, drop.D.ranges=FALSE,
-             ignore.strand=FALSE) 
+    function(x, use.mcols=FALSE, order.as.in.query=FALSE, drop.D.ranges=FALSE,
+                ignore.strand=FALSE) 
     {
+        if (!isTRUEorFALSE(use.mcols))
+            stop("'use.mcols' must be TRUE or FALSE")
         if (ignore.strand)
             strand(x@unlistData) <- "*"
         rgl <- rglist(x@unlistData,
@@ -224,41 +226,57 @@ setMethod("grglist", "GAlignmentsList",
                       ranges=unlist(rgl), 
                       strand=rep.int(strand(x@unlistData), eltlen),
                       seqinfo=seqinfo(x@unlistData))
-        relist(gr, .shiftPartition(x@partitioning, rgl@partitioning))
+        ans <- relist(gr, .shiftPartition(x@partitioning, rgl@partitioning))
+        if (use.mcols)
+            mcols(ans) <- mcols(x)
+        ans
     }
 )
  
 setMethod("granges", "GAlignmentsList",
-    function(x, ignore.strand=FALSE) 
+    function(x, use.mcols=FALSE, ignore.strand=FALSE) 
     {
+        if (!isTRUEorFALSE(use.mcols))
+            stop("'use.mcols' must be TRUE or FALSE")
         if (ignore.strand)
             strand(x@unlistData) <- "*"
         msg <- paste0("For some list elements in 'x', the ranges are ",
                       "not aligned to the same chromosome and strand. ",
-                      "Cannot extract a single range for them.")
+                      "Cannot extract a single range for them. ",
+                      "As a consequence, the returned GRanges object ",
+                      "is not parallel to 'x'.")
         rg <- range(grglist(x, ignore.strand=ignore.strand))
-        if (all(elementLengths(rg) != 1L)) { 
+        is_one_to_one <- all(elementLengths(rg) == 1L)
+        if (!is_one_to_one) {
             if (ignore.strand)
                 warning(msg)
             else
                 warning(paste0(msg, " Consider using 'ignore.strand=TRUE'."))
         }
-        unlist(rg) 
+        ans <- unlist(rg)
+        if (is_one_to_one && use.mcols)
+            mcols(ans) <- mcols(x)
+        ans
     }
 )
 
 ## FIXME (H.P. Feb 25, 2014):
 ## This is broken if 'x' has empty elements:
-##     > rglist(GAlignmentsList(GAlignments("chr1", 20L, "10M", strand("+")),
-##                              GAlignments()))
-##     Error in relist(rgl@unlistData, partitioning) :
-##       shape of 'skeleton' is not compatible with 'NROW(flesh)'
+##   > rglist(GAlignmentsList(GAlignments("chr1", 20L, "10M", strand("+")),
+##                            GAlignments()))
+##   Error in relist(rgl@unlistData, partitioning) :
+##     shape of 'skeleton' is not compatible with 'NROW(flesh)'
 setMethod("rglist", "GAlignmentsList",
-    function(x, order.as.in.query=FALSE, drop.D.ranges=FALSE)
+    function(x, use.mcols=FALSE, order.as.in.query=FALSE, drop.D.ranges=FALSE)
     {
+        if (!isTRUEorFALSE(use.mcols))
+            stop("'use.mcols' must be TRUE or FALSE")
         rgl <- rglist(x@unlistData)
         partitioning <- .shiftPartition(x@partitioning, rgl@partitioning) 
-        relist(rgl@unlistData, partitioning) 
+        ans <- relist(rgl@unlistData, partitioning)
+        if (use.mcols)
+            mcols(ans) <- mcols(x)
+        ans
     }
 )
 
@@ -277,12 +295,11 @@ setMethod("rglist", "GAlignmentsList",
 }
 
 ## FIXME (H.P. Feb 25, 2014):
-## - This should be the "range" method, not the "ranges" method.
-## - It's broken if 'x' has empty elements:
-##     > ranges(GAlignmentsList(GAlignments("chr1", 20L, "10M", strand("+")),
-##                              GAlignments()))
-##     Error in relist(unlist(rgl), .shiftPartition(...)) : 
-##       shape of 'skeleton' is not compatible with 'NROW(flesh)'
+## This is broken if 'x' has empty elements:
+##   > ranges(GAlignmentsList(GAlignments("chr1", 20L, "10M", strand("+")),
+##                            GAlignments()))
+##   Error in relist(unlist(rgl), .shiftPartition(...)) : 
+##     shape of 'skeleton' is not compatible with 'NROW(flesh)'
 setMethod("ranges", "GAlignmentsList",
     function(x) 
     {
@@ -294,13 +311,13 @@ setMethod("ranges", "GAlignmentsList",
 )
 
 setAs("GAlignmentsList", "GRangesList", 
-    function(from) grglist(from)
+    function(from) grglist(from, use.mcols=TRUE)
 )
 setAs("GAlignmentsList", "GRanges", 
-    function(from) granges(from)
+    function(from) granges(from, use.mcols=TRUE)
 )
 setAs("GAlignmentsList", "RangesList", 
-    function(from) rglist(from)
+    function(from) rglist(from, use.mcols=TRUE)
 )
 setAs("GAlignmentsList", "Ranges", 
     function(from) ranges(from)

@@ -175,25 +175,33 @@
 
   \describe{
     \item{}{
-      \code{granges(x, ignore.strand=FALSE)}, 
+      \code{granges(x, use.mcols=FALSE, ignore.strand=FALSE)}, 
       \code{ranges(x)}:
       Return either a \link{GRanges} or a \link[IRanges]{IRanges}
       object of length \code{length(x)}. Note this coercion IGNORES 
       the cigar information. The resulting ranges span the entire
       range, including any gaps or spaces between paired-end reads.
 
+      If \code{use.mcols} is TRUE and \code{x} has metadata columns on it
+      (accessible with \code{mcols(x)}), they're propagated to the returned
+      object.
+
       \code{granges} coercion supports \code{ignore.strand} to allow 
       ranges of opposite strand to be combined (see examples). All
       ranges in the resulting GRanges will have strand \sQuote{*}.
     }
     \item{}{
-      \code{grglist(x, ignore.strand=FALSE)}, 
-      \code{rglist(x)}:
+      \code{grglist(x, use.mcols=FALSE, ignore.strand=FALSE)}, 
+      \code{rglist(x, use.mcols=FALSE)}:
       Return either a \link{GRangesList} or a \link[IRanges]{IRangesList}
       object of length \code{length(x)}. This coercion RESPECTS the cigar 
       information. The resulting ranges are fragments of the original ranges 
       that do not include gaps or spaces between paired-end reads.
  
+      If \code{use.mcols} is TRUE and \code{x} has metadata columns on it
+      (accessible with \code{mcols(x)}), they're propagated to the returned
+      object.
+
       \code{grglist} coercion supports \code{ignore.strand} to allow 
       ranges of opposite strand to be combined (see examples). All 
       ranges in the resulting GRangesList will have strand \sQuote{*}.
@@ -201,13 +209,15 @@
     \item{}{
       \code{as(x, "GRangesList")}, \code{as(x, "GRanges")},
       \code{as(x, "RangesList")}, \code{as(x, "Ranges")}:
-      Alternate ways of doing \code{grglist(x)}, \code{granges(x)},
-      \code{rglist(x)}, \code{ranges(x)}, respectively.
+      Alternate ways of doing \code{grglist(x, use.mcols=TRUE)},
+      \code{granges(x, use.mcols=TRUE)}, \code{rglist(x, use.mcols=TRUE)},
+      and \code{ranges(x)}, respectively.
     }
     \item{}{
-      \code{as(x, "GALignmentsList")}: Return a \link{GAlignmentsList} object of 
-      length \code{length(x)} where the i-th list element represents the ranges 
-      of the i-th alignment pair in \code{x}.
+      \code{as(x, "GALignmentsList")}: Here \code{x} is a
+      \link{GAlignmentPairs} object. Return a GAlignmentsList object of length
+      \code{length(x)} where the i-th list element represents the ranges of
+      the i-th alignment pair in \code{x}.
     }
   }
 }

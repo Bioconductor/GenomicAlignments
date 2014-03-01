@@ -273,9 +273,11 @@
 
   \describe{
     \item{}{
-      \code{grglist(x, order.as.in.query=FALSE,
+      \code{grglist(x, use.mcols=FALSE,
+                       order.as.in.query=FALSE,
                        drop.D.ranges=FALSE)},
-      \code{rglist(x, order.as.in.query=FALSE,
+      \code{rglist(x, use.mcols=FALSE,
+                      order.as.in.query=FALSE,
                       drop.D.ranges=FALSE)}:
 
       Return either a \link{GRangesList} or a \link[IRanges]{RangesList}
@@ -285,6 +287,10 @@
 
       More precisely, the \link[IRanges]{RangesList} object returned by
       \code{rglist(x)} is a \link[IRanges]{CompressedIRangesList} object.
+
+      If \code{use.mcols} is TRUE and \code{x} has metadata columns on it
+      (accessible with \code{mcols(x)}), they're propagated to the returned
+      object.
 
       The \code{order.as.in.query} toggle affects the order of the ranges
       \emph{within} each top-level element of the returned object.
@@ -311,19 +317,24 @@
       See Details section above for more information.
     }
     \item{}{
-      \code{granges(x)}, \code{ranges(x)}:
+      \code{granges(x, use.mcols=FALSE)}, \code{ranges(x)}:
       Return either a \link{GRanges} or a \link[IRanges]{Ranges}
       object of length \code{length(x)} where each element represents the
       regions in the reference to which a query is aligned.
 
       More precisely, the \link[IRanges]{Ranges} object returned by
       \code{ranges(x)} is an \link[IRanges]{IRanges} object.
+
+      If \code{use.mcols} is TRUE and \code{x} has metadata columns on it
+      (accessible with \code{mcols(x)}), they're propagated to the returned
+      object.
     }
     \item{}{
       \code{as(x, "GRangesList")}, \code{as(x, "GRanges")},
       \code{as(x, "RangesList")}, \code{as(x, "Ranges")}:
-      Alternate ways of doing \code{grglist(x)}, \code{granges(x)},
-      \code{rglist(x)}, \code{ranges(x)}, respectively.
+      Alternate ways of doing \code{grglist(x, use.mcols=TRUE)},
+      \code{granges(x, use.mcols=TRUE)}, \code{rglist(x, use.mcols=TRUE)},
+      and \code{ranges(x)}, respectively.
     }
   }
 

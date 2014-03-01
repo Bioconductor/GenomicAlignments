@@ -385,12 +385,14 @@ shrinkByHalf <- function(x)
 }
 
 setMethod("grglist", "GAlignmentPairs",
-    function(x, order.as.in.query=FALSE, drop.D.ranges=FALSE)
+    function(x, use.mcols=FALSE, order.as.in.query=FALSE, drop.D.ranges=FALSE)
     {
+        if (!isTRUEorFALSE(use.mcols))
+            stop("'use.mcols' must be TRUE or FALSE")
         if (!isTRUEorFALSE(order.as.in.query))
             stop("'order.as.in.query' must be TRUE or FALSE")
         x_mcols <- mcols(x)
-        if ("query.break" %in% colnames(x_mcols))
+        if (use.mcols && "query.break" %in% colnames(x_mcols))
             stop("'mcols(x)' cannot have reserved column \"query.break\"")
         x_first <- x@first
         x_last <- invertRleStrand(x@last)
@@ -411,21 +413,28 @@ setMethod("grglist", "GAlignmentPairs",
             ans_nelt1[i] <- ans_nelt2[i]
         }
         names(ans) <- names(x)
-        x_mcols$query.break <- ans_nelt1
-        mcols(ans) <- x_mcols
+        ans_mcols <- DataFrame(query.break=ans_nelt1)
+        if (use.mcols)
+            ans_mcols <- cbind(ans_mcols, x_mcols)
+        mcols(ans) <- ans_mcols
         ans
     }
 )
 
 setMethod("granges", "GAlignmentPairs",
-    function (x)
+    function(x, use.mcols=FALSE)
     {
+        if (!isTRUEorFALSE(use.mcols))
+            stop("'use.mcols' must be TRUE or FALSE")
         rg <- range(grglist(x))
         if (!all(elementLengths(rg) == 1L))
             stop("For some pairs in 'x', the first and last alignments ",
                  "are not aligned to the same chromosome and strand. ",
                  "Cannot extract a single range for them.")
-        unlist(rg)
+        ans <- unlist(rg)
+        if (use.mcols)
+            mcols(ans) <- mcols(x)
+        ans
     }
 )
 
@@ -433,6 +442,7 @@ setAs("GAlignmentPairs", "GRangesList", function(from) grglist(from))
 setAs("GAlignmentPairs", "GRanges", function(from) granges(from))
 setAs("GAlignmentPairs", "GAlignments",
       function(from) unlist(from, use.names=TRUE))
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### fillGaps()

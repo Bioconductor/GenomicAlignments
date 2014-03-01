@@ -19,13 +19,13 @@
 }
 
 \usage{
-junctions(x, ...)
+junctions(x, use.mcols=FALSE, ...)
 
-\S4method{junctions}{GAlignments}(x)
+\S4method{junctions}{GAlignments}(x, use.mcols=FALSE)
 
-\S4method{junctions}{GAlignmentPairs}(x)
+\S4method{junctions}{GAlignmentPairs}(x, use.mcols=FALSE)
 
-\S4method{junctions}{GAlignmentsList}(x, ignore.strand=FALSE)
+\S4method{junctions}{GAlignmentsList}(x, use.mcols=FALSE, ignore.strand=FALSE)
 }
 
 \arguments{
@@ -33,8 +33,13 @@ junctions(x, ...)
     A \link{GAlignments}, \link{GAlignmentPairs}, or \link{GAlignmentsList}
     object.
   }
+  \item{use.mcols}{
+    \code{TRUE} or \code{FALSE} (the default).
+    Whether the metadata columns on \code{x} (accessible with \code{mcols(x)})
+    should be propagated to the returned object or not.
+  }
   \item{...}{
-    Additional arguments supported by specific \code{junctions} methods.
+    Additional arguments, for use in specific methods.
   }
   \item{ignore.strand}{
   }
@@ -61,8 +66,11 @@ junctions(x, ...)
 
 \value{
   \code{junctions(x)} returns the genomic ranges of the junctions in a
-  \link[GenomicRanges]{GRangesList} object \emph{parallel} to \code{x}
+  \link[GenomicRanges]{GRangesList} object \emph{parallel} to \code{x},
   (i.e. with 1 list element per element in \code{x}).
+  If \code{x} has names on it, they're propagated to the returned object.
+  If \code{use.mcols} is TRUE and \code{x} has metadata columns on it
+  (accessible with \code{mcols(x)}), they're propagated to the returned object.
 }
 
 \author{H. Pages}

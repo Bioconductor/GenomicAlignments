@@ -417,14 +417,12 @@ setMethod("update", "GAlignments",
     elt_lens <- elementLengths(x)
     seqnames <- rep.int(seqnames, elt_lens)
     strand <- rep.int(strand, elt_lens)
-    unlistData <- GRanges(seqnames=seqnames,
-                          ranges=x@unlistData,
-                          strand=strand)
-    seqinfo(unlistData) <- seqinfo
-    new("GRangesList",
-        unlistData=unlistData,
-        partitioning=x@partitioning,
-        elementMetadata=x@elementMetadata)
+    unlisted_ans <- GRanges(seqnames=seqnames, ranges=x@unlistData,
+                            strand=strand)
+    seqinfo(unlisted_ans) <- seqinfo
+    ans <- relist(unlisted_ans, x)
+    mcols(ans) <- mcols(x)
+    ans
 }
 
 
@@ -433,25 +431,34 @@ setMethod("update", "GAlignments",
 ###
 
 setMethod("grglist", "GAlignments",
-    function(x, order.as.in.query=FALSE, drop.D.ranges=FALSE)
+    function(x, use.mcols=FALSE, order.as.in.query=FALSE, drop.D.ranges=FALSE)
     {
-        rgl <- rglist(x,
-                   order.as.in.query=order.as.in.query,
-                   drop.D.ranges=drop.D.ranges)
+        rgl <- rglist(x, use.mcols=use.mcols,
+                         order.as.in.query=order.as.in.query,
+                         drop.D.ranges=drop.D.ranges)
         .CompressedIRangesListToGRangesList(rgl, seqnames(x), strand(x),
                                             seqinfo(x))
     }
 )
 
 setMethod("granges", "GAlignments",
-    function(x)
-        .GAlignmentsToGRanges(seqnames(x), start(x), width(x),
-                                   strand(x), seqinfo(x), names(x))
+    function(x, use.mcols=FALSE)
+    {
+        if (!isTRUEorFALSE(use.mcols))
+            stop("'use.mcols' must be TRUE or FALSE")
+        ans <- .GAlignmentsToGRanges(seqnames(x), start(x), width(x),
+                                     strand(x), seqinfo(x), names(x))
+        if (use.mcols)
+            mcols(ans) <- mcols(x)
+        ans
+    }
 )
 
 setMethod("rglist", "GAlignments",
-    function(x, order.as.in.query=FALSE, drop.D.ranges=FALSE)
+    function(x, use.mcols=FALSE, order.as.in.query=FALSE, drop.D.ranges=FALSE)
     {
+        if (!isTRUEorFALSE(use.mcols))
+            stop("'use.mcols' must be TRUE or FALSE")
         if (!isTRUEorFALSE(order.as.in.query))
             stop("'reorder.ranges.from5to3' must be TRUE or FALSE")
         ans <- extractAlignmentRangesOnReference(x@cigar, x@start,
@@ -459,7 +466,8 @@ setMethod("rglist", "GAlignments",
         if (order.as.in.query)
             ans <- revElements(ans, strand(x) == "-")
         names(ans) <- names(x)
-        mcols(ans) <- mcols(x)
+        if (use.mcols)
+            mcols(ans) <- mcols(x)
         ans
     }
 )
@@ -468,9 +476,11 @@ setMethod("ranges", "GAlignments",
     function(x) IRanges(start=start(x), width=width(x), names=names(x))
 )
 
-setAs("GAlignments", "GRangesList", function(from) grglist(from))
-setAs("GAlignments", "GRanges", function(from) granges(from))
-setAs("GAlignments", "RangesList", function(from) rglist(from))
+setAs("GAlignments", "GRangesList",
+    function(from) grglist(from, use.mcols=TRUE)
+)
+setAs("GAlignments", "GRanges", function(from) granges(from, use.mcols=TRUE))
+setAs("GAlignments", "RangesList", function(from) rglist(from, use.mcols=TRUE))
 setAs("GAlignments", "Ranges", function(from) ranges(from))
 
 setMethod("as.data.frame", "GAlignments",

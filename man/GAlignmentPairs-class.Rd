@@ -247,11 +247,17 @@
 
   \describe{
     \item{}{
-      \code{grglist(x, order.as.in.query=FALSE, drop.D.ranges=FALSE)}:
+      \code{grglist(x, use.mcols=FALSE,
+                       order.as.in.query=FALSE,
+                       drop.D.ranges=FALSE)}:
 
       Return a \link{GRangesList} object of length \code{length(x)}
       where the i-th element represents the ranges (with respect to the
       reference) of the i-th alignment pair in \code{x}.
+
+      If \code{use.mcols} is TRUE and \code{x} has metadata columns on it
+      (accessible with \code{mcols(x)}), they're propagated to the returned
+      object.
 
       IMPORTANT: The strand of the ranges coming from the "last" alignment
       in the pair is \emph{always} inverted.
@@ -294,14 +300,19 @@
       ranges corresponding to deletions are dropped.
     }
     \item{}{
-      \code{granges(x)}: Return a \link{GRanges} object of length
-      \code{length(x)} where each range is obtained by merging all the
-      ranges within the corresponding top-level element in \code{grglist(x)}.
+      \code{granges(x, use.mcols=FALSE)}: Return a \link{GRanges} object
+      of length \code{length(x)} where each range is obtained by merging
+      all the ranges within the corresponding top-level element in
+      \code{grglist(x)}.
+
+      If \code{use.mcols} is TRUE and \code{x} has metadata columns on it
+      (accessible with \code{mcols(x)}), they're propagated to the returned
+      object.
     }
     \item{}{
       \code{as(x, "GRangesList")}, \code{as(x, "GRanges")}:
-      Alternate ways of doing \code{grglist(x)} and \code{granges(x)},
-      respectively.
+      Alternate ways of doing \code{grglist(x, use.mcols=TRUE)} and
+      \code{granges(x, use.mcols=TRUE)}, respectively.
     }
     \item{}{
       \code{as(x, "GAlignments")}:
