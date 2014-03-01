@@ -438,10 +438,15 @@ setMethod("granges", "GAlignmentPairs",
     }
 )
 
-setAs("GAlignmentPairs", "GRangesList", function(from) grglist(from))
-setAs("GAlignmentPairs", "GRanges", function(from) granges(from))
+setAs("GAlignmentPairs", "GRangesList",
+    function(from) grglist(from, use.mcols=TRUE)
+)
+setAs("GAlignmentPairs", "GRanges",
+    function(from) granges(from, use.mcols=TRUE)
+)
 setAs("GAlignmentPairs", "GAlignments",
-      function(from) unlist(from, use.names=TRUE))
+    function(from) unlist(from, use.names=TRUE)
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

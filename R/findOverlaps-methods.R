@@ -75,7 +75,7 @@ setMethod("findOverlaps", c("GAlignmentPairs", "Vector"),
              type = c("any", "start", "end", "within"),
              select = c("all", "first"), ignore.strand = FALSE)
     {
-        findOverlaps(as(query, "GRangesList"), subject,
+        findOverlaps(grglist(query), subject,
                      maxgap = maxgap, minoverlap = minoverlap,
                      type = match.arg(type), select = match.arg(select),
                      ignore.strand = ignore.strand)
@@ -87,7 +87,7 @@ setMethod("findOverlaps", c("Vector", "GAlignmentPairs"),
              type = c("any", "start", "end", "within"),
              select = c("all", "first"), ignore.strand = FALSE)
     {
-        findOverlaps(query, as(subject, "GRangesList"),
+        findOverlaps(query, grglist(subject),
                      maxgap = maxgap, minoverlap = minoverlap,
                      type = match.arg(type), select = match.arg(select),
                      ignore.strand = ignore.strand)
@@ -99,7 +99,7 @@ setMethod("findOverlaps", c("GAlignmentPairs", "GAlignmentPairs"),
              type = c("any", "start", "end", "within"),
              select = c("all", "first"), ignore.strand = FALSE)
     {
-        findOverlaps(as(query, "GRangesList"), as(subject, "GRangesList"),
+        findOverlaps(grglist(query), grglist(subject),
                      maxgap = maxgap, minoverlap = minoverlap,
                      type = match.arg(type), select = match.arg(select),
                      ignore.strand = ignore.strand)
