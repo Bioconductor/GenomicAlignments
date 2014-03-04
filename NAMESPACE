@@ -107,6 +107,7 @@ export(
     readGAlignmentsList,
     readGappedReads,
 
+    NATURAL_INTRON_MOTIFS,
     summarizeJunctions,
     readTopHatJunctions,
     readSTARJunctions,

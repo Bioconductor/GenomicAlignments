@@ -70,6 +70,13 @@ setMethod("junctions", "GAlignmentsList",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Natural intron motifs taken from:
+###   http://www.ncbi.nlm.nih.gov/pmc/articles/PMC84117/
+
+NATURAL_INTRON_MOTIFS <- c("GT-AG", "GC-AG", "AT-AC", "AT-AA", "AT-AG")
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### summarizeJunctions()
 ###
 
@@ -86,13 +93,9 @@ setMethod("junctions", "GAlignmentsList",
     xscat(Ldinucl, "-", Rdinucl)
 }
 
-### Natural intron motifs taken from:
-###   http://www.ncbi.nlm.nih.gov/pmc/articles/PMC84117/
-.NATURAL_INTRON_MOTIFS <- c("GT-AG", "GC-AG", "AT-AC", "AT-AA", "AT-AG")
-
 .infer_intron_strand <- function(unoriented_intron_motif)
 {
-    natural_intron_motifs <- DNAStringSet(.NATURAL_INTRON_MOTIFS)
+    natural_intron_motifs <- DNAStringSet(NATURAL_INTRON_MOTIFS)
     intron_strand <- rep.int(NA, length(unoriented_intron_motif))
     idx <- which(unoriented_intron_motif %in%
                  natural_intron_motifs)
@@ -102,7 +105,7 @@ setMethod("junctions", "GAlignmentsList",
     intron_strand[idx] <- TRUE
     if (any(is.na(intron_strand)))
         warning("strand of some introns could not be determined")
-    strand(Rle(intron_strand))
+    strand(intron_strand)
 }
 
 .orient_intron_motif <- function(unoriented_intron_motif, intron_strand)
@@ -110,7 +113,7 @@ setMethod("junctions", "GAlignmentsList",
     ans <- unoriented_intron_motif
     idx <- which(intron_strand == "-")
     ans[idx] <- reverseComplement(ans[idx])
-    ans <- factor(as.character(ans), levels=.NATURAL_INTRON_MOTIFS)
+    ans <- factor(as.character(ans), levels=NATURAL_INTRON_MOTIFS)
 }
 
 summarizeJunctions <- function(x, with.revmap=FALSE, genome=NULL)
@@ -143,8 +146,8 @@ summarizeJunctions <- function(x, with.revmap=FALSE, genome=NULL)
         ans_intron_motif <- .orient_intron_motif(unoriented_intron_motif,
                                                  ans_intron_strand)
         ans_mcols <- cbind(ans_mcols,
-                           DataFrame(intron_strand=ans_intron_strand,
-                                     intron_motif=ans_intron_motif))
+                           DataFrame(intron_motif=ans_intron_motif,
+                                     intron_strand=ans_intron_strand))
     }
     mcols(ans) <- ans_mcols
     ans
@@ -211,7 +214,7 @@ readTopHatJunctions <- function(file, file.is.raw.juncs=FALSE)
             if (file_ext == file_ext0)
                 stop("'file.is.raw.juncs=TRUE' is not aimed to be ",
                      "used on a file\n  with the .bed extension")
-            df <- read.table(file)
+            df <- read.table(file, stringsAsFactors=FALSE)
             ## The 2nd and 3rd columns in 'new_list.juncs' are the left and
             ## right positions of the junctions, respectively. The convention
             ## used by TopHat is that these are NOT the positions of the
@@ -246,13 +249,42 @@ readTopHatJunctions <- function(file, file.is.raw.juncs=FALSE)
 ###   readSTARJunctions("SJ.out.tab")
 ###
 
+.STAR_INTRON_MOTIFS <- c("GT-AG", "CT-AC",
+                         "GC-AG", "CT-GC",
+                         "AT-AC", "GT-AT")
+
+.get_STAR_intron_motif_levels <- function()
+{
+    ans <- .STAR_INTRON_MOTIFS[(1:3)*2L - 1L]
+    stopifnot(all(ans == NATURAL_INTRON_MOTIFS[1:3]))
+    rev_motifs <- .STAR_INTRON_MOTIFS[(1:3)*2L]
+    stopifnot(all(rev_motifs == reverseComplement(DNAStringSet(ans))))
+    ans
+}
+
 readSTARJunctions <- function(file)
 {
-    df <- read.table(file)
-    GRanges(df[[1L]],
-            IRanges(df[[2L]], df[[3L]]),
+    motif123 <- .get_STAR_intron_motif_levels()
+    df <- read.table(file, stringsAsFactors=FALSE)
+    ans_seqnames <- df[[1L]]
+    ans_start <- df[[2L]]
+    ans_end <- df[[3L]]
+    STAR_intron_motif_code <- df[[5L]]
+    if (!is.integer(ans_start) || !is.integer(ans_end)
+     || !is.integer(STAR_intron_motif_code)
+     || IRanges:::anyMissingOrOutside(STAR_intron_motif_code,
+                                      lower=0L, upper=6L))
+        stop("'file' does not look like a junction file generated ",
+             "by the STAR aligner (normally the SJ.out.tab file)")
+    STAR_intron_motif_code[STAR_intron_motif_code == 0L] <- NA_integer_
+    code1 <- STAR_intron_motif_code + 1L
+    ans_intron_motif <- factor(motif123[code1 %/% 2L], levels=motif123)
+    ans_intron_strand <- strand(as.logical(code1 %% 2L))
+    GRanges(ans_seqnames,
+            IRanges(ans_start, ans_end),
             strand=strand(df[[4L]] == 2L),
-            intron_motif=df[[5L]],
+            intron_motif=ans_intron_motif,
+            intron_strand=ans_intron_strand,
             um_reads=df[[7L]],
             mm_reads=df[[8L]])
 }
