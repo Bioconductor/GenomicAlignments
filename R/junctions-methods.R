@@ -73,21 +73,78 @@ setMethod("junctions", "GAlignmentsList",
 ### summarizeJunctions()
 ###
 
-summarizeJunctions <- function(x, with.mapping=FALSE, genome=NULL)
+.extract_unoriented_intron_motif <- function(genome, junctions)
 {
-    if (!isTRUEorFALSE(with.mapping))
-        stop("'with.mapping' must be TRUE or FALSE")
+    mcols(junctions) <- NULL
+    junctions_len <- length(junctions)
+    Ldinucl_gr <- Rdinucl_gr <- junctions
+    end(Ldinucl_gr) <- start(Ldinucl_gr) + 1L
+    start(Rdinucl_gr) <- end(Rdinucl_gr) - 1L
+    all_dinucl <- getSeq(genome, c(Ldinucl_gr, Rdinucl_gr))
+    Ldinucl <- head(all_dinucl, n=junctions_len)
+    Rdinucl <- tail(all_dinucl, n=junctions_len)
+    xscat(Ldinucl, "-", Rdinucl)
+}
+
+### Natural intron motifs taken from:
+###   http://www.ncbi.nlm.nih.gov/pmc/articles/PMC84117/
+.NATURAL_INTRON_MOTIFS <- c("GT-AG", "GC-AG", "AT-AC", "AT-AA", "AT-AG")
+
+.infer_intron_strand <- function(unoriented_intron_motif)
+{
+    natural_intron_motifs <- DNAStringSet(.NATURAL_INTRON_MOTIFS)
+    intron_strand <- rep.int(NA, length(unoriented_intron_motif))
+    idx <- which(unoriented_intron_motif %in%
+                 natural_intron_motifs)
+    intron_strand[idx] <- FALSE
+    idx <- which(unoriented_intron_motif %in%
+                 reverseComplement(natural_intron_motifs))
+    intron_strand[idx] <- TRUE
+    if (any(is.na(intron_strand)))
+        warning("strand of some introns could not be determined")
+    strand(intron_strand)
+}
+
+.orient_intron_motif <- function(unoriented_intron_motif, intron_strand)
+{
+    ans <- unoriented_intron_motif
+    idx <- which(intron_strand == "-")
+    ans[idx] <- reverseComplement(ans[idx])
+    ans <- factor(as.character(ans), levels=.NATURAL_INTRON_MOTIFS)
+}
+
+summarizeJunctions <- function(x, with.revmap=FALSE, genome=NULL)
+{
+    if (!isTRUEorFALSE(with.revmap))
+        stop("'with.revmap' must be TRUE or FALSE")
     if (!is.null(genome))
         genome <- getBSgenome(genome)
 
     x_junctions <- junctions(x)
-    unlisted_junctions <- unstrand(unlist(x_junctions, use.names=FALSE))
+    unlisted_junctions0 <- unlist(x_junctions, use.names=FALSE)
+    unlisted_junctions <- unstrand(unlisted_junctions0)
     ans <- sort(unique(unlisted_junctions))
     unq2dups <- as(findMatches(ans, unlisted_junctions), "List")
-    ans_mcols <- DataFrame(score=elementLengths(unq2dups))
-    if (with.mapping) {
+    ans_score <- elementLengths(unq2dups)
+    tmp <- extractList(strand(unlisted_junctions0), unq2dups)
+    ans_plus_score <- sum(tmp == "+")
+    ans_minus_score <- sum(tmp == "-")
+    ans_mcols <- DataFrame(score=ans_score,
+                           plus_score=ans_plus_score,
+                           minus_score=ans_minus_score)
+    if (with.revmap) {
         supported_by <- togroup(x_junctions)
-        ans_mcols$mapping <- extractList(supported_by, unq2dups)
+        ans_mcols$revmap <- extractList(supported_by, unq2dups)
+    }
+    if (!is.null(genome)) {
+        unoriented_intron_motif <- .extract_unoriented_intron_motif(genome,
+                                                                    ans)
+        ans_intron_strand <- .infer_intron_strand(unoriented_intron_motif)
+        ans_intron_motif <- .orient_intron_motif(unoriented_intron_motif,
+                                                 ans_intron_strand)
+        ans_mcols <- cbind(ans_mcols,
+                           DataFrame(intron_strand=ans_intron_strand,
+                                     intron_motif=ans_intron_motif))
     }
     mcols(ans) <- ans_mcols
     ans
@@ -102,15 +159,16 @@ summarizeJunctions <- function(x, with.mapping=FALSE, genome=NULL)
 ### Usage:
 ###   readTopHatJunctions("junctions.bed")
 ###
-### Comparing with output of bed_to_juncs script (assuming the 'juncs.tab'
-### file was obtained by passing 'junctions.bed' thru the bed_to_juncs):
+### Comparing with output of bed_to_juncs script (assuming the
+### 'new_list.juncs' file was obtained by passing 'junctions.bed' thru
+### bed_to_juncs):
 ###   junctions1 <- readTopHatJunctions("junctions.bed")
-###   junctions2 <- readTopHatJunctions("juncs.tab",
+###   junctions2 <- readTopHatJunctions("new_list.juncs",
 ###                                     file.is.bed_to_juncs.output=TRUE)
 ###   stopifnot(all(junctions1 == junctions2))
 ###
 
-.tophatBedToJuncs <- function(x)
+.bed_to_Juncs <- function(x)
 {
     if (!is(x, "GRanges"))
         stop("'x' must be a GRanges object")
@@ -154,11 +212,12 @@ readTopHatJunctions <- function(file, file.is.bed_to_juncs.output=FALSE)
                 stop("'file.is.bed_to_juncs.output=TRUE' is not aimed to be ",
                      "used on a file\n  with the .bed extension")
             df <- read.table(file)
-            ## The 2nd and 3rd columns in 'juncs.tab' are the left and right
-            ## positions of the junctions, respectively. The convention used
-            ## by TopHat is that these are NOT the positions of the left-most
-            ## and right-most nucleotides of the intron, but rather the
-            ## positions immediately before and after, respectively.
+            ## The 2nd and 3rd columns in 'new_list.juncs' are the left and
+            ## right positions of the junctions, respectively. The convention
+            ## used by TopHat is that these are NOT the positions of the
+            ## left-most and right-most nucleotides of the intron, but rather
+            ## the positions immediately before and after, respectively, that
+            ## is, the last and the first positions of the flanking exons.
             ## Also these positions are *both* 0-based.
             ans_ranges <- IRanges(df[[2L]] + 2L, df[[3L]])
             ans <- GRanges(df[[1L]], ans_ranges, strand=df[[4L]])
@@ -174,14 +233,14 @@ readTopHatJunctions <- function(file, file.is.bed_to_juncs.output=FALSE)
                     "'file.is.bed_to_juncs.output=TRUE'")
     }
     junctions_bed <- rtracklayer::import(file)
-    .tophatBedToJuncs(junctions_bed)
+    .bed_to_Juncs(junctions_bed)
 }
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### readSTARJunctions()
 ###
-### Read splice junctions file (SJ.out.tab) produced by the STAR aligner
+### Read splice junctions file (SJ.out.tab) generated by the STAR aligner
 ### into a GRanges object.
 ### Usage:
 ###   readSTARJunctions("SJ.out.tab")

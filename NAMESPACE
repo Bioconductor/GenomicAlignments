@@ -107,6 +107,7 @@ export(
     readGAlignmentsList,
     readGappedReads,
 
+    summarizeJunctions,
     readTopHatJunctions,
     readSTARJunctions,
 
