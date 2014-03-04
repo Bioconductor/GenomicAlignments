@@ -274,6 +274,7 @@ readSTARJunctions <- function(file)
     ans_seqnames <- df[[1L]]
     ans_start <- df[[2L]]
     ans_end <- df[[3L]]
+    ans_strand <- strand(df[[4L]] == 2L)
     STAR_intron_motif_code <- df[[5L]]
     if (!is.integer(ans_start) || !is.integer(ans_end)
      || !is.integer(STAR_intron_motif_code)
@@ -285,9 +286,22 @@ readSTARJunctions <- function(file)
     code1 <- STAR_intron_motif_code + 1L
     ans_intron_motif <- factor(motif123[code1 %/% 2L], levels=motif123)
     ans_intron_strand <- strand(as.logical(code1 %% 2L))
+    has_code_zero <- is.na(ans_intron_motif)
+    stopifnot(identical(has_code_zero, ans_intron_strand == "*"))
+    idx0 <- which(!has_code_zero)
+    if (!identical(ans_strand[idx0], ans_intron_strand[idx0]))
+        warning("For some junctions, the strand reported in the motif_strand ",
+                "metadata column\n  (which was inferred from the STAR intron ",
+                "motif code stored in column 5 of\n  'file') is conflicting ",
+                "with the strand of the junction reported in column 4\n  ",
+                "of 'file'. Bug in STAR? Obscure feature? Or corrupted file? ",
+                "Please ask on the\n  STAR general user mailing list ",
+                "(https://groups.google.com/d/forum/rna-star)\n  for ",
+                "clarifications about this (only if you're confident that ",
+                "your SJ.out.tab\n  file is not corrupted though).")
     GRanges(ans_seqnames,
             IRanges(ans_start, ans_end),
-            strand=strand(df[[4L]] == 2L),
+            strand=ans_strand,
             intron_motif=ans_intron_motif,
             intron_strand=ans_intron_strand,
             um_reads=df[[7L]],
