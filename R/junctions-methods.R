@@ -102,7 +102,7 @@ setMethod("junctions", "GAlignmentsList",
     intron_strand[idx] <- TRUE
     if (any(is.na(intron_strand)))
         warning("strand of some introns could not be determined")
-    strand(intron_strand)
+    strand(Rle(intron_strand))
 }
 
 .orient_intron_motif <- function(unoriented_intron_motif, intron_strand)
@@ -164,7 +164,7 @@ summarizeJunctions <- function(x, with.revmap=FALSE, genome=NULL)
 ### bed_to_juncs):
 ###   junctions1 <- readTopHatJunctions("junctions.bed")
 ###   junctions2 <- readTopHatJunctions("new_list.juncs",
-###                                     file.is.bed_to_juncs.output=TRUE)
+###                                     file.is.raw.juncs=TRUE)
 ###   stopifnot(all(junctions1 == junctions2))
 ###
 
@@ -197,19 +197,19 @@ summarizeJunctions <- function(x, with.revmap=FALSE, genome=NULL)
 ### immediately before and after the intron. In the GRanges object returned
 ### by readTopHatJunctions(), a junction is considered to start at the
 ### left-most and to end at the right-most nucleotide of the intron.
-readTopHatJunctions <- function(file, file.is.bed_to_juncs.output=FALSE)
+readTopHatJunctions <- function(file, file.is.raw.juncs=FALSE)
 {
-    if (!isTRUEorFALSE(file.is.bed_to_juncs.output))
-        stop("'file.is.bed_to_juncs.output' must be TRUE or FALSE")
+    if (!isTRUEorFALSE(file.is.raw.juncs))
+        stop("'file.is.raw.juncs' must be TRUE or FALSE")
     if (is.character(file)) {
         if (!isSingleString(file))
             stop("'file' must be a single string")
         file_ext0 <- ".bed"
         file_ext <- substr(file, start=nchar(file) - nchar(file_ext0) + 1L,
                                  stop=nchar(file))
-        if (file.is.bed_to_juncs.output) {
+        if (file.is.raw.juncs) {
             if (file_ext == file_ext0)
-                stop("'file.is.bed_to_juncs.output=TRUE' is not aimed to be ",
+                stop("'file.is.raw.juncs=TRUE' is not aimed to be ",
                      "used on a file\n  with the .bed extension")
             df <- read.table(file)
             ## The 2nd and 3rd columns in 'new_list.juncs' are the left and
@@ -230,7 +230,7 @@ readTopHatJunctions <- function(file, file.is.bed_to_juncs.output=FALSE)
                     "with similar content). If 'file' is a tab-delimited ",
                     "file obtained\n  by running TopHat's bed_to_juncs script ",
                     "on a junctions.bed file, you\n  should use ",
-                    "'file.is.bed_to_juncs.output=TRUE'")
+                    "'file.is.raw.juncs=TRUE'")
     }
     junctions_bed <- rtracklayer::import(file)
     .bed_to_Juncs(junctions_bed)
@@ -252,6 +252,7 @@ readSTARJunctions <- function(file)
     GRanges(df[[1L]],
             IRanges(df[[2L]], df[[3L]]),
             strand=strand(df[[4L]] == 2L),
+            intron_motif=df[[5L]],
             um_reads=df[[7L]],
             mm_reads=df[[8L]])
 }
