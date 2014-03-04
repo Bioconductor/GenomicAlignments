@@ -5,7 +5,7 @@ Description: Provides efficient containers for storing and manipulating
         reads to a reference genome). This includes read counting,
         computing the coverage, junction detection, and working with
         the nucleotide content of the alignments.
-Version: 0.99.28
+Version: 0.99.29
 Author: Herv\'e Pag\`es, Valerie Obenchain, Martin Morgan
 Maintainer: Bioconductor Package Maintainer
         <maintainer@bioconductor.org>
@@ -30,4 +30,4 @@ Collate: utils.R cigar-utils.R GAlignments-class.R
         findOverlaps-methods.R map-methods.R encodeOverlaps-methods.R
         findCompatibleOverlaps-methods.R summarizeOverlaps-methods.R
         findSpliceOverlaps-methods.R zzz.R
-biocViews: Genetics, Infrastructure, Sequencing, Sequencing, SNP
+biocViews: Genetics, Infrastructure, Sequencing, SNP
