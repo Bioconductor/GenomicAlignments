@@ -1,47 +1,33 @@
 Package: GenomicAlignments
 Title: Representation and manipulation of short genomic alignments
 Description: Provides efficient containers for storing and manipulating
-	short genomic alignments (typically obtained by aligning short reads
-	to a reference genome). This includes read counting, computing the
-	coverage, junction detection, and working with the nucleotide content
-	of the alignments.
-Version: 0.99.27
+        short genomic alignments (typically obtained by aligning short
+        reads to a reference genome). This includes read counting,
+        computing the coverage, junction detection, and working with
+        the nucleotide content of the alignments.
+Version: 0.99.28
 Author: Herv\'e Pag\`es, Valerie Obenchain, Martin Morgan
-Maintainer: Bioconductor Package Maintainer <maintainer@bioconductor.org>
-biocViews: Genetics, Infrastructure, Sequencing, HighThroughputSequencing, SNP
-Depends: R (>= 2.10), methods, BiocGenerics (>= 0.7.7),
-	IRanges (>= 1.21.25), GenomicRanges (>= 1.15.32),
-	Biostrings (>= 2.31.10), Rsamtools (>= 1.15.26), BSgenome (>= 1.31.12),
+Maintainer: Bioconductor Package Maintainer
+        <maintainer@bioconductor.org>
+Depends: R (>= 2.10), methods, BiocGenerics (>= 0.7.7), IRanges (>=
+        1.21.25), GenomicRanges (>= 1.15.32), Biostrings (>= 2.31.10),
+        Rsamtools (>= 1.15.26), BSgenome (>= 1.31.12),
 Imports: methods, stats, BiocGenerics, IRanges, GenomicRanges,
-	Biostrings, Rsamtools, BiocParallel
+        Biostrings, Rsamtools, BiocParallel
 LinkingTo: IRanges
-Suggests: rtracklayer, GenomicFeatures,
-	RNAseqData.HNRNPC.bam.chr14, pasillaBamSubset,
-	TxDb.Hsapiens.UCSC.hg19.knownGene, TxDb.Dmelanogaster.UCSC.dm3.ensGene,
-	BSgenome.Dmelanogaster.UCSC.dm3, BSgenome.Hsapiens.UCSC.hg19,
-	DESeq, edgeR,
-	RUnit, BiocStyle
+Suggests: rtracklayer, GenomicFeatures, RNAseqData.HNRNPC.bam.chr14,
+        pasillaBamSubset, TxDb.Hsapiens.UCSC.hg19.knownGene,
+        TxDb.Dmelanogaster.UCSC.dm3.ensGene,
+        BSgenome.Dmelanogaster.UCSC.dm3, BSgenome.Hsapiens.UCSC.hg19,
+        DESeq, edgeR, RUnit, BiocStyle
 License: Artistic-2.0
-Collate: utils.R
-	cigar-utils.R
-	GAlignments-class.R
-	GAlignmentPairs-class.R
-	GAlignmentsList-class.R
-	GappedReads-class.R
-	OverlapEncodings-class.R
-	findMateAlignment.R
-	readGAlignments.R
-	junctions-methods.R
-	sequenceLayer.R
-	stackStringsFromBam.R
-	pileLettersAt.R
-	intra-range-methods.R
-	coverage-methods.R
-	setops-methods.R
-	findOverlaps-methods.R
-	map-methods.R
-	encodeOverlaps-methods.R
-	findCompatibleOverlaps-methods.R
-	summarizeOverlaps-methods.R
-	findSpliceOverlaps-methods.R
-	zzz.R
+Collate: utils.R cigar-utils.R GAlignments-class.R
+        GAlignmentPairs-class.R GAlignmentsList-class.R
+        GappedReads-class.R OverlapEncodings-class.R
+        findMateAlignment.R readGAlignments.R junctions-methods.R
+        sequenceLayer.R stackStringsFromBam.R pileLettersAt.R
+        intra-range-methods.R coverage-methods.R setops-methods.R
+        findOverlaps-methods.R map-methods.R encodeOverlaps-methods.R
+        findCompatibleOverlaps-methods.R summarizeOverlaps-methods.R
+        findSpliceOverlaps-methods.R zzz.R
+biocViews: Genetics, Infrastructure, Sequencing, Sequencing, SNP
