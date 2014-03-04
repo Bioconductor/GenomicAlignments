@@ -104,7 +104,12 @@ NATURAL_INTRON_MOTIFS <- c("GT-AG", "GC-AG", "AT-AC", "AT-AA", "AT-AG")
                  reverseComplement(natural_intron_motifs))
     intron_strand[idx] <- TRUE
     if (any(is.na(intron_strand)))
-        warning("strand of some introns could not be determined")
+        warning("For some junctions, the dinucleotides found at the intron ",
+                "boundaries don't\n  match any of the natural intron motifs ",
+                "stored in predefined character vector\n  ",
+                "'NATURAL_INTRON_MOTIFS'. For these junctions, the ",
+                "intron_motif and\n  intron_strand metadata columns ",
+                "were set to NA and *, respectively.")
     strand(intron_strand)
 }
 
