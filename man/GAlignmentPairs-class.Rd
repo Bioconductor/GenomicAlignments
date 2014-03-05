@@ -355,8 +355,8 @@
     \item \code{\link{makeGAlignmentPairs}} for pairing the elements of a
           \link{GAlignments} object into a GAlignmentPairs object.
 
-    \item \link{junctions-methods} for extracting junctions from a
-          GAlignmentPairs object.
+    \item \link{junctions-methods} for extracting and summarizing junctions
+          from a GAlignmentPairs object.
 
     \item \link[GenomicAlignments]{coverage-methods} for computing the
           coverage of a GAlignmentPairs object.

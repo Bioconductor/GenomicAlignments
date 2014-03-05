@@ -47,20 +47,9 @@
     param
 }
 
-### NOTE: Using the same letter ("-") for junctions (N) and deletions (D)
-###       is problematic when one tries to infer coverage by calling
-###       consensusMatrix() on the result of sequenceLayer(): then junctions
-###       and deletions will both generate coverage when only the latters
-###       should! Hence the result won't be consistent with coverage().
-###       OTOH using "+" for junctions is compatible with coverage() but is
-###       not visually appealing (the junctions, which are usually big,
-###       cannot be seen anymore).
-###       "-" and "+" are the only 2 special letters in Biostrings DNA
-###       alphabet (DNA_ALPHABET). Should we add 1 more? Should it be " ",
-###       ".", or "*"?
 stackStringsFromBam <- function(file, index=file, param,
                                 what="seq", use.names=FALSE,
-                                D.letter="-", N.letter="-",
+                                D.letter="-", N.letter=".",
                                 Lpadding.letter="+", Rpadding.letter="+")
 {
     param <- .normarg_param(param)

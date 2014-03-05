@@ -107,7 +107,7 @@
 }
 
 sequenceLayer <- function(x, cigar, from="query", to="reference",
-                          D.letter="-", N.letter="-",
+                          D.letter="-", N.letter=".",
                           I.letter="-", S.letter="+", H.letter="+")
 {
     if (!is(x, "XStringSet"))

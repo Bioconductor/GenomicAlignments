@@ -267,8 +267,8 @@
     \item \link{GAlignments} and \link{GAlignmentPairs} objects for handling
           aligned single- and paired-end reads, respectively.
 
-    \item \link{junctions-methods} for extracting junctions from a
-          GAlignmentsList object.
+    \item \link{junctions-methods} for extracting and summarizing junctions
+          from a GAlignmentsList object.
 
     \item \link[GenomicAlignments]{findOverlaps-methods} for finding range
           overlaps between a GAlignmentsList object and another range-based

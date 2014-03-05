@@ -14,7 +14,7 @@
 \usage{
 stackStringsFromBam(file, index=file, param,
                     what="seq", use.names=FALSE,
-                    D.letter="-", N.letter="-",
+                    D.letter="-", N.letter=".",
                     Lpadding.letter="+", Rpadding.letter="+")
 }
 

@@ -408,8 +408,8 @@
     \item \link{GAlignmentPairs} objects for handling aligned paired-end
           reads.
 
-    \item \link{junctions-methods} for extracting junctions from a
-          GAlignments object.
+    \item \link{junctions-methods} for extracting and summarizing junctions
+          from a GAlignments object.
 
     \item \link[GenomicAlignments]{coverage-methods} for computing the
           coverage of a GAlignments object.

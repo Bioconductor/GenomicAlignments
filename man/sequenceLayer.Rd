@@ -22,7 +22,7 @@
 
 \usage{
 sequenceLayer(x, cigar, from="query", to="reference",
-              D.letter="-", N.letter="-",
+              D.letter="-", N.letter=".",
               I.letter="-", S.letter="+", H.letter="+")
 }
 
@@ -317,12 +317,12 @@ cigarWidth <- list(
 cigar <- c("3H2S4M1D2M2I1M5N3M6H", "5M1I3M2D4M2S")
 
 seq <- list(
-    BStringSet(c(A="AAAA-BBC+++++DDD", B="AAAAABBB--CCCC")),
+    BStringSet(c(A="AAAA-BBC.....DDD", B="AAAAABBB--CCCC")),
     BStringSet(c(A="AAAA-BBCDDD", B="AAAAABBB--CCCC")),
-    BStringSet(c(A="..AAAABBiiCDDD", B="AAAAAiBBBCCCC..")),
-    BStringSet(c(A=".....AAAABBiiCDDD......", B="AAAAAiBBBCCCC..")),
+    BStringSet(c(A="++AAAABBiiCDDD", B="AAAAAiBBBCCCC++")),
+    BStringSet(c(A="+++++AAAABBiiCDDD++++++", B="AAAAAiBBBCCCC++")),
     BStringSet(c(A="AAAABBiiCDDD", B="AAAAAiBBBCCCC")),
-    BStringSet(c(A="AAAA-BBiiC+++++DDD", B="AAAAAiBBB--CCCC")),
+    BStringSet(c(A="AAAA-BBiiC.....DDD", B="AAAAAiBBB--CCCC")),
     BStringSet(c(A="AAAA-BBiiCDDD", B="AAAAAiBBB--CCCC")),
     BStringSet(c(A="AAAABBCDDD", B="AAAAABBBCCCC"))
 )
@@ -332,8 +332,7 @@ stopifnot(all(sapply(1:8,
 )))
 
 sequenceLayer2 <- function(x, cigar, from, to)
-    sequenceLayer(x, cigar, from=from, to=to, D.letter="-", N.letter= "+",
-                  I.letter="i", S.letter=".", H.letter=".")
+    sequenceLayer(x, cigar, from=from, to=to, I.letter="i")
 
 identical_XStringSet <- function(target, current)
 {
