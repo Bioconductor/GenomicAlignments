@@ -129,12 +129,12 @@ summarizeJunctions <- function(x, with.revmap=FALSE, genome=NULL)
         genome <- getBSgenome(genome)
 
     x_junctions <- junctions(x)
-    unlisted_junctions0 <- unlist(x_junctions, use.names=FALSE)
-    unlisted_junctions <- unstrand(unlisted_junctions0)
-    ans <- sort(unique(unlisted_junctions))
-    unq2dups <- as(findMatches(ans, unlisted_junctions), "List")
+    unlisted_junctions <- unlist(x_junctions, use.names=FALSE)
+    unstranded_unlisted_junctions <- unstrand(unlisted_junctions)
+    ans <- sort(unique(unstranded_unlisted_junctions))
+    unq2dups <- as(findMatches(ans, unstranded_unlisted_junctions), "List")
     ans_score <- elementLengths(unq2dups)
-    tmp <- extractList(strand(unlisted_junctions0), unq2dups)
+    tmp <- extractList(strand(unlisted_junctions), unq2dups)
     ans_plus_score <- sum(tmp == "+")
     ans_minus_score <- sum(tmp == "-")
     ans_mcols <- DataFrame(score=ans_score,
@@ -142,7 +142,17 @@ summarizeJunctions <- function(x, with.revmap=FALSE, genome=NULL)
                            minus_score=ans_minus_score)
     if (with.revmap) {
         supported_by <- togroup(x_junctions)
-        ans_mcols$revmap <- extractList(supported_by, unq2dups)
+        ans_revmap <- extractList(supported_by, unq2dups)
+        ## 'ans_revmap' should never contain duplicates when 'x' is a
+        ## GAlignments object, because a given junction can show up at most
+        ## once per SAM/BAM record (i.e. per element in 'x', or per alignment).
+        ## This doesn't hold if the elements in 'x' consist of more than 1
+        ## SAM/BAM record (or alignment) e.g. if 'x' is a GAlignmentPairs or
+        ## GAlignmentsList object, because, in that case, the same junction
+        ## can show up more than once per element in 'x'.
+        if (!is(x, "GAlignments"))
+            ans_revmap <- unique(ans_revmap)
+        ans_mcols$revmap <- ans_revmap
     }
     if (!is.null(genome)) {
         unoriented_intron_motif <- .extract_unoriented_intron_motif(genome,
