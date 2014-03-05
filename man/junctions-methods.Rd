@@ -81,7 +81,7 @@ readSTARJunctions(file)
     If set to \code{TRUE}, then a \code{revmap} metadata column is added to
     the output of \code{summarizeJunctions}. This metadata column is an
     \link[IRanges]{IntegerList} object representing the mapping from each
-    element in the ouput (i.e. a junction) to the corresponding elements in
+    element in the ouput (i.e. each junction) to the corresponding elements in
     the input \code{x}.
   }
   \item{genome}{
@@ -147,15 +147,15 @@ readSTARJunctions(file)
   junctions in \code{x} in an unstranded \link[GenomicRanges]{GRanges}
   object with the following metadata columns:
   \itemize{
-    \item \code{score}: The total number of alignments that "support" each
+    \item \code{score}: The total number of alignments crossing each
           junction, i.e., that have the junction encoded in their CIGAR.
 
-    \item \code{plus_score} and \code{minus_score}: The number of supporting
-          alignments on each strand.
+    \item \code{plus_score} and \code{minus_score}: The strand-specific
+          number of alignments crossing each junction.
 
     \item \code{revmap}: [Only if \code{with.revmap} was set to \code{TRUE}.]
           An \link[IRanges]{IntegerList} object representing the mapping from
-          each element in the ouput (i.e. a junction) to the corresponding
+          each element in the ouput (i.e. each junction) to the corresponding
           elements in input \code{x}.
 
     \item \code{intron_motif} and \code{intron_strand}: [Only if \code{genome}
@@ -181,7 +181,7 @@ readSTARJunctions(file)
           of the form JUNC00000017 and is unique within the
           \emph{junctions.bed} file.
           
-    \item \code{score}: The total number of alignments that "support" each
+    \item \code{score}: The total number of alignments crossing each
           junction.
   }
   With the following metadata columns for \code{readSTARJunctions}:
@@ -198,11 +198,13 @@ readSTARJunctions(file)
           3 levels. If code is 0, then \code{intron_motif} and
           \code{intron_strand} are set to \code{NA} and \code{*}, respectively.
 
-    \item \code{um_reads}: The number of uniquely mapping reads crossing the
-          junction.
+    \item \code{um_reads}: The number of uniquely mapping reads crossing
+          the junction (a pair where the 2 alignments cross the same junction
+          is counted only once).
 
     \item \code{mm_reads}: The number of multi-mapping reads crossing the
-          junction.
+          junction (a pair where the 2 alignments cross the same junction is
+          counted only once).
   }
   See STAR manual at \url{https://code.google.com/p/rna-star/} for more
   information.
@@ -287,12 +289,12 @@ junc_summary <- summarizeJunctions(gal)
 junc_summary
 
 ## The "score" metadata column reports the total number of alignments
-## that "support" each junction, i.e., that have the junction encoded
-## in their CIGAR:
+## crossing each junction, i.e., that have the junction encoded in their
+## CIGAR:
 median(mcols(junc_summary)$score)
 
-## The "plus_score" and "minus_score" metadata columns report the number
-## of supporting alignments on each strand:
+## The "plus_score" and "minus_score" metadata columns report the
+## strand-specific number of alignments crossing each junction:
 stopifnot(identical(mcols(junc_summary)$score,
                     mcols(junc_summary)$plus_score +
                     mcols(junc_summary)$minus_score))
@@ -302,7 +304,7 @@ stopifnot(identical(mcols(junc_summary)$score,
 ## ting the mapping from each element in the ouput (i.e. a junction) to
 ## the corresponding elements in the input 'x'. Here we're going to use
 ## this to compute a 'score2' for each junction. We obtain this score
-## by summing the mapping qualities of the alignments supporting the
+## by summing the mapping qualities of the alignments crossing the
 ## junction:
 gal <- readGAlignments(bamfile, param=ScanBamParam(what="mapq"))
 junc_summary <- summarizeJunctions(gal, with.revmap=TRUE)
@@ -335,7 +337,7 @@ strandedTest <- function(plus_score, minus_score)
         sum((plus_score + minus_score) ^ 2)
 
 ## The result of this test is guaranteed to be >= 0.5 and <= 1.
-## If, for each junction, the strand of the supporting alignments looks
+## If, for each junction, the strand of the crossing alignments looks
 ## random (i.e. "plus_score" and "minus_score" are close), then
 ## strandedTest() will return a value close to 0.5. If it doesn't look
 ## random (i.e. for each junction, one of "plus_score" and "minus_score"
@@ -412,8 +414,8 @@ mcols(th_junctions14) <- merge2(mcols(th_junctions14),
 idx0 <- which(mcols(th_junctions14)$score2 == 0L)
 th_junctions14[idx0]
 gal[mcols(th_junctions14)$revmap[[idx0]]]
-## The junction is supported by 5 alignments (score is 5), all of
-## which have a mapping quality of 0!
+## The junction is crossed by 5 alignments (score is 5), all of which
+## have a mapping quality of 0!
 }
 
 \keyword{methods}

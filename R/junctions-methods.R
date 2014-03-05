@@ -141,15 +141,15 @@ summarizeJunctions <- function(x, with.revmap=FALSE, genome=NULL)
                            plus_score=ans_plus_score,
                            minus_score=ans_minus_score)
     if (with.revmap) {
-        supported_by <- togroup(x_junctions)
-        ans_revmap <- extractList(supported_by, unq2dups)
+        crossed_by <- togroup(x_junctions)
+        ans_revmap <- extractList(crossed_by, unq2dups)
         ## 'ans_revmap' should never contain duplicates when 'x' is a
         ## GAlignments object, because a given junction can show up at most
         ## once per SAM/BAM record (i.e. per element in 'x', or per alignment).
-        ## This doesn't hold if the elements in 'x' consist of more than 1
-        ## SAM/BAM record (or alignment) e.g. if 'x' is a GAlignmentPairs or
-        ## GAlignmentsList object, because, in that case, the same junction
-        ## can show up more than once per element in 'x'.
+        ## This doesn't hold anymore if the elements in 'x' consist of more
+        ## than 1 SAM/BAM record (or alignment) e.g. if 'x' is a
+        ## GAlignmentPairs or GAlignmentsList object, because, in that case,
+        ## the same junction can show up more than once per element in 'x'.
         if (!is(x, "GAlignments"))
             ans_revmap <- unique(ans_revmap)
         ans_mcols$revmap <- ans_revmap
