@@ -127,9 +127,7 @@ readSTARJunctions(file)
   On a \code{x} is a \link{GAlignmentPairs} object, it's equivalent to (but
   faster than):
 \preformatted{
-  junctions1 <- junctions(first(x))
-  junctions2 <- junctions(last(x, invert.strand=TRUE))
-  mendoapply(c, junctions1, junctions2)
+  mendoapply(c, junctions(first(x)), junctions(last(x)))
 }
 
   \code{NATURAL_INTRON_MOTIFS} is a predefined character vector containing

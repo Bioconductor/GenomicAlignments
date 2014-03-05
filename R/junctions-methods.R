@@ -31,7 +31,7 @@ setMethod("junctions", "GAlignmentPairs",
         if (!isTRUEorFALSE(use.mcols))
             stop("'use.mcols' must be TRUE or FALSE")
         first_junctions <- junctions(x@first)
-        last_junctions <- junctions(invertRleStrand(x@last))
+        last_junctions <- junctions(x@last)
         ## Fast way of doing mendoapply(c, first_junctions, last_junctions)
         ## on 2 CompressedList objects.
         ans <- c(first_junctions, last_junctions)
