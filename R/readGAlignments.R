@@ -160,11 +160,13 @@ setMethod("readGAlignmentsFromBam", "BamFile",
 ### 'use.mcols' can be TRUE, FALSE, or a character vector specifying the
 ### *inner* metadata columns to return, i.e., the metadata columns to set on
 ### the 2 halves of the returned GAlignmentPairs object.
-.make_GAlignmentPairs_from_GAlignmentsList <- function(galist, use.mcols=FALSE)
+.make_GAlignmentPairs_from_GAlignments <- function(gal, use.mcols=FALSE)
 {
-    ## Dump "ambiguous" groups.
+    mate_status <- mcols(gal)[ , "mate_status"]
+
+    ## Dump alignments with "ambiguous" mate status.
     flushDumpedAlignments()
-    dumped_gal <- unlist(galist[mcols(galist)$mate_status == "ambiguous"])
+    dumped_gal <- gal[mate_status == "ambiguous"]
     dumped_count <- length(dumped_gal)
     if (dumped_count != 0L) {
         dumpAlignments(dumped_gal)
@@ -173,83 +175,75 @@ setMethod("readGAlignmentsFromBam", "BamFile",
                 "them from the dump environment.")
     }
 
-    ## Only keep "mated" groups.
-    mate_status <- mcols(galist)[ , "mate_status"]
-    galist <- galist[which(mate_status %in% "mated")]
-
-    unlisted_galist <- unlist(galist, use.names=FALSE)
-
-    ## Extract indices into 'unlisted_galist' of the 1st and 2nd elements
-    ## of each pair.
-    galist_partitioning <- PartitioningByEnd(galist)
-    is_a_pair <- width(galist_partitioning) == 2L
-    mate2_idx <- end(galist_partitioning)[is_a_pair]
-    mate1_idx <- mate2_idx - 1L
+    ## Keep alignments with "mated" mate status only.
+    gal <- gal[mate_status == "mated"]
 
     ## Check "flag" metadata column.
-    flag <- mcols(unlisted_galist)[ , "flag"]
-    flag1 <- flag[mate1_idx]
-    flag2 <- flag[mate2_idx]
+    flag <- mcols(gal)[ , "flag"]
+    is_first_mate <- bamFlagAsBitMatrix(flag, bitnames="isFirstMateRead")
+    is_last_mate <- bamFlagAsBitMatrix(flag, bitnames="isSecondMateRead")
+    bits_0x40_0x80_are_ok <- is_first_mate != is_last_mate
+    if (!all(bits_0x40_0x80_are_ok)) {
+        keep_idx <- which(bits_0x40_0x80_are_ok)
+        gal <- gal[keep_idx]
+        is_first_mate <- is_first_mate[keep_idx]
+        is_last_mate <- is_last_mate[keep_idx]
+    }
 
-    is_first_mate1 <- bamFlagAsBitMatrix(flag1, bitnames="isFirstMateRead")
-    is_last_mate1 <- bamFlagAsBitMatrix(flag1, bitnames="isSecondMateRead")
-    is_first_mate2 <- bamFlagAsBitMatrix(flag2, bitnames="isFirstMateRead")
-    is_last_mate2 <- bamFlagAsBitMatrix(flag2, bitnames="isSecondMateRead")
-    stopifnot(all(is_first_mate1))
-    stopifnot(all(is_first_mate1 != is_last_mate1))
-    stopifnot(all(is_first_mate2 != is_last_mate2))
-    stopifnot(all(is_first_mate1 == is_last_mate2))
-    #switch_mates_idx <- which(is_last_mate1 != 0L)
-    #mate1_idx[switch_mates_idx] <- mate1_idx[switch_mates_idx] + 1L
-    #mate2_idx[switch_mates_idx] <- mate2_idx[switch_mates_idx] - 1L
+    ## Split.
+    idx1 <- which(as.logical(is_first_mate))
+    idx2 <- which(as.logical(is_last_mate))
+    ans_first <- gal[idx1]
+    ans_last <- gal[idx2]
+    groupid1 <- mcols(ans_first)[ , "groupid"]
+    groupid2 <- mcols(ans_last)[ , "groupid"]
+    stopifnot(identical(groupid1, groupid2))
 
+    ## Drop the names.
+    ans_names <- names(ans_first)
+    names(ans_first) <- names(ans_last) <- NULL
+
+    ## Order the pairs by ascending start position of the first mate.
+    oo1 <- IRanges:::orderIntegerPairs(as.integer(ans_first@seqnames),
+                                       ans_first@start)
+    ans_first <- ans_first[oo1]
+    ans_last <- ans_last[oo1]
+    ans_names <- ans_names[oo1]
+
+    ## Check isProperPair (0x2) and isNotPrimaryRead (0x100) flag bits.
+    flag1 <- mcols(ans_first)[ , "flag"]
+    flag2 <- mcols(ans_last)[ , "flag"]
     is_proper1 <- bamFlagAsBitMatrix(flag1, bitnames="isProperPair")
     is_proper2 <- bamFlagAsBitMatrix(flag2, bitnames="isProperPair")
     stopifnot(identical(is_proper1, is_proper2))
-
     is_secondary1 <- bamFlagAsBitMatrix(flag1, bitnames="isNotPrimaryRead")
     is_secondary2 <- bamFlagAsBitMatrix(flag2, bitnames="isNotPrimaryRead")
     stopifnot(identical(is_secondary1, is_secondary2))
 
-    ## Split 'unlisted_galist' in 2 parallel GAlignments objects: 'ans_first'
-    ## and 'ans_last'.
-    ans_first <- unlisted_galist[mate1_idx]
-    ans_last <- unlisted_galist[mate2_idx]
-    ans_names <- names(galist)[is_a_pair]
-
-    ## Drop pairs with discordant seqnames or strand. Right now the pairs in
-    ## a GAlignmentPairs object are assumed to be concordant but maybe this
-    ## should be revisited.
-    is_discordant <- (as.character(seqnames(ans_first)) !=
-                      as.character(seqnames(ans_last))) |
-                     (as.character(strand(ans_first)) ==
-                      as.character(strand(ans_last)))
+    ## Drop discordant pairs. 
+    is_discordant <- (seqnames(ans_first) != seqnames(ans_last)) |
+                     (strand(ans_first) == strand(ans_last))
     discordant_idx <- which(is_discordant)
     if (length(discordant_idx) != 0L) {
         nb_discordant_proper <- sum(is_proper1[discordant_idx])
-        if (nb_discordant_proper != 0L) {
-            ratio <- 100.0 * nb_discordant_proper / length(discordant_idx)
-            warning(ratio, "% of the pairs with discordant seqnames or ",
-                    "strand were flagged\n",
-                    "  as proper pairs by the aligner. Dropping them anyway.")
-        }
-        concordant_idx <- which(!is_discordant)
-        ans_first <- ans_first[concordant_idx]
-        ans_last <- ans_last[concordant_idx]
-        ans_names <- ans_names[concordant_idx]
-        is_proper1 <- is_proper1[concordant_idx]
+        nb_discordant_not_proper <- length(discordant_idx) -
+                                    nb_discordant_proper
+        warning(length(discordant_idx), " pairs (", nb_discordant_proper,
+                " proper, ", nb_discordant_not_proper, " not proper) were ",
+                "dropped because the seqname\n  or strand of the alignments ",
+                "in the pair were not concordant.\n",
+                "  Note that a GAlignmentPairs object can only hold ",
+                "concordant pairs at the\n  moment, that is, pairs where ",
+                "the 2 alignments are on the opposite strands\n  of the same ",
+                "chromosome.")
+        keep_idx <- which(!is_discordant)
+        ans_first <- ans_first[keep_idx]
+        ans_last <- ans_last[keep_idx]
+        is_proper1 <- is_proper1[keep_idx]
+        ans_names <- ans_names[keep_idx]
     }
 
-    ## Order the pairs by ascending start position of the first mate.
-    oo <- IRanges:::orderIntegerPairs(as.integer(ans_first@seqnames),
-                                      ans_first@start)
-    ans_first <- ans_first[oo]
-    ans_last <- ans_last[oo]
-    ans_names <- ans_names[oo]
-    is_proper1 <- is_proper1[oo]
-
     ## Make the GAlignmentPairs object and return it.
-    names(ans_first) <- names(ans_last) <- NULL
     if (is.character(use.mcols)) {
         mcols(ans_first) <- mcols(ans_first)[use.mcols]
         mcols(ans_last) <- mcols(ans_last)[use.mcols]
@@ -273,15 +267,15 @@ setMethod("readGAlignmentPairsFromBam", "BamFile",
         if (is.null(param))
             param <- ScanBamParam()
         flag0 <- scanBamFlag(isPaired=TRUE, hasUnmappedMate=FALSE)
-        what0 <- "flag"
+        what0 <- c("flag", "groupid", "mate_status")
         param2 <- .normargParam(param, flag0, what0)
-        galist <- readGAlignmentsListFromBam(file, use.names=use.names,
-                                             param=param2,
-                                             with.which_label=with.which_label)
+        gal <- readGAlignmentsFromBam(file, use.names=use.names,
+                                      param=param2,
+                                      with.which_label=with.which_label)
         use.mcols <- c(bamWhat(param), bamTag(param))
         if (with.which_label)
             use.mcols <- c(use.mcols, "which_label")
-        .make_GAlignmentPairs_from_GAlignmentsList(galist, use.mcols=use.mcols)
+        .make_GAlignmentPairs_from_GAlignments(gal, use.mcols=use.mcols)
     }
 )
 
