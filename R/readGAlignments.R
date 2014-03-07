@@ -176,9 +176,13 @@ setMethod("readGAlignmentsFromBam", "BamFile",
     }
 
     ## Keep alignments with "mated" mate status only.
-    gal <- gal[mate_status == "mated"]
+    is_mated <- mate_status == "mated"
+    if (!all(is_mated)) {
+        keep_idx <- which(is_mated)
+        gal <- gal[keep_idx]
+    }
 
-    ## Check "flag" metadata column.
+    ## Check flag bits 0x40 and 0x80.
     flag <- mcols(gal)[ , "flag"]
     is_first_mate <- bamFlagAsBitMatrix(flag, bitnames="isFirstMateRead")
     is_last_mate <- bamFlagAsBitMatrix(flag, bitnames="isSecondMateRead")
@@ -190,9 +194,12 @@ setMethod("readGAlignmentsFromBam", "BamFile",
         is_last_mate <- is_last_mate[keep_idx]
     }
 
-    ## Split.
+    ## Split and order the pairs by ascending start position of the first mate.
     idx1 <- which(as.logical(is_first_mate))
-    idx2 <- which(as.logical(is_last_mate))
+    oo1 <- IRanges:::orderIntegerPairs(as.integer(gal@seqnames)[idx1],
+                                       gal@start[idx1])
+    idx1 <- idx1[oo1]
+    idx2 <- which(as.logical(is_last_mate))[oo1]
     ans_first <- gal[idx1]
     ans_last <- gal[idx2]
     groupid1 <- mcols(ans_first)[ , "groupid"]
@@ -202,13 +209,6 @@ setMethod("readGAlignmentsFromBam", "BamFile",
     ## Drop the names.
     ans_names <- names(ans_first)
     names(ans_first) <- names(ans_last) <- NULL
-
-    ## Order the pairs by ascending start position of the first mate.
-    oo1 <- IRanges:::orderIntegerPairs(as.integer(ans_first@seqnames),
-                                       ans_first@start)
-    ans_first <- ans_first[oo1]
-    ans_last <- ans_last[oo1]
-    ans_names <- ans_names[oo1]
 
     ## Check isProperPair (0x2) and isNotPrimaryRead (0x100) flag bits.
     flag1 <- mcols(ans_first)[ , "flag"]
