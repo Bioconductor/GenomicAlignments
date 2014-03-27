@@ -234,6 +234,7 @@ IntersectionNotEmpty(features, reads, ignore.strand=FALSE, inter.feature=TRUE)
         \item{When \code{fragments} is FALSE, a \code{GAlignmentsList}
               object is used in counting (pairs, singletons, unmapped
               mates, etc.)}
+      }
     }
   }
 }
