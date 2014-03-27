@@ -259,6 +259,18 @@ readGappedReadsFromBam(file, index=file, use.names=FALSE,
     call behind the scene. It is also the pairing criteria used by
     \code{\link{findMateAlignment}}.
   }
+  \subsection{yieldSize in BamFile and which in ScanBamParam}{
+    The \code{yieldSize} argument is used when creating a \code{\link{BamFile}} 
+    and controls the number of records returned iteratively until 
+    the end of the file is reached. The \code{which} argument to
+    \code{\link{ScanBamParam}} defines genomic regions of interest. When
+    both \code{yieldSize} and \code{which} are defined (i.e., not missing
+    or NA) the \code{which} in \code{ScanBamParam} takes priority and
+    \code{yieldSize} is ignored. The point of \code{yieldSize} is to 
+    specify a reasonable chuck size to move through a large file. When
+    the \code{ScanBamParam} has a \code{which} defined the assumption is
+    that \code{which} is of reasonable size.
+  }
 }
 
 \value{
