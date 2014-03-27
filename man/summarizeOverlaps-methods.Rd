@@ -138,9 +138,10 @@ IntersectionNotEmpty(features, reads, ignore.strand=FALSE, inter.feature=TRUE)
   }
   \item{...}{
     Additional arguments for BAM file methods such as \code{singleEnd},
-    \code{fragments} or \code{param} (see below). Providing
-    \code{count.mapped.reads=TRUE} include additional passes through the
-    BAM file to collect statistics like those from \code{countBam}.
+    \code{fragments} or \code{param} that apply to the reading of
+    records from a file (see below). Providing \code{count.mapped.reads=TRUE} 
+    include additional passes through the BAM file to collect statistics 
+    similar to those from \code{countBam}.
   }
   \item{singleEnd}{
     (Default TRUE) A logical value indicating if reads are single or 
@@ -223,10 +224,16 @@ IntersectionNotEmpty(features, reads, ignore.strand=FALSE, inter.feature=TRUE)
       hit. Paired-end records can be counted in a \link{GAlignmentPairs}
       container or BAM file. 
 
-      When counting BAM files the method has an additional argument,
-      \code{singleEnd}, which should be FALSE for paired-end data.
-      See ?\code{summarizeOverlaps,GRanges,BamFileList-method} for details
-      on additional arguments when counting BAM files.
+      Counting pairs in BAM files:
+      \itemize{
+        \item{The \code{singleEnd} argument should be FALSE.}
+        \item{When \code{reads} are supplied as a BamFile or BamFileList, 
+              the \code{asMates} argument to the BamFile should be TRUE.}
+        \item{When \code{fragments} is TRUE, a \code{GAlignmentPairs}
+              object is used in counting (pairs only).}
+        \item{When \code{fragments} is FALSE, a \code{GAlignmentsList}
+              object is used in counting (pairs, singletons, unmapped
+              mates, etc.)}
     }
   }
 }
@@ -388,7 +395,7 @@ table(assays(nofrag)$counts > 0)
 
 ## When 'fragments=TRUE' all singletons, reads with unmapped pairs 
 ## and other fragments will be included in the counting.
-bf <- BamFile(untreated3_chr4())
+bf <- BamFile(untreated3_chr4(), asMates=TRUE)
 frag <- summarizeOverlaps(exbygene, bf, singleEnd=FALSE, fragments=TRUE)
 table(assays(frag)$counts > 0)
 
