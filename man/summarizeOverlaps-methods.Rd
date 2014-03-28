@@ -176,10 +176,9 @@ IntersectionNotEmpty(features, reads, ignore.strand=FALSE, inter.feature=TRUE)
   \item{param}{An optional \code{\link[Rsamtools]{ScanBamParam}} instance to
     further influence scanning, counting, or filtering.
 
-    When \code{yieldSize} is specified in a \code{\link{BamFile}} and
-    \code{which} is defined in a \code{\link{ScanBamParam}} the \code{which}
-    takes priority and \code{yieldSize} is ignored. The assumption is that 
-    the range in \code{which} is of reasonable size.
+    See \code{?\link{BamFile}} for details of how records are returned
+    when both \code{yieldSize} is specified in a \code{\link{BamFile}} and
+    \code{which} is defined in a \code{\link{ScanBamParam}}.
   }
 }
 
