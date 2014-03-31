@@ -8,7 +8,7 @@ test_readGAlignmentsListFromBam_construction <- function()
     galist <- readGAlignmentsListFromBam(fl)
     checkTrue(is.null(names(galist)))
     galist <- readGAlignmentsListFromBam(fl, use.names=TRUE)
-    target <- c("B7_589:1:101:825:28", "B7_589:1:110:543:934")
+    target <- c("EAS54_61:4:143:69:578", "EAS219_FC30151:7:51:1429:1043")
     checkIdentical(names(galist)[1:2], target)
 
     ## first segment first
