@@ -187,7 +187,11 @@ readGappedReadsFromBam(file, index=file, use.names=FALSE,
     \link{GAlignmentPairs} objects.
 
     \code{readGAlignmentsListFromBam} pairs records into mates
-    according to the pairing criteria described below.
+    according to the pairing criteria described below. The 1st mate
+    will always be 1st in the \code{GAlignmentsList} list elements that 
+    have mate_status set to \code{"mated"}, and the 2nd mate will 
+    always be 2nd.
+
     A \code{GAlignmentsList} is returned with a \sQuote{mate_status}
     metadata column on the outer list elements. \code{mate_status} is a
     factor with 3 levels indicating mate status, \sQuote{mated},
