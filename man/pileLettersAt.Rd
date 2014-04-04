@@ -26,18 +26,18 @@ pileLettersAt(x, seqnames, pos, cigar, at)
     the + strand. 
   }
   \item{seqnames}{
-    A factor-\link[IRanges]{Rle} parallel to \code{x}.
+    A factor-\link[IRanges]{Rle} \emph{parallel} to \code{x}.
     For each \code{i}, \code{seqnames[i]} must be the name of the reference
     sequence of the i-th alignment.
   }
   \item{pos}{
-    An integer vector parallel to \code{x}.
+    An integer vector \emph{parallel} to \code{x}.
     For each \code{i}, \code{pos[i]} must be the 1-based position
     on the reference sequence of the first aligned letter in \code{x[[i]]}.
   }
   \item{cigar}{
-    A character vector parallel to \code{x}. Contains the extended CIGAR
-    strings of the alignments.
+    A character vector \emph{parallel} to \code{x}. Contains the extended
+    CIGAR strings of the alignments.
   }
   \item{at}{
     A \link[GenomicRanges]{GRanges} object containing the individual genomic
@@ -47,14 +47,14 @@ pileLettersAt(x, seqnames, pos, cigar, at)
 }
 
 \details{
-  \code{x}, \code{seqnames}, \code{pos}, \code{cigar} must be 4 parallel
+  \code{x}, \code{seqnames}, \code{pos}, \code{cigar} must be 4 \emph{parallel}
   vectors describing N aligned reads.
 }
 
 \value{
   An \link[Biostrings]{XStringSet} (typically \link[Biostrings]{DNAStringSet})
-  object parallel to \code{at} (i.e. with 1 string per individual genomic
-  position).
+  object \emph{parallel} to \code{at} (i.e. with 1 string per individual
+  genomic position).
 }
 
 \author{H. Pages}

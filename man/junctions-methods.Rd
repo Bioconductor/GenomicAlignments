@@ -137,7 +137,7 @@ readSTARJunctions(file)
 
 \value{
   \code{junctions(x)} returns the genomic ranges of the junctions in a
-  \link[GenomicRanges]{GRangesList} object \emph{parallel} to \code{x},
+  \link[GenomicRanges]{GRangesList} object \emph{parallel} to \code{x}
   (i.e. with 1 list element per element in \code{x}).
   If \code{x} has names on it, they're propagated to the returned object.
   If \code{use.mcols} is TRUE and \code{x} has metadata columns on it
