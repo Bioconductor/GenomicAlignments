@@ -110,30 +110,9 @@ Union <- function(features, reads, ignore.strand=FALSE, inter.feature=TRUE)
     countQueryHits(ov)
 }
 
-### Drop from 'reads' circular seqlevels that are in use in *both*: 'reads'
-### and 'features'.
-.dropCircularSeqlevelsInUse <- function(reads, features)
-{
-    seqlevels_in_use <- intersect(seqlevelsInUse(reads),
-                                  seqlevelsInUse(features))
-    seqinfo <- merge(seqinfo(reads), seqinfo(features))
-    is_circ <- isCircular(seqinfo)
-    circular_seqlevels <- names(is_circ)[is_circ]
-    seqlevels_to_drop <- intersect(seqlevels_in_use, circular_seqlevels)
-    if (length(seqlevels_to_drop) != 0L) {
-        warning("reads on circular sequence(s) '",
-                paste(seqlevels_to_drop, sep="', '"),
-                "' were ignored")
-        seqlevels(reads, force=TRUE) <- setdiff(seqlevels(reads),
-                                                seqlevels_to_drop)
-    }
-    reads
-}
-
 IntersectionStrict <- function(features, reads, ignore.strand=FALSE,
                                inter.feature=TRUE)
 {
-    reads <- .dropCircularSeqlevelsInUse(reads, features)
     ov <- findOverlaps(reads, features, type="within",
                        ignore.strand=ignore.strand)
     if (inter.feature) {
