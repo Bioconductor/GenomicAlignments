@@ -9,6 +9,10 @@
 \alias{summarizeOverlaps,GRangesList,GAlignmentsList-method}
 \alias{summarizeOverlaps,GRanges,GAlignmentPairs-method}
 \alias{summarizeOverlaps,GRangesList,GAlignmentPairs-method}
+\alias{summarizeOverlaps,GRanges,GRanges-method}
+\alias{summarizeOverlaps,GRangesList,GRanges-method}
+\alias{summarizeOverlaps,GRanges,GRangesList-method}
+\alias{summarizeOverlaps,GRangesList,GRangesList-method}
 
 \alias{Union}
 \alias{IntersectionStrict}
@@ -35,6 +39,12 @@
   features, reads, mode, ignore.strand=FALSE, ..., inter.feature=TRUE) 
 
 \S4method{summarizeOverlaps}{GRangesList,GAlignments}(
+  features, reads, mode, ignore.strand=FALSE, ..., inter.feature=TRUE) 
+
+\S4method{summarizeOverlaps}{GRanges,GRanges}(
+  features, reads, mode, ignore.strand=FALSE, ..., inter.feature=TRUE) 
+
+\S4method{summarizeOverlaps}{GRangesList,GRanges}(
   features, reads, mode, ignore.strand=FALSE, ..., inter.feature=TRUE) 
 
 \S4method{summarizeOverlaps}{GRanges,GAlignmentPairs}(
@@ -76,8 +86,11 @@ IntersectionNotEmpty(features, reads, ignore.strand=FALSE, inter.feature=TRUE)
     slot. 
   } 
   \item{reads}{
-    A \link[Rsamtools]{BamViews} or \link[Rsamtools]{BamFileList} object
-    that represents the data to be counted by \code{summarizeOverlaps}.
+    A \link[GenomicRanges]{GRanges}, \link[GenomicRanges]{GRangesList}
+    \link{GAlignments}, \link{GAlignmentsList}, 
+    \link{GAlignmentPairs}, \link[Rsamtools]{BamViews} or 
+    \link[Rsamtools]{BamFileList} object that represents the data to be 
+    counted by \code{summarizeOverlaps}.
 
     Can be missing when a \link[Rsamtools]{BamViews} object is the only
     argument supplied to \code{summarizeOverlaps}.

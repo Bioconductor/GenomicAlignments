@@ -94,6 +94,37 @@ setMethod("summarizeOverlaps", c("GRangesList", "GAlignmentPairs"),
                        ..., inter.feature=inter.feature)
 })
 
+setMethod("summarizeOverlaps", c("GRanges", "GRanges"),
+    function(features, reads, mode, ignore.strand=FALSE, ...,
+             inter.feature=TRUE)
+{
+    .summarizeOverlaps(features, reads, mode, ignore.strand,
+                       ..., inter.feature=inter.feature)
+})
+
+setMethod("summarizeOverlaps", c("GRangesList", "GRanges"),
+    function(features, reads, mode, ignore.strand=FALSE, ...,
+             inter.feature=TRUE)
+{
+    .summarizeOverlaps(features, reads, mode, ignore.strand,
+                       ..., inter.feature=inter.feature)
+})
+
+setMethod("summarizeOverlaps", c("GRanges", "GRangesList"),
+    function(features, reads, mode, ignore.strand=FALSE, ...,
+             inter.feature=TRUE)
+{
+    .summarizeOverlaps(features, reads, mode, ignore.strand, ...,
+                       inter.feature=inter.feature)
+})
+
+setMethod("summarizeOverlaps", c("GRangesList", "GRangesList"),
+    function(features, reads, mode, ignore.strand=FALSE, ...,
+             inter.feature=TRUE)
+{
+    .summarizeOverlaps(features, reads, mode, ignore.strand, ...,
+                       inter.feature=inter.feature)
+})
 
 ### -------------------------------------------------------------------------
 ### 'mode' functions 
