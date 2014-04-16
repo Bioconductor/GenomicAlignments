@@ -749,7 +749,7 @@ setMethod("c", "GAlignments",
 setMethod("ngap", "GAlignments",
     function(x)
     {
-        .Deprecated("njunc")
+        .Defunct("njunc")
         njunc(x)
     }
 )

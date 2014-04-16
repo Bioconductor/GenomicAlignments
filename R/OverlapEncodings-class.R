@@ -282,7 +282,7 @@ setMethod("show", "OverlapEncodings",
 setMethod("ngap", "character",
     function(x)
     {
-        .Deprecated("njunc")
+        .Defunct("njunc")
         njunc(x)
     }
 )
@@ -290,7 +290,7 @@ setMethod("ngap", "character",
 setMethod("ngap", "factor",
     function(x)
     {
-        .Deprecated("njunc")
+        .Defunct("njunc")
         njunc(x)
     }
 )
@@ -298,20 +298,20 @@ setMethod("ngap", "factor",
 setMethod("ngap", "OverlapEncodings",
     function(x)
     {
-        .Deprecated("njunc")
+        .Defunct("njunc")
         njunc(x)
     }
 )
 
 Lngap <- function(x)
 {
-    .Deprecated("Lnjunc")
+    .Defunct("Lnjunc")
     Lnjunc(x)
 }
 
 Rngap <- function(x)
 {
-    .Deprecated("Rnjunc")
+    .Defunct("Rnjunc")
     Rnjunc(x)
 }
 

@@ -356,7 +356,7 @@ setMethod("relistToClass", "GAlignments",
 )
 
 setMethod("splitAsListReturnedClass", "GAlignments",
-    function(x) {.Deprecated("relistToClass"); "GAlignmentsList"}
+    function(x) {.Defunct("relistToClass"); "GAlignmentsList"}
 )
 
 
@@ -382,7 +382,7 @@ makeGAlignmentsListFromFeatureFragments <- function(seqnames=Rle(factor()),
                                                 strand=character(0),
                                                 sep=",")
 {
-    .Deprecated()
+    .Defunct()
     fragmentPos <-
         GenomicRanges:::normargListOfIntegers(fragmentPos, sep, "fragmentPos")
     nfrag_per_feature <- elementLengths(fragmentPos)
@@ -423,7 +423,7 @@ makeGAlignmentsListFromFeatureFragments <- function(seqnames=Rle(factor()),
 setMethod("ngap", "GAlignmentsList",
     function(x)
     {
-        .Deprecated("njunc")
+        .Defunct("njunc")
         njunc(x)
     }
 )

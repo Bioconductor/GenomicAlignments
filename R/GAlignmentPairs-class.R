@@ -678,7 +678,7 @@ setMethod("c", "GAlignmentPairs",
 setMethod("ngap", "GAlignmentPairs",
     function(x)
     {
-        .Deprecated("njunc")
+        .Defunct("njunc")
         njunc(x)
     }
 )

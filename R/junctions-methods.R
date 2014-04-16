@@ -325,7 +325,7 @@ readSTARJunctions <- function(file)
 
 introns <- function(...)
 {
-    .Deprecated("junctions")
+    .Defunct("junctions")
     junctions(...)
 }
 
