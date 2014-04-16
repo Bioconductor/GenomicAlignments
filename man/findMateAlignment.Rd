@@ -8,8 +8,6 @@
 \alias{countDumpedAlignments}
 \alias{flushDumpedAlignments}
 
-% Old stuff:
-\alias{makeGappedAlignmentPairs}
 
 \title{Pairing the elements of a GAlignments object}
 

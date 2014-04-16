@@ -22,15 +22,6 @@
 \alias{readGappedReadsFromBam,BamFile-method}
 \alias{readGappedReadsFromBam,character-method}
 
-% Old stuff:
-\alias{readGappedAlignments}
-\alias{readGappedAlignmentPairs}
-
-\alias{readBamGappedAlignments}
-\alias{readBamGappedReads}
-\alias{readBamGappedAlignmentPairs}
-\alias{readBamGAlignmentsList}
-
 
 \title{Reading genomic alignments from a file}
 

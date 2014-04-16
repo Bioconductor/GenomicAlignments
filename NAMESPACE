@@ -16,10 +16,7 @@ exportClasses(
     GAlignmentPairs,
     GAlignmentsList,
     GappedReads,
-    OverlapEncodings,
-
-    ## Old names:
-    GappedAlignments, GappedAlignmentPairs
+    OverlapEncodings
 )
 
 
@@ -78,19 +75,15 @@ export(
     CIGAR_OPS,
     explodeCigarOps, explodeCigarOpLengths,
     cigarToRleList,
-    splitCigar,
     cigarRangesAlongReferenceSpace,
     cigarRangesAlongQuerySpace,
     cigarRangesAlongPairwiseSpace,
     extractAlignmentRangesOnReference,
-    cigarToIRanges,
-    cigarToIRangesListByAlignment, cigarToIRangesListByRName,
     cigarWidthAlongReferenceSpace,
     cigarWidthAlongQuerySpace,
     cigarWidthAlongPairwiseSpace,
-    cigarToWidth, cigarToQWidth,
     cigarNarrow, cigarQNarrow,
-    cigarOpTable, cigarToCigarTable, summarizeCigarTable,
+    cigarOpTable,
     queryLoc2refLoc, queryLocs2refLocs,
 
     GAlignments,
@@ -126,13 +119,6 @@ export(
     Union, IntersectionNotEmpty, IntersectionStrict,
 
     ## old stuff (deprecated or defunct):
-    GappedAlignments,
-    GappedAlignmentPairs,
-    makeGappedAlignmentPairs,
-    readBamGappedAlignments,
-    readBamGappedAlignmentPairs,
-    readBamGAlignmentsList,
-    readBamGappedReads,
     Lngap, Rngap,
     introns
 )

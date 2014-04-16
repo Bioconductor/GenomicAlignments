@@ -56,10 +56,6 @@
 \alias{splitAsListReturnedClass,GAlignments-method}
 
 % Old stuff:
-\alias{GappedAlignments}
-\alias{class:GappedAlignments}
-\alias{GappedAlignments-class}
-\alias{show,GappedAlignments-method}
 \alias{ngap,GAlignments-method}
 
 

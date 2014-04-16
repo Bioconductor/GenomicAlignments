@@ -49,10 +49,6 @@
 \alias{c,GAlignmentPairs-method}
 
 % Old stuff:
-\alias{GappedAlignmentPairs}
-\alias{class:GappedAlignmentPairs}
-\alias{GappedAlignmentPairs-class}
-\alias{show,GappedAlignmentPairs-method}
 \alias{ngap,GAlignmentPairs-method}
 
 

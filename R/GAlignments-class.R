@@ -746,32 +746,6 @@ setMethod("c", "GAlignments",
 ### Old stuff (deprecated & defunct)
 ###
 
-.GappedAlignments_warning_msg <- function()
-{
-    msg <- c("  The GappedAlignments class, the GappedAlignments()",
-             "constructor, and the readGappedAlignments() function, have been",
-             "renamed: GAlignments, GAlignments(), and readGAlignments(),",
-             "respectively. The old names are now defunct. Please use the ",
-             "new names instead.")
-    paste0(msg, collapse="\n  ")
-}
-
-setClass("GappedAlignments", contains="GAlignments")
-
-setValidity("GappedAlignments",
-    function(object) .Defunct(msg=.GappedAlignments_warning_msg())
-)
-
-setMethod("show", "GappedAlignments",
-    function(object) .Defunct(msg=.GappedAlignments_warning_msg())
-)
-
-GappedAlignments <- function(...)
-    .Defunct(msg=.GappedAlignments_warning_msg())
-
-readGappedAlignments <- function(...)
-    .Defunct(msg=.GappedAlignments_warning_msg())
-
 setMethod("ngap", "GAlignments",
     function(x)
     {

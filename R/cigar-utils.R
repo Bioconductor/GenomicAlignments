@@ -256,9 +256,7 @@ extractAlignmentRangesOnReference <- function(cigar, pos=1L,
         stop("'drop.D.ranges' must be TRUE or FALSE")
     ## Not sure why we include "I" operations here since they don't generate
     ## coverage on the reference (they always produce zero-width ranges on the
-    ## reference). Anyway, this is what old cigarToIRangesListByAlignment()
-    ## and cigarToIRangesListByRName() have been doing for a while so
-    ## extractAlignmentRangesOnReference() (which replaces them) does the same.
+    ## reference).
     if (drop.D.ranges) {
         ops <- c("M", "=", "X", "I")
     } else {
@@ -354,57 +352,4 @@ queryLocs2refLocs <- function(qlocs, cigar, pos=1L, flag=NULL)
 {
     stop("NOT IMPLEMENTED YET, SORRY!")
 }
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Old stuff (deprecated & defunct)
-###
-
-splitCigar <- function(cigar) .Defunct()
-
-cigarToIRanges <- function(cigar, drop.D.ranges=FALSE,
-                           drop.empty.ranges=FALSE, reduce.ranges=TRUE)
-    .Defunct("extractAlignmentRangesOnReference")
-
-### 2 wrappers to cigarRangesAlongReferenceSpace() with ugly names. Used
-### internally in the GenomicAlignments package for turning a GAlignments
-### object into a GRangesList object and/or for extracting the ranges that
-### generate coverage on the reference.
-cigarToIRangesListByAlignment <- function(cigar, pos=1L, flag=NULL,
-                                          drop.D.ranges=FALSE,
-                                          drop.empty.ranges=FALSE,
-                                          reduce.ranges=TRUE)
-    .Defunct("extractAlignmentRangesOnReference")
-
-cigarToIRangesListByRName <- function(cigar, rname, pos=1L, flag=NULL,
-                                      drop.D.ranges=FALSE,
-                                      drop.empty.ranges=FALSE,
-                                      reduce.ranges=TRUE)
-    .Defunct("extractAlignmentRangesOnReference")
-
-cigarToWidth <- function(...)
-    .Defunct("cigarWidthAlongReferenceSpace")
-
-cigarToQWidth <- function(...)
-    .Defunct("cigarWidthAlongQuerySpace")
-
-cigarToCigarTable <- function(cigar)
-{
-    msg <- c("  cigarToCigarTable() is defunct.",
-             "Please use 'table(cigar)' instead.")
-    .Defunct(msg=paste0(msg, collapse=" "))
-}
-
-### summarizeCigarTable() is broken:
-###
-###   > summarizeCigarTable(cigarToCigarTable(c("55M", "5M3I40M")))
-###   Error in data.frame(subject = subjectHits(findOverlaps(IRanges(unlist(x[["cigar"]] ==  : 
-###     arguments imply differing number of rows: 0, 1
-###
-### In addition, what it's supposed to do and to return is not really
-### documented, its implementation is kind of cryptic, and it doesn't seem
-### very useful anyway (hard to know exactly without more details about what
-### it does though). I doubt a lot of people have tried to use it ==> Probably
-### not worth fixing/maintaining.
-summarizeCigarTable <- function(x) .Defunct()
 

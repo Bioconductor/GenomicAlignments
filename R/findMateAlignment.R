@@ -488,11 +488,3 @@ makeGAlignmentPairs <- function(x, use.names=FALSE, use.mcols=FALSE)
     GAlignmentPairs(ans_first, ans_last, ans_is_proper, names=ans_names)
 }
 
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Old stuff.
-###
-
-makeGappedAlignmentPairs <- function(...)
-    .Defunct("makeGAlignmentPairs")
-

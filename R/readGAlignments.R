@@ -468,19 +468,3 @@ readGappedReads <- function(file, format="BAM", use.names=FALSE, ...)
     stop("only BAM format is supported at the moment")
 }
 
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Old stuff.
-###
-
-readBamGappedAlignments <- function(...)
-    .Defunct("readGAlignmentsFromBam")
-
-readBamGappedReads <- function(...)
-    .Defunct("readGappedReadsFromBam")
-
-readBamGappedAlignmentPairs <- function(...)
-    .Defunct("readGAlignmentPairsFromBam")
-
-readBamGAlignmentsList <- function(...)
-    .Defunct("readGAlignmentsListFromBam")

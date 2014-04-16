@@ -27,16 +27,6 @@
 \alias{queryLoc2refLoc}
 \alias{queryLocs2refLocs}
 
-% Old stuff:
-\alias{splitCigar}
-\alias{cigarToIRanges}
-\alias{cigarToIRangesListByAlignment}
-\alias{cigarToIRangesListByRName}
-\alias{cigarToWidth}
-\alias{cigarToQWidth}
-\alias{cigarToCigarTable}
-\alias{summarizeCigarTable}
-
 
 \title{
   CIGAR utility functions
