@@ -1,5 +1,6 @@
 #include "GenomicAlignments.h"
 #include "IRanges_interface.h"
+#include "S4Vectors_interface.h"
 
 #include <ctype.h> /* for isdigit() */
 

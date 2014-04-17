@@ -206,7 +206,7 @@
 }
 
 ## Until we have the formal 'gaps' method for GRangeList
-.isNumericOrNAs <- IRanges:::isNumericOrNAs
+.isNumericOrNAs <- S4Vectors:::isNumericOrNAs
 .gaps <- function(x, start=NA, end=NA)
 {
     if (!.isNumericOrNAs(start))

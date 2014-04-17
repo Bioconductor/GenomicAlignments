@@ -262,7 +262,7 @@ setReplaceMethod("seqinfo", "GAlignmentPairs",
     }
     if (length(x_isProperPair) != length(x))
         return("'x@isProperPair' and 'x' must have the same length")
-    if (IRanges:::anyMissing(x_isProperPair))
+    if (S4Vectors:::anyMissing(x_isProperPair))
         return("'x@isProperPair' cannot contain NAs")
     NULL
 }
@@ -519,7 +519,7 @@ showGAlignmentPairs <- function(x, margin="",
         " and ",
         nc, " metadata ", ifelse(nc == 1L, "column", "columns"),
         ":\n", sep="")
-    out <- IRanges:::makePrettyMatrixForCompactPrinting(x,
+    out <- S4Vectors:::makePrettyMatrixForCompactPrinting(x,
                .makeNakedMatFromGAlignmentPairs)
     if (with.classinfo) {
         .PAIR_COL2CLASS <- c(

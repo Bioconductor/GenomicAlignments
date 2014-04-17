@@ -288,7 +288,7 @@ readSTARJunctions <- function(file)
     STAR_intron_motif_code <- df[[5L]]
     if (!is.integer(ans_start) || !is.integer(ans_end)
      || !is.integer(STAR_intron_motif_code)
-     || IRanges:::anyMissingOrOutside(STAR_intron_motif_code,
+     || S4Vectors:::anyMissingOrOutside(STAR_intron_motif_code,
                                       lower=0L, upper=6L))
         stop("'file' does not look like a junction file generated ",
              "by the STAR aligner (normally the SJ.out.tab file)")

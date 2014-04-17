@@ -823,7 +823,7 @@ setMethod("extractSkippedExonRanks", "OverlapEncodings",
         stop("'elt_lens' must be an integer vector of the same length as 'x'")
     if (!is.integer(elt_lens))
         elt_lens <- as.integer(elt_lens)
-    if (IRanges:::anyMissingOrOutside(elt_lens, lower=0L))
+    if (S4Vectors:::anyMissingOrOutside(elt_lens, lower=0L))
         stop("'elt_lens' cannot contain NAs or negative values")
     x_elt_lens <- elementLengths(x)
     if (!all(elt_lens <= x_elt_lens))

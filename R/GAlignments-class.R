@@ -254,7 +254,7 @@ setReplaceMethod("seqinfo", "GAlignments",
 .valid.GAlignments.start <- function(x)
 {
     x_start <- start(x)
-    if (!is.integer(x_start) || !is.null(names(x_start)) || IRanges:::anyMissing(x_start))
+    if (!is.integer(x_start) || !is.null(names(x_start)) || S4Vectors:::anyMissing(x_start))
         return("'start(x)' must be an unnamed integer vector with no NAs")
     if (length(x_start) != length(cigar(x)))
         return("'start(x)' and 'cigar(x)' must have the same length")
@@ -584,7 +584,7 @@ showGAlignments <- function(x, margin="",
         " and ",
         nc, " metadata ", ifelse(nc == 1L, "column", "columns"),
         ":\n", sep="")
-    out <- IRanges:::makePrettyMatrixForCompactPrinting(x,
+    out <- S4Vectors:::makePrettyMatrixForCompactPrinting(x,
                .makeNakedMatFromGAlignments)
     if (with.classinfo) {
         .COL2CLASS <- c(
