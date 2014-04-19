@@ -91,6 +91,7 @@ export(
     GAlignmentPairs,
     GAlignmentsList,
     makeGAlignmentsListFromFeatureFragments,
+    GappedReads,
 
     findMateAlignment, findMateAlignment2,
     makeGAlignmentPairs,

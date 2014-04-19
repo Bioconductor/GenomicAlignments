@@ -2,7 +2,10 @@
 \docType{class}
 
 % Class:
+\alias{class:GappedReads}
 \alias{GappedReads-class}
+
+% Constructor:
 \alias{GappedReads}
 
 % Accessors:
