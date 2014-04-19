@@ -137,7 +137,7 @@ CIGAR):
 
 <<gaps-in-U1.GAL>>=
 head(unique(cigar(U1.GAL)))
-table(ngap(U1.GAL))
+table(njunc(U1.GAL))
 @
 
 Also, the following table indicates that indels were not allowed/supported 
@@ -226,7 +226,7 @@ Our reads can have up to 1 gap per end:
 <<gaps-in-U3.GALP>>=
 head(unique(cigar(first(U3.GALP))))
 head(unique(cigar(last(U3.GALP))))
-table(ngap(first(U3.GALP)), ngap(last(U3.GALP)))
+table(njunc(first(U3.GALP)), njunc(last(U3.GALP)))
 @
 
 Like for our single-end reads, the following tables indicate that indels were
@@ -1197,7 +1197,7 @@ findSequenceHits <- function(qseq, txseq, which.txseq=NULL, max.mismatch=0)
     }
 
     ## Order the hits.
-    oo <- IRanges:::orderIntegerPairs(query_hits, subject_hits)
+    oo <- S4Vectors:::orderIntegerPairs(query_hits, subject_hits)
     hits0@queryHits <- query_hits[oo]
     hits0@subjectHits <- subject_hits[oo]
 

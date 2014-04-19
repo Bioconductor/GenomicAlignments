@@ -36,7 +36,7 @@ setMethod("junctions", "GAlignmentPairs",
         ## on 2 CompressedList objects.
         ans <- c(first_junctions, last_junctions)
         collate_subscript <-
-            IRanges:::make_XYZxyz_to_XxYyZz_subscript(length(x))
+            S4Vectors:::make_XYZxyz_to_XxYyZz_subscript(length(x))
         ans <- ans[collate_subscript]
         ans <- shrinkByHalf(ans)
         names(ans) <- names(x)

@@ -351,7 +351,7 @@ setMethod("unlist", "GAlignmentPairs",
         x_first <- x@first
         x_last <- x@last
         collate_subscript <-
-            IRanges:::make_XYZxyz_to_XxYyZz_subscript(length(x))
+            S4Vectors:::make_XYZxyz_to_XxYyZz_subscript(length(x))
         ans <- c(x_first, x_last)[collate_subscript]
         if (use.names)
             names(ans) <- rep(names(x), each=2L)
@@ -398,7 +398,7 @@ setMethod("grglist", "GAlignmentPairs",
         x_last <- invertRleStrand(x@last)
         ## Not the same as doing 'unlist(x, use.names=FALSE)'.
         collate_subscript <-
-            IRanges:::make_XYZxyz_to_XxYyZz_subscript(length(x))
+            S4Vectors:::make_XYZxyz_to_XxYyZz_subscript(length(x))
         x_unlisted <- c(x_first, x_last)[collate_subscript]
         grl <- grglist(x_unlisted,
                        order.as.in.query=TRUE,
@@ -466,7 +466,7 @@ fillGaps <- function(x)
     offsets <- end(x@partitioning)
     if (length(x) != 0L) 
         offsets <- c(0L, offsets[-length(offsets)])
-    idx <- IRanges:::fancy_mseq(query.breaks, offsets)
+    idx <- S4Vectors:::fancy_mseq(query.breaks, offsets)
     half1_partitioning <- PartitioningByEnd(cumsum(query.breaks))
     half1 <- relist(x@unlistData[idx], half1_partitioning)
     half1 <- range(half1)@unlistData
@@ -474,7 +474,7 @@ fillGaps <- function(x)
     half2_partitioning <- PartitioningByEnd(cumsum(half2_eltlens))
     half2 <- relist(x@unlistData[-idx], half2_partitioning)
     half2 <- range(half2)@unlistData
-    collate_subscript <- IRanges:::make_XYZxyz_to_XxYyZz_subscript(length(x))
+    collate_subscript <- S4Vectors:::make_XYZxyz_to_XxYyZz_subscript(length(x))
     ans_unlistData <- c(half1, half2)[collate_subscript]
     ans_partitioning <- PartitioningByEnd(2L * seq_along(x),
                                           names=names(x))

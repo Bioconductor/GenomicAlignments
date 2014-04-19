@@ -196,8 +196,8 @@ setMethod("readGAlignmentsFromBam", "BamFile",
 
     ## Split and order the pairs by ascending start position of the first mate.
     idx1 <- which(as.logical(is_first_mate))
-    oo1 <- IRanges:::orderIntegerPairs(as.integer(gal@seqnames)[idx1],
-                                       gal@start[idx1])
+    oo1 <- S4Vectors:::orderIntegerPairs(as.integer(gal@seqnames)[idx1],
+                                         gal@start[idx1])
     idx1 <- idx1[oo1]
     idx2 <- which(as.logical(is_last_mate))[oo1]
     ans_first <- gal[idx1]

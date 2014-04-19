@@ -93,7 +93,7 @@
     x2 <- match(x, x,
                 nomatch=.Machine$integer.max,
                 incomparables=NA_character_)
-    xo <- IRanges:::orderInteger(x2)
+    xo <- S4Vectors:::orderInteger(x2)
     ox2 <- Rle(x2[xo])
     group.sizes <- runLength(ox2)
     ngroup <- length(group.sizes)

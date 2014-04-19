@@ -238,8 +238,8 @@ junction reads (N).
 
 Finally we count and summarize the number of gaps per alignment:
 
-<<table_ngap>>=
-table(ngap(gal1))
+<<table_njunc>>=
+table(njunc(gal1))
 @
 
 Some reads contain up to 3 gaps (i.e. span 3 splice junctions).
@@ -344,7 +344,7 @@ Our reads can have up to 1 gap per end:
 <<gaps-in-U3.GALP>>=
 head(unique(cigar(first(U3.GALP))))
 head(unique(cigar(last(U3.GALP))))
-table(ngap(first(U3.GALP)), ngap(last(U3.GALP)))
+table(njunc(first(U3.GALP)), njunc(last(U3.GALP)))
 @
 
 Like for our single-end reads, the following tables indicate that indels were

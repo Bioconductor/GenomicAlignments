@@ -829,7 +829,7 @@ setMethod("extractSkippedExonRanks", "OverlapEncodings",
     if (!all(elt_lens <= x_elt_lens))
         stop("'all(elt_lens <= elementLengths(x))' must be TRUE")
     offset <- cumsum(c(0L, x_elt_lens[-length(x_elt_lens)]))
-    ii <- IRanges:::fancy_mseq(elt_lens, offset=offset)
+    ii <- S4Vectors:::fancy_mseq(elt_lens, offset=offset)
     x@unlistData <- x@unlistData[ii]
     x@partitioning@end <- unname(cumsum(elt_lens))
     x

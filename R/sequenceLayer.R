@@ -51,7 +51,7 @@
     if (length(x) != length(y))
         stop("'x' and 'y' must have the same length")
     xy <- c(x, y)
-    collate_subscript <- IRanges:::make_XYZxyz_to_XxYyZz_subscript(length(x))
+    collate_subscript <- S4Vectors:::make_XYZxyz_to_XxYyZz_subscript(length(x))
     ans_flesh <- unlist(xy[collate_subscript], use.names=FALSE)
     ans_breakpoints <- end(PartitioningByEnd(x)) + end(PartitioningByEnd(y))
     ans_skeleton <- PartitioningByEnd(ans_breakpoints)
