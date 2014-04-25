@@ -31,7 +31,6 @@
 \alias{width,GAlignmentsList-method}
 
 % Coercion:
-\alias{as.data.frame,GAlignmentsList-method}
 \alias{coerce,GAlignmentsList,GRangesList-method}
 \alias{coerce,GAlignmentsList,GRanges-method}
 \alias{coerce,GAlignmentsList,RangesList-method}
@@ -212,6 +211,13 @@
       Alternate ways of doing \code{grglist(x, use.mcols=TRUE)},
       \code{granges(x, use.mcols=TRUE)}, \code{rglist(x, use.mcols=TRUE)},
       and \code{ranges(x)}, respectively.
+    }
+    \item{}{
+      \code{as.data.frame(x, row.names = NULL, optional = FALSE,
+         ..., value.name = "value", use.outer.mcols = FALSE, 
+         group_name.as.factor = FALSE)}: 
+      Coerces \code{x} to a \code{data.frame}. See as.data.frame on the 
+      \code{List} man page for details (?\code{List}). 
     }
     \item{}{
       \code{as(x, "GALignmentsList")}: Here \code{x} is a

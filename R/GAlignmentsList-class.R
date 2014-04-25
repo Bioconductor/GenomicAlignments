@@ -31,7 +31,6 @@ setClass("GAlignmentsList",
 ###   granges(x)  - GRanges object of the same length as 'x'.
 ###   rglist(x)   - CompressedIRangesList object of the same length as 'x'.
 ###   ranges(x)   - IRanges object of the same length as 'x'.
-###   as.data.frame(x) - data.frame with 1 row per alignment in 'x'.
 
 ###   show(x)     - compact display in a data.frame-like fashion.
 ###   GAlignmentsList(x, ...) - constructor.
@@ -321,9 +320,6 @@ setAs("GAlignmentsList", "RangesList",
 )
 setAs("GAlignmentsList", "Ranges", 
     function(from) ranges(from)
-)
-setMethod("as.data.frame", "GAlignmentsList",
-    GenomicRanges:::GRangesListAsdataframe
 )
 
 setAs("GAlignmentPairs", "GAlignmentsList", 

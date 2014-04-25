@@ -52,7 +52,9 @@ test_GAlignmentsList_coercion <- function() {
     checkTrue(length(gr) == 4L)
 
     ## data.frame
-    df <- data.frame(element=rep(c("a", "b"), each=2),
+    galist <- GAlignmentsList(a=.noGaps[1:2], b=.Gaps[1:2])
+    df <- data.frame(group=togroup(galist),
+                     group_name=names(galist)[togroup(galist)],
                      seqnames=c("chr1", rep("chr2", 3)), 
                      strand=c("-", "+", "-", "-"),
                      cigar=c("10M", "9M", "5M", "3M2N3M2N3M"),
@@ -61,7 +63,6 @@ test_GAlignmentsList_coercion <- function() {
                      njunc=c(0, 0, 0, 2), score=c(1, 2, 1, 2), 
                      row.names=c("a", "b", "t", "u"),
                      stringsAsFactors=FALSE)
-    galist <- GAlignmentsList(a=.noGaps[1:2], b=.Gaps[1:2])
     checkTrue(all.equal(as.data.frame(galist), df))
 
     ## introns
