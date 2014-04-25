@@ -264,7 +264,7 @@ flipQuery <- function(x, i)
     xi_query.break <- mcols(xi)$query.break
     if (!is.null(xi_query.break)) {
         revxi_query.break <- elementLengths(xi) - xi_query.break
-        mcols(x)$query.break[IRanges:::subscript(i)] <- revxi_query.break
+        mcols(x)$query.break[i] <- revxi_query.break
     }
     x
 }
