@@ -72,13 +72,11 @@ GappedReads <- function(seqnames=Rle(factor()), pos=integer(0),
 ### Subsetting.
 ###
 
-### Supported 'i' types: numeric vector, logical vector, NULL and missing.
-setMethod(IRanges:::extractROWS, "GappedReads",
+setMethod("extractROWS", "GappedReads",
     function(x, i)
     {
-        if (missing(i) || !is(i, "Ranges"))
-            i <- IRanges:::normalizeSingleBracketSubscript(i, x)
-        x@qseq <- IRanges:::extractROWS(x@qseq, i)
+        i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
+        x@qseq <- extractROWS(x@qseq, i)
         callNextMethod()
     }
 )

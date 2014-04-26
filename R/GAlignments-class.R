@@ -530,17 +530,16 @@ setAs("GenomicRanges", "GAlignments",
 ### Subsetting.
 ###
 
-setMethod(IRanges:::extractROWS, "GAlignments",
+setMethod("extractROWS", "GAlignments",
     function(x, i)
     {
-        if (missing(i) || !is(i, "Ranges"))
-            i <- IRanges:::normalizeSingleBracketSubscript(i, x)
-        ans_names <- IRanges:::extractROWS(names(x), i)
-        ans_seqnames <- IRanges:::extractROWS(seqnames(x), i)
-        ans_start <- IRanges:::extractROWS(start(x), i)
-        ans_cigar <- IRanges:::extractROWS(cigar(x), i)
-        ans_strand <- IRanges:::extractROWS(strand(x), i)
-        ans_mcols <- IRanges:::extractROWS(mcols(x), i)
+        i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
+        ans_names <- extractROWS(names(x), i)
+        ans_seqnames <- extractROWS(seqnames(x), i)
+        ans_start <- extractROWS(start(x), i)
+        ans_cigar <- extractROWS(cigar(x), i)
+        ans_strand <- extractROWS(strand(x), i)
+        ans_mcols <- extractROWS(mcols(x), i)
         GenomicRanges:::clone(x, NAMES=ans_names,
                                  seqnames=ans_seqnames,
                                  start=ans_start,

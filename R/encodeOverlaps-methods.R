@@ -258,13 +258,14 @@ flipQuery <- function(x, i)
 {
     if (!is(x, "GRangesList"))
         stop("'x' must be a GRangesList object")
-    i <- IRanges:::normalizeSingleBracketSubscript(i, x)
-    xi <- IRanges:::extractROWS(x, i)
-    x <- IRanges:::replaceROWS(x, i, invertRleListStrand(revElements(xi)))
+    i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
+    xi <- extractROWS(x, i)
+    x <- replaceROWS(x, i, invertRleListStrand(revElements(xi)))
     xi_query.break <- mcols(xi)$query.break
     if (!is.null(xi_query.break)) {
         revxi_query.break <- elementLengths(xi) - xi_query.break
-        mcols(x)$query.break[i] <- revxi_query.break
+        mcols(x)$query.break <- replaceROWS(mcols(x)$query.break, i,
+                                            revxi_query.break)
     }
     x
 }

@@ -298,16 +298,15 @@ GAlignmentPairs <- function(first, last, isProperPair, names=NULL)
 ### Vector methods.
 ###
 
-setMethod(IRanges:::extractROWS, "GAlignmentPairs",
+setMethod("extractROWS", "GAlignmentPairs",
     function(x, i)
     {
-        if (missing(i) || !is(i, "Ranges"))
-            i <- IRanges:::normalizeSingleBracketSubscript(i, x)
-        ans_names <- IRanges:::extractROWS(names(x), i)
-        ans_first <- IRanges:::extractROWS(first(x), i)
-        ans_last <- IRanges:::extractROWS(last(x), i)
-        ans_isProperPair <- IRanges:::extractROWS(isProperPair(x), i)
-        ans_mcols <- IRanges:::extractROWS(mcols(x), i)
+        i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
+        ans_names <- extractROWS(names(x), i)
+        ans_first <- extractROWS(first(x), i)
+        ans_last <- extractROWS(last(x), i)
+        ans_isProperPair <- extractROWS(isProperPair(x), i)
+        ans_mcols <- extractROWS(mcols(x), i)
         initialize(x, NAMES=ans_names,
                       first=ans_first,
                       last=ans_last,
@@ -336,7 +335,7 @@ setMethod("[[", "GAlignmentPairs",
     {
         if (missing(i) || !missing(j) || length(list(...)) > 0L)
             stop("invalid subsetting")
-        i <- IRanges:::normalizeDoubleBracketSubscript(i, x)
+        i <- normalizeDoubleBracketSubscript(i, x)
         .GAlignmentPairs.getElement(x, i)
     }
 )
