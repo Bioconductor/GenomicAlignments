@@ -36,22 +36,28 @@
 
 \usage{
 \S4method{summarizeOverlaps}{GRanges,GAlignments}(
-  features, reads, mode, ignore.strand=FALSE, ..., inter.feature=TRUE) 
+  features, reads, mode, ignore.strand=FALSE, ..., inter.feature=TRUE,
+  preprocess.reads=NULL) 
 
 \S4method{summarizeOverlaps}{GRangesList,GAlignments}(
-  features, reads, mode, ignore.strand=FALSE, ..., inter.feature=TRUE) 
+  features, reads, mode, ignore.strand=FALSE, ..., inter.feature=TRUE,
+  preprocess.reads=NULL) 
 
 \S4method{summarizeOverlaps}{GRanges,GRanges}(
-  features, reads, mode, ignore.strand=FALSE, ..., inter.feature=TRUE) 
+  features, reads, mode, ignore.strand=FALSE, ..., inter.feature=TRUE,
+  preprocess.reads=NULL) 
 
 \S4method{summarizeOverlaps}{GRangesList,GRanges}(
-  features, reads, mode, ignore.strand=FALSE, ..., inter.feature=TRUE) 
+  features, reads, mode, ignore.strand=FALSE, ..., inter.feature=TRUE,
+  preprocess.reads=NULL) 
 
 \S4method{summarizeOverlaps}{GRanges,GAlignmentPairs}(
-  features, reads, mode, ignore.strand=FALSE, ..., inter.feature=TRUE) 
+  features, reads, mode, ignore.strand=FALSE, ..., inter.feature=TRUE,
+  preprocess.reads=NULL) 
 
 \S4method{summarizeOverlaps}{GRangesList,GAlignmentPairs}(
-  features, reads, mode, ignore.strand=FALSE, ..., inter.feature=TRUE) 
+  features, reads, mode, ignore.strand=FALSE, ..., inter.feature=TRUE,
+  preprocess.reads=NULL) 
 
 ## mode funtions
 Union(features, reads, ignore.strand=FALSE, inter.feature=TRUE)
@@ -60,11 +66,13 @@ IntersectionNotEmpty(features, reads, ignore.strand=FALSE, inter.feature=TRUE)
 
 \S4method{summarizeOverlaps}{GRanges,BamFile}(
   features, reads, mode, ignore.strand=FALSE, ..., inter.feature=TRUE,
-  singleEnd=TRUE, fragments=FALSE, param=ScanBamParam())
+  singleEnd=TRUE, fragments=FALSE, param=ScanBamParam(),
+  preprocess.reads=NULL)
 
 \S4method{summarizeOverlaps}{BamViews,missing}(
   features, reads, mode, ignore.strand=FALSE, ..., inter.feature=TRUE,
-  singleEnd=TRUE, fragments=FALSE, param=ScanBamParam())
+  singleEnd=TRUE, fragments=FALSE, param=ScanBamParam(),
+  preprocess.reads=NULL)
 }
 
 \arguments{
@@ -148,6 +156,17 @@ IntersectionNotEmpty(features, reads, ignore.strand=FALSE, inter.feature=TRUE)
     \code{type=within}, respectively. \sQuote{IntersectionNotEmpty} does
     not reduce to a simple countOverlaps because common (shared) regions 
     of the annotation are removed before counting.
+  }
+  \item{preprocess.reads}{
+    A function applied to the reads before counting. The first argument
+    should be \code{reads} and the return value should be an object 
+    compatible with the \code{reads} argument to the counting modes,
+    Union, IntersectionStrict and IntersectionNotEmpty.
+
+    The distinction between a user-defined 'mode' and user-defined
+    'preprocess.reads' function is that in the first case the user
+    defines how to count; in the second case the reads are preprocess
+    before counting with a pre-defined mode. See examples.
   }
   \item{...}{
     Additional arguments for BAM file methods such as \code{singleEnd},
@@ -458,7 +477,7 @@ edger <- DGEList(assays(se)$counts, group=rownames(colData(se)))
 
 ## ---------------------------------------------------------------------
 ## Filter records by map quality before counting. 
-## (user-supplied count function) 
+## (user-supplied 'mode' function) 
 ## ---------------------------------------------------------------------
 
 ## The 'mode' argument can take a custom count function whose
@@ -491,7 +510,29 @@ my_count <- function(features, reads,  ignore.strand, inter.feature) {
 }
 
 ## ---------------------------------------------------------------------
-## summarizeOverlaps() with BamViews
+## Preprocessing reads before counting with a standard count mode.
+## (user-supplied 'preprocess.reads' function) 
+## ---------------------------------------------------------------------
+
+## The 'preprocess.reads' argument takes a function that is
+## applied to the reads before counting with a pre-defined mode.
+
+ResizeReads <- function(reads, width=1, fix="start", ...) {
+    reads <- as(reads, "GRanges")
+    stopifnot(all(strand(reads) != "*"))
+    resize(reads, width=width, fix=fix, ...)
+}
+
+## By default ResizeReads() counts reads that overlap on the 5' end:
+summarizeOverlaps(grl, reads, mode=Union, preprocess.reads=ResizeReads)
+
+## Count reads that overlap on the 3' end by passing new values
+## for 'width' and 'fix':
+summarizeOverlaps(grl, reads, mode=Union, preprocess.reads=ResizeReads,
+                  width=1, fix="end")
+
+## ---------------------------------------------------------------------
+## summarizeOverlaps() with BamViews.
 ## ---------------------------------------------------------------------
 
 ## bamSamples and bamPaths metadata are included in the colData.
