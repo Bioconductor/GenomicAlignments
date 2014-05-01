@@ -11,7 +11,7 @@ BiocStyle::latex()
 
 \title{Overlap encodings}
 \author{Herv\'e Pag\`es}
-\date{Last modified: January 2014; Compiled: \today}
+\date{Last modified: May 2014; Compiled: \today}
 
 \begin{document}
 
@@ -913,12 +913,12 @@ Dmelanogaster
 @
 
 To extract the portions of the reference genome corresponding to the ranges
-in \Rcode{U1.grl}, we can use the \Rfunction{extractTranscriptsFromGenome}
+in \Rcode{U1.grl}, we can use the \Rfunction{extractTranscriptSeqs}
 function defined in the \Rpackage{GenomicFeatures} package:
 
 <<U1-reference-query-sequences>>=
 library(GenomicFeatures)
-U1.GAL_rqseq <- extractTranscriptsFromGenome(Dmelanogaster, U1.grl)
+U1.GAL_rqseq <- extractTranscriptSeqs(Dmelanogaster, U1.grl)
 head(U1.GAL_rqseq)
 @
 
@@ -937,8 +937,8 @@ ranges in \Rclass{GRangesList} objects \Rcode{U3.grl\_first} and
 \Rcode{U3.grl\_last}:
 
 <<U3-reference-query-sequences>>=
-U3.GALP_rqseq1 <- extractTranscriptsFromGenome(Dmelanogaster, U3.grl_first)
-U3.GALP_rqseq2 <- extractTranscriptsFromGenome(Dmelanogaster, U3.grl_last)
+U3.GALP_rqseq1 <- extractTranscriptSeqs(Dmelanogaster, U3.grl_first)
+U3.GALP_rqseq2 <- extractTranscriptSeqs(Dmelanogaster, U3.grl_last)
 @
 
 
@@ -972,12 +972,12 @@ If we use the {\it reference query sequence} instead of the {\it original
 query sequence} for this comparison, then it should match {\bf exactly}
 the sequence found at the {\it query start} in the transcript.
 
-Let's start by using \Rfunction{extractTranscriptsFromGenome} again
+Let's start by using \Rfunction{extractTranscriptSeqs} again
 to extract the transcript sequences (aka transcriptome) from the dm3
 reference genome:
 
 <<txseq>>=
-txseq <- extractTranscriptsFromGenome(Dmelanogaster, exbytx)
+txseq <- extractTranscriptSeqs(Dmelanogaster, exbytx)
 @
 
 For each ``compatible'' overlap, the read sequence in \Rcode{U1.GAL\_rqseq}
