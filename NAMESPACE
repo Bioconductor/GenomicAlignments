@@ -13,6 +13,10 @@ import(BSgenome)
 importFrom(BiocParallel, bplapply)
 
 
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Export S4 classes
+###
+
 exportClasses(
     GAlignments,
     GAlignmentPairs,
