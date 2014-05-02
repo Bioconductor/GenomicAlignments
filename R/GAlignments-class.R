@@ -203,16 +203,16 @@ setReplaceMethod("seqinfo", "GAlignments",
     {
         if (!is(value, "Seqinfo"))
             stop("the supplied 'seqinfo' must be a Seqinfo object")
-        dangling_seqlevels <- GenomicRanges:::getDanglingSeqlevels(x,
+        dangling_seqlevels <- GenomeInfoDb:::getDanglingSeqlevels(x,
                                   new2old=new2old, force=force,
                                   seqlevels(value))
         if (length(dangling_seqlevels) != 0L)
             x <- x[!(seqnames(x) %in% dangling_seqlevels)]
         old_seqinfo <- seqinfo(x)
-        x@seqnames <- GenomicRanges:::makeNewSeqnames(x,
+        x@seqnames <- GenomeInfoDb:::makeNewSeqnames(x,
                                   new2old, seqlevels(value))
         x@seqinfo <- value
-        geom_has_changed <- GenomicRanges:::sequenceGeometryHasChanged(
+        geom_has_changed <- GenomeInfoDb:::sequenceGeometryHasChanged(
                                   seqinfo(x), old_seqinfo, new2old=new2old)
         if (any(geom_has_changed, na.rm=TRUE))
             validObject(x)

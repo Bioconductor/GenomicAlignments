@@ -238,7 +238,7 @@
     \item The \code{\link{encodeOverlaps}} function for computing "overlap
           encodings".
 
-    \item The \code{\link[IRanges]{compare}} function in the \pkg{IRanges}
+    \item The \code{\link[S4Vectors]{compare}} function in the \pkg{IRanges}
           package for the interpretation of the strings returned by
           \code{encoding}.
 

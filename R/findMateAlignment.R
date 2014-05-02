@@ -267,7 +267,7 @@ findMateAlignment <- function(x)
         query_hits <- subject_hits <- integer(0)
     } else {
         subject_hits0 <- m0[query_hits0]
-        subject_low2high <- IRanges:::makeLow2highFromHigh2low(
+        subject_low2high <- S4Vectors:::reverseSelfmatchMapping(
                                 high2low(subject))
         extra_hits <- subject_low2high[subject_hits0]
         query_nhits <- 1L + elementLengths(extra_hits)
@@ -291,7 +291,7 @@ findMateAlignment <- function(x)
     xo_and_GS <- .getCharacterOrderAndGroupSizes(x)
     xo <- xo_and_GS$xo
     GS <- xo_and_GS$group.sizes
-    ans <- IRanges:::makeAllGroupInnerHits(GS, hit.type=1L)
+    ans <- S4Vectors:::makeAllGroupInnerHits(GS, hit.type=1L)
     ans@queryHits <- xo[ans@queryHits]
     ans@subjectHits <- xo[ans@subjectHits]
     ans@queryLength <- ans@subjectLength <- length(x)

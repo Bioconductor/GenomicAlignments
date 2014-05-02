@@ -46,7 +46,7 @@ countCompatibleOverlaps(query, subject)
 }
 
 \value{
-  A \link[IRanges]{Hits} object for \code{findCompatibleOverlaps}.
+  A \link[S4Vectors]{Hits} object for \code{findCompatibleOverlaps}.
 
   An integer vector \emph{parallel} to (i.e. same length as) \code{query}.
 }

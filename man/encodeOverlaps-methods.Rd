@@ -97,13 +97,13 @@ extractQueryStartInTranscript(query, subject, hits=NULL, ovenc=NULL,
     \link[IRanges]{RangesList} or \link[GenomicRanges]{GRangesList} objects.
   }
   \item{hits}{
-    An optional \link[IRanges]{Hits} object typically obtained from a
+    An optional \link[S4Vectors]{Hits} object typically obtained from a
     previous call to \code{\link[IRanges]{findOverlaps}(query, subject)}.
 
     Strictly speaking, \code{hits} only needs to be compatible with
     \code{query} and \code{subject}, that is,
-    \code{\link[IRanges]{queryLength}(hits)} and
-    \code{\link[IRanges]{subjectLength}(hits)} must be equal to
+    \code{\link[S4Vectors]{queryLength}(hits)} and
+    \code{\link[S4Vectors]{subjectLength}(hits)} must be equal to
     \code{length(query)} and \code{length(subject)}, respectively.
 
     Supplying \code{hits} is a convenient way to do
@@ -191,8 +191,8 @@ extractQueryStartInTranscript(query, subject, hits=NULL, ovenc=NULL,
     \item The \link{OverlapEncodings} class for a brief introduction to
           "overlap encodings".
 
-    \item The \link[IRanges]{Hits} class defined and documented in the
-          \pkg{IRanges} package.
+    \item The \link[S4Vectors]{Hits} class defined and documented in the
+          \pkg{S4Vectors} package.
 
     \item The "OverlapEncodings" vignette in this package.
 

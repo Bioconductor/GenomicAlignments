@@ -91,7 +91,7 @@ findSpliceOverlaps(query, subject, ignore.strand=FALSE, ...)
 }
 
 \value{
-  The output is a \link[IRanges]{Hits} object with
+  The output is a \link[S4Vectors]{Hits} object with
   the metadata columns defined below. Each column is a \code{logical}
   indicating if the read (query) met the criteria.
 
