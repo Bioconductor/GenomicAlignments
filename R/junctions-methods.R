@@ -125,8 +125,12 @@ summarizeJunctions <- function(x, with.revmap=FALSE, genome=NULL)
 {
     if (!isTRUEorFALSE(with.revmap))
         stop("'with.revmap' must be TRUE or FALSE")
-    if (!is.null(genome))
-        genome <- getBSgenome(genome)
+    if (!is.null(genome)) {
+        if (!suppressWarnings(require(BSgenome, quietly=TRUE)))
+            stop("you need to install the BSgenome package in order ",
+                 "to use the 'genome' argument")
+        genome <- BSgenome::getBSgenome(genome)
+    }
 
     x_junctions <- junctions(x)
     unlisted_junctions <- unlist(x_junctions, use.names=FALSE)

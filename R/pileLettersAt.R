@@ -3,17 +3,6 @@
 ### -------------------------------------------------------------------------
 
 
-### Conceptually equivalent to:
-###     sapply(x, function(xx) paste(xx, collapse=""))
-.collapse_XStringSetList <- function(x)
-{
-    unlisted_x <- unlist(x, use.names=FALSE)
-    unlisted_ans <- unlist(unlisted_x, use.names=FALSE)
-    ans_width <- sum(relist(width(unlisted_x), x))
-    extract_at <- as(PartitioningByEnd(cumsum(ans_width)), "IRanges")
-    extractAt(unlisted_ans, extract_at)
-}
-
 ### .pileLettersOnSingleRefAt() is the workhorse behind pileLettersAt().
 ### 'x', 'pos', 'cigar': 3 parallel vectors describing N strings aligned
 ### to the same reference sequence. 'x' must be an XStringSet (typically
@@ -58,7 +47,7 @@
     piles_skeleton <- PartitioningByEnd(queryHits(hits), NG=length(at),
                                        names=names(at))
     piles <- relist(unlisted_piles, piles_skeleton)
-    .collapse_XStringSetList(piles)
+    unstrsplit(piles)
 }
 
 ### 'x', 'seqnames', 'pos', 'cigar': 4 parallel vectors describing N

@@ -9,7 +9,6 @@ import(GenomeInfoDb)
 import(GenomicRanges)
 import(Biostrings)
 import(Rsamtools)
-import(BSgenome)
 importFrom(BiocParallel, bplapply)
 
 

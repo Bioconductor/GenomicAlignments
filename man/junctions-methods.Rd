@@ -85,11 +85,14 @@ readSTARJunctions(file)
     the input \code{x}.
   }
   \item{genome}{
-    \code{NULL} (the default), or the reference genome that was used to
-    align the reads, specified in a way that is accepted by the
-    \code{\link[BSgenome]{getBSgenome}} function defined in the \pkg{BSgenome}
-    software package. In that case the corresponding BSgenome data package
-    needs to be already installed (see \code{?getBSgenome} for the details).
+    \code{NULL} (the default), or a \link[BSgenome]{BSgenome} object
+    containing the sequences of the reference genome that was used to align
+    the reads, or the name of this reference genome specified in a way that
+    is accepted by the \code{\link[BSgenome]{getBSgenome}} function defined
+    in the \pkg{BSgenome} software package. In that case the corresponding
+    BSgenome data package needs to be already installed (see
+    \code{?\link[BSgenome]{getBSgenome}} in the \pkg{BSgenome} package for
+    the details).
 
     If \code{genome} is supplied, then the \code{intron_motif} and
     \code{intron_strand} metadata columns are computed (based on the
@@ -312,11 +315,12 @@ junc_score2 <- sum(extractList(mcols(gal)$mapq,
                                mcols(junc_summary)$revmap))
 mcols(junc_summary)$score2 <- junc_score2
 
-## If a genome is specified thru the 'genome' argument (in which case
-## the corresponding BSgenome data package needs to be installed), then
-## summarizeJunctions() returns the intron motif and strand for each
-## junction. Since the reads in RNAseqData.HNRNPC.bam.chr14 were aligned
-## to the hg19 genome, the following requires that you have
+## If the name of the reference genome is specified thru the 'genome'
+## argument (in which case the corresponding BSgenome data package needs
+## to be installed), then summarizeJunctions() returns the intron motif
+## and strand for each junction.
+## Since the reads in RNAseqData.HNRNPC.bam.chr14 were aligned to
+## the hg19 genome, the following requires that you have
 ## BSgenome.Hsapiens.UCSC.hg19 installed:
 junc_summary <- summarizeJunctions(gal, with.revmap=TRUE, genome="hg19")
 mcols(junc_summary)$score2 <- junc_score2  # putting 'score2' back
