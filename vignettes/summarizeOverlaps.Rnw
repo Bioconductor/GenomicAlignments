@@ -11,7 +11,7 @@ BiocStyle::latex()
 
 \title{Counting reads with \Rfunction{summarizeOverlaps}}
 \author{Valerie Obenchain}
-\date{Edited: October 2013; Compiled: \today}
+\date{Edited: May 2014; Compiled: \today}
 
 \begin{document}
 
@@ -38,7 +38,7 @@ methods found in the HTSeq package by Simon Anders (see references).
 
 In this example reads are counted from a list of BAM files and returned in
 a \Robject{matrix} for use in further analysis such as those offered in 
-\Biocpkg{DESeq} and \Biocpkg{edgeR}. 
+\Biocpkg{DESeq} and \Biocpkg{edgeR}.
 <<firstExample, eval=TRUE, keep.source=TRUE>>=
 library(GenomicAlignments)
 library(DESeq)
@@ -46,7 +46,6 @@ library(edgeR)
 
 fls <- list.files(system.file("extdata", package="GenomicAlignments"),
     recursive=TRUE, pattern="*bam$", full=TRUE)
-bfl <- BamFileList(fls)
 
 features <- GRanges(
     seqnames = c(rep("chr2L", 4), rep("chr2R", 5), rep("chr3L", 2)),
@@ -55,10 +54,22 @@ features <- GRanges(
         300, 500, 500)), "-",
     group_id=c(rep("A", 4), rep("B", 5), rep("C", 2)))
 
-olap <- summarizeOverlaps(features, bfl)
-deseq <- newCountDataSet(assays(olap)$counts, rownames(colData(olap)))
-edger <- DGEList(assays(olap)$counts, group=rownames(colData(olap)))
+olap <- summarizeOverlaps(features, fls)
+deseq <- newCountDataSet(assay(olap), rownames(colData(olap)))
+edger <- DGEList(assay(olap), group=rownames(colData(olap)))
 @
+%% 
+By default, the \Rfunction{summarizeOverlaps} function iterates
+through files in `chunks' and with files processed in parallel. For
+finer-grain control over memory consumption, use the
+\Rfunction{BamFileList} function and specify the \Rcode{yieldSize}
+argument (e.g., \Rcode{yieldSize=1000000}) to determine the size of
+each `chunk' (smaller chunks consume less memory, but are a little
+less efficient to process). For controlling the number of processors
+in use, use \Rfunction{BiocParallel::register} to use an appropriate
+back-end, e.g., in linux or Mac to process on 6 cores of a single
+machine use \Rcode{register(MulticoreParam(workers=6))}; see the
+\Biocpkg{BiocParallel} vignette for further details.
 
 \section{Counting Modes}
 
@@ -128,11 +139,11 @@ region. However, the read overlaps both gr1 and gr2 so a decision
 cannot be made and the read is discarded.
 <<simpleGRanges>>=
 gr <- c(gr1, gr2)
-data.frame(union = assays(summarizeOverlaps(gr, rd))$counts,
-           intStrict = assays(summarizeOverlaps(gr, rd,
-               mode="IntersectionStrict"))$counts,
-           intNotEmpty = assays(summarizeOverlaps(gr, rd,
-               mode="IntersectionNotEmpty"))$counts)
+data.frame(union = assay(summarizeOverlaps(gr, rd)),
+           intStrict = assay(summarizeOverlaps(gr, rd,
+               mode="IntersectionStrict")),
+           intNotEmpty = assay(summarizeOverlaps(gr, rd,
+               mode="IntersectionNotEmpty")))
 @
 
 \noindent
@@ -141,14 +152,13 @@ length 1 with 2 elements. Modes \Rcode{Union} and \Rcode{IntersectionNotEmpty}
 both count the read for the single feature.
 <<simpleGRangesList>>=
 grl <- GRangesList(c(gr1, gr2))
-data.frame(union = assays(summarizeOverlaps(grl, rd))$counts,
-           intStrict = assays(summarizeOverlaps(grl, rd,
-               mode="IntersectionStrict"))$counts,
-           intNotEmpty = assays(summarizeOverlaps(grl, rd,
-               mode="IntersectionNotEmpty"))$counts)
+data.frame(union = assay(summarizeOverlaps(grl, rd)),
+           intStrict = assay(summarizeOverlaps(grl, rd,
+               mode="IntersectionStrict")),
+           intNotEmpty = assay(summarizeOverlaps(grl, rd,
+               mode="IntersectionNotEmpty")))
 @
 
-\newpage
 In this more complicated example we have 7 reads, 5 are simple and 
 2 have gaps in the CIGAR. There are 12 ranges that will serve as the
 \Robject{features}. 
@@ -178,11 +188,11 @@ Using a \Rclass{GRanges} as the \Rcode{features} all 12 ranges
 are considered to be different features and counts are produced
 for each row,
 <<GRanges>>=
-data.frame(union = assays(summarizeOverlaps(features, reads))$counts,
-           intStrict = assays(summarizeOverlaps(features, reads,
-               mode="IntersectionStrict"))$counts,
-           intNotEmpty = assays(summarizeOverlaps(features, reads,
-               mode="IntersectionNotEmpty"))$counts)
+data.frame(union = assay(summarizeOverlaps(features, reads)),
+           intStrict = assay(summarizeOverlaps(features, reads,
+               mode="IntersectionStrict")),
+           intNotEmpty = assay(summarizeOverlaps(features, reads,
+               mode="IntersectionNotEmpty")))
 @
 
 \noindent
@@ -195,11 +205,11 @@ lst <- split(features, mcols(features)[["group_id"]])
 length(lst)
 @
 <<GRangesList>>=
-data.frame(union = assays(summarizeOverlaps(lst, reads))$counts,
-           intStrict = assays(summarizeOverlaps(lst, reads,
-               mode="IntersectionStrict"))$counts,
-           intNotEmpty = assays(summarizeOverlaps(lst, reads,
-               mode="IntersectionNotEmpty"))$counts)
+data.frame(union = assay(summarizeOverlaps(lst, reads)),
+           intStrict = assay(summarizeOverlaps(lst, reads,
+               mode="IntersectionStrict")),
+           intNotEmpty = assay(summarizeOverlaps(lst, reads,
+               mode="IntersectionNotEmpty")))
 @
 
 If desired, users can supply their own counting function as the \Rcode{mode}
@@ -287,19 +297,19 @@ genehits <- summarizeOverlaps(chr4genes, bamlst, mode="Union")
 A \Rcode{CountDataSet} is constructed from the counts and experiment
 data in \Rclass{pasilla}.
 <<pasilla_exoncountset, eval=FALSE>>=
-expdata = new("MIAME",
+expdata = MIAME(
               name="pasilla knockdown",
               lab="Genetics and Developmental Biology, University of 
                   Connecticut Health Center",
               contact="Dr. Brenton Graveley",
               title="modENCODE Drosophila pasilla RNA Binding Protein RNAi 
                   knockdown RNA-Seq Studies",
+              pubMedIds="20921232",
               url="http://www.ncbi.nlm.nih.gov/projects/geo/query/acc.cgi?acc=GSE18508",
               abstract="RNA-seq of 3 biological replicates of from the Drosophila
                   melanogaster S2-DRSC cells that have been RNAi depleted of mRNAs 
                   encoding pasilla, a mRNA binding protein and 4 biological replicates 
                   of the the untreated cell line.")
-              pubMedIds(expdata) <- "20921232"
 
 design <- data.frame(
               condition=c("treated", "untreated", "untreated"),
@@ -308,7 +318,7 @@ design <- data.frame(
               countfiles=path(colData(genehits)[,1]), stringsAsFactors=TRUE)
 
 geneCDS <- newCountDataSet(
-                  countData=assays(genehits)$counts,
+                  countData=assay(genehits),
                   conditions=design)
 
 experimentData(geneCDS) <- expdata
@@ -320,7 +330,7 @@ the annotation file can be split on transcript id.
 <<pasilla_genes, eval=FALSE>>=
 chr4tx <- split(gff, mcols(gff)$transcript_id)
 txhits <- summarizeOverlaps(chr4tx, bamlst)
-txCDS <- newCountDataSet(assays(txhits)$counts, design) 
+txCDS <- newCountDataSet(assay(txhits), design) 
 experimentData(txCDS) <- expdata
 @
 
