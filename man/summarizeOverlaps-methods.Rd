@@ -84,14 +84,12 @@ IntersectionNotEmpty(features, reads, ignore.strand=FALSE, inter.feature=TRUE)
     considered a feature. This distinction is important when defining
     overlaps.
 
-    Can also be a \link[Rsamtools]{BamViews} object. In that case
-    \code{features} are extracted from the \code{bamRanges} of the
-    \link[Rsamtools]{BamViews} object.
-
-    Metadata from \code{bamPaths} and \code{bamSamples} are stored in the
-    \code{colData} slot of the \link[GenomicRanges]{SummarizedExperiment}
-    object. \code{bamExperiment} metadata are in the \code{exptData}
-    slot. 
+    When \code{features} is a \link[Rsamtools]{BamViews} the \code{reads}
+    argument is missing. Features are extracted from the \code{bamRanges} 
+    and the \code{reads} from \code{bamPaths}. Metadata from \code{bamPaths} 
+    and \code{bamSamples} are stored in the \code{colData} of the 
+    resulting \link[GenomicRanges]{SummarizedExperiment} object.
+    \code{bamExperiment} metadata are stored in the \code{exptData}. 
   } 
   \item{reads}{
     A \link[GenomicRanges]{GRanges}, \link[GenomicRanges]{GRangesList}
@@ -100,8 +98,8 @@ IntersectionNotEmpty(features, reads, ignore.strand=FALSE, inter.feature=TRUE)
     \link[Rsamtools]{BamFileList} object that represents the data to be 
     counted by \code{summarizeOverlaps}.
 
-    Can be missing when a \link[Rsamtools]{BamViews} object is the only
-    argument supplied to \code{summarizeOverlaps}.
+    \code{reads} is missing when a \link[Rsamtools]{BamViews} object is 
+    the only argument supplied to \code{summarizeOverlaps}.
     \code{reads} are the files specified in \code{bamPaths} of the
     \link[Rsamtools]{BamViews} object.
   }
