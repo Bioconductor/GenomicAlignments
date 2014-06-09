@@ -29,7 +29,7 @@ setMethod("coverage", "BamFile",
     repeat {
         aln <- readGAlignmentsFromBam(x, param=param)
         if (length(aln) == 0L)
-            break
+            return(RleList()) 
         cvg0 <- coverage(aln, shift=shift, width=width, weight=weight, ...)
         if (is.null(cvg))
             cvg <- cvg0
