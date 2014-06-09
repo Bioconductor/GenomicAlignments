@@ -396,7 +396,7 @@ setMethod("summarizeOverlaps", c("BamViews", "missing"),
                       singleEnd=singleEnd, fragments=fragments, param=param,
                       preprocess.reads=preprocess.reads)
     colData(se)$bamSamples <- bamSamples(features)
-    colData(se)$bamIndicies <- bamIndicies(features)
+    colData(se)$bamIndices <- bamIndicies(features)
     exptData(se)$bamExperiment <- bamExperiment(features)
     se
 })

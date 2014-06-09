@@ -275,17 +275,19 @@ IntersectionNotEmpty(features, reads, ignore.strand=FALSE, inter.feature=TRUE)
 
 \value{
   A \link[GenomicRanges]{SummarizedExperiment} object. The \code{assays} slot
-  holds the counts, \code{rowData} holds the annotation specified in 
-  \code{features}. 
+  holds the counts, \code{rowData} holds the annotation from \code{features}.
 
-  \code{colData} is a DataFrame with columns of \sQuote{object} (class of 
-  \code{reads}) and \sQuote{records} (length of \code{reads}). When \code{reads}
-  is a BamFile or BamFileList and \code{count.mapped.reads=TRUE},
-  the \code{colData} holds the output of a call
-  to \code{countBam} with columns of \sQuote{records} (total records in file), 
-  \sQuote{nucleotides} and \sQuote{mapped}. The number in \sQuote{mapped} is
-  the number of records returned when \code{isUnmappedQuery=FALSE} in the 
-  \sQuote{ScanBamParam}.
+  When \code{reads} is a \code{BamFile} or \code{BamFileList} \code{colData} 
+  is an empty DataFrame with a single row named \sQuote{counts}. If 
+  \code{count.mapped.reads=TRUE}, \code{colData} holds the output of 
+  \code{countBam} in 3 columns named \sQuote{records} (total records), 
+  \sQuote{nucleotides} and \sQuote{mapped} (mapped records).
+
+  When \code{features} is a \code{BamViews} \code{colData} includes
+  2 columns named \code{bamSamples} and \code{bamIndices}. 
+
+  In all other cases, \code{colData} has columns of \sQuote{object} 
+  (class of reads) and \sQuote{records} (length of \code{reads}). 
 }
 
 \references{
