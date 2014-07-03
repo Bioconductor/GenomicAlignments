@@ -26,7 +26,7 @@ pileLettersAt(x, seqnames, pos, cigar, at)
     the + strand. 
   }
   \item{seqnames}{
-    A factor-\link[IRanges]{Rle} \emph{parallel} to \code{x}.
+    A factor-\link[S4Vectors]{Rle} \emph{parallel} to \code{x}.
     For each \code{i}, \code{seqnames[i]} must be the name of the reference
     sequence of the i-th alignment.
   }

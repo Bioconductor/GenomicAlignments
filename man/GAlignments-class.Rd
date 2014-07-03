@@ -167,7 +167,7 @@
       Get or set the name of the reference sequence for each alignment
       in \code{x} (see Details section above for more information about
       the RNAME field of a SAM/BAM file).
-      \code{value} can be a factor, or a 'factor' \link[IRanges]{Rle},
+      \code{value} can be a factor, or a 'factor' \link[S4Vectors]{Rle},
       or a character vector.
     }
     \item{}{
@@ -179,7 +179,7 @@
       Get or set the strand for each alignment in \code{x} (see Details
       section above for more information about the strand of an alignment).
       \code{value} can be a factor (with levels +, - and *), or a 'factor'
-      \link[IRanges]{Rle}, or a character vector.
+      \link[S4Vectors]{Rle}, or a character vector.
     }
     \item{}{
       \code{cigar(x)}:

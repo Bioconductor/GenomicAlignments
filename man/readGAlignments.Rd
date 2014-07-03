@@ -114,7 +114,7 @@ readGappedReadsFromBam(file, index=file, use.names=FALSE,
     return if called with the same \code{param} argument. If some ranges
     are duplicated, then the labels are made unique by appending a unique
     suffix to all of them. The \code{"which_label"} metadata column is
-    represented as a factor-\link[IRanges]{Rle}.}
+    represented as a factor-\link[S4Vectors]{Rle}.}
 }
 
 \details{
