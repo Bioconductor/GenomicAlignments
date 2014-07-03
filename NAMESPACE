@@ -51,6 +51,9 @@ export(
 exportMethods(
     c,
 
+    ## Generics defined in BiocGenerics:
+    start, end, width,
+    
     ## Generics defined in IRanges:
     relistToClass,
     ngap,
