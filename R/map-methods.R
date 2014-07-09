@@ -13,8 +13,8 @@ setMethod("map", c("GenomicRanges", "GAlignments"), function(from, to) {
   space <- names(to_hits)
   if (is.null(space))
     space <- as.character(seq_len(length(to))[subjectHits(from_ol)])
-  new("RangesMapping", hits = from_ol, space = Rle(space),
-      ranges = ranges)
+  new("GRangesMapping", hits = from_ol,
+      granges = GRanges(Rle(space), ranges))
 })
 
 setMethod("pmap", c("Ranges", "GAlignments"), function(from, to) {
