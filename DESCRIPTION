@@ -5,14 +5,14 @@ Description: Provides efficient containers for storing and manipulating
 	to a reference genome). This includes read counting, computing the
 	coverage, junction detection, and working with the nucleotide content
 	of the alignments.
-Version: 1.1.17
+Version: 1.1.19
 Author: Herv\'e Pag\`es, Valerie Obenchain, Martin Morgan
 Maintainer: Bioconductor Package Maintainer <maintainer@bioconductor.org>
 biocViews: Genetics, Infrastructure, DataImport, Sequencing, RNASeq, SNP,
            Coverage, Alignment
 Depends: R (>= 2.10), methods, BiocGenerics (>= 0.11.3),
-	S4Vectors (>= 0.1.0), IRanges (>= 1.99.18),
-	GenomeInfoDb (>= 1.1.3), GenomicRanges (>= 1.17.20),
+	S4Vectors (>= 0.1.0), IRanges (>= 1.99.21),
+	GenomeInfoDb (>= 1.1.3), GenomicRanges (>= 1.17.22),
 	Biostrings (>= 2.33.11), Rsamtools (>= 1.17.28)
 Imports: methods, stats, BiocGenerics, S4Vectors, IRanges, GenomicRanges,
 	Biostrings, Rsamtools, BiocParallel
@@ -41,7 +41,7 @@ Collate: utils.R
 	coverage-methods.R
 	setops-methods.R
 	findOverlaps-methods.R
-	map-methods.R
+	mapCoords-methods.R
 	encodeOverlaps-methods.R
 	findCompatibleOverlaps-methods.R
 	summarizeOverlaps-methods.R

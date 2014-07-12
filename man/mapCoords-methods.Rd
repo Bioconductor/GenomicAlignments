@@ -1,0 +1,63 @@
+\name{mapCoords-methods}
+
+\alias{mapCoords-methods}
+\alias{mapCoords,GenomicRanges,GAlignments-method}
+
+\title{Mapping ranges between sequences}
+
+\description{
+  A method for translating a set of input ranges through a
+  \link{GAlignments} object. Returns a \linkS4class{GenomicRanges}
+  object.
+
+  NOTE: The \code{\link[IRanges]{mapCoords}} generic function is 
+  defined and documented in the \pkg{IRanges} package. A method for 
+  translating a set of input ranges through a
+  \link[GenomicRanges]{GRangesList} object is defined and documented 
+  in the \pkg{GenomicRanges} package.
+}
+
+\usage{
+\S4method{mapCoords}{GenomicRanges,GAlignments}(x, to, ...)
+}
+
+\arguments{
+  \item{x}{The input ranges to map, usually
+    a \code{\linkS4class{GenomicRanges}}}
+ 
+  \item{to}{The alignment between the sequences in \code{x} and the
+    sequences in the result.}
+
+  \item{\dots}{Arguments passed to other methods.}
+}
+
+\value{
+  A \code{GRanges} object of mapped coordinates with matching data
+  as metadata columns (`queryHits` and `subjectHits`).
+
+  The matching data is the result of calling \code{findOverlaps} with
+  type `within` on  ranges in \code{x} (the query) to the 
+  ranges in \code{to} (the subject). Matching can be many-to-one 
+  or one-to-many; one row is reported for each match. 
+}
+
+\details{
+  Each element in \code{to} is taken to represent the
+  alignment of a (read) sequence. The CIGAR string is used to
+  translate the input ranges to be relative to the read start. This
+  is useful, for example, when determining the cycle (read position)
+  at which a particular genomic mismatch occurs.
+}
+
+\seealso{
+  The generic \link[IRanges]{mapCoords-methods} in the IRanges package.
+}
+
+\examples{
+bf <- system.file("extdata", "ex1.bam", package="Rsamtools", mustWork=TRUE)
+gal <- readGAlignmentsFromBam(bf)
+gr <- GRanges(c("seq1", "seq1", "seq2"), IRanges(c(3, 69, 1529), width=5)) 
+mapCoords(gr, gal)
+}
+
+\author{M. Lawrence}

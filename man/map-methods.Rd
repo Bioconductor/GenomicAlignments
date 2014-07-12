@@ -5,9 +5,11 @@
 
 \title{Mapping ranges between sequences}
 \description{
+  \code{map} and \code{pmap} are deprecated. Use \code{mapCoords}
+  and \code{pmapCoords} instead.
+
   A method for translating a set of input ranges through a
-  \link{GAlignments} object. Returns a \linkS4class{GRangesMapping}
-  object.
+  \link{GAlignments} object. Returns a GRangesMapping object.
 
   NOTE: The \code{\link[IRanges]{map}} generic function is defined and
   documented in the \pkg{IRanges} package.
@@ -25,7 +27,7 @@
     sequences in the result.}
 }
 \value{
-  An object of class \code{GRangesMapping}, which consists of a
+  An object of class GRangesMapping, which consists of a
   \code{Hits} instance and \code{GRanges} instance. 
 }
 \details{
@@ -36,7 +38,7 @@
   at which a particular genomic mismatch occurs.
 }
 \seealso{
-  The \linkS4class{GRangesMapping} class is the typical return value.
+  \code{\link{mapCoords}} and \code{\link{pmapCoords}} methods.
 }
 
 \author{M. Lawrence}

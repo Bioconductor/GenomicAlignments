@@ -53,7 +53,7 @@ exportMethods(
 
     ## Generics defined in BiocGenerics:
     start, end, width,
-    
+ 
     ## Generics defined in IRanges:
     relistToClass,
     ngap,
@@ -61,7 +61,7 @@ exportMethods(
     coverage,
     pintersect,
     findOverlaps, countOverlaps, overlapsAny, subsetByOverlaps,
-    map,
+    map, mapCoords,
 
     ## Generics defined in GenomicRanges:
     seqinfo, "seqinfo<-",
