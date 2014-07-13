@@ -22,8 +22,7 @@
 }
 
 \arguments{
-  \item{x}{The input ranges to map, usually
-    a \code{\linkS4class{GenomicRanges}}}
+  \item{x}{The input ranges to map, usually a \code{\linkS4class{GRanges}}.}
  
   \item{to}{The alignment between the sequences in \code{x} and the
     sequences in the result.}
@@ -35,8 +34,8 @@
   A \code{GRanges} object of mapped coordinates with matching data
   as metadata columns (`queryHits` and `subjectHits`).
 
-  The matching data is the result of calling \code{findOverlaps} with
-  type `within` on  ranges in \code{x} (the query) to the 
+  Matching data are the result of calling \code{findOverlaps} with
+  type `within` on  ranges in \code{x} (the query) and the 
   ranges in \code{to} (the subject). Matching can be many-to-one 
   or one-to-many; one row is reported for each match. 
 }
