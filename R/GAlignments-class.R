@@ -534,18 +534,18 @@ setMethod("extractROWS", "GAlignments",
     function(x, i)
     {
         i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
-        ans_names <- extractROWS(names(x), i)
-        ans_seqnames <- extractROWS(seqnames(x), i)
-        ans_start <- extractROWS(start(x), i)
-        ans_cigar <- extractROWS(cigar(x), i)
-        ans_strand <- extractROWS(strand(x), i)
-        ans_mcols <- extractROWS(mcols(x), i)
-        GenomicRanges:::clone(x, NAMES=ans_names,
+        ans_NAMES <- extractROWS(x@NAMES, i)
+        ans_seqnames <- extractROWS(x@seqnames, i)
+        ans_start <- extractROWS(x@start, i)
+        ans_cigar <- extractROWS(x@cigar, i)
+        ans_strand <- extractROWS(x@strand, i)
+        ans_elementMetadata <- extractROWS(x@elementMetadata, i)
+        GenomicRanges:::clone(x, NAMES=ans_NAMES,
                                  seqnames=ans_seqnames,
                                  start=ans_start,
                                  cigar=ans_cigar,
                                  strand=ans_strand,
-                                 elementMetadata=ans_mcols)
+                                 elementMetadata=ans_elementMetadata)
     }
 )
 

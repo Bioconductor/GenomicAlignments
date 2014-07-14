@@ -302,16 +302,16 @@ setMethod("extractROWS", "GAlignmentPairs",
     function(x, i)
     {
         i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
-        ans_names <- extractROWS(names(x), i)
-        ans_first <- extractROWS(first(x), i)
-        ans_last <- extractROWS(last(x), i)
-        ans_isProperPair <- extractROWS(isProperPair(x), i)
-        ans_mcols <- extractROWS(mcols(x), i)
-        initialize(x, NAMES=ans_names,
+        ans_NAMES <- extractROWS(x@NAMES, i)
+        ans_first <- extractROWS(x@first, i)
+        ans_last <- extractROWS(x@last, i)
+        ans_isProperPair <- extractROWS(x@isProperPair, i)
+        ans_elementMetadata <- extractROWS(x@elementMetadata, i)
+        initialize(x, NAMES=ans_NAMES,
                       first=ans_first,
                       last=ans_last,
                       isProperPair=ans_isProperPair,
-                      elementMetadata=ans_mcols)
+                      elementMetadata=ans_elementMetadata)
     }
 )
 
