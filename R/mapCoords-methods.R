@@ -4,11 +4,11 @@
 ###
 
 setMethod("map", c("GenomicRanges", "GAlignments"), function(from, to) {
-  .Deprecated(msg="map() has been deprecated. Use mapCoords() instead.")
+  .Defunct(msg="map() is defunct. Use mapCoords() instead.")
 })
 
 setMethod("pmap", c("Ranges", "GAlignments"), function(from, to) {
-  .Deprecated(msg="pmap() has been deprecated. Use pmapCoords() instead.")
+  .Defunct(msg="pmap() is defunct. Use pmapCoords() instead.")
 })
 
 setMethod("mapCoords", c("GenomicRanges", "GAlignments"), function(x, to, ...) {

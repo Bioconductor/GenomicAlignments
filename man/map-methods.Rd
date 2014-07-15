@@ -5,7 +5,7 @@
 
 \title{Mapping ranges between sequences}
 \description{
-  \code{map} and \code{pmap} are deprecated. Use \code{mapCoords}
+  \code{map} and \code{pmap} are defunct. Use \code{mapCoords}
   and \code{pmapCoords} instead.
 
   A method for translating a set of input ranges through a
