@@ -449,12 +449,12 @@ setAs("GAlignmentPairs", "GAlignments",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### fillGaps()
+### fillJunctionGaps()
 ###
 ### Not exported. Used in the SplicingGraphs package.
 ###
 
-fillGaps <- function(x)
+fillJunctionGaps <- function(x)
 {
     if (!is(x, "GRangesList"))
         stop("'x' must be a GRangesList object")
