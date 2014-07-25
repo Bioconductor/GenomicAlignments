@@ -247,7 +247,7 @@ colSums(cigarOpTable(cigar(last(U3.GALP))))
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Load the transcripts from a \Rclass{TranscriptDb} object}
+\subsection{Load the transcripts from a \Rclass{TxDb} object}
 
 In order to compute overlaps between reads and transcripts, we need access
 to the genomic positions of a set of known transcripts and their exons.
@@ -255,14 +255,14 @@ It is essential that the reference genome of this set of transcripts and exons
 be {\bf exactly} the same as the reference genome used to align the reads.
 
 We could use the \Rfunction{makeTranscriptDbFromUCSC} function defined in
-the \Rpackage{GenomicFeatures} package to make a \Rclass{TranscriptDb}
+the \Rpackage{GenomicFeatures} package to make a \Rclass{TxDb}
 object containing the dm3 transcripts and their exons retrieved from the
 UCSC Genome Browser\footnote{\url{http://genome.ucsc.edu/cgi-bin/hgGateway}}.
 The Bioconductor project however provides a few annotation packages
-containing \Rclass{TranscriptDb} objects for the most commonly studied
+containing \Rclass{TxDb} objects for the most commonly studied
 organisms (those data packages are sometimes called the {\it TxDb} packages).
 One of them is the \Rpackage{TxDb.Dmelanogaster.\-UCSC.\-dm3.ensGene} package.
-It contains a \Rclass{TranscriptDb} object that was made by pointing
+It contains a \Rclass{TxDb} object that was made by pointing
 the \Rfunction{makeTranscriptDbFromUCSC} function to the dm3 genome
 and {\it Ensembl Genes} track \footnote{See
 \url{http://genome.ucsc.edu/cgi-bin/hgTrackUi?hgsid=276880911&g=ensGene}
@@ -308,8 +308,8 @@ exbytx_strand <- unlist(runValue(strand(exbytx)), use.names=FALSE)
 
 We will also need the mapping between the transcripts and their gene.
 We start by using \Rfunction{transcripts} to extract this information
-from our \Rclass{TranscriptDb} object \Rcode{txdb}, and
-then we construct a named factor that represents the mapping:
+from our \Rclass{TxDb} object \Rcode{txdb}, and then we construct a
+named factor that represents the mapping:
 
 <<exbytx2gene>>=
 tx <- transcripts(txdb, columns=c("tx_name", "gene_id"))
