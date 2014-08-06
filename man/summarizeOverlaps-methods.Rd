@@ -163,14 +163,16 @@ IntersectionNotEmpty(features, reads, ignore.strand=FALSE, inter.feature=TRUE)
 
     The distinction between a user-defined 'mode' and user-defined
     'preprocess.reads' function is that in the first case the user
-    defines how to count; in the second case the reads are preprocess
+    defines how to count; in the second case the reads are preprocessed
     before counting with a pre-defined mode. See examples.
   }
   \item{...}{
-    Additional arguments for BAM file methods such as \code{singleEnd},
-    \code{fragments} or \code{param} that apply to the reading of
-    records from a file (see below). Providing \code{count.mapped.reads=TRUE} 
-    include additional passes through the BAM file to collect statistics 
+    Additional arguments passed to functions or methods called
+    from within \code{summarizeOverlaps}. For BAM file methods 
+    arguments may include \code{singleEnd}, \code{fragments} or 
+    \code{param} which apply to reading records from a file 
+    (see below). Providing \code{count.mapped.reads=TRUE} include 
+    additional passes through the BAM file to collect statistics 
     similar to those from \code{countBam}.
   }
   \item{singleEnd}{
