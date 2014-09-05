@@ -257,7 +257,7 @@ readSTARJunctions(file)
 
     \item The \code{\link[IRanges]{extractList}} function in the \pkg{IRanges}
           package, for extracting groups of elements from a vector-like object
-          and returning them into a \link[IRanges]{List} object.
+          and returning them into a \link[S4Vectors]{List} object.
   }
 }
 
