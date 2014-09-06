@@ -160,10 +160,10 @@ readGappedReadsFromBam(file, index=file, use.names=FALSE,
     \code{bamIndicies(file)}. Only reads in \code{bamRanges(file)} are
     returned (if \code{param} is supplied, \code{bamRanges(file)} takes
     precedence over \code{bamWhich(param)}).
-    The return value is a \link[IRanges]{SimpleList} object, with elements
+    The return value is a \link[S4Vectors]{SimpleList} object, with elements
     of the list corresponding to each path. \code{bamSamples(file)} is
     available as metadata columns (accessed with \code{mcols}) of the
-    returned \link[IRanges]{SimpleList} object.
+    returned \link[S4Vectors]{SimpleList} object.
 
     \code{readGAlignmentPairsFromBam} proceeds in 2 steps:
     \enumerate{
