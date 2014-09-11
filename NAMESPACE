@@ -115,8 +115,9 @@ export(
     readSTARJunctions,
 
     sequenceLayer,
-    stackStringsFromBam,
     pileLettersAt,
+    stackStringsFromBam,
+    alphabetFrequencyFromBam,
 
     encodeOverlaps1,
     flipQuery,

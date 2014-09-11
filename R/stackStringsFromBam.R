@@ -53,7 +53,7 @@ stackStringsFromBam <- function(file, index=file, param,
                                 Lpadding.letter="+", Rpadding.letter="+")
 {
     param <- .normarg_param(param)
-    region <- unlist(bamWhich(param), use.names=FALSE)
+    region_range <- unlist(bamWhich(param), use.names=FALSE)
     what <- match.arg(what, c("seq", "qual"))
     param_what <- bamWhat(param)
     if (!(what %in% param_what))
@@ -67,7 +67,7 @@ stackStringsFromBam <- function(file, index=file, param,
         what_col <- BStringSet(what_col)
     layed_seq <- sequenceLayer(what_col, cigar(gal),
                                D.letter=D.letter, N.letter=N.letter)
-    ans <- stackStrings(layed_seq, start(region), end(region),
+    ans <- stackStrings(layed_seq, start(region_range), end(region_range),
                         shift=start(gal)-1L,
                         Lpadding.letter=Lpadding.letter,
                         Rpadding.letter=Rpadding.letter)
@@ -82,5 +82,25 @@ stackStringsFromBam <- function(file, index=file, param,
     names(ans) <- names(gal)
     mcols(ans) <- gal_mcols
     ans
+}
+
+alphabetFrequencyFromBam <- function(file, index=file, param,
+                                     what="seq", ...)
+{
+    param <- .normarg_param(param)
+    region_range <- unlist(bamWhich(param), use.names=FALSE)
+    region_seqname <- names(bamWhich(param))
+    what <- match.arg(what, c("seq", "qual"))
+    bamWhat(param) <- what
+    gal <- readGAlignmentsFromBam(file, index=index, param=param)
+    seqlevels(gal) <- region_seqname
+    what_col <- mcols(gal)[ , what]
+    if (what == "qual")
+        what_col <- BStringSet(what_col)
+    at <- start(region_range) - 1L + seq_len(width(region_range))
+    at <- GRanges(region_seqname, IRanges(at, width=1L))
+    piles <- pileLettersAt(what_col, seqnames(gal), start(gal), cigar(gal),
+                           at)
+    alphabetFrequency(piles, ...)
 }
 
