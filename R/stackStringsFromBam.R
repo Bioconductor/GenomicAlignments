@@ -21,14 +21,15 @@
     if (is(param, "GenomicRanges")) {
         if (length(param) != 1L)
             stop("when a GRanges object, 'param' must have length 1")
+        seqlevels(param) <- seqlevelsInUse(param)
         param <- ScanBamParam(which=param)
         return(param)
     }
     if (is(param, "RangesList")) {
         ## We support RangesList just because ScanBamParam() supports it too
         ## and also because that's what's returned by bamWhich().
-        region <- unlist(param, use.names=FALSE)
-        if (length(region) != 1L)
+        param <- param[elementLengths(param) != 0L]
+        if (length(unlist(param, use.names=FALSE)) != 1L)
             stop("when a RangesList object, 'param' must contain exactly 1 ",
                  "genomic region\n  (i.e. 'unlist(param)' must have length 1)")
         param <- ScanBamParam(which=param)
@@ -39,11 +40,13 @@
              "containing\n  exactly 1 genomic region, or a GRanges object ",
              "of length 1, or a character\n  string specifying a single ",
              "genomic region (in the \"chr14:5201-5300\" format)")
-    region <- unlist(bamWhich(param), use.names=FALSE)
-    if (length(region) != 1L)
+    param_which <- bamWhich(param)
+    param_which <- param_which[elementLengths(param_which) != 0L]
+    if (length(unlist(param_which, use.names=FALSE)) != 1L)
         stop("when a ScanBamParam object, 'param' must contain exactly 1 ",
              "genomic region\n  (i.e. 'unlist(bamWhich(param))' must have ",
              "length 1)")
+    bamWhich(param) <- param_which
     param
 }
 
