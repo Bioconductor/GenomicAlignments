@@ -66,7 +66,7 @@ alphabetFrequencyFromBam(file, index=file, param, what="seq", ...)
     package for more details.
   }
   \item{...}{
-    Further arguments to be passed to \link[Biostrings]{alpahabetFrequency}.
+    Further arguments to be passed to \link[Biostrings]{alphabetFrequency}.
   }
 }
 
@@ -153,8 +153,11 @@ region1 <- GRanges("seq1", IRanges(1, 60))  # region of interest
 
 ## Stack the read sequences:
 stackStringsFromBam(bamfile1, param=region1)
+
+## Compute the "consensus matrix" (1 column per nucleotide position
+## in the region of interest):
 af <- alphabetFrequencyFromBam(bamfile1, param=region1, baseOnly=TRUE)
-cm1a <- t(af[ , DNA_BASES])  # consensus matrix
+cm1a <- t(af[ , DNA_BASES])
 cm1a
 
 ## Stack their quality strings:
@@ -169,7 +172,7 @@ stacked_qseq <- stackStringsFromBam(bamfile1, param="seq2:1509-1519")
 stacked_qseq  # deletion in read 13
 af <- alphabetFrequencyFromBam(bamfile1, param="seq2:1509-1519",
                                 baseOnly=TRUE)
-cm1b <- t(af[ , DNA_BASES])
+cm1b <- t(af[ , DNA_BASES])  # consensus matrix
 cm1b
 
 ## Sanity check:
@@ -194,6 +197,41 @@ stackStringsFromBam(bamfile2, param=region2)
 af <- alphabetFrequencyFromBam(bamfile2, param=region2, baseOnly=TRUE)
 cm2 <- t(af[ , DNA_BASES])  # consensus matrix
 cm2
+
+## ---------------------------------------------------------------------
+## C. COMPUTE READ CONSENSUS SEQUENCE FOR REGION OF INTEREST
+## ---------------------------------------------------------------------
+
+## Let's write our own little naive function to go from consensus matrix
+## to consensus sequence. For each nucleotide position in the region of
+## interest (i.e. each column in the matrix), we select the letter with
+## highest frequency. We also use special letter "*" at positions where
+## there is a tie, and special letter "." at positions where all the
+## frequencies are 0 (a particular type of tie):
+cm_to_cs <- function(cm)
+{
+    stopifnot(is.matrix(cm))
+    nr <- nrow(cm)
+    rnames <- rownames(cm)
+    stopifnot(!is.null(rnames) && all(nchar(rnames) == 1L))
+    selection <- apply(cm, 2,
+                       function(x) {
+                         i <- which.max(x)
+                         if (x[i] == 0L)
+                           return(nr + 1L)
+                         if (sum(x == x[i]) != 1L)
+                           return(nr + 2L)
+                         i
+                       })
+    paste0(c(rnames, ".", "*")[selection], collapse="")
+}
+
+cm_to_cs(cm1a)
+cm_to_cs(cm1b)
+cm_to_cs(cm2)
+
+## Note that the consensus sequences we obtain are relative to the
+## plus strand of the reference sequence.
 }
 
 \keyword{methods}
