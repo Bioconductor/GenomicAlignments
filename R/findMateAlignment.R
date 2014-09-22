@@ -155,8 +155,8 @@
         paste(idx, collapse=", "),
         ".\n!! Details:\n!! ", sep="")
     showGAlignments(x[idx], margin="!! ",
-                            with.classinfo=TRUE,
-                            print.seqlengths=FALSE)
+                            print.classinfo=TRUE,
+                            print.seqinfo=FALSE)
     cat("!! ==> won't assign a mate to them!\n")
 }
 

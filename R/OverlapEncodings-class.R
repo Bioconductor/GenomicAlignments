@@ -247,7 +247,7 @@ setMethod("show", "OverlapEncodings",
     function(object)
     {
         lo <- length(object)
-        cat(class(object), " of length ", lo, "\n", sep="")
+        cat(class(object), " object of length ", lo, "\n", sep="")
         if (lo == 0L)
             return(NULL)
         if (lo < 20L) {

@@ -574,18 +574,18 @@ setMethod("extractROWS", "GAlignments",
 }
 
 showGAlignments <- function(x, margin="",
-                            with.classinfo=FALSE, print.seqlengths=FALSE)
+                            print.classinfo=FALSE, print.seqinfo=FALSE)
 {
     lx <- length(x)
     nc <- ncol(mcols(x))
-    cat(class(x), " with ",
+    cat(class(x), " object with ",
         lx, " ", ifelse(lx == 1L, "alignment", "alignments"),
         " and ",
         nc, " metadata ", ifelse(nc == 1L, "column", "columns"),
         ":\n", sep="")
     out <- S4Vectors:::makePrettyMatrixForCompactPrinting(x,
                .makeNakedMatFromGAlignments)
-    if (with.classinfo) {
+    if (print.classinfo) {
         .COL2CLASS <- c(
             seqnames="Rle",
             strand="Rle",
@@ -608,16 +608,16 @@ showGAlignments <- function(x, margin="",
     ## limit that would typically be reached when 'showHeadLines' global
     ## option is set to Inf.
     print(out, quote=FALSE, right=TRUE, max=length(out))
-    if (print.seqlengths) {
-        cat(margin, "---\n", sep="")
-        GenomicRanges:::showSeqlengths(x, margin=margin)
+    if (print.seqinfo) {
+        cat(margin, "-------\n", sep="")
+        cat(margin, "seqinfo: ", summary(seqinfo(x)), "\n", sep="")
     }
 }
 
 setMethod("show", "GAlignments",
     function(object)
         showGAlignments(object, margin="  ",
-                        with.classinfo=TRUE, print.seqlengths=TRUE)
+                        print.classinfo=TRUE, print.seqinfo=TRUE)
 )
 
 
