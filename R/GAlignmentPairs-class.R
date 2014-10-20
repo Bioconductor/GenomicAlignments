@@ -672,16 +672,3 @@ setMethod("c", "GAlignmentPairs",
     }
 )
 
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Old stuff (deprecated & defunct)
-###
-
-setMethod("ngap", "GAlignmentPairs",
-    function(x)
-    {
-        .Defunct("njunc")
-        njunc(x)
-    }
-)
-

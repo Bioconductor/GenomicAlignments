@@ -351,10 +351,6 @@ setMethod("relistToClass", "GAlignments",
     function(x) "GAlignmentsList"
 )
 
-setMethod("splitAsListReturnedClass", "GAlignments",
-    function(x) {.Defunct("relistToClass"); "GAlignmentsList"}
-)
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### show method.
@@ -363,64 +359,5 @@ setMethod("splitAsListReturnedClass", "GAlignments",
 setMethod("show", "GAlignmentsList",
     function(object)
         GenomicRanges:::showList(object, showGAlignments, FALSE)
-)
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Old stuff (deprecated & defunct)
-###
-
-## Taken from GRangesList. Maybe not needed?
-## Herve 12/04/2013: Probably not needed. What's the use case? It has no
-## example.
-makeGAlignmentsListFromFeatureFragments <- function(seqnames=Rle(factor()),
-                                                fragmentPos=list(),
-                                                fragmentCigar=list(),
-                                                strand=character(0),
-                                                sep=",")
-{
-    .Defunct()
-    fragmentPos <-
-        GenomicRanges:::normargListOfIntegers(fragmentPos, sep, "fragmentPos")
-    nfrag_per_feature <- elementLengths(fragmentPos)
-    pos <- unlist(fragmentPos, recursive=FALSE, use.names=FALSE)
-
-    ncigar_per_elt <- elementLengths(fragmentCigar)
-    if (length(ncigar_per_elt) != 0L) {
-        if (length(nfrag_per_feature) == 0L)
-            nfrag_per_feature <- ncigar_per_elt
-        else if (!identical(ncigar_per_elt, nfrag_per_feature))
-            stop("'fragmentPos' and 'fragmentCigar' have ",
-                 "incompatible \"shapes\"")
-    }
-    cigar <- unlist(fragmentCigar, recursive=FALSE, use.names=FALSE)
-
-    nfrag <- sum(nfrag_per_feature)
-    if (nfrag == 0L) {
-        ## Cannot blindly subset by FALSE because it doesn't work on a
-        ## zero-length Rle.
-        if (length(seqnames) != 0L)
-            seqnames <- seqnames[FALSE]
-        if (length(strand) != 0L)
-            strand <- strand[FALSE]
-    } else {
-        if (length(seqnames) != length(nfrag_per_feature) ||
-            length(strand) != length(nfrag_per_feature))
-            stop("length of 'seqnames' and/or 'strand' is incompatible ",
-                 "with fragmentPos/Cigar")
-        seqnames <- rep.int(seqnames, nfrag_per_feature)
-        strand <- rep.int(strand, nfrag_per_feature)
-    }
-    unlistData <- GAlignments(seqnames=seqnames, pos=pos, cigar=cigar,
-                              strand=strand)
-    partitioning <- PartitioningByEnd(cumsum(nfrag_per_feature), names=NULL)
-    relist(unlistData, partitioning)
-}
-
-setMethod("ngap", "GAlignmentsList",
-    function(x)
-    {
-        .Defunct("njunc")
-        njunc(x)
-    }
 )
 

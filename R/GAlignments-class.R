@@ -743,16 +743,3 @@ setMethod("c", "GAlignments",
     }
 )
 
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Old stuff (deprecated & defunct)
-###
-
-setMethod("ngap", "GAlignments",
-    function(x)
-    {
-        .Defunct("njunc")
-        njunc(x)
-    }
-)
-

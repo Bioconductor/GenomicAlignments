@@ -322,14 +322,3 @@ readSTARJunctions <- function(file)
             mm_reads=df[[8L]])
 }
 
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Old stuff (deprecated & defunct)
-###
-
-introns <- function(...)
-{
-    .Defunct("junctions")
-    junctions(...)
-}
-

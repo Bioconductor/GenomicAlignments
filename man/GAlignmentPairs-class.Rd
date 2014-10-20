@@ -48,9 +48,6 @@
 % Combining:
 \alias{c,GAlignmentPairs-method}
 
-% Old stuff:
-\alias{ngap,GAlignmentPairs-method}
-
 
 \title{GAlignmentPairs objects}
 

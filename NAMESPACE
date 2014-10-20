@@ -55,12 +55,11 @@ exportMethods(
  
     ## Generics defined in IRanges:
     relistToClass,
-    ngap,
     narrow,
     coverage,
     pintersect,
     findOverlaps, countOverlaps, overlapsAny, subsetByOverlaps,
-    map, mapCoords,
+    mapCoords,
 
     ## Generics defined in GenomicRanges:
     seqinfo, "seqinfo<-",
@@ -96,7 +95,6 @@ export(
     GAlignments,
     GAlignmentPairs,
     GAlignmentsList,
-    makeGAlignmentsListFromFeatureFragments,
     GappedReads,
 
     findMateAlignment, findMateAlignment2,
@@ -125,11 +123,7 @@ export(
 
     countCompatibleOverlaps,
 
-    Union, IntersectionNotEmpty, IntersectionStrict,
-
-    ## old stuff (deprecated or defunct):
-    Lngap, Rngap,
-    introns
+    Union, IntersectionNotEmpty, IntersectionStrict
 )
 
 

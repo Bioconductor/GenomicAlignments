@@ -50,9 +50,6 @@
 % show:
 \alias{show,GAlignmentsList-method}
 
-% Old stuff (deprecated & defunct):
-\alias{makeGAlignmentsListFromFeatureFragments}
-\alias{ngap,GAlignmentsList-method}
 
 \title{GAlignmentsList objects}
 

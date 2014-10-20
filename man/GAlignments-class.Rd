@@ -52,12 +52,6 @@
 % "show" method:
 \alias{show,GAlignments-method}
 
-% Other methods:
-\alias{splitAsListReturnedClass,GAlignments-method}
-
-% Old stuff:
-\alias{ngap,GAlignments-method}
-
 
 \title{GAlignments objects}
 

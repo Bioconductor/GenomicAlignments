@@ -14,9 +14,6 @@
 \alias{readTopHatJunctions}
 \alias{readSTARJunctions}
 
-% Old stuff:
-\alias{introns}
-
 
 \title{Extract junctions from genomic alignments}
 

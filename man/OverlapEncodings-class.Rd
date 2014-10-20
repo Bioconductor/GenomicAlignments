@@ -41,13 +41,6 @@
 \alias{as.data.frame,OverlapEncodings-method}
 \alias{show,OverlapEncodings-method}
 
-% Old stuff:
-\alias{ngap,character-method}
-\alias{ngap,factor-method}
-\alias{ngap,OverlapEncodings-method}
-\alias{Lngap}
-\alias{Rngap}
-
 
 \title{OverlapEncodings objects}
 

@@ -3,14 +3,6 @@
 ### -------------------------------------------------------------------------
 ###
 
-setMethod("map", c("GenomicRanges", "GAlignments"), function(from, to) {
-  .Defunct(msg="map() is defunct. Use mapCoords() instead.")
-})
-
-setMethod("pmap", c("Ranges", "GAlignments"), function(from, to) {
-  .Defunct(msg="pmap() is defunct. Use pmapCoords() instead.")
-})
-
 setMethod("mapCoords", c("GenomicRanges", "GAlignments"), function(x, to, ...) {
   to_grl <- grglist(to, drop.D.ranges=TRUE)
   from_ol <- findOverlaps(x, to_grl, ignore.strand=TRUE, type="within")
