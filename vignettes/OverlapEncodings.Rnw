@@ -11,7 +11,7 @@ BiocStyle::latex()
 
 \title{Overlap encodings}
 \author{Herv\'e Pag\`es}
-\date{Last modified: May 2014; Compiled: \today}
+\date{Last modified: October 2014; Compiled: \today}
 
 \begin{document}
 
@@ -254,7 +254,7 @@ to the genomic positions of a set of known transcripts and their exons.
 It is essential that the reference genome of this set of transcripts and exons
 be {\bf exactly} the same as the reference genome used to align the reads.
 
-We could use the \Rfunction{makeTranscriptDbFromUCSC} function defined in
+We could use the \Rfunction{makeTxDbFromUCSC} function defined in
 the \Rpackage{GenomicFeatures} package to make a \Rclass{TxDb}
 object containing the dm3 transcripts and their exons retrieved from the
 UCSC Genome Browser\footnote{\url{http://genome.ucsc.edu/cgi-bin/hgGateway}}.
@@ -263,7 +263,7 @@ containing \Rclass{TxDb} objects for the most commonly studied
 organisms (those data packages are sometimes called the {\it TxDb} packages).
 One of them is the \Rpackage{TxDb.Dmelanogaster.\-UCSC.\-dm3.ensGene} package.
 It contains a \Rclass{TxDb} object that was made by pointing
-the \Rfunction{makeTranscriptDbFromUCSC} function to the dm3 genome
+the \Rfunction{makeTxDbFromUCSC} function to the dm3 genome
 and {\it Ensembl Genes} track \footnote{See
 \url{http://genome.ucsc.edu/cgi-bin/hgTrackUi?hgsid=276880911&g=ensGene}
 for a description of this track.}. We can use it here:
