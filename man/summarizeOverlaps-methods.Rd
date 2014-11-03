@@ -176,7 +176,7 @@ IntersectionNotEmpty(features, reads, ignore.strand=FALSE, inter.feature=TRUE)
     similar to those from \code{countBam}.
   }
   \item{singleEnd}{
-    (Default TRUE) A logical value indicating if reads are single or 
+    (Default TRUE) A logical indicating if reads are single or 
     paired-end. In Bioconductor > 2.12 it is not necessary to sort
     paired-end BAM files by \code{qname}. When counting with 
     \code{summarizeOverlaps}, setting \code{singleEnd=FALSE} will trigger 
@@ -185,24 +185,21 @@ IntersectionNotEmpty(features, reads, ignore.strand=FALSE, inter.feature=TRUE)
     \code{singleEnd=FALSE}.
   }
   \item{fragments}{
-    (Default FALSE) Applies to paired-end data only so \code{singleEnd}
-    must be FALSE. 
+    (Default FALSE) A logical value indicating if singletons, reads with
+    unmapped pairs and other fragments should be included in counting.  Applies
+    to paired-end data only.
 
-    \code{fragments} is a logical value indicating if singletons, reads 
-    with unmapped pairs and other fragments should be included in counting. 
-    When \code{fragments=FALSE} the
-    \code{\link{readGAlignmentPairs}} function
-    from the \pkg{GenomicAlignments} package is used to 
-    read in the data, when \code{fragments=TRUE} the
-    \code{\link{readGAlignmentsList}}
-    is used.
+    When \code{fragments=FALSE} the \code{\link{readGAlignmentPairs}} function
+    is used to read in the data. Only the read pairs mated by the algorithm are
+    kept and counted.
 
-    \code{readGAlignmentPairs} keeps only the read pairs mated by the 
-    algorithm while \code{readGAlignmentsList} keeps the pairs as well as 
-    all singletons, reads with unmapped pairs and other fragments. When 
-    \code{fragments=TRUE} counts will generally be higher because all 
-    records are included in the counting, not just the primary alignment 
-    pairs. See \code{?\link{readGAlignmentsListFromBam}} for the algorithm
+    When \code{fragments=TRUE} \code{singleEnd} should be FALSE.
+    \code{\link{readGAlignmentsList}} is used to read in the data. Read pairs
+    mated by the algorithm as well as all singletons, reads with unmapped pairs
+    and other fragments are kept and counted. Because more records are kept,
+    generally counts will be  higher with \code{fragments=TRUE}.
+
+    See \code{?\link{readGAlignmentsListFromBam}} for the count algorithm
     details.
   }
   \item{param}{An optional \code{\link[Rsamtools]{ScanBamParam}} instance to
@@ -264,9 +261,9 @@ IntersectionNotEmpty(features, reads, ignore.strand=FALSE, inter.feature=TRUE)
         \item{The \code{singleEnd} argument should be FALSE.}
         \item{When \code{reads} are supplied as a BamFile or BamFileList, 
               the \code{asMates} argument to the BamFile should be TRUE.}
-        \item{When \code{fragments} is TRUE, a \code{GAlignmentPairs}
+        \item{When \code{fragments} is FALSE, a \code{GAlignmentPairs}
               object is used in counting (pairs only).}
-        \item{When \code{fragments} is FALSE, a \code{GAlignmentsList}
+        \item{When \code{fragments} is TRUE, a \code{GAlignmentsList}
               object is used in counting (pairs, singletons, unmapped
               mates, etc.)}
       }
