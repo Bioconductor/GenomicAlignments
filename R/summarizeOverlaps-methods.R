@@ -186,13 +186,9 @@ IntersectionStrict <- function(features, reads, ignore.strand=FALSE,
     ov <- findOverlaps(features, regions, ignore.strand=ignore.strand)
     regions_to_keep <- which(countSubjectHits(ov) == 1L)
     ov <- ov[subjectHits(ov) %in% regions_to_keep]
-    ans_flesh <- regions[subjectHits(ov)]
-    ## Using 'countQueryHits(ov)' to compute the skeleton of 'ans' relies
-    ## on the assumption that the hits returned by findOverlaps() are always
-    ## ordered by query.
-    ans_eltlens <- countQueryHits(ov)
-    ans_skeleton <- PartitioningByEnd(cumsum(ans_eltlens))
-    relist(ans_flesh, ans_skeleton)
+    unlisted_ans <- regions[subjectHits(ov)]
+    ans_partitioning <- as(ov, "PartitioningByEnd")
+    relist(unlisted_ans, ans_partitioning)
 }
 
 IntersectionNotEmpty <-  function(features, reads, ignore.strand=FALSE,
@@ -200,7 +196,7 @@ IntersectionNotEmpty <-  function(features, reads, ignore.strand=FALSE,
 {
     features <- .removeSharedRegions(features, ignore.strand=ignore.strand)
     Union(features, reads, ignore.strand=ignore.strand,
-           inter.feature=inter.feature)
+          inter.feature=inter.feature)
 }
 
 
