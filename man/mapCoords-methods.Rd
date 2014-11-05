@@ -50,6 +50,8 @@
 
 \seealso{
   The generic \link[IRanges]{mapCoords-methods} in the IRanges package.
+  Additional methods in the GenomicRanges package 
+    \link[GenomicRanges]{mapCoords-methods}.
 }
 
 \examples{

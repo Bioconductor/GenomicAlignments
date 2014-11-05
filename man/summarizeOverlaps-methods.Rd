@@ -213,20 +213,20 @@ IntersectionNotEmpty(features, reads, ignore.strand=FALSE, inter.feature=TRUE)
 
 \details{
   \describe{
-    \item{}{\code{summarizeOverlaps} offers counting modes to resolve reads 
-      that overlap multiple features. The \code{mode} argument defines a
-      set of rules to resolve the read to a single feature such that each read 
-      is counted a maximum of once. New to GenomicRanges >= 1.13.9 is the
-      \code{inter.feature} argument which allows reads to be counted for
-      each feature they overlap. When \code{inter.feature=TRUE} the counting
-      modes are aware of feature overlap and reads overlapping multiple 
-      features are dropped and not counted. When \code{inter.feature=FALSE} 
-      multiple feature overlap is ignored and reads are counted once for each 
-      feature they map to. This essentially reduces modes \sQuote{Union} and
-      \sQuote{IntersectionStrict} to \code{countOverlaps} with 
+    \item{}{\code{summarizeOverlaps} offers counting modes to resolve reads that
+      overlap multiple features. The \code{mode} argument defines a set of rules
+      to resolve the read to a single feature such that each read is counted a
+      maximum of once. New to GenomicRanges >= 1.13.9 is the
+      \code{inter.feature} argument which allows reads to be counted for each
+      feature they overlap.  When \code{inter.feature=TRUE} the counting modes
+      are aware of feature overlap; reads that overlap multiple features are
+      dropped and not counted.  When \code{inter.feature=FALSE} multiple feature
+      overlap is ignored and reads are counted once for each feature they map
+      to. This essentially reduces modes \sQuote{Union} and
+      \sQuote{IntersectionStrict} to \code{countOverlaps} with
       \code{type="any"}, and \code{type="within"}, respectively.
       \sQuote{IntersectionNotEmpty} is not reduced to a derivative of
-      \code{countOverlaps} because the shared regions are removed before 
+      \code{countOverlaps} because the shared regions are removed before
       counting.
 
       The \code{BamViews}, \code{BamFile} and \code{BamFileList} methods
