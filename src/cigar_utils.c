@@ -157,24 +157,24 @@ static int is_visible_in_space(char OP, int space)
 
 static void drop_or_append_or_merge_range(int start, int width,
 		int drop_empty_range, int merge_range, int nelt0,
-		RangeAE *range_buf, const char *OP, CharAEAE *OP_buf)
+		IntPairAE *range_buf, const char *OP, CharAEAE *OP_buf)
 {
 	int buf_nelt, buf_nelt_minus_1, prev_end_plus_1;
 	CharAE OP_buf_new_elt, *OP_buf_prev_elt;
 
 	if (drop_empty_range && width == 0)  /* Drop. */
 		return;
-	buf_nelt = RangeAE_get_nelt(range_buf);
+	buf_nelt = IntPairAE_get_nelt(range_buf);
 	if (merge_range && buf_nelt > nelt0) {
 		/* The incoming range should never overlap with the previous
 		   incoming range i.e. 'start' should always be > the end of
 		   the previous incoming range. */
 		buf_nelt_minus_1 = buf_nelt - 1;
-		prev_end_plus_1 = range_buf->start.elts[buf_nelt_minus_1] +
-				  range_buf->width.elts[buf_nelt_minus_1];
+		prev_end_plus_1 = range_buf->a.elts[buf_nelt_minus_1] +
+				  range_buf->b.elts[buf_nelt_minus_1];
 		if (start == prev_end_plus_1) {
 			/* Merge. */
-			range_buf->width.elts[buf_nelt_minus_1] += width;
+			range_buf->b.elts[buf_nelt_minus_1] += width;
 			if (OP_buf != NULL) {
 				OP_buf_prev_elt = OP_buf->elts +
 						  buf_nelt_minus_1;
@@ -185,7 +185,7 @@ static void drop_or_append_or_merge_range(int start, int width,
 		}
 	}
 	/* Append. */
-	RangeAE_insert_at(range_buf, buf_nelt, start, width);
+	IntPairAE_insert_at(range_buf, buf_nelt, start, width);
 	if (OP_buf != NULL) {
 		OP_buf_new_elt = new_CharAE(1);
 		CharAE_insert_at(&OP_buf_new_elt, 0, *OP);
@@ -198,13 +198,13 @@ static void drop_or_append_or_merge_range(int start, int width,
 static const char *parse_cigar_ranges(const char *cigar_string,
 		int space, int pos,
 		int drop_empty_ranges, int reduce_ranges,
-		RangeAE *range_buf, CharAEAE *OP_buf)
+		IntPairAE *range_buf, CharAEAE *OP_buf)
 {
 	int buf_nelt0, cigar_offset, n, OPL /* Operation Length */,
 	    start, width;
 	char OP /* Operation */;
 
-	buf_nelt0 = RangeAE_get_nelt(range_buf);
+	buf_nelt0 = IntPairAE_get_nelt(range_buf);
 	cigar_offset = 0;
 	start = pos;
 	while ((n = next_cigar_OP(cigar_string, cigar_offset, &OP, &OPL))) {
@@ -507,24 +507,25 @@ SEXP cigar_op_table(SEXP cigar)
  * cigar_ranges()
  */
 
-static SEXP make_list_of_IRanges(const RangeAEAE *range_buf, SEXP names)
+static SEXP make_list_of_IRanges(const IntPairAEAE *range_buf, SEXP names)
 {
 	SEXP ans, ans_names;
 
-	PROTECT(ans = new_list_of_IRanges_from_RangeAEAE("IRanges", range_buf));
+	PROTECT(ans = new_list_of_IRanges_from_IntPairAEAE("IRanges",
+							   range_buf));
 	PROTECT(ans_names = duplicate(names));
 	SET_NAMES(ans, ans_names);
 	UNPROTECT(2);
 	return ans;
 }
 
-static SEXP make_CompressedIRangesList(const RangeAE *range_buf,
+static SEXP make_CompressedIRangesList(const IntPairAE *range_buf,
 		const CharAEAE *OP_buf, SEXP breakpoints)
 {
 	SEXP ans, ans_unlistData, ans_unlistData_names, ans_partitioning;
 
 	PROTECT(ans_unlistData =
-			new_IRanges_from_RangeAE("IRanges", range_buf));
+			new_IRanges_from_IntPairAE("IRanges", range_buf));
 	if (OP_buf != NULL) {
 		PROTECT(ans_unlistData_names =
 				new_CHARACTER_from_CharAEAE(OP_buf));
@@ -580,8 +581,8 @@ SEXP cigar_ranges(SEXP cigar, SEXP flag, SEXP space, SEXP pos, SEXP f,
 	SEXP ans, ans_breakpoints, f_levels, cigar_elt;
 	int cigar_len, space0, pos_len, f_is_NULL, ans_len, *breakpoint,
 	    drop_empty_ranges0, reduce_ranges0, with_ops0, i;
-	RangeAE range_buf1, *range_buf_p;
-	RangeAEAE range_buf2;
+	IntPairAE range_buf1, *range_buf_p;
+	IntPairAEAE range_buf2;
 	CharAEAE OP_buf, *OP_buf_p;
 	const int *flag_elt, *pos_elt, *f_elt;
 	const char *cigar_string, *errmsg;
@@ -597,14 +598,14 @@ SEXP cigar_ranges(SEXP cigar, SEXP flag, SEXP space, SEXP pos, SEXP f,
 	if (f_is_NULL) {
 		ans_len = cigar_len;
 		/* We will typically generate at least 'cigar_len' ranges. */
-		range_buf1 = new_RangeAE(ans_len, 0);
+		range_buf1 = new_IntPairAE(ans_len, 0);
 		range_buf_p = &range_buf1;
 		PROTECT(ans_breakpoints = NEW_INTEGER(ans_len));
 		breakpoint = INTEGER(ans_breakpoints);
 	} else {
 		f_levels = GET_LEVELS(f);
 		ans_len = LENGTH(f_levels);
-		range_buf2 = new_RangeAEAE(ans_len, ans_len);
+		range_buf2 = new_IntPairAEAE(ans_len, ans_len);
 		f_elt = INTEGER(f);
 	}
 	drop_empty_ranges0 = LOGICAL(drop_empty_ranges)[0];
@@ -666,7 +667,7 @@ for_tail:
 		if (pos_len != 1)
 			pos_elt++;
 		if (f_is_NULL)
-			*(breakpoint++) = RangeAE_get_nelt(range_buf_p);
+			*(breakpoint++) = IntPairAE_get_nelt(range_buf_p);
 		else
 			f_elt++;
 	}
