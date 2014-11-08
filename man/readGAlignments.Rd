@@ -367,6 +367,8 @@ fls <- system.file("extdata", "ex1.bam", package="Rsamtools",
 bv <- BamViews(fls,
                bamSamples=DataFrame(info="test", row.names="ex1"),
                auto.range=TRUE)
+## Note that the "readGAlignmentsFromBam" method for BamViews objects
+## requires the ShortRead package to be installed.
 aln <- readGAlignmentsFromBam(bv)
 aln
 aln[[1]]

@@ -6,11 +6,14 @@
 setMethod("findOverlaps", c("GAlignments", "Vector"),
     function(query, subject, maxgap = 0L, minoverlap = 1L,
              type = c("any", "start", "end", "within"),
-             select = c("all", "first"), ignore.strand = FALSE)
+             select = c("all", "first"),
+             algorithm = c("intervaltree", "nclist"),
+             ignore.strand = FALSE)
     {
         findOverlaps(grglist(query), subject,
                      maxgap = maxgap, minoverlap = minoverlap,
                      type = match.arg(type), select = match.arg(select),
+                     algorithm = match.arg(algorithm),
                      ignore.strand = ignore.strand)
     }
 )
@@ -18,11 +21,14 @@ setMethod("findOverlaps", c("GAlignments", "Vector"),
 setMethod("findOverlaps", c("Vector", "GAlignments"),
     function(query, subject, maxgap = 0L, minoverlap = 1L,
              type = c("any", "start", "end", "within"),
-             select = c("all", "first"), ignore.strand = FALSE)
+             select = c("all", "first"),
+             algorithm = c("intervaltree", "nclist"),
+             ignore.strand = FALSE)
     {
         findOverlaps(query, grglist(subject),
                      maxgap = maxgap, minoverlap = minoverlap,
                      type = match.arg(type), select = match.arg(select),
+                     algorithm = match.arg(algorithm),
                      ignore.strand = ignore.strand)
     }
 )
@@ -37,11 +43,14 @@ setMethod("findOverlaps", c("Vector", "GAlignments"),
 setMethod("findOverlaps", c("GAlignments", "GAlignments"),
     function(query, subject, maxgap = 0L, minoverlap = 1L,
              type = c("any", "start", "end", "within"),
-             select = c("all", "first"), ignore.strand = FALSE)
+             select = c("all", "first"),
+             algorithm = c("intervaltree", "nclist"),
+             ignore.strand = FALSE)
     {
         findOverlaps(grglist(query), grglist(subject),
                      maxgap = maxgap, minoverlap = minoverlap,
                      type = match.arg(type), select = match.arg(select),
+                     algorithm = match.arg(algorithm),
                      ignore.strand = ignore.strand)
     }
 )
@@ -49,11 +58,14 @@ setMethod("findOverlaps", c("GAlignments", "GAlignments"),
 setMethod("findOverlaps", c("GAlignments", "GRangesList"),
     function(query, subject, maxgap = 0L, minoverlap = 1L,
              type = c("any", "start", "end", "within"),
-             select = c("all", "first"), ignore.strand = FALSE)
+             select = c("all", "first"),
+             algorithm = c("intervaltree", "nclist"),
+             ignore.strand = FALSE)
     {
         findOverlaps(grglist(query), subject,
                      maxgap = maxgap, minoverlap = minoverlap,
                      type = match.arg(type), select = match.arg(select),
+                     algorithm = match.arg(algorithm),
                      ignore.strand = ignore.strand)
     }
 )
@@ -61,11 +73,14 @@ setMethod("findOverlaps", c("GAlignments", "GRangesList"),
 setMethod("findOverlaps", c("GRangesList", "GAlignments"),
     function(query, subject, maxgap = 0L, minoverlap = 1L,
              type = c("any", "start", "end", "within"),
-             select = c("all", "first"), ignore.strand = FALSE)
+             select = c("all", "first"),
+             algorithm = c("intervaltree", "nclist"),
+             ignore.strand = FALSE)
     {
         findOverlaps(query, grglist(subject),
                      maxgap = maxgap, minoverlap = minoverlap,
                      type = match.arg(type), select = match.arg(select),
+                     algorithm = match.arg(algorithm),
                      ignore.strand = ignore.strand)
     }
 )
@@ -73,11 +88,14 @@ setMethod("findOverlaps", c("GRangesList", "GAlignments"),
 setMethod("findOverlaps", c("GAlignmentPairs", "Vector"),
     function(query, subject, maxgap = 0L, minoverlap = 1L,
              type = c("any", "start", "end", "within"),
-             select = c("all", "first"), ignore.strand = FALSE)
+             select = c("all", "first"),
+             algorithm = c("intervaltree", "nclist"),
+             ignore.strand = FALSE)
     {
         findOverlaps(grglist(query), subject,
                      maxgap = maxgap, minoverlap = minoverlap,
                      type = match.arg(type), select = match.arg(select),
+                     algorithm = match.arg(algorithm),
                      ignore.strand = ignore.strand)
     }
 )
@@ -85,11 +103,14 @@ setMethod("findOverlaps", c("GAlignmentPairs", "Vector"),
 setMethod("findOverlaps", c("Vector", "GAlignmentPairs"),
     function(query, subject, maxgap = 0L, minoverlap = 1L,
              type = c("any", "start", "end", "within"),
-             select = c("all", "first"), ignore.strand = FALSE)
+             select = c("all", "first"),
+             algorithm = c("intervaltree", "nclist"),
+             ignore.strand = FALSE)
     {
         findOverlaps(query, grglist(subject),
                      maxgap = maxgap, minoverlap = minoverlap,
                      type = match.arg(type), select = match.arg(select),
+                     algorithm = match.arg(algorithm),
                      ignore.strand = ignore.strand)
     }
 )
@@ -97,11 +118,14 @@ setMethod("findOverlaps", c("Vector", "GAlignmentPairs"),
 setMethod("findOverlaps", c("GAlignmentPairs", "GAlignmentPairs"),
     function(query, subject, maxgap = 0L, minoverlap = 1L,
              type = c("any", "start", "end", "within"),
-             select = c("all", "first"), ignore.strand = FALSE)
+             select = c("all", "first"),
+             algorithm = c("intervaltree", "nclist"),
+             ignore.strand = FALSE)
     {
         findOverlaps(grglist(query), grglist(subject),
                      maxgap = maxgap, minoverlap = minoverlap,
                      type = match.arg(type), select = match.arg(select),
+                     algorithm = match.arg(algorithm),
                      ignore.strand = ignore.strand)
     }
 )
@@ -109,11 +133,14 @@ setMethod("findOverlaps", c("GAlignmentPairs", "GAlignmentPairs"),
 setMethod("findOverlaps", c("GAlignmentsList", "Vector"),
     function(query, subject, maxgap = 0L, minoverlap = 1L,
              type = c("any", "start", "end", "within"),
-             select = c("all", "first"), ignore.strand = FALSE)
+             select = c("all", "first"),
+             algorithm = c("intervaltree", "nclist"),
+             ignore.strand = FALSE)
     {
         hits <- findOverlaps(grglist(unlist(query, use.names = FALSE)),
                              subject, maxgap = maxgap, minoverlap = minoverlap,
                              type = match.arg(type), select = match.arg(select),
+                             algorithm = match.arg(algorithm),
                              ignore.strand = ignore.strand)
         remapHits(hits, query.map=factor(togroup(query)))
     }
@@ -122,11 +149,14 @@ setMethod("findOverlaps", c("GAlignmentsList", "Vector"),
 setMethod("findOverlaps", c("Vector", "GAlignmentsList"),
     function(query, subject, maxgap = 0L, minoverlap = 1L,
              type = c("any", "start", "end", "within"),
-             select = c("all", "first"), ignore.strand = FALSE)
+             select = c("all", "first"),
+             algorithm = c("intervaltree", "nclist"),
+             ignore.strand = FALSE)
     {
         hits <- findOverlaps(query, grglist(unlist(subject, use.names = FALSE)),
                              maxgap = maxgap, minoverlap = minoverlap,
                              type = match.arg(type), select = match.arg(select),
+                             algorithm = match.arg(algorithm),
                              ignore.strand = ignore.strand)
         remapHits(hits, subject.map=factor(togroup(subject)))
     }
@@ -135,13 +165,16 @@ setMethod("findOverlaps", c("Vector", "GAlignmentsList"),
 setMethod("findOverlaps", c("GAlignmentsList", "GAlignmentsList"),
     function(query, subject, maxgap = 0L, minoverlap = 1L,
              type = c("any", "start", "end", "within"),
-             select = c("all", "first"), ignore.strand = FALSE)
+             select = c("all", "first"),
+             algorithm = c("intervaltree", "nclist"),
+             ignore.strand = FALSE)
     {
         hits <- findOverlaps(grglist(unlist(query, use.names = FALSE)), 
                              grglist(unlist(subject, use.names = FALSE)),
                              maxgap = maxgap, minoverlap = minoverlap,
                              type = match.arg(type), 
                              select = match.arg(select),
+                             algorithm = match.arg(algorithm),
                              ignore.strand = ignore.strand)
         remapHits(hits, subject.map=factor(togroup(subject)),
                   query.map=factor(togroup(query)))

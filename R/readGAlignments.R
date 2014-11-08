@@ -405,6 +405,7 @@ setMethod("readGAlignmentsFromBam", "BamViews",
                                    use.names=use.names,
                                    param=param,
                                    with.which_label=with.which_label)
+        ### Rsamtools:::.BamViews_delegate requires the ShortRead package!
         Rsamtools:::.BamViews_delegate("readGAlignmentsFromBam", file, fun)
     }
 )
