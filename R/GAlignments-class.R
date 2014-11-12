@@ -560,7 +560,7 @@ setMethod("extractROWS", "GAlignments",
     nc <- ncol(mcols(x))
     ans <- cbind(seqnames=as.character(seqnames(x)),
                  strand=as.character(strand(x)),
-                 cigar=cigar(x),
+                 cigar=S4Vectors:::sketchStr(cigar(x), 23L),
                  qwidth=qwidth(x),
                  start=start(x),
                  end=end(x),
