@@ -8,12 +8,12 @@
 ### mapCoords:
 
 setMethod("mapCoords", c("GenomicRanges", "GAlignments"), 
-    function(x, to, ...) 
+    function(from, to, ...) 
     {
         to_grl <- grglist(to, drop.D.ranges=TRUE)
-        from_ol <- findOverlaps(x, to_grl, ignore.strand=TRUE, type="within")
+        from_ol <- findOverlaps(from, to_grl, ignore.strand=TRUE, type="within")
         to_hits <- to[subjectHits(from_ol)]
-        from_hits <- ranges(x)[queryHits(from_ol)]
+        from_hits <- ranges(from)[queryHits(from_ol)]
         ranges <- pmapCoords(from_hits, to_hits)
         space <- names(to_hits)
         if (is.null(space))
@@ -27,11 +27,11 @@ setMethod("mapCoords", c("GenomicRanges", "GAlignments"),
 ### pmapCoords:
 
 setMethod("pmapCoords", c("Ranges", "GAlignments"), 
-    function(x, to, ...) 
+    function(from, to, ...) 
     {
-        starts <- .Call("ref_locs_to_query_locs", start(x), cigar(to), 
+        starts <- .Call("ref_locs_to_query_locs", start(from), cigar(to), 
                         start(to), FALSE, PACKAGE="GenomicAlignments")
-        ends <- .Call("ref_locs_to_query_locs", end(x), cigar(to), 
+        ends <- .Call("ref_locs_to_query_locs", end(from), cigar(to), 
                       start(to), TRUE, PACKAGE="GenomicAlignments")
         ends <- pmax(ends, starts - 1L)
         IRanges(starts, ends)

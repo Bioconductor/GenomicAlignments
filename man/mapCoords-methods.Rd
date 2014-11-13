@@ -18,13 +18,13 @@
 }
 
 \usage{
-\S4method{mapCoords}{GenomicRanges,GAlignments}(x, to, ...)
+\S4method{mapCoords}{GenomicRanges,GAlignments}(from, to, ...)
 }
 
 \arguments{
-  \item{x}{The input ranges to map, usually a \code{\linkS4class{GRanges}}.}
+  \item{from}{The input ranges to map, usually a \code{\linkS4class{GRanges}}.}
  
-  \item{to}{The alignment between the sequences in \code{x} and the
+  \item{to}{The alignment between the sequences in \code{from} and the
     sequences in the result.}
 
   \item{\dots}{Arguments passed to other methods.}
@@ -35,7 +35,7 @@
   as metadata columns (`queryHits` and `subjectHits`).
 
   Matching data are the result of calling \code{findOverlaps} with
-  type `within` on  ranges in \code{x} (the query) and the 
+  type `within` on  ranges in \code{from} (the query) and the 
   ranges in \code{to} (the subject). Matching can be many-to-one 
   or one-to-many; one row is reported for each match. 
 }
