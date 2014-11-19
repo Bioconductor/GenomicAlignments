@@ -32,7 +32,7 @@
 
 \value{
   A \code{GRanges} object of mapped coordinates with matching data
-  as metadata columns (`queryHits` and `subjectHits`).
+  as metadata columns (`fromHits` and `toHits`).
 
   Matching data are the result of calling \code{findOverlaps} with
   type `within` on  ranges in \code{from} (the query) and the 

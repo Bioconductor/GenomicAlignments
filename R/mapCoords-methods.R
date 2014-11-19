@@ -19,8 +19,8 @@ setMethod("mapCoords", c("GenomicRanges", "GAlignments"),
         if (is.null(space))
           space <- as.character(seq_len(length(to))[subjectHits(from_ol)])
  
-        GRanges(Rle(space), ranges, queryHits=queryHits(from_ol),
-                subjectHits=subjectHits(from_ol))
+        GRanges(Rle(space), ranges, fromHits=queryHits(from_ol),
+                toHits=subjectHits(from_ol))
     }
 )
 
