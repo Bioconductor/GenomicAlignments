@@ -1247,7 +1247,6 @@ SEXP query_locs_to_ref_locs(SEXP query_locs, SEXP cigar, SEXP pos,
         }
         case 'S':
           query_consumed += OPL;
-          ref_loc -= OPL;
           break;
           /* Deletion from the reference */
         case 'D':
