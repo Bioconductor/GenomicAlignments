@@ -68,25 +68,29 @@
 
 \usage{
 \S4method{findOverlaps}{GAlignments,GAlignments}(query, subject,
-    maxgap = 0L, minoverlap = 1L,
-    type = c("any", "start", "end", "within"),
-    select = c("all", "first"),
-    ignore.strand = FALSE)
+    maxgap=0L, minoverlap=1L,
+    type=c("any", "start", "end", "within"),
+    select=c("all", "first", "last", "arbitrary"),
+    algorithm=c("nclist", "intervaltree"),
+    ignore.strand=FALSE)
 
 \S4method{countOverlaps}{GAlignments,GAlignments}(query, subject,
-    maxgap = 0L, minoverlap = 1L,
-    type = c("any", "start", "end", "within"),
-    ignore.strand = FALSE)
+    maxgap=0L, minoverlap=1L,
+    type=c("any", "start", "end", "within"),
+    algorithm=c("nclist", "intervaltree"),
+    ignore.strand=FALSE)
 
 \S4method{overlapsAny}{GAlignments,GAlignments}(query, subject,
-    maxgap = 0L, minoverlap = 1L,
-    type = c("any", "start", "end", "within"),
-    ignore.strand = FALSE)
+    maxgap=0L, minoverlap=1L,
+    type=c("any", "start", "end", "within"),
+    algorithm=c("nclist", "intervaltree"),
+    ignore.strand=FALSE)
 
 \S4method{subsetByOverlaps}{GAlignments,GAlignments}(query, subject,
-    maxgap = 0L, minoverlap = 1L,
-    type = c("any", "start", "end", "within"),
-    ignore.strand = FALSE)
+    maxgap=0L, minoverlap=1L,
+    type=c("any", "start", "end", "within"),
+    algorithm=c("nclist", "intervaltree"),
+    ignore.strand=FALSE)
 }
 
 \arguments{

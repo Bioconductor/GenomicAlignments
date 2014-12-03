@@ -18,8 +18,8 @@
 }
 
 \usage{
-findCompatibleOverlaps(query, subject)
-countCompatibleOverlaps(query, subject)
+findCompatibleOverlaps(query, subject, algorithm=c("nclist", "intervaltree"))
+countCompatibleOverlaps(query, subject, algorithm=c("nclist", "intervaltree"))
 }
 
 \arguments{

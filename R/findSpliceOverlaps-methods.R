@@ -168,8 +168,8 @@
     ## full result
     if (!is.null(nc)) {
         mcols(hits) <- DataFrame(compatible, unique, coding, strandSpecific,
-                                  novelTSS, novelTSE, novelSite, novelJunction,
-                                  novelExon, novelRetention)
+                                 novelTSS, novelTSE, novelSite, novelJunction,
+                                 novelExon, novelRetention)
         hits
     ## no overlaps 
     } else if (is.null(compatible)) {
@@ -245,7 +245,8 @@
 
 }
 
-.findSpliceOverlaps <- function(query, subject, ignore.strand=FALSE, cds=NULL)
+.findSpliceOverlaps <- function(query, subject, algorithm,
+                                ignore.strand=FALSE, cds=NULL)
 {
     ## adjust strand based on 'XS'
     if (!is.null(xs <- mcols(query)$XS)) {
@@ -257,12 +258,14 @@
     ## is intentional: a read is only assigned to a transcript if it
     ## hits an exon. Otherwise, it could be from another gene inside
     ## an intron (happens frequently).
-    olap <- findOverlaps(query, subject, ignore.strand=ignore.strand)
+    olap <- findOverlaps(query, subject, algorithm=algorithm,
+                         ignore.strand=ignore.strand)
     if (length(olap) == 0L)
         return(.result(olap))
     if (!is.null(cds)) {
         coding <- logical(length(olap))
-        hits <- findOverlaps(query, cds, ignore.strand=ignore.strand)
+        hits <- findOverlaps(query, cds, algorithm=algorithm,
+                             ignore.strand=ignore.strand)
         coding[queryHits(olap) %in% queryHits(hits)] <- TRUE
     } else {
         coding <- rep.int(NA, length(olap))
@@ -281,25 +284,31 @@
 
 
 setGeneric("findSpliceOverlaps", signature=c("query", "subject"),
-    function(query, subject, ignore.strand=FALSE, ...)
+    function(query, subject, algorithm=c("nclist", "intervaltree"),
+             ignore.strand=FALSE, ...)
         standardGeneric("findSpliceOverlaps")
 )
 
 setMethod("findSpliceOverlaps", c("GRangesList", "GRangesList"),
-    function(query, subject, ignore.strand=FALSE, ..., cds=NULL)
+    function(query, subject, algorithm=c("nclist", "intervaltree"),
+             ignore.strand=FALSE, ..., cds=NULL)
 {
-    .findSpliceOverlaps(query, subject, ignore.strand, cds=cds)
+    .findSpliceOverlaps(query, subject, match.arg(algorithm),
+                        ignore.strand, cds=cds)
 })
 
 setMethod("findSpliceOverlaps", c("GAlignments", "GRangesList"),
-    function(query, subject, ignore.strand=FALSE, ..., cds=NULL)
+    function(query, subject, algorithm=c("nclist", "intervaltree"),
+             ignore.strand=FALSE, ..., cds=NULL)
 {
     findSpliceOverlaps(grglist(query, order.as.in.query=TRUE), subject,
+                       algorithm=match.arg(algorithm),
                        ignore.strand, ..., cds=cds)
 })
 
 setMethod("findSpliceOverlaps", c("GAlignmentPairs", "GRangesList"),
-    function(query, subject, ignore.strand=FALSE, ..., cds=NULL)
+    function(query, subject, algorithm=c("nclist", "intervaltree"),
+             ignore.strand=FALSE, ..., cds=NULL)
 {
 ### FIXME: order.as.in.query = FALSE needed for .insertGaps(). If we
 ### really want to use .insertGaps(), we need to make it robust to
@@ -311,22 +320,28 @@ setMethod("findSpliceOverlaps", c("GAlignmentPairs", "GRangesList"),
 ### set to junctions(query) here. The downside is that a GRangesList
 ### derived from GAlignmentPairs will no longer work.
     findSpliceOverlaps(grglist(query, order.as.in.query=FALSE), subject,
+                       algorithm=match.arg(algorithm),
                        ignore.strand, ..., cds=cds)
 })
 
 setMethod("findSpliceOverlaps", c("character", "ANY"),
-          function(query, subject, ignore.strand=FALSE, ...,
+          function(query, subject, algorithm=c("nclist", "intervaltree"),
+                   ignore.strand=FALSE, ...,
                    param=ScanBamParam(), singleEnd=TRUE)
 {
-    findSpliceOverlaps(BamFile(query), subject, ignore.strand, ...,
+    findSpliceOverlaps(BamFile(query), subject,
+                       algorithm=match.arg(algorithm),
+                       ignore.strand, ...,
                        param=param, singleEnd=singleEnd)
 })
 
 setMethod("findSpliceOverlaps", c("BamFile", "ANY"),
-    function(query, subject, ignore.strand=FALSE, ...,
+    function(query, subject, algorithm=c("nclist", "intervaltree"),
+             ignore.strand=FALSE, ...,
              param=ScanBamParam(), singleEnd=TRUE)
 {
     findSpliceOverlaps(.readRanges(query, param, singleEnd), subject,
+                       algorithm=match.arg(algorithm),
                        ignore.strand, ...)
 })
 

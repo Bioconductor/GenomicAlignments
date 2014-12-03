@@ -20,16 +20,21 @@
 }
 
 \usage{
-findSpliceOverlaps(query, subject, ignore.strand=FALSE, ...)
+findSpliceOverlaps(query, subject, algorithm=c("nclist", "intervaltree"),
+                   ignore.strand=FALSE, ...)
 
-\S4method{findSpliceOverlaps}{GRangesList,GRangesList}(query, subject, ignore.strand=FALSE, ..., cds=NULL)
+\S4method{findSpliceOverlaps}{GRangesList,GRangesList}(query, subject, algorithm=c("nclist", "intervaltree"),
+                   ignore.strand=FALSE, ..., cds=NULL)
 
-\S4method{findSpliceOverlaps}{GAlignments,GRangesList}(query, subject, ignore.strand=FALSE, ..., cds=NULL)
+\S4method{findSpliceOverlaps}{GAlignments,GRangesList}(query, subject, algorithm=c("nclist", "intervaltree"),
+                   ignore.strand=FALSE, ..., cds=NULL)
 
-\S4method{findSpliceOverlaps}{GAlignmentPairs,GRangesList}(query, subject, ignore.strand=FALSE, ..., cds=NULL)
+\S4method{findSpliceOverlaps}{GAlignmentPairs,GRangesList}(query, subject, algorithm=c("nclist", "intervaltree"),
+                   ignore.strand=FALSE, ..., cds=NULL)
 
-\S4method{findSpliceOverlaps}{BamFile,ANY}(query, subject, ignore.strand=FALSE, ...,
-                   param=ScanBamParam(), singleEnd=TRUE)
+\S4method{findSpliceOverlaps}{BamFile,ANY}(query, subject, algorithm=c("nclist", "intervaltree"),
+                   ignore.strand=FALSE, ..., param=ScanBamParam(),
+                   singleEnd=TRUE)
 }
 
 \arguments{

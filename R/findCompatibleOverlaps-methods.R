@@ -5,16 +5,18 @@
 
 
 setGeneric("findCompatibleOverlaps",
-    function(query, subject) standardGeneric("findCompatibleOverlaps")
+    function(query, subject, algorithm=c("nclist", "intervaltree"))
+        standardGeneric("findCompatibleOverlaps")
 )
 
 .GAlignmentsORGAlignmentPairs.findCompatibleOverlaps <-
-    function(query, subject)
+    function(query, subject, algorithm=c("nclist", "intervaltree"))
 {
     grl <- grglist(query, order.as.in.query=TRUE)
     ## TODO: Use 'type="within"' when it's supported for circular
     ## sequences like the mitochondrial chromosome.
-    ov <- findOverlaps(grl, subject, ignore.strand=TRUE)
+    ov <- findOverlaps(grl, subject, algorithm=match.arg(algorithm),
+                       ignore.strand=TRUE)
     ovenc <- encodeOverlaps(grl, subject, hits=ov,
                             flip.query.if.wrong.strand=TRUE)
     ov_is_compat <- isCompatibleWithSplicing(ovenc)
@@ -29,9 +31,11 @@ setMethod("findCompatibleOverlaps", c("GAlignmentPairs", "GRangesList"),
     .GAlignmentsORGAlignmentPairs.findCompatibleOverlaps
 )
 
-countCompatibleOverlaps <- function(query, subject)
+countCompatibleOverlaps <- function(query, subject,
+                                    algorithm=c("nclist", "intervaltree"))
 {
-    compatov <- findCompatibleOverlaps(query, subject)
+    compatov <- findCompatibleOverlaps(query, subject,
+                                       algorithm=match.arg(algorithm))
     tabulate(queryHits(compatov), nbins=queryLength(compatov))
 }
 
