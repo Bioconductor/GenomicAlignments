@@ -5,8 +5,6 @@
 \alias{findOverlaps,GAlignments,Vector-method}
 \alias{findOverlaps,Vector,GAlignments-method}
 \alias{findOverlaps,GAlignments,GAlignments-method}
-\alias{findOverlaps,GAlignments,GRangesList-method}
-\alias{findOverlaps,GRangesList,GAlignments-method}
 \alias{findOverlaps,GAlignmentPairs,Vector-method}
 \alias{findOverlaps,Vector,GAlignmentPairs-method}
 \alias{findOverlaps,GAlignmentPairs,GAlignmentPairs-method}
