@@ -7,9 +7,8 @@ setGeneric("summarizeOverlaps", signature=c("features", "reads"),
     function(features, reads, mode=Union,
              algorithm=c("nclist", "intervaltree"),
              ignore.strand=FALSE, ...)
-{
-    standardGeneric("summarizeOverlaps")
-})
+        standardGeneric("summarizeOverlaps")
+)
 
 
 ### -------------------------------------------------------------------------
