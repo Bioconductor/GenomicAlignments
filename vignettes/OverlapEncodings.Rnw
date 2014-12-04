@@ -11,7 +11,7 @@ BiocStyle::latex()
 
 \title{Overlap encodings}
 \author{Herv\'e Pag\`es}
-\date{Last modified: October 2014; Compiled: \today}
+\date{Last modified: December 2014; Compiled: \today}
 
 \begin{document}
 
@@ -1143,8 +1143,7 @@ findSequenceHits <- function(qseq, txseq, which.txseq=NULL, max.mismatch=0)
         if (is.null(query_hits))
             query_hits <- integer(0)
         subject_hits <- rep.int(seq_len(length(x)), elementLengths(x))
-        new("Hits", queryHits=query_hits, subjectHits=subject_hits,
-                    queryLength=pattern_length, subjectLength=length(x))
+        Hits(query_hits, subject_hits, pattern_length, length(x))
     }
 
     .isHitInTranscriptBounds <- function(hits, qseq, txseq)
