@@ -50,6 +50,23 @@ SEXP cigar_qnarrow(
 	SEXP right_qwidth
 );
 
+
+/* mapping_methods.c */
+
+SEXP map_to_genome(
+	SEXP start,
+	SEXP end,
+	SEXP cigar,
+	SEXP pos
+);
+
+SEXP map_to_transcript(
+	SEXP start,
+	SEXP end,
+	SEXP cigar,
+	SEXP pos
+);
+
 SEXP ref_locs_to_query_locs(
 	SEXP ref_locs,
 	SEXP cigar,

@@ -53,4 +53,3 @@ setMethod("prmap", c("Ranges", "GAlignments"),
         IRanges(starts, ends)
     }
 )
-

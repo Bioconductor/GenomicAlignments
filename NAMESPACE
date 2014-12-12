@@ -173,7 +173,10 @@ export(
     summarizeOverlaps,
 
     ## findSpliceOverlaps-methods.R:
-    findSpliceOverlaps
+    findSpliceOverlaps,
+
+    ## coordinateMapping-methods.R:
+    mapToGenome, pmapToGenome, mapToTranscript, pmapToTranscript
 )
 
 ### Exactly the same list as above.
@@ -197,6 +200,7 @@ exportMethods(
     extractSkippedExonRanks,
     findCompatibleOverlaps,
     summarizeOverlaps,
-    findSpliceOverlaps
+    findSpliceOverlaps,
+    mapToGenome, pmapToGenome, mapToTranscript, pmapToTranscript
 )
 

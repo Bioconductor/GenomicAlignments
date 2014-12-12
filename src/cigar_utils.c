@@ -1113,85 +1113,223 @@ SEXP cigar_qnarrow(SEXP cigar, SEXP left_qwidth, SEXP right_qwidth)
 	return ans;
 }
 
+/****************************************************************************
+ * Mapping from genome (reference) to transcript (local) space.
+ */
+
+/* Returns integer position of 'ref_loc' mapped to transcript-based space.
+ * If 'ref_loc' cannot be mapped NA is returned.
+ */
+int to_transcript(int ref_loc, const char *cig0, int pos, Rboolean narrow_left)
+{
+  
+  int query_loc = ref_loc - pos + 1;
+  int n, offset = 0, OPL, query_consumed = 0;
+  char OP;
+  
+  while (query_consumed < query_loc &&
+         (n = next_cigar_OP(cig0, offset, &OP, &OPL)))
+  {
+    switch (OP) {
+    /* Alignment match (can be a sequence match or mismatch) */
+    case 'M': case '=': case 'X':
+      query_consumed += OPL;
+      break;
+    /* Insertion to the reference */
+    case 'I':
+    /* Soft clip on the read */
+    case 'S':
+      query_loc += OPL;
+      query_consumed += OPL;
+      break;
+    /* Deletion from the reference */
+    case 'D':
+    /* Skipped region from reference; narrow to query */
+    case 'N':
+      {
+        Rboolean query_loc_past_gap = query_loc - query_consumed > OPL;
+        if (query_loc_past_gap) {
+          query_loc -= OPL;
+        } else {
+          if (narrow_left) {
+            query_loc = query_consumed;
+          } else {
+            query_loc = query_consumed + 1;
+          }
+        }
+      }
+      break;
+    /* Hard clip on the read */
+    case 'H':
+      break;
+    /* Silent deletion from the padded reference */
+    case 'P':
+      break;
+    default:
+      break;
+    }
+    offset += n;
+  }
+
+  if (query_loc < 0 || n == 0)
+    query_loc = NA_INTEGER;
+
+  return query_loc;
+}
 
 /****************************************************************************
  * --- .Call ENTRY POINT ---
  * Args:
- *   ref_locs: global positions in the reference that we will map
- *   cigar: character string containing the extended CIGAR;
- *   pos: reference position at which the query alignment begins
- *        (after clip)
+ *   ref_locs   : global positions in the reference to map
+ *   cigar      : character string containing the extended CIGAR;
+ *   pos        : reference position at which the query alignment begins
+ *                (after clip)
  *   narrow_left: whether to narrow to the left (or right) side of a gap
- * Returns the local query positions. This assumes that the reference
- * positions actually occur in the read alignment region, outside of
- * any deletions or insertions. 
+ *
+ * Returns an integer vector of local query positions. This assumes the 
+ * reference positions actually occur in the read alignment region, 
+ * outside of any deletions or insertions. 
  */
 SEXP ref_locs_to_query_locs(SEXP ref_locs, SEXP cigar, SEXP pos,
                             SEXP narrow_left)
 {
-  int nlocs, i;
-  SEXP query_locs;
-  Rboolean _narrow_left = asLogical(narrow_left);
+        int nlocs, i;
+        SEXP query_locs;
+        
+        nlocs = LENGTH(ref_locs);
+        PROTECT(query_locs = allocVector(INTSXP, nlocs));
+        for (i = 0; i < nlocs; i++) {
+                const char *cig_i = CHAR(STRING_ELT(cigar, i));
+                INTEGER(query_locs)[i] = to_transcript(INTEGER(ref_locs)[i], 
+                                                       cig_i, INTEGER(pos)[i], 
+                                                       asLogical(narrow_left));
+        }
+        
+        UNPROTECT(1);
+        return query_locs;
+}
+
+/****************************************************************************
+ * --- .Call ENTRY POINT ---
+ * Args:
+ *   ref_locs   : global positions in the reference to map
+ *   cigar      : character string containing the extended CIGAR;
+ *   pos        : reference position at which the query alignment begins
+ *                (after clip)
+ *   narrow_left: whether to narrow to the left (or right) side of a gap
+ *
+ * Returns a list of length 4:
+ *   - start of local query position
+ *   - end of local query position
+ *   - index of 'start' used in match ('from_hits')
+ *   - index of 'pos' used in match ('to_hits')
+ * All list elements are integer vectors. This assumes that the reference
+ * positions actually occur in the read alignment region, outside of
+ * any deletions or insertions. 
+ */
+SEXP map_to_transcript(SEXP start, SEXP end, SEXP cigar, SEXP pos)
+{
+	SEXP ans, ans_start, ans_end, ans_q_hits, ans_s_hits;
+	int i, j, s, e, nlocs, ncigar;
+        int nhits = 0;
+
+        nlocs = LENGTH(start);
+        ncigar = LENGTH(cigar);
+	PROTECT(ans_start = NEW_INTEGER(nlocs*ncigar));
+	PROTECT(ans_end = NEW_INTEGER(nlocs*ncigar));
+	PROTECT(ans_q_hits = NEW_INTEGER(nlocs*ncigar));
+	PROTECT(ans_s_hits = NEW_INTEGER(nlocs*ncigar));
+
+        for (i = 0; i < nlocs; i++) {
+                for (j = 0; j < ncigar; j++) {
+                        const char *cig_j = CHAR(STRING_ELT(cigar, j));
+                        int pos_j = INTEGER(pos)[j];
+                        s = to_transcript(INTEGER(start)[i], cig_j, pos_j, 
+                                          FALSE);
+                        if (s == NA_INTEGER)
+                                break;
+                        e = to_transcript(INTEGER(end)[i], cig_j, pos_j, TRUE); 
+                        if (e == NA_INTEGER)
+                                break;
+                        INTEGER(ans_start)[nhits] = s;
+                        INTEGER(ans_end)[nhits] = e;
+                        INTEGER(ans_q_hits)[nhits] = i + 1;
+                        INTEGER(ans_s_hits)[nhits] = j + 1;
+                        nhits += 1;
+                }
+        }
+
+        PROTECT(ans = NEW_LIST(4));
+        SET_VECTOR_ELT(ans, 0, Rf_lengthgets(ans_start, nhits));
+        SET_VECTOR_ELT(ans, 1, Rf_lengthgets(ans_end, nhits));
+        SET_VECTOR_ELT(ans, 2, Rf_lengthgets(ans_q_hits, nhits));
+        SET_VECTOR_ELT(ans, 3, Rf_lengthgets(ans_s_hits, nhits));
+        UNPROTECT(5);
+        return ans;
+}
+
+/****************************************************************************
+ * Mapping from transcript (local) to genome (reference) space.
+ */
+
+/* Returns integer position of 'query_loc' mapped to genome-based space. 
+ * If 'query_loc' cannot be mapped NA is returned.
+ */
+int to_genome(int query_loc, const char *cig0, int pos, Rboolean narrow_left)
+{
+  int ref_loc = query_loc + pos - 1;
+  int n, offset = 0, OPL, query_consumed = 0;
+  char OP;
   
-  nlocs = LENGTH(ref_locs);
-  PROTECT(query_locs = allocVector(INTSXP, nlocs));
-  
-  for (i = 0; i < nlocs; i++) {
-    int query_loc = INTEGER(ref_locs)[i] - INTEGER(pos)[i] + 1;
-    int n, offset = 0, OPL, query_consumed = 0;
-    char OP;
-    const char *cig0 = CHAR(STRING_ELT(cigar, i));
-    while (query_consumed < query_loc &&
-           (n = next_cigar_OP(cig0, offset, &OP, &OPL)))
-    {
-      switch (OP) {
-        /* Alignment match (can be a sequence match or mismatch) */
+  while (query_consumed < query_loc &&
+         (n = next_cigar_OP(cig0, offset, &OP, &OPL)))
+  {
+    switch (OP) {
+      /* Alignment match (can be a sequence match or mismatch) */
       case 'M': case '=': case 'X':
-        query_consumed += OPL;
-        break;
-        /* Insertion to the reference */
-      case 'I':
-        /* Soft clip on the read */
-      case 'S':
-        query_loc += OPL;
-        query_consumed += OPL;
-        break;
-        /* Deletion from the reference */
-      case 'D':
-      case 'N': /* Skipped region from reference; narrow to query */
-        {
-          Rboolean query_loc_past_gap = query_loc - query_consumed > OPL;
-          if (query_loc_past_gap) {
-            query_loc -= OPL;
-          } else {
-            if (_narrow_left) {
-              query_loc = query_consumed;
-            } else {
-              query_loc = query_consumed + 1;
-            }
+          query_consumed += OPL;
+          break;
+      /* Insertion to the reference */
+      case 'I': {
+        int width_from_insertion_start = query_loc - query_consumed;
+        Rboolean query_loc_past_insertion = width_from_insertion_start > OPL;
+        if (query_loc_past_insertion) {
+          ref_loc -= OPL;
+        } else {
+          ref_loc -= width_from_insertion_start;
+          if (!narrow_left) {
+            ref_loc += 1;
           }
         }
+        query_consumed += OPL;
         break;
-       /* Hard clip on the read */
+      }
+      /* Soft clip on the read */
+      case 'S':
+        query_consumed += OPL;
+        break;
+      /* Deletion from the reference */
+      case 'D':
+      case 'N': /* Skipped region from reference; narrow to query */
+        ref_loc += OPL;
+        break;
+      /* Hard clip on the read */
       case 'H':
         break;
-        /* Silent deletion from the padded reference */
+      /* Silent deletion from the padded reference */
       case 'P':
         break;
       default:
         break;
-      }
-      offset += n;
     }
-    if (n == 0)
-      error("hit end of cigar string %d: %s", i + 1, cig0);
-    INTEGER(query_locs)[i] = query_loc;
+    offset += n;
   }
 
-  UNPROTECT(1);
-  return query_locs;
-}
+  if (n == 0)
+    ref_loc = NA_INTEGER;
 
+  return ref_loc;
+}
 
 /****************************************************************************
  * --- .Call ENTRY POINT ---
@@ -1201,75 +1339,82 @@ SEXP ref_locs_to_query_locs(SEXP ref_locs, SEXP cigar, SEXP pos,
  *   pos: reference position at which the query alignment begins
  *        (after clip)
  *   narrow_left: whether to narrow to the left (or right) side of a gap
- * Returns the local query positions. This assumes that the reference
- * positions actually occur in the read alignment region, outside of
- * any deletions or insertions. 
+ * Returns an integer vector of local query positions. This assumes 
+ * that the reference positions actually occur in the read alignment region, 
+ * outside of any deletions or insertions. 
  */
 SEXP query_locs_to_ref_locs(SEXP query_locs, SEXP cigar, SEXP pos,
                             SEXP narrow_left)
 {
-  int nlocs, i;
-  SEXP ref_locs;
-  Rboolean _narrow_left = asLogical(narrow_left);
-  
-  nlocs = LENGTH(query_locs);
-  PROTECT(ref_locs = allocVector(INTSXP, nlocs));
-  
-  for (i = 0; i < nlocs; i++) {
-    int query_loc_i = INTEGER(query_locs)[i];
-    int ref_loc = query_loc_i + INTEGER(pos)[i] - 1;
-    int n, offset = 0, OPL, query_consumed = 0;
-    char OP;
-    const char *cig0 = CHAR(STRING_ELT(cigar, i));
-    while (query_consumed < query_loc_i &&
-           (n = next_cigar_OP(cig0, offset, &OP, &OPL)))
-      {
-        switch (OP) {
-          /* Alignment match (can be a sequence match or mismatch) */
-        case 'M': case '=': case 'X':
-          query_consumed += OPL;
-          break;
-          /* Insertion to the reference */
-        case 'I': {
-          /* Soft clip on the read */
-          int width_from_insertion_start = query_loc_i - query_consumed;
-          Rboolean query_loc_past_insertion = width_from_insertion_start > OPL;
-          if (query_loc_past_insertion) {
-            ref_loc -= OPL;
-          } else {
-            ref_loc -= width_from_insertion_start;
-            if (!_narrow_left) {
-              ref_loc += 1;
-            }
-          }
-          query_consumed += OPL;
-          break;
+        int nlocs, i;
+        SEXP ref_locs;
+        
+        nlocs = LENGTH(query_locs);
+        PROTECT(ref_locs = allocVector(INTSXP, nlocs));
+        for (i = 0; i < nlocs; i++) {
+                const char *cig_i = CHAR(STRING_ELT(cigar, i));
+                INTEGER(ref_locs)[i] = to_genome(INTEGER(query_locs)[i], 
+                                                 cig_i, INTEGER(pos)[i], 
+                                                 asLogical(narrow_left));
         }
-        case 'S':
-          query_consumed += OPL;
-          break;
-          /* Deletion from the reference */
-        case 'D':
-        case 'N': /* Skipped region from reference; narrow to query */
-          ref_loc += OPL;
-          break;
-          /* Hard clip on the read */
-        case 'H':
-          break;
-          /* Silent deletion from the padded reference */
-        case 'P':
-          break;
-        default:
-          break;
-        }
-        offset += n;
-      }
-    if (n == 0)
-      error("hit end of cigar string %d: %s", i + 1, cig0);
-    INTEGER(ref_locs)[i] = ref_loc;
-  }
-
-  UNPROTECT(1);
-  return ref_locs;
+        
+        UNPROTECT(1);
+        return ref_locs;
 }
 
+/****************************************************************************
+ * --- .Call ENTRY POINT ---
+ * Args:
+ *   query_locs: local positions in the read that we will map
+ *   cigar: character string containing the extended CIGAR;
+ *   pos: reference position at which the query alignment begins
+ *        (after clip)
+ *   narrow_left: whether to narrow to the left (or right) side of a gap
+ * Returns a list of length 4:
+ *      - start of local query position
+ *      - end of local query position
+ *      - index of 'start' used in match ('from_hits')
+ *      - index of 'pos' used in match ('to_hits')
+ * All list elements are integer vectors. This assumes that the reference
+ * positions actually occur in the read alignment region, outside of
+ * any deletions or insertions. 
+ */
+SEXP map_to_genome(SEXP start, SEXP end, SEXP cigar, SEXP pos)
+{
+	SEXP ans, ans_start, ans_end, ans_q_hits, ans_s_hits;
+	int i, j, s, e, nlocs, ncigar;
+        int nhits = 0;
+
+        nlocs = LENGTH(start);
+        ncigar = LENGTH(cigar);
+	PROTECT(ans_start = NEW_INTEGER(nlocs*ncigar));
+	PROTECT(ans_end = NEW_INTEGER(nlocs*ncigar));
+	PROTECT(ans_q_hits = NEW_INTEGER(nlocs*ncigar));
+	PROTECT(ans_s_hits = NEW_INTEGER(nlocs*ncigar));
+
+        for (i = 0; i < nlocs; i++) {
+                for (j = 0; j < ncigar; j++) {
+                        const char *cig_j = CHAR(STRING_ELT(cigar, j));
+                        int pos_j = INTEGER(pos)[j];
+                        s = to_genome(INTEGER(start)[i], cig_j, pos_j, FALSE);
+                        if (s == NA_INTEGER)
+                                break;
+                        e = to_genome(INTEGER(end)[i], cig_j, pos_j, TRUE); 
+                        if (e == NA_INTEGER)
+                                break;
+                        INTEGER(ans_start)[nhits] = s;
+                        INTEGER(ans_end)[nhits] = e;
+                        INTEGER(ans_q_hits)[nhits] = i + 1;
+                        INTEGER(ans_s_hits)[nhits] = j + 1;
+                        nhits += 1;
+                }
+        }
+
+        PROTECT(ans = NEW_LIST(4));
+        SET_VECTOR_ELT(ans, 0, Rf_lengthgets(ans_start, nhits));
+        SET_VECTOR_ELT(ans, 1, Rf_lengthgets(ans_end, nhits));
+        SET_VECTOR_ELT(ans, 2, Rf_lengthgets(ans_q_hits, nhits));
+        SET_VECTOR_ELT(ans, 3, Rf_lengthgets(ans_s_hits, nhits));
+        UNPROTECT(5);
+        return ans;
+}

@@ -124,13 +124,3 @@ test_cigarNarrow <- function()
     attr(ans0, "rshift") <- 29L
     checkIdentical(ans, ans0)
 }
-
-test_refLocs2queryLocs <- function() {
-  cigar <- "66S42M2I20M8I18D15M43243N5M1D38M1D85M1D115M139S"
-  pos <- 525842L
-  ref <- 43425L + pos - 1L
-  query <- 238L
-  ans <- .Call("ref_locs_to_query_locs", ref, cigar, pos, FALSE,
-               PACKAGE="GenomicAlignments")
-  checkIdentical(ans, query)
-}
