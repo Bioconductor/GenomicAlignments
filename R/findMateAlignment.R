@@ -24,7 +24,7 @@
 ###
 ###   (F) isProperPair(x[i1]) == isProperPair(y[i2])
 ###
-###   (G) isNotPrimaryRead(x[i1]) == isNotPrimaryRead(y[i2])
+###   (G) isSecondaryAlignment(x[i1]) == isSecondaryAlignment(y[i2])
 
 .checkMetadatacols <- function(arg, argname)
 {

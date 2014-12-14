@@ -210,14 +210,14 @@ setMethod("readGAlignmentsFromBam", "BamFile",
     ans_names <- names(ans_first)
     names(ans_first) <- names(ans_last) <- NULL
 
-    ## Check isProperPair (0x2) and isNotPrimaryRead (0x100) flag bits.
+    ## Check isProperPair (0x2) and isSecondaryAlignment (0x100) flag bits.
     flag1 <- mcols(ans_first)[ , "flag"]
     flag2 <- mcols(ans_last)[ , "flag"]
     is_proper1 <- bamFlagAsBitMatrix(flag1, bitnames="isProperPair")
     is_proper2 <- bamFlagAsBitMatrix(flag2, bitnames="isProperPair")
     stopifnot(identical(is_proper1, is_proper2))
-    is_secondary1 <- bamFlagAsBitMatrix(flag1, bitnames="isNotPrimaryRead")
-    is_secondary2 <- bamFlagAsBitMatrix(flag2, bitnames="isNotPrimaryRead")
+    is_secondary1 <- bamFlagAsBitMatrix(flag1, bitnames="isSecondaryAlignment")
+    is_secondary2 <- bamFlagAsBitMatrix(flag2, bitnames="isSecondaryAlignment")
     stopifnot(identical(is_secondary1, is_secondary2))
 
     ## Drop discordant pairs. 

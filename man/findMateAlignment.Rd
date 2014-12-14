@@ -116,8 +116,9 @@ This is for a \link{GAlignments} object coming from a file with an
 the file contains only primary reads) is optimal for the pairing algorithm.
 A greater value, say > 3, will significantly degrade its performance.
 An easy way to avoid this degradation is to load only primary alignments
-by setting the \code{isNotPrimaryRead} flag to \code{FALSE} in ScanBamParam().
-See examples in \code{?\link{readGAlignmentPairsFromBam}} for how to do this.
+by setting the \code{isSecondaryAlignment} flag to \code{FALSE} in
+ScanBamParam().  See examples in
+\code{?\link{readGAlignmentPairsFromBam}} for how to do this.
 }
 
 \subsection{Ambiguous pairing}{
@@ -170,11 +171,11 @@ Now showing the corresponding flag bits:
 [2,]        1            1               0               0             0
 [3,]        1            1               0               0             1
 [4,]        1            1               0               0             1
-     isMateMinusStrand isFirstMateRead isSecondMateRead isNotPrimaryRead
-[1,]                 1               0                1                0
-[2,]                 1               0                1                0
-[3,]                 0               1                0                0
-[4,]                 0               1                0                0
+     isMateMinusStrand isFirstMateRead isSecondMateRead isSecondaryAlignment
+[1,]                 1               0                1                    0
+[2,]                 1               0                1                    0
+[3,]                 0               1                0                    0
+[4,]                 0               1                0                    0
      isNotPassingQualityControls isDuplicate
 [1,]                           0           0
 [2,]                           0           0
