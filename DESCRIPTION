@@ -13,7 +13,7 @@ biocViews: Genetics, Infrastructure, DataImport, Sequencing, RNASeq, SNP,
 Depends: R (>= 2.10), methods, BiocGenerics (>= 0.11.3),
 	S4Vectors (>= 0.5.14), IRanges (>= 2.1.26),
 	GenomeInfoDb (>= 1.1.20), GenomicRanges (>= 1.19.23),
-	Biostrings (>= 2.35.1), Rsamtools (>= 1.17.28)
+	Biostrings (>= 2.35.1), Rsamtools (>= 1.19.17)
 Imports: methods, stats, BiocGenerics, S4Vectors, IRanges, GenomicRanges,
 	Biostrings, Rsamtools, BiocParallel
 LinkingTo: S4Vectors, IRanges
