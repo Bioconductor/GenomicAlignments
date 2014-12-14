@@ -24,38 +24,38 @@
 }
 
 \usage{
-\S4method{pmapToGenome}{Ranges,GAlignments}(from, to, ...) 
+\S4method{pmapToGenome}{Ranges,GAlignments}(x, alignment, ...) 
 
-\S4method{pmapToGenome}{GRanges,GAlignments}(from, to, 
+\S4method{pmapToGenome}{GRanges,GAlignments}(x, alignment, 
          ignore.strand = TRUE, ...)
 
-\S4method{pmapToTranscript}{Ranges,GAlignments}(from, to, ...) 
+\S4method{pmapToTranscript}{Ranges,GAlignments}(x, alignment, ...) 
 
-\S4method{pmapToTranscript}{GRanges,GAlignments}(from, to, 
+\S4method{pmapToTranscript}{GRanges,GAlignments}(x, alignment, 
          ignore.strand = TRUE, ...)
 }
 
 \arguments{
-  \item{from}{
+  \item{x}{
     A \code{\linkS4class{Ranges}} or \code{\linkS4class{GRanges}}
     object of positions to be mapped.
 
     \itemize{
-      \item{} For \code{mapToTranscript} \code{from} is in genome-based 
+      \item{} For \code{mapToTranscript} \code{x} is in genome-based 
         coordinates 
-      \item{} For \code{mapToGenome} \code{from} is in transcript-based 
+      \item{} For \code{mapToGenome} \code{x} is in transcript-based 
         coordinates 
     }
   }
-  \item{to}{
+  \item{alignment}{
     A \code{\linkS4class{GAlignments}} object that represents the alignment (aka
-    mapping) between the sequences in \code{from} and the sequences in the
-    result. Ranges in \code{to} are the 1-based positions of the clipped query
+    mapping) between the sequences in \code{x} and the sequences in the
+    result. Ranges in \code{alignment} are the 1-based positions of the clipped query
     relative to the reference sequence; this is the standard representation of
     ranges in a GAlignments object.
 
-    The current implementation assumes that positions in \code{from} 
-    occur within the \code{to} region, outside of any deletions or insertions.
+    The current implementation assumes that positions in \code{x} 
+    occur within the \code{alignment} region, outside of any deletions or insertions.
   }
   \item{ignore.strand}{
     When TRUE, strand is ignored in overlap operations.
@@ -80,7 +80,7 @@
   On this man page the terms `genomic` and `reference` are used interchangeably;
   `transcript` refers to any transcript-based coordinates such as gene ranges,
   exons, introns, etc.  These functions use a \code{GAlignments} object as the
-  `mapper` to represent alignment between the input ranges \code{from} and the
+  `mapper` to represent alignment between the input ranges \code{x} and the
   output. The following CIGAR operations in the "Extended CIGAR format" are 
   used in the coordinate mapping:
   \itemize{
@@ -102,19 +102,19 @@
     }
     \item{\code{pmapToGenome} and \code{pmapToTranscript}}{
       Parallel versions of \code{mapToGenome} and \code{mapToTranscript}. The 
-      i-th range in \code{from} is mapped to the i-th range in \code{to}; 
-      \code{from} and \code{to} must have the same length.
+      i-th range in \code{x} is mapped to the i-th range in \code{alignment}; 
+      \code{x} and \code{alignment} must have the same length.
     }
   }
 }
 
 \value{
-  An object the same class as \code{from}.
+  An object the same class as \code{x}.
 }
 
 \seealso{
   \itemize{
-    \item \code{?`\link[GenomicRanges]{mapping-methods}`} in the 
+    \item \code{?`\link[GenomicRanges]{coordinate-mapping-methods}`} in the 
       in the \pkg{GenomicRanges} package for methods on \link{GenomicRanges} 
       objects.
 

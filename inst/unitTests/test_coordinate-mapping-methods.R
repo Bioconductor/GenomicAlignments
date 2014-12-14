@@ -12,13 +12,13 @@ GA_3 <- GAlignments(rep("chr1", 6), rep(20L, 6), cigar, strand(rep("+", 6)))
 test_mapToGenome <- function() {
     ans <- mapToGenome(GR_1, GA_1)
     checkIdentical(start(ans), c(14L, 14L, 14L, 19L, 19L, 19L))
-    checkIdentical(mcols(ans)$from_hits, c(rep(1L, 3), rep(2L, 3)))
-    checkIdentical(mcols(ans)$to_hits, rep(1:3, 2))
+    checkIdentical(mcols(ans)$x_hits, c(rep(1L, 3), rep(2L, 3)))
+    checkIdentical(mcols(ans)$alignment_hits, rep(1:3, 2))
 
     ans <- mapToGenome(GR_2, GA_2)
     checkIdentical(start(ans), rep(10L, 6))
     checkIdentical(end(ans), c(15L, 17L, 17L, 13L, 15L, 15L)) 
-    checkIdentical(mcols(ans)$to_hits, as.integer(1:6))
+    checkIdentical(mcols(ans)$alignment_hits, as.integer(1:6))
 
     ## TODO: strand
 }
@@ -47,12 +47,12 @@ test_mapToTranscript <- function() {
     ans <- mapToTranscript(GR_1, GA_1)
     checkIdentical(start(ans), rep(1L, 3))
     checkIdentical(end(ans), rep(2L, 3))
-    checkIdentical(mcols(ans)$from_hits, c(rep(2L, 3)))
-    checkIdentical(mcols(ans)$to_hits, c(1L, 2L, 3L))
+    checkIdentical(mcols(ans)$x_hits, c(rep(2L, 3)))
+    checkIdentical(mcols(ans)$alignment_hits, c(1L, 2L, 3L))
 
     ans <- mapToTranscript(GR_2, GA_3)
     checkIdentical(end(ans), c(7L, 4L, 4L, 8L, 6L, 6L)) 
-    checkIdentical(mcols(ans)$to_hits, as.integer(1:6))
+    checkIdentical(mcols(ans)$alignment_hits, as.integer(1:6))
 
     ## TODO: strand
 }
