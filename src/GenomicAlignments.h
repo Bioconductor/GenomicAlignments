@@ -3,6 +3,15 @@
 
 /* cigar_utils.c */
 
+const char *_get_cigar_parsing_error();
+
+int _next_cigar_OP(
+	const char *cigar_string,
+	int offset,
+	char *OP,
+	int *OPL
+);
+
 SEXP valid_cigar(
 	SEXP cigar,
 	SEXP ans_type

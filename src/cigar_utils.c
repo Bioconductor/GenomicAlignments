@@ -16,11 +16,17 @@
 
 static char errmsg_buf[200];
 
+const char *_get_cigar_parsing_error()
+{
+	return errmsg_buf;
+}
+
 /* Return the number of chars that was read, or 0 if there is no more char
-   to read (i.e. cigar_string[offset] is '\0'), or -1 in case of a parse error.
+   to read (i.e. cigar_string[offset] is '\0'), or -1 in case of a parse error
+   (in which case _get_cigar_parsing_error() can be used to get a pointer to
+   the error message).
    Zero-length operations are ignored. */
-static int next_cigar_OP(const char *cigar_string, int offset,
-		char *OP, int *OPL)
+int _next_cigar_OP(const char *cigar_string, int offset, char *OP, int *OPL)
 {
 	char c;
 	int offset0, opl;
@@ -207,9 +213,9 @@ static const char *parse_cigar_ranges(const char *cigar_string,
 	buf_nelt0 = IntPairAE_get_nelt(range_buf);
 	cigar_offset = 0;
 	start = pos;
-	while ((n = next_cigar_OP(cigar_string, cigar_offset, &OP, &OPL))) {
+	while ((n = _next_cigar_OP(cigar_string, cigar_offset, &OP, &OPL))) {
 		if (n == -1)
-			return errmsg_buf;
+			return _get_cigar_parsing_error();
 		width = is_visible_in_space(OP, space) ? OPL : 0;
 		if (is_in_ops(OP))
 			drop_or_append_or_merge_range(start, width,
@@ -229,9 +235,9 @@ static const char *parse_cigar_width(const char *cigar_string, int space,
 	char OP /* Operation */;
 
 	*width = cigar_offset = 0;
-	while ((n = next_cigar_OP(cigar_string, cigar_offset, &OP, &OPL))) {
+	while ((n = _next_cigar_OP(cigar_string, cigar_offset, &OP, &OPL))) {
 		if (n == -1)
-			return errmsg_buf;
+			return _get_cigar_parsing_error();
 		if (is_visible_in_space(OP, space))
 			*width += OPL;
 		cigar_offset += n;
@@ -307,9 +313,9 @@ static const char *split_cigar_string(const char *cigar_string,
 	char OP /* Operation */;
 
 	offset = 0;
-	while ((n = next_cigar_OP(cigar_string, offset, &OP, &OPL))) {
+	while ((n = _next_cigar_OP(cigar_string, offset, &OP, &OPL))) {
 		if (n == -1)
-			return errmsg_buf;
+			return _get_cigar_parsing_error();
 		if (is_in_ops(OP)) {
 			if (OPbuf != NULL)
 				CharAE_insert_at(OPbuf,
@@ -438,9 +444,9 @@ static const char *cigar_string_op_table(SEXP cigar_string, const char *allOPs,
 		return "CIGAR string is empty";
 	cig0 = CHAR(cigar_string);
 	offset = 0;
-	while ((n = next_cigar_OP(cig0, offset, &OP, &OPL))) {
+	while ((n = _next_cigar_OP(cig0, offset, &OP, &OPL))) {
 		if (n == -1)
-			return errmsg_buf;
+			return _get_cigar_parsing_error();
 		tmp = strchr(allOPs, (int) OP);
 		if (tmp == NULL) {
 			snprintf(errmsg_buf, sizeof(errmsg_buf),
@@ -751,9 +757,9 @@ static const char *Lnarrow_cigar_string(SEXP cigar_string,
 		return "CIGAR string is empty";
 	cig0 = CHAR(cigar_string);
 	*rshift = offset = 0;
-	while ((n = next_cigar_OP(cig0, offset, &OP, &OPL))) {
+	while ((n = _next_cigar_OP(cig0, offset, &OP, &OPL))) {
 		if (n == -1)
-			return errmsg_buf;
+			return _get_cigar_parsing_error();
 		switch (OP) {
 		/* Alignment match (can be a sequence match or mismatch) */
 		    case 'M': case '=': case 'X':
@@ -806,7 +812,7 @@ static const char *Rnarrow_cigar_string(SEXP cigar_string,
 	offset = LENGTH(cigar_string);
 	while ((n = prev_cigar_OP(cig0, offset, &OP, &OPL))) {
 		if (n == -1)
-			return errmsg_buf;
+			return _get_cigar_parsing_error();
 		offset -= n;
 		switch (OP) {
 		/* Alignment match (can be a sequence match or mismatch) */
@@ -870,7 +876,7 @@ static const char *narrow_cigar_string(SEXP cigar_string,
 	buf_offset = 0;
 	cig0 = CHAR(cigar_string);
 	for (offset = Loffset; offset <= Roffset; offset += n) {
-		n = next_cigar_OP(cig0, offset, &OP, &OPL);
+		n = _next_cigar_OP(cig0, offset, &OP, &OPL);
 		if (offset == Loffset)
 			OPL -= Lwidth;
 		if (offset == Roffset)
@@ -942,9 +948,9 @@ static const char *Lqnarrow_cigar_string(SEXP cigar_string,
 		return "CIGAR string is empty";
 	cig0 = CHAR(cigar_string);
 	*rshift = offset = 0;
-	while ((n = next_cigar_OP(cig0, offset, &OP, &OPL))) {
+	while ((n = _next_cigar_OP(cig0, offset, &OP, &OPL))) {
 		if (n == -1)
-			return errmsg_buf;
+			return _get_cigar_parsing_error();
 		switch (OP) {
 		/* Alignment match (can be a sequence match or mismatch) */
 		    case 'M': case '=': case 'X':
@@ -998,7 +1004,7 @@ static const char *Rqnarrow_cigar_string(SEXP cigar_string,
 	offset = LENGTH(cigar_string);
 	while ((n = prev_cigar_OP(cig0, offset, &OP, &OPL))) {
 		if (n == -1)
-			return errmsg_buf;
+			return _get_cigar_parsing_error();
 		offset -= n;
 		switch (OP) {
 		/* M, =, X, I, S, H */
@@ -1054,7 +1060,7 @@ static const char *qnarrow_cigar_string(SEXP cigar_string,
 	buf_offset = 0;
 	cig0 = CHAR(cigar_string);
 	for (offset = Loffset; offset <= Roffset; offset += n) {
-		n = next_cigar_OP(cig0, offset, &OP, &OPL);
+		n = _next_cigar_OP(cig0, offset, &OP, &OPL);
 		if (offset == Loffset)
 			OPL -= Lqwidth;
 		if (offset == Roffset)
@@ -1128,7 +1134,7 @@ int to_transcript(int ref_loc, const char *cig0, int pos, Rboolean narrow_left)
   char OP;
  
   while (query_consumed < query_loc &&
-         (n = next_cigar_OP(cig0, offset, &OP, &OPL)))
+         (n = _next_cigar_OP(cig0, offset, &OP, &OPL)))
   {
     switch (OP) {
     /* Alignment match (can be a sequence match or mismatch) */
@@ -1284,7 +1290,7 @@ int to_genome(int query_loc, const char *cig0, int pos, Rboolean narrow_left)
   char OP;
  
   while (query_consumed < query_loc &&
-         (n = next_cigar_OP(cig0, offset, &OP, &OPL)))
+         (n = _next_cigar_OP(cig0, offset, &OP, &OPL)))
   {
     switch (OP) {
       /* Alignment match (can be a sequence match or mismatch) */
