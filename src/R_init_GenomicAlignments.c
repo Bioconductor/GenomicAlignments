@@ -3,6 +3,9 @@
 
 #define CALLMETHOD_DEF(fun, numArgs) {#fun, (DL_FUNC) &fun, numArgs}
 
+#define REGISTER_CCALLABLE(fun) \
+	R_RegisterCCallable("GenomicAlignments", #fun, (DL_FUNC) &fun)
+
 static const R_CallMethodDef callMethods[] = {
 
 /* cigar_utils.c */
@@ -32,6 +35,10 @@ static const R_CallMethodDef callMethods[] = {
 void R_init_GenomicAlignments(DllInfo *info)
 {
 	R_registerRoutines(info, NULL, callMethods, NULL, NULL);
+
+        /* cigar_utils.c */
+	REGISTER_CCALLABLE(_next_cigar_OP);
+
 	return;
 }
 

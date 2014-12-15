@@ -60,7 +60,7 @@ SEXP cigar_qnarrow(
 );
 
 
-/* mapping_methods.c */
+/* coordinate_mapping_methods.c */
 
 SEXP map_to_genome(
 	SEXP start,
