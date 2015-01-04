@@ -236,7 +236,6 @@ IntersectionNotEmpty(features, reads, algorithm=c("nclist", "intervaltree"),
       summarize overlaps across one or several files. The latter uses
       \code{bplapply}; control parallel evaluation using the
       \code{\link{register}} interface in the \pkg{BiocParallel} package.
-
     }
     \item{features :}{
       A \sQuote{feature} can be any portion of a genomic region such as a gene, 

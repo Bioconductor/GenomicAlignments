@@ -1,178 +1,128 @@
 ### =========================================================================
-### [p]mapToGenome() and [p]mapToTranscript() methods
+### mapToAlignment() and pmapToAlignment()
 ### -------------------------------------------------------------------------
 ###
 
-### Generics are in GenomicRanges.
-
-### Non-parallel: mapToGenome() and mapToTranscript()
-### - All elements in 'x' are mapped to 'alignment'
-### - Result length varies like a Hits object
-### - Result only contains mapped records; non-hits are not returned
-### FIXME: currently not strand-aware
-
-### Parallel: pmapToGenome() and pmapToTranscript
-### - i-th element of 'x' is mapped to i-th element of 'alignment'
-### - Result is the same length as 'x'
-### - Ranges with strand mismatch or no hit are returned as zero-width ranges.
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Generics 
 ###
-###   When mapping transcript -> genome the range in 'x' can never
-###   be before the range in 'alignment' and therefore the start of the 
-###   zero-width range begins after the width of 'alignment'.
-###
-###   When mapping genome -> transcript the range in 'x' can be either
-###   before or after the range in 'alignment'. Start of the zero-width range
-###   begins at 0 if if falls before the range or after the width of 
-###   'alignment' if it falls after. Strand mismatch zero-width ranges start 
-###   at 0.
 
+setGeneric("mapToAlignment", signature=c("x", "alignment"),
+    function(x, alignment, reverse=FALSE, ...) 
+        standardGeneric("mapToAlignment")
+)
+
+setGeneric("pmapToAlignment", signature=c("x", "alignment"),
+    function(x, alignment, reverse=FALSE, ...) 
+        standardGeneric("pmapToAlignment")
+)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### mapToGenome and pmapToGenome 
+### mapToAlignment() methods
 ###
 
-.mapToGenome <- function(x, alignment)
+.mapToAlignment <- function(x, alignment, reverse) 
 {
-    map <- .Call("map_to_genome", 
-                 start(x), end(x), cigar(alignment), start(alignment),
-                 PACKAGE="GenomicAlignments")
-    starts <- map[[1]]
-    ends <- pmax(map[[2]], starts - 1L)
-
-    ans <- IRanges(starts, ends)
-    mcols(ans) <- DataFrame(x_hits=map[[3]], alignment_hits=map[[4]])
-    ans
-}
-
-setMethod("mapToGenome", c("Ranges", "GAlignments"), .mapToGenome)
-
-setMethod("mapToGenome", c("GRanges", "GAlignments"),
-    function(x, alignment, ...)
-    {
-        map <- .mapToGenome(x, alignment)
-        index <- mcols(map)$x_hits
-        ans <- suppressWarnings(GRanges(seqnames(x)[index], map, 
-                                strand(x)[index]))
-        mcols(ans) <- mcols(map)
+    if (length(x) && length(alignment)) {
+        if (reverse)
+            FUN <- "map_to_transcript"
+        else
+            FUN <- "map_to_genome"
+        map <- .Call(FUN, start(x), end(x), cigar(alignment), start(alignment))
+        starts <- map[[1]]
+        if (!all(length(starts))) {
+            ans <- GRanges()
+            mcols(ans) <- DataFrame(xHits=integer(), alignmentHits=integer())
+            return(ans) 
+        }
+        ends <- pmax(map[[2]], starts - 1L)
+        xHits <- map[[3]]
+        alignmentHits <- map[[4]]
+        seqname <- as.character(seqnames(alignment)[alignmentHits])
+        if (any(skip <- is.na(starts) | is.na(ends))) {
+            starts[skip] <- 1L 
+            ends[skip] <- 0L
+            seqname[skip] <- "unmapped"
+        }
+        ## result is "*" strand
+        GRanges(Rle(seqname), IRanges(starts, ends), strand="*", 
+                DataFrame(xHits, alignmentHits))
+    } else {
+        ans <- GRanges()
+        mcols(ans) <- DataFrame(xHits=integer(), alignmentHits=integer())
         ans
     }
-)
-
-.pmapToGenome <- function(x, alignment, strand_mismatch)
-{
-    starts <- .Call("query_locs_to_ref_locs", 
-                    start(x), cigar(alignment), start(alignment), 
-                    FALSE, PACKAGE="GenomicAlignments")
-    ends <- .Call("query_locs_to_ref_locs", 
-                  end(x), cigar(alignment), start(alignment), 
-                  TRUE, PACKAGE="GenomicAlignments")
-    ends <- pmax(ends, starts - 1L)
-
-    skip <- is.na(starts) | is.na(ends) | strand_mismatch
-    if (any(skip)) {
-        starts[skip] <- width(alignment[skip]) + 1L 
-        ends[skip] <- starts[skip] - 1L
-    }
-    IRanges(starts, ends)
 }
 
-setMethod("pmapToGenome", c("Ranges", "GAlignments"),
-    function(x, alignment, ...)
+setMethod("mapToAlignment", c("Ranges", "GAlignments"),
+    function(x, alignment, reverse=FALSE, ...)
     {
-        if (length(x) != length(alignment))
-            stop("'x' and 'alignment' must have the same length")
-        .pmapToGenome(x, alignment, logical(length(x)))
+        if (reverse)
+            ranges(.mapToAlignment(x, alignment, TRUE))
+        else
+            ranges(.mapToAlignment(x, alignment, FALSE))
     }
 )
 
-setMethod("pmapToGenome", c("GRanges", "GAlignments"), 
-    function(x, alignment, ignore.strand = TRUE, ...) 
+setMethod("mapToAlignment", c("GenomicRanges", "GAlignments"),
+    function(x, alignment, reverse=FALSE, ...)
     {
-        if (length(x) != length(alignment))
-            stop("'x' and 'alignment' must have the same length")
-        if (ignore.strand)
-            strand_mismatch <- logical(length(x)) 
+        if (reverse)
+            .mapToAlignment(x, alignment, TRUE)
         else
-            strand_mismatch <- as.logical(strand(x) != strand(alignment))
-
-        map <- .pmapToGenome(ranges(x), alignment, strand_mismatch)
-        GRanges(seqnames(x), map, strand(x))
+            .mapToAlignment(x, alignment, FALSE)
     }
 )
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### mapToTranscript and pmapToTranscript 
+### pmapToAlignment() methods
 ###
 
-.mapToTranscript <- function(x, alignment)
+.pmapToAlignment <- function(x, alignment, reverse)
 {
-    map <- .Call("map_to_transcript", 
-                 start(x), end(x), cigar(alignment), start(alignment),
-                 PACKAGE="GenomicAlignments")
-    starts <- map[[1]]
-    ends <- pmax(map[[2]], starts - 1L)
-
-    ans <- IRanges(starts, ends)
-    mcols(ans) <- DataFrame(x_hits=map[[3]], alignment_hits=map[[4]])
-    ans
-}
-
-setMethod("mapToTranscript", c("Ranges", "GAlignments"), .mapToTranscript)
-
-setMethod("mapToTranscript", c("GRanges", "GAlignments"),
-    function(x, alignment, ...)
-    {
-        map <- .mapToTranscript(x, alignment)
-        index <- mcols(map)$x_hits
-        ans <- suppressWarnings(GRanges(seqnames(x)[index], map, 
-                                strand(x)[index]))
-        mcols(ans) <- mcols(map)
-        ans
-    }
-)
-
-.pmapToTranscript <- function(x, alignment, strand_mismatch)
-{
-    starts <- .Call("ref_locs_to_query_locs", 
-                    start(x), cigar(alignment), start(alignment), 
-                    FALSE, PACKAGE="GenomicAlignments")
-    ends <- .Call("ref_locs_to_query_locs", 
-                  end(x), cigar(alignment), start(alignment), 
-                  TRUE, PACKAGE="GenomicAlignments")
-    ends <- pmax(ends, starts - 1L)
-
-    before <- start(x) < start(alignment)
-    after <- end(x) > end(alignment)
-    skip <- before | after | strand_mismatch
-    if (any(skip)) {
-        starts[before | strand_mismatch] <- 1L 
-        ends[before | strand_mismatch] <- 0L 
-        starts[after] <- width(alignment[after]) + 1L 
-        ends[after] <- starts[after] - 1L
-    }
-    IRanges(starts, ends)
-}
-
-setMethod("pmapToTranscript", c("Ranges", "GAlignments"),
-    function(x, alignment, ...)
-    {
+    if (length(x) && length(alignment)) {
         if (length(x) != length(alignment))
             stop("'x' and 'alignment' must have the same length")
-        .pmapToTranscript(x, alignment, logical(length(x)))
-    }
-)
 
-setMethod("pmapToTranscript", c("GRanges", "GAlignments"), 
-    function(x, alignment, ignore.strand = TRUE, ...) 
-    {
-        if (length(x) != length(alignment))
-            stop("'x' and 'alignment' must have the same length")
-        if (ignore.strand)
-            strand_mismatch <- logical(length(x))
+        if (reverse)
+            FUN <- "ref_locs_to_query_locs"
         else
-            strand_mismatch <- as.logical(strand(x) != strand(alignment))
+            FUN <- "query_locs_to_ref_locs"
+        starts <- .Call(FUN, start(x), cigar(alignment), 
+                        start(alignment), FALSE)
+        ends <- .Call(FUN, end(x), cigar(alignment), 
+                      start(alignment), TRUE)
+        ends <- pmax(ends, starts - 1L)
+        seqname <- as.character(seqnames(alignment))
+        if (any(skip <- is.na(starts) | is.na(ends))) {
+            starts[skip] <- 1L 
+            ends[skip] <- 0L
+            seqname[skip] <- "unmapped"
+        }
+        ## result is "*" strand
+        GRanges(Rle(seqname), IRanges(starts, ends))
+    } else {
+        GRanges()
+    }
+}
 
-        map <- .pmapToTranscript(ranges(x), alignment, strand_mismatch)
-        GRanges(seqnames(x), map, strand(x))
+setMethod("pmapToAlignment", c("Ranges", "GAlignments"),
+    function(x, alignment, reverse=FALSE, ...)
+    {
+        if (reverse)
+            ranges(.pmapToAlignment(x, alignment, TRUE))
+        else
+            ranges(.pmapToAlignment(x, alignment, FALSE))
     }
 )
+
+setMethod("pmapToAlignment", c("GenomicRanges", "GAlignments"), 
+    function(x, alignment, reverse=FALSE, ...) 
+    {
+        if (reverse)
+            .pmapToAlignment(ranges(x), alignment, TRUE)
+        else
+            .pmapToAlignment(ranges(x), alignment, FALSE)
+    }
+)
+

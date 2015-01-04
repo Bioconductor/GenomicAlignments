@@ -176,7 +176,7 @@ export(
     findSpliceOverlaps,
 
     ## coordinateMapping-methods.R:
-    mapToGenome, pmapToGenome, mapToTranscript, pmapToTranscript
+    mapToAlignment, pmapToAlignment
 )
 
 ### Exactly the same list as above.
@@ -201,6 +201,6 @@ exportMethods(
     findCompatibleOverlaps,
     summarizeOverlaps,
     findSpliceOverlaps,
-    mapToGenome, pmapToGenome, mapToTranscript, pmapToTranscript
+    mapToAlignment, pmapToAlignment
 )
 
