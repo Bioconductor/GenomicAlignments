@@ -4,13 +4,13 @@
 
 
 /****************************************************************************
- * Mapping from genome (reference) to transcript (local) space.
+ * Mapping from genome (reference) to local space.
  */
 
-/* Returns integer position of 'ref_loc' mapped to transcript-based space.
+/* Returns integer position of 'ref_loc' mapped to local space.
  * If 'ref_loc' cannot be mapped NA is returned.
  */
-int to_transcript(int ref_loc, const char *cig0, int pos, Rboolean narrow_left)
+int to_query(int ref_loc, const char *cig0, int pos, Rboolean narrow_left)
 {
  
   int query_loc = ref_loc - pos + 1;
@@ -90,9 +90,9 @@ SEXP ref_locs_to_query_locs(SEXP ref_locs, SEXP cigar, SEXP pos,
         PROTECT(query_locs = allocVector(INTSXP, nlocs));
         for (i = 0; i < nlocs; i++) {
                 const char *cig_i = CHAR(STRING_ELT(cigar, i));
-                INTEGER(query_locs)[i] = to_transcript(INTEGER(ref_locs)[i], 
-                                                       cig_i, INTEGER(pos)[i], 
-                                                       asLogical(narrow_left));
+                INTEGER(query_locs)[i] = to_query(INTEGER(ref_locs)[i], 
+                                                  cig_i, INTEGER(pos)[i], 
+                                                  asLogical(narrow_left));
         }
  
         UNPROTECT(1);
@@ -117,7 +117,7 @@ SEXP ref_locs_to_query_locs(SEXP ref_locs, SEXP cigar, SEXP pos,
  * positions actually occur in the read alignment region, outside of
  * any deletions or insertions. 
  */
-SEXP map_to_transcript(SEXP start, SEXP end, SEXP cigar, SEXP pos)
+SEXP map_ref_locs_to_query_locs(SEXP start, SEXP end, SEXP cigar, SEXP pos)
 {
         SEXP ans, ans_start, ans_end, ans_qhits, ans_shits;
         IntAE sbuf, ebuf, qhbuf, shbuf;
@@ -133,11 +133,10 @@ SEXP map_to_transcript(SEXP start, SEXP end, SEXP cigar, SEXP pos)
                 for (j = 0; j < ncigar; j++) {
                         const char *cig_j = CHAR(STRING_ELT(cigar, j));
                         int pos_j = INTEGER(pos)[j];
-                        s = to_transcript(INTEGER(start)[i], cig_j, pos_j, 
-                                          FALSE);
+                        s = to_query(INTEGER(start)[i], cig_j, pos_j, FALSE);
                         if (s == NA_INTEGER)
                                 break;
-                        e = to_transcript(INTEGER(end)[i], cig_j, pos_j, TRUE); 
+                        e = to_query(INTEGER(end)[i], cig_j, pos_j, TRUE); 
                         if (e == NA_INTEGER)
                                 break;
                         IntAE_insert_at(&sbuf, IntAE_get_nelt(&sbuf), s);
@@ -161,13 +160,13 @@ SEXP map_to_transcript(SEXP start, SEXP end, SEXP cigar, SEXP pos)
 }
 
 /****************************************************************************
- * Mapping from transcript (local) to genome (reference) space.
+ * Mapping from local to genome (reference) space.
  */
 
 /* Returns integer position of 'query_loc' mapped to genome-based space. 
  * If 'query_loc' cannot be mapped NA is returned.
  */
-int to_genome(int query_loc, const char *cig0, int pos, Rboolean narrow_left)
+int to_ref(int query_loc, const char *cig0, int pos, Rboolean narrow_left)
 {
   int ref_loc = query_loc + pos - 1;
   int n, offset = 0, OPL, query_consumed = 0;
@@ -245,9 +244,9 @@ SEXP query_locs_to_ref_locs(SEXP query_locs, SEXP cigar, SEXP pos,
         PROTECT(ref_locs = allocVector(INTSXP, nlocs));
         for (i = 0; i < nlocs; i++) {
                 const char *cig_i = CHAR(STRING_ELT(cigar, i));
-                INTEGER(ref_locs)[i] = to_genome(INTEGER(query_locs)[i], 
-                                                 cig_i, INTEGER(pos)[i], 
-                                                 asLogical(narrow_left));
+                INTEGER(ref_locs)[i] = to_ref(INTEGER(query_locs)[i], 
+                                              cig_i, INTEGER(pos)[i], 
+                                              asLogical(narrow_left));
         }
  
         UNPROTECT(1);
@@ -271,7 +270,7 @@ SEXP query_locs_to_ref_locs(SEXP query_locs, SEXP cigar, SEXP pos,
  * positions actually occur in the read alignment region, outside of
  * any deletions or insertions. 
  */
-SEXP map_to_genome(SEXP start, SEXP end, SEXP cigar, SEXP pos)
+SEXP map_query_locs_to_ref_locs(SEXP start, SEXP end, SEXP cigar, SEXP pos)
 {
         SEXP ans, ans_start, ans_end, ans_qhits, ans_shits;
         IntAE sbuf, ebuf, qhbuf, shbuf;
@@ -287,10 +286,10 @@ SEXP map_to_genome(SEXP start, SEXP end, SEXP cigar, SEXP pos)
                 for (j = 0; j < ncigar; j++) {
                         const char *cig_j = CHAR(STRING_ELT(cigar, j));
                         int pos_j = INTEGER(pos)[j];
-                        s = to_genome(INTEGER(start)[i], cig_j, pos_j, FALSE);
+                        s = to_ref(INTEGER(start)[i], cig_j, pos_j, FALSE);
                         if (s == NA_INTEGER)
                                 break;
-                        e = to_genome(INTEGER(end)[i], cig_j, pos_j, TRUE); 
+                        e = to_ref(INTEGER(end)[i], cig_j, pos_j, TRUE); 
                         if (e == NA_INTEGER)
                                 break;
                         IntAE_insert_at(&sbuf, IntAE_get_nelt(&sbuf), s);

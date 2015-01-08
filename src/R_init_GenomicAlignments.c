@@ -19,8 +19,8 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(cigar_qnarrow, 3),
 
 /* mapping_methods.c */
-	CALLMETHOD_DEF(map_to_genome, 4),
-	CALLMETHOD_DEF(map_to_transcript, 4),
+	CALLMETHOD_DEF(map_query_locs_to_ref_locs, 4),
+	CALLMETHOD_DEF(map_ref_locs_to_query_locs, 4),
 	CALLMETHOD_DEF(ref_locs_to_query_locs, 4),
 	CALLMETHOD_DEF(query_locs_to_ref_locs, 4),
 

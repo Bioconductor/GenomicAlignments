@@ -176,7 +176,7 @@ export(
     findSpliceOverlaps,
 
     ## coordinateMapping-methods.R:
-    mapToAlignment, pmapToAlignment
+    mapToAlignments, pmapToAlignments
 )
 
 ### Exactly the same list as above.
@@ -201,6 +201,6 @@ exportMethods(
     findCompatibleOverlaps,
     summarizeOverlaps,
     findSpliceOverlaps,
-    mapToAlignment, pmapToAlignment
+    mapToAlignments, pmapToAlignments
 )
 

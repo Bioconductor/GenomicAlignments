@@ -62,14 +62,14 @@ SEXP cigar_qnarrow(
 
 /* coordinate_mapping_methods.c */
 
-SEXP map_to_genome(
+SEXP map_query_locs_to_ref_locs(
 	SEXP start,
 	SEXP end,
 	SEXP cigar,
 	SEXP pos
 );
 
-SEXP map_to_transcript(
+SEXP map_ref_locs_to_query_locs(
 	SEXP start,
 	SEXP end,
 	SEXP cigar,
