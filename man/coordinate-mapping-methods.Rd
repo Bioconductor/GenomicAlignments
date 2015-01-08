@@ -9,16 +9,16 @@
 \alias{pmapToAlignments,Ranges,GAlignments-method}
 \alias{pmapToAlignments,GenomicRanges,GAlignments-method}
 
-\title{Map range coordinates between reads (local) and genome (reference)
-       space using CIGAR alignments}
+\title{Map range coordinates between reads and genome space using
+       CIGAR alignments}
 
 \description{
   Map range coordinates between reads (local) and genome (reference) space 
   using the CIGAR in a \code{GAlignments} object.
  
-  See \code{?`\link[GenomicFeatures]{mapToTranscripts-methods}`} in the 
-  \pkg{GenomicRanges} package for mapping coordinates between transcript
-  and genome space.
+  See \code{?\link[GenomicFeatures]{mapToTranscripts}} in the 
+  \pkg{GenomicRanges} package for mapping coordinates between features
+  in the transcriptome and genome space.
 }
 
 \usage{
