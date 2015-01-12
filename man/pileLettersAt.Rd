@@ -112,7 +112,7 @@ flag <- scanBamFlag(isNotPassingQualityControls=FALSE,
                     isDuplicate=FALSE)
 what <- c("seq", "qual")
 param <- ScanBamParam(flag=flag, what=c("seq", "qual"), which=which)
-gal <- readGAlignmentsFromBam(bamfile, param=param)
+gal <- readGAlignments(bamfile, param=param)
 seqlevels(gal) <- seqlevels(my_IGPOI) 
 
 ## Extract the read sequences (a.k.a. query sequences) and quality

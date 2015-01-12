@@ -75,9 +75,9 @@ alphabetFrequencyFromBam(file, index=file, param, what="seq", ...)
   \enumerate{
     \item Load the read sequences (or their quality strings) from the BAM
           file. Only the read sequences that overlap with the specified region
-          are loaded. This is done with the
-          \code{\link{readGAlignmentsFromBam}} function. Note that if the
-          file contains paired-end reads, the pairing is ignored.
+          are loaded. This is done with the \code{\link{readGAlignments}}
+          function. Note that if the file contains paired-end reads, the
+          pairing is ignored.
 
     \item Lay the sequences alongside the reference space, using their CIGARs.
           This is done with the \code{\link{sequenceLayer}} function.
@@ -122,7 +122,7 @@ alphabetFrequencyFromBam(file, index=file, param, what="seq", ...)
           of a set of aligned reads on top of a set of individual genomic
           positions.
 
-    \item The \code{\link{readGAlignmentsFromBam}} function for loading read
+    \item The \code{\link{readGAlignments}} function for loading read
           sequences (or their quality strings) from a BAM file (via a
           \link{GAlignments} object).
 

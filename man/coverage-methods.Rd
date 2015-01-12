@@ -59,7 +59,7 @@
   }
   \item{param}{
     An optional \link[Rsamtools]{ScanBamParam} object passed to
-    \code{\link{readGAlignmentsFromBam}}.
+    \code{\link{readGAlignments}}.
   }
   \item{yieldSize}{
     An optional argument controlling how many records are input
@@ -76,7 +76,7 @@
   The method for \link[Rsamtools]{BamFile} objects iterates through a
   BAM file, reading \code{yieldSize(x)} records (or all records, if
   \code{is.na(yieldSize(x))}) and calculating:
-\preformatted{  aln <- readGAlignmentsFromBam(x, param=param)
+\preformatted{  aln <- readGAlignments(x, param=param)
   coverage(aln, shift=shift, width=width, weight=weight, ...)
 }
 
@@ -101,7 +101,7 @@
 
     \item \link{GAlignments} and \link{GAlignmentPairs} objects.
 
-    \item \code{\link{readGAlignmentsFromBam}}.
+    \item \code{\link{readGAlignments}}.
   }
 }
 

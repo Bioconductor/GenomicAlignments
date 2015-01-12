@@ -123,7 +123,13 @@ export(
 
     countCompatibleOverlaps,
 
-    Union, IntersectionNotEmpty, IntersectionStrict
+    Union, IntersectionNotEmpty, IntersectionStrict,
+
+    ## Old stuff (Deprecated or Defunct):
+    readGAlignmentsFromBam,
+    readGAlignmentPairsFromBam,
+    readGAlignmentsListFromBam,
+    readGappedReadsFromBam
 )
 
 
@@ -147,10 +153,10 @@ export(
     Lencoding, Rencoding, Lnjunc, Rnjunc,
 
     ## readGAlignments.R:
-    readGAlignmentsFromBam,
-    readGAlignmentPairsFromBam,
-    readGAlignmentsListFromBam,
-    readGappedReadsFromBam,
+    readGAlignments,
+    readGAlignmentPairs,
+    readGAlignmentsList,
+    readGappedReads,
 
     ## junctions-methods.R:
     junctions,
@@ -187,10 +193,10 @@ exportMethods(
     qseq,
     Loffset, Roffset, flippedQuery,
     Lencoding, Rencoding, Lnjunc, Rnjunc,
-    readGAlignmentsFromBam,
-    readGAlignmentPairsFromBam,
-    readGAlignmentsListFromBam,
-    readGappedReadsFromBam,
+    readGAlignments,
+    readGAlignmentPairs,
+    readGAlignmentsList,
+    readGappedReads,
     junctions,
     qnarrow,
     encodeOverlaps,

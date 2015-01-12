@@ -1,19 +1,19 @@
 library(pasillaBamSubset)
 chr4 <- untreated3_chr4()
 
-test_readGAlignmentsListFromBam_construction <- function()
+test_readGAlignmentsList_construction <- function()
 {
     fl <- system.file("extdata", "ex1.bam", package="Rsamtools")
     bf <- BamFile(fl, asMates=TRUE)
-    galist <- readGAlignmentsListFromBam(fl)
+    galist <- readGAlignmentsList(fl)
     checkTrue(is.null(names(galist)))
-    galist <- readGAlignmentsListFromBam(fl, use.names=TRUE)
+    galist <- readGAlignmentsList(fl, use.names=TRUE)
     target <- c("EAS54_61:4:143:69:578", "EAS219_FC30151:7:51:1429:1043")
     checkIdentical(names(galist)[1:2], target)
 
     ## first segment first
     param <- ScanBamParam(what="flag")
-    galist <- readGAlignmentsListFromBam(fl, param=param)
+    galist <- readGAlignmentsList(fl, param=param)
     mates <- galist[mcols(galist)$mate_status == "mated"]
     flagBit <- bamFlagAsBitMatrix(mcols(unlist(mates))$flag,
                                   bitnames="isFirstMateRead") 
@@ -21,15 +21,15 @@ test_readGAlignmentsListFromBam_construction <- function()
     checkIdentical(c(1572L, 0), rowSums(m))
 }
 
-test_readGAlignmentsListFromBam_noYieldSize <- function()
+test_readGAlignmentsList_noYieldSize <- function()
 {
     fl <- system.file("extdata", "ex1.bam", package="Rsamtools")
     bf <- BamFile(fl, asMates=TRUE)
-    galist <- readGAlignmentsListFromBam(fl)
+    galist <- readGAlignmentsList(fl)
     checkTrue(validObject(galist))
 }
 
-test_readGAlignmentsListFromBam_yieldSize <- function()
+test_readGAlignmentsList_yieldSize <- function()
 {
     bf <- BamFile(chr4, asMates=TRUE, yieldSize=1)
     scn1 <- scanBam(bf)
@@ -46,34 +46,34 @@ test_readGAlignmentsListFromBam_yieldSize <- function()
     checkTrue(length(unique(scn2[[1]]$qname)) == length(galist2))
 }
 
-test_readGAlignmentsListFromBam_mcols <- function()
+test_readGAlignmentsList_mcols <- function()
 {
     bf <- BamFile(chr4, asMates=TRUE, yieldSize=100)
     param <- ScanBamParam(tag=("NM"))
-    galist <- readGAlignmentsListFromBam(bf, param=param)
+    galist <- readGAlignmentsList(bf, param=param)
     checkIdentical(colnames(mcols(unlist(galist))), "NM")
     checkTrue(names(mcols(galist)) == "mate_status")
 
     param <- ScanBamParam(tag=("FO"))
-    galist <- readGAlignmentsListFromBam(bf, param=param)
+    galist <- readGAlignmentsList(bf, param=param)
     checkIdentical(rep.int(NA, length(unlist(galist))), 
                    mcols(unlist(galist))[["FO"]])
 }
 
-test_readGAlignmentsListFromBam_compare_pairs <- function()
+test_readGAlignmentsList_compare_pairs <- function()
 {
     bamfile <- BamFile(untreated3_chr4(), asMates=TRUE)
-    galist <- readGAlignmentsListFromBam(bamfile)
+    galist <- readGAlignmentsList(bamfile)
     mates <- galist[mcols(galist)$mate_status == "mated"]
-    galp <- readGAlignmentPairsFromBam(bamfile)
+    galp <- readGAlignmentPairs(bamfile)
     checkIdentical(length(galp), length(mates)) 
 }
 
-test_readGAlignmentsListFromBam_flags <- function()
+test_readGAlignmentsList_flags <- function()
 {
     bamfile <- BamFile(untreated3_chr4(), asMates=TRUE)
     param <- ScanBamParam(flag=scanBamFlag(isProperPair=TRUE))
-    galist <- readGAlignmentsListFromBam(bamfile, param=param)
+    galist <- readGAlignmentsList(bamfile, param=param)
     status <- table(mcols(galist)$mate_status)
     checkIdentical(status[["mated"]], 45828L)
     checkIdentical(status[["ambiguous"]], 0L)
@@ -111,15 +111,15 @@ test_readGAlignmentsListFromBam_flags <- function()
 ##       1 secondary proper + 1 secondary non proper
 ## p009: 3 pairs mapped to the same position: 
 ##       1 primary proper + 2 secondary proper. 
-source(system.file("unitTests", "test_readGAlignmentPairsFromBam.R", 
+source(system.file("unitTests", "test_readGAlignmentPairs.R", 
                    package="GenomicAlignments"))
 bf <- BamFile(toy_bamfile, asMates=TRUE)
 
-test_readGAlignmentsListFromBam_toybamfile <- function()
+test_readGAlignmentsList_toybamfile <- function()
 {
     param <- ScanBamParam(tag="pi")
-    galp <- readGAlignmentPairsFromBam(toy_bamfile, use.names=TRUE, param=param)
-    galist <- readGAlignmentsListFromBam(bf, use.names=TRUE, param=param)
+    galp <- readGAlignmentPairs(toy_bamfile, use.names=TRUE, param=param)
+    galist <- readGAlignmentsList(bf, use.names=TRUE, param=param)
 
     ## 'mated' 
     mated_galist <- unlist(galist[mcols(galist)$mate_status == "mated"]) 
@@ -146,21 +146,21 @@ test_readGAlignmentsListFromBam_toybamfile <- function()
     unmated <- na.omit(unique(mcols(unmated_galist)$pi)) 
     checkTrue(all(unmated %in% pi_target)) 
 
-    ## Reads of this type cannot be filtered out wrt
-    ## readGAlignmentsList. They are always returned by 
-    ## readGAlignmentsList but never returned by readGAlignmentPairs.
+    ## Reads of this type cannot be filtered out wrt readGAlignmentsList.
+    ## They are always returned by readGAlignmentsList but never returned by
+    ## readGAlignmentPairs.
     bamFlag(param) <- scanBamFlag(isProperPair=TRUE,
                                   hasUnmappedMate=FALSE,
                                   isUnmappedQuery=FALSE,
                                   isPaired=TRUE)
-    galist <- readGAlignmentsListFromBam(bf, use.names=TRUE, param=param)
+    galist <- readGAlignmentsList(bf, use.names=TRUE, param=param)
     unmated_galist <- unlist(galist[mcols(galist)$mate_status == "unmated"]) 
     unmated <- names(unmated_galist)[is.na(mcols(unmated_galist)$pi)] 
     name_target <- c("m001", "m002", "p991")
     checkTrue(all(unmated %in% name_target))
 }
 
-test_readGAlignmentsListFromBam_which <- function()
+test_readGAlignmentsList_which <- function()
 {
     ## 4 non-overlapping regions of interest: first two regions only overlap
     ## with first p001 mate and last two regions only with last p001 mate.
@@ -168,8 +168,8 @@ test_readGAlignmentsListFromBam_which <- function()
     my_ROI_labels <- c("chr2:10-10", "chr2:15-15",
                        "chr2:110-110", "chr2:115-115")
     param <- ScanBamParam(tag="pi", which=my_ROI[c(1, 4)])
-    target1 <- readGAlignmentsListFromBam(toy_bamfile, use.names=TRUE,
-                                          param=param, with.which_label=TRUE)
+    target1 <- readGAlignmentsList(toy_bamfile, use.names=TRUE,
+                                   param=param, with.which_label=TRUE)
     ## Duplicate results with distinct 'which_label'
     checkIdentical(2L, length(target1))
     checkIdentical(as.vector(mcols(target1)$mate_status), c("mated", "mated"))

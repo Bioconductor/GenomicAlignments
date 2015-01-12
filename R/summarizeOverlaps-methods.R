@@ -186,12 +186,12 @@ IntersectionNotEmpty <-  function(features, reads,
 .getReadFunction <- function(singleEnd, fragments)
 {
     if (singleEnd) {
-        FUN <- readGAlignmentsFromBam
+        FUN <- readGAlignments
     } else {
         if (fragments)
-            FUN <- readGAlignmentsListFromBam
+            FUN <- readGAlignmentsList
         else
-            FUN <- readGAlignmentPairsFromBam
+            FUN <- readGAlignmentPairs
     }
     FUN
 }

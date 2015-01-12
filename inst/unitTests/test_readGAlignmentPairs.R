@@ -1,4 +1,4 @@
-### test_readGAlignmentPairsFromBam.R
+### test_readGAlignmentPairs.R
 
 # Flag bits summary
 # -----------------
@@ -193,11 +193,11 @@ p009  chr2   90   6M3I9M +       chr2   190  9M3D9M -       0       1      p009c
 
 toy_bamfile <- make_toy_bamfile(mapped_pair_table, tempfile())
 
-test_readGAlignmentPairsFromBam <- function()
+test_readGAlignmentPairs <- function()
 {
     param <- ScanBamParam(tag="pi")
     galp <- suppressWarnings(
-        readGAlignmentPairsFromBam(toy_bamfile, use.names=TRUE, param=param)
+        readGAlignmentPairs(toy_bamfile, use.names=TRUE, param=param)
     )
 
     ## Check the dumped alignments
@@ -215,7 +215,7 @@ test_readGAlignmentPairsFromBam <- function()
     checkIdentical(pi_target, mcols(last(galp))$pi)
 }
 
-### Starting with BioC 2.14, readGAlignmentPairsFromBam() behavior changed when
+### Starting with BioC 2.14, readGAlignmentPairs() behavior changed when
 ### using the 'which' argument. Old behavior: the same pair was returned once
 ### per each range in 'which' that had an overlap with the *two* segments in
 ### the pair. New behavior: the same pair is returned once per each range in
@@ -227,7 +227,7 @@ test_readGAlignmentPairsFromBam <- function()
 ### for the pairing.
 ### The new behavior breaks the test below so I'm turning it off for now.
 if (FALSE) {
-test_readGAlignmentPairsFromBam_which <- function()
+test_readGAlignmentPairs_which <- function()
 {
     ## 4 non-overlapping regions of interest: first two regions only overlap
     ## with first p001 mate and last two regions only with last p001 mate.
@@ -235,7 +235,7 @@ test_readGAlignmentPairsFromBam_which <- function()
     my_ROI_labels <- c("chr2:10-10", "chr2:15-15",
                        "chr2:110-110", "chr2:115-115")
     param <- ScanBamParam(tag="pi", which=my_ROI[c(1, 4)])
-    target1 <- readGAlignmentPairsFromBam(toy_bamfile, use.names=TRUE,
+    target1 <- readGAlignmentPairs(toy_bamfile, use.names=TRUE,
                                           param=param, with.which_label=TRUE)
     checkTrue(validObject(target1, complete=TRUE))
     checkIdentical(1L, length(target1))
@@ -253,7 +253,7 @@ test_readGAlignmentPairsFromBam_which <- function()
             #print(i)
             param <- ScanBamParam(tag="pi", which=my_ROI[i])
             current <- suppressWarnings(
-                readGAlignmentPairsFromBam(toy_bamfile, use.names=TRUE,
+                readGAlignmentPairs(toy_bamfile, use.names=TRUE,
                                            param=param)
             )
             if (sum(i <= 2L) == 1L && sum(i >= 3L) == 1L) {

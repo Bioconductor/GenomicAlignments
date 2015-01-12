@@ -1,26 +1,27 @@
 \name{readGAlignments}
 
 \alias{readGAlignments}
+\alias{readGAlignments,BamFile-method}
+\alias{readGAlignments,character-method}
+\alias{readGAlignments,BamViews-method}
+
 \alias{readGAlignmentPairs}
+\alias{readGAlignmentPairs,BamFile-method}
+\alias{readGAlignmentPairs,character-method}
+
 \alias{readGAlignmentsList}
+\alias{readGAlignmentsList,BamFile-method}
+\alias{readGAlignmentsList,character-method}
+
 \alias{readGappedReads}
+\alias{readGappedReads,BamFile-method}
+\alias{readGappedReads,character-method}
 
+% old stuff (Deprecated or Defunct)
 \alias{readGAlignmentsFromBam}
-\alias{readGAlignmentsFromBam,BamFile-method}
-\alias{readGAlignmentsFromBam,character-method}
-\alias{readGAlignmentsFromBam,BamViews-method}
-
 \alias{readGAlignmentPairsFromBam}
-\alias{readGAlignmentPairsFromBam,BamFile-method}
-\alias{readGAlignmentPairsFromBam,character-method}
-
 \alias{readGAlignmentsListFromBam}
-\alias{readGAlignmentsListFromBam,BamFile-method}
-\alias{readGAlignmentsListFromBam,character-method}
-
 \alias{readGappedReadsFromBam}
-\alias{readGappedReadsFromBam,BamFile-method}
-\alias{readGappedReadsFromBam,character-method}
 
 
 \title{Reading genomic alignments from a file}
@@ -32,48 +33,39 @@
 }
 
 \usage{
-## Front-ends
-readGAlignments(file, format="BAM", use.names=FALSE, ...)
-readGAlignmentPairs(file, format="BAM", use.names=FALSE, ...)
-readGAlignmentsList(file, format="BAM", use.names=FALSE, ...)
-readGappedReads(file, format="BAM", use.names=FALSE, ...)
+readGAlignments(file, index=file, use.names=FALSE, param=NULL,
+                      with.which_label=FALSE)
 
-## BAM specific back-ends
-readGAlignmentsFromBam(file, index=file, ..., use.names=FALSE,
-                       param=NULL, with.which_label=FALSE)
+readGAlignmentPairs(file, index=file, use.names=FALSE, param=NULL,
+                          with.which_label=FALSE)
 
-readGAlignmentPairsFromBam(file, index=file, use.names=FALSE,
-                           param=NULL, with.which_label=FALSE)
+readGAlignmentsList(file, index=file, use.names=FALSE, param=ScanBamParam(),
+                          with.which_label=FALSE)
 
-readGAlignmentsListFromBam(file, index=file, ..., use.names=FALSE,
-                           param=ScanBamParam(), with.which_label=FALSE)
-
-readGappedReadsFromBam(file, index=file, use.names=FALSE,
-                       param=NULL, with.which_label=FALSE)
+readGappedReads(file, index=file, use.names=FALSE, param=NULL,
+                      with.which_label=FALSE)
 }
 
 \arguments{
   \item{file}{
     The path to the file to read or a \link[Rsamtools]{BamFile} object.
     Can also be a \link[Rsamtools]{BamViews} object for
-    \code{readGAlignmentsFromBam}.
+    \code{readGAlignments}.
   }
-
-  \item{format}{
-    Only \code{"BAM"} (the default) is supported for now.
-  }
-
-  \item{use.names}{Use the query template names (QNAME field) as the
-    names of the returned object? If not (the default), then the returned
-    object has no names.}
-
-  \item{...}{Arguments passed to other methods.}
-
-  \item{index}{The path to the index file of the BAM file to read.
+  \item{index}{
+    The path to the index file of the BAM file to read.
     Must be given \emph{without} the '.bai' extension.
     See \code{\link[Rsamtools]{scanBam}} in the \pkg{Rsamtools} packages
-    for more information.}
-
+    for more information.
+  }
+  \item{use.names}{
+    \code{TRUE} or \code{FALSE}. By default (i.e. \code{use.names=FALSE}),
+    the resulting object has no names. If \code{use.names} is \code{TRUE},
+    then the names are constructed from the query template names (QNAME
+    field in a SAM/BAM file). Note that the 2 records in a pair (when using
+    \code{readGAlignmentPairs} or the records in a group (when using
+    \code{readGAlignmentsList}) have the same QNAME.
+  }
   \item{param}{\code{NULL} or a \link[Rsamtools]{ScanBamParam} object.
     Like for \code{\link[Rsamtools]{scanBam}}, this influences what fields
     and which records are imported. However, note that the fields specified
@@ -87,11 +79,11 @@ readGappedReadsFromBam(file, index=file, use.names=FALSE,
     By default (i.e. \code{param=NULL} or \code{param=ScanBamParam()}), no 
     additional field is loaded. The flag used is 
     \code{scanBamFlag(isUnmappedQuery=FALSE)} for
-    \code{readGAlignmentsFromBam}, \code{readGappedReadsFromBam} and
-    \code{readGAlignmentsListFromBam}
+    \code{readGAlignments}, \code{readGAlignmentsList}, and
+    \code{readGappedReads}.
     (i.e. only records corresponding to mapped reads are loaded),
     and \code{scanBamFlag(isUnmappedQuery=FALSE, isPaired=TRUE,
-    hasUnmappedMate=FALSE)} for \code{readGAlignmentPairsFromBam}
+    hasUnmappedMate=FALSE)} for \code{readGAlignmentPairs}
     (i.e. only records corresponding to paired-end reads with both ends
     mapped are loaded).}
 
@@ -101,7 +93,7 @@ readGappedReadsFromBam(file, index=file, use.names=FALSE,
     \link{GAlignments} or \link{GappedReads} object,
     or to the \code{\link{first}} and \code{\link{last}} components
     of the returned \link{GAlignmentPairs} object.
-    In the case of \code{readGAlignmentsListFromBam}, it's added as an
+    In the case of \code{readGAlignmentsList}, it's added as an
     \emph{inner} metadata column, that is, the metadata column is placed
     on the \link{GAlignments} object obtained by unlisting
     the returned \link{GAlignmentsList} object.
@@ -118,99 +110,65 @@ readGappedReadsFromBam(file, index=file, use.names=FALSE,
 }
 
 \details{
-  See \code{?\link{GAlignments}} for a description of \link{GAlignments}
-  objects.
+  \itemize{
+    \item \code{readGAlignments} reads a file containing aligned reads as a
+          \link{GAlignments} object. See \code{?\link{GAlignments}} for a
+          description of \link{GAlignments} objects.
 
-  See \code{?\link{GappedReads}} for a description of \link{GappedReads}
-  objects.
+          When \code{file} is a \link[Rsamtools]{BamViews} object,
+          \code{readGAlignments} visits each path in \code{bamPaths(file)},
+          returning the result of \code{readGAlignments} applied to the
+          specified path. When \code{index} is missing, it is set equal to
+          \code{bamIndicies(file)}. Only reads in \code{bamRanges(file)} are
+          returned (if \code{param} is supplied, \code{bamRanges(file)} takes
+          precedence over \code{bamWhich(param)}). The return value is a
+          \link[S4Vectors]{SimpleList} object, with elements of the list
+          corresponding to each path. \code{bamSamples(file)} is available
+          as metadata columns (accessed with \code{mcols}) of the returned
+          \link[S4Vectors]{SimpleList} object.
 
-  \subsection{Front-ends}{
-    \code{readGAlignments} reads a file containing aligned reads as a
-    \link{GAlignments} object.
+    \item \code{readGAlignmentPairs} reads a file containing aligned paired-end
+          reads as a \link{GAlignmentPairs} object.
+          See \code{?\link{GAlignmentPairs}} for a description of
+          \link{GAlignmentPairs} objects.
 
-    \code{readGAlignmentPairs} reads a file containing aligned paired-end
-    reads as a \link{GAlignmentPairs} object.
+    \item \code{readGAlignmentsList} reads a file containing aligned reads as
+          a \link{GAlignmentsList} object. See \code{?\link{GAlignmentsList}} 
+          for a description of \link{GAlignmentsList} objects.
+          \code{readGAlignmentsList} pairs records into mates according to the
+          pairing criteria described below. The 1st mate will always be 1st in
+          the \link{GAlignmentsList} list elements that have mate_status set to
+          \code{"mated"}, and the 2nd mate will always be 2nd.
 
-    \code{readGAlignmentsList} reads a file containing aligned reads as a
-    \link{GAlignmentsList} object.
+          A \code{GAlignmentsList} is returned with a \sQuote{mate_status}
+          metadata column on the outer list elements. \code{mate_status} is a
+          factor with 3 levels indicating mate status, \sQuote{mated},
+          \sQuote{ambiguous} or \sQuote{unmated}:
+          \itemize{
+            \item{mated:} primary or non-primary pairs 
+            \item{ambiguous:} multiple segments matching to the
+                              same location (indistinguishable) 
+            \item{unmated:} mate does not exist or is unmapped
+          }
 
-    \code{readGappedReads} reads a file containing aligned reads as a
-    \link{GappedReads} object.
+          When the \sQuote{file} argument is a BamFile, \sQuote{asMates=TRUE}
+          must be set, otherwise the data are treated as single-end reads. 
+          See the \sQuote{asMates} section of \code{?\link[Rsamtools]{BamFile}}
+          in the \pkg{Rsamtools} package for details. 
 
-    By default (i.e. \code{use.names=FALSE}), the resulting object has no
-    names. If \code{use.names} is \code{TRUE}, then the names are
-    constructed from the query template names (QNAME field in a SAM/BAM
-    file). Note that the 2 records in a pair (when using
-    \code{readGAlignmentPairs} or the records in a group (when using
-    \code{readGAlignmentsList}) have the same QNAME.
-
-    These functions are just front-ends that delegate to a
-    format-specific back-end function depending on the supplied \code{format}
-    argument. The \code{use.names} argument and any extra argument are
-    passed to the back-end function.
-    Only the BAM format is supported for now via the \code{read*FromBam}
-    back-end functions.
+    \item \code{readGappedReads} reads a file containing aligned reads as a
+          \link{GappedReads} object. See \code{?\link{GappedReads}} for a
+          description of \link{GappedReads} objects.
   }
 
-  \subsection{BAM specific back-ends}{
-    When \code{file} is \link[Rsamtools]{BamViews} object
-    \code{readGAlignmentsFromBam} visits each path in \code{bamPaths(file)},
-    returning the result of \code{readGAlignmentsFromBam} applied to the
-    specified path. When \code{index} is missing, it is set equal to
-    \code{bamIndicies(file)}. Only reads in \code{bamRanges(file)} are
-    returned (if \code{param} is supplied, \code{bamRanges(file)} takes
-    precedence over \code{bamWhich(param)}).
-    The return value is a \link[S4Vectors]{SimpleList} object, with elements
-    of the list corresponding to each path. \code{bamSamples(file)} is
-    available as metadata columns (accessed with \code{mcols}) of the
-    returned \link[S4Vectors]{SimpleList} object.
+  For all these functions, flags, tags and ranges may be specified in the
+  supplied \link[Rsamtools]{ScanBamParam} object for fine tuning of results.
+}
 
-    \code{readGAlignmentPairsFromBam} proceeds in 2 steps:
-    \enumerate{
-      \item Load the BAM file into a \link{GAlignmentsList}
-            object with \code{readGAlignmentsListFromBam} (see below);
-      \item Turn this \link{GAlignmentsList} object into a
-            \link{GAlignmentPairs} object. Only list elements marked with
-            mate status \code{"mated"} go into the returned
-            \link{GAlignmentPairs} object.
-    }
-    See \code{?\link{GAlignmentPairs}} for a description of
-    \link{GAlignmentPairs} objects.
-
-    \code{readGAlignmentsListFromBam} pairs records into mates
-    according to the pairing criteria described below. The 1st mate
-    will always be 1st in the \code{GAlignmentsList} list elements that 
-    have mate_status set to \code{"mated"}, and the 2nd mate will 
-    always be 2nd.
-
-    A \code{GAlignmentsList} is returned with a \sQuote{mate_status}
-    metadata column on the outer list elements. \code{mate_status} is a
-    factor with 3 levels indicating mate status, \sQuote{mated},
-    \sQuote{ambiguous} or \code{unmated}.
-
-      Mate status:
-      \itemize{
-        \item{mated:} primary or non-primary pairs 
-        \item{ambiguous:} multiple segments matching to the
-                          same location (indistinguishable) 
-        \item{unmated:} mate does not exist or is unmapped
-      }
-
-    When the \sQuote{file} argument is a BamFile, \sQuote{asMates=TRUE}
-    must be set, otherwise the data are treated as single-end reads. 
-    See the \sQuote{asMates} section of \code{?\link{BamFile}} for details. 
-
-    Flags, tags and ranges may be specified in the \code{ScanBamParam}
-    for fine tuning of results.
-
-    See \code{?\link{GAlignmentsList-class}} for a 
-    description of \link{GAlignmentsList} objects.
-  }
-
-  \subsection{Pairing criteria}{
-    This section describes the pairing criteria used by
-    \code{readGAlignmentsListFromBam} and \code{readGAlignmentPairsFromBam}.
-    \itemize{
+\section{Pairing criteria}{
+  This section describes the pairing criteria used by
+  \code{readGAlignmentsList} and \code{readGAlignmentPairs}.
+  \itemize{
     \item First, only records with flag bit 0x1 (multiple segments) set to 1,
           flag bit 0x4 (segment unmapped) set to 0, and flag bit 0x8 (next
           segment in the template unmapped) set to 0, are candidates for
@@ -246,38 +204,36 @@ readGappedReadsFromBam(file, index=file, use.names=FALSE,
             \item (F) rec1 and rec2 have same flag bit 0x2
             \item (G) rec1 and rec2 have same flag bit 0x100
           }
-    }
-    Note that this is actually the pairing criteria used by
-    \code{\link[Rsamtools]{scanBam}} (when the \link[Rsamtools]{BamFile}
-    passed to it has the \code{asMates} toggle set to \code{TRUE}), which
-    \code{readGAlignmentsListFromBam} and \code{readGAlignmentPairsFromBam}
-    call behind the scene. It is also the pairing criteria used by
-    \code{\link{findMateAlignment}}.
   }
+  Note that this is actually the pairing criteria used by
+  \code{\link[Rsamtools]{scanBam}} (when the \link[Rsamtools]{BamFile}
+  passed to it has the \code{asMates} toggle set to \code{TRUE}), which
+  \code{readGAlignmentsList} and \code{readGAlignmentPairs} call behind
+  the scene. It is also the pairing criteria used by
+  \code{\link{findMateAlignment}}.
 }
 
 \value{
-  A \link{GAlignments} object for \code{readGAlignmentsFromBam}.
+  A \link{GAlignments} object for \code{readGAlignments}.
 
-  A \link{GAlignmentPairs} object for \code{readGAlignmentPairsFromBam}.
+  A \link{GAlignmentPairs} object for \code{readGAlignmentPairs}.
   Note that a BAM (or SAM) file can in theory contain a mix of single-end
   and paired-end reads, but in practise it seems that single-end and
   paired-end are not mixed. In other words, the value of flag bit 0x1
   (\code{isPaired}) is the same for all the records in a file.
-  So if \code{readGAlignmentPairsFromBam} returns a
-  \link{GAlignmentPairs} object of length zero,
-  this almost certainly means that the BAM (or SAM) file contains
-  alignments for single-end reads (although it could also mean that the
-  user-supplied \code{\linkS4class{ScanBamParam}} is filtering out everything,
-  or that the file is empty, or that all the records in the file correspond
-  to unmapped reads).
+  So if \code{readGAlignmentPairs} returns a \link{GAlignmentPairs} object
+  of length zero, this almost always means that the BAM (or SAM) file
+  contains alignments for single-end reads (although it could also mean that
+  the user-supplied \code{\linkS4class{ScanBamParam}} is filtering out
+  everything, or that the file is empty, or that all the records in the file
+  correspond to unmapped reads).
 
-  A \link{GAlignmentsList} object for \code{readGAlignmentsListFromBam}. 
+  A \link{GAlignmentsList} object for \code{readGAlignmentsList}. 
   When the list contains paired-end reads a metadata data column of
   \code{mate_status} is added to the object. See details in the 
   `Bam specific back-ends' section on this man page. 
 
-  A \link{GappedReads} object for \code{readGappedReadsFromBam}.
+  A \link{GappedReads} object for \code{readGappedReads}.
 }
 
 \note{
@@ -306,18 +262,18 @@ readGappedReadsFromBam(file, index=file, use.names=FALSE,
 
 \examples{
 ## ---------------------------------------------------------------------
-## A. readGAlignmentsFromBam()
+## A. readGAlignments()
 ## ---------------------------------------------------------------------
 
 ## Simple use:
 bamfile <- system.file("extdata", "ex1.bam", package="Rsamtools",
                        mustWork=TRUE)
-gal1 <- readGAlignmentsFromBam(bamfile)
+gal1 <- readGAlignments(bamfile)
 gal1
 names(gal1)
 
 ## Using the 'use.names' arg:
-gal2 <- readGAlignmentsFromBam(bamfile, use.names=TRUE)
+gal2 <- readGAlignments(bamfile, use.names=TRUE)
 gal2
 head(names(gal2))
 
@@ -326,7 +282,7 @@ head(names(gal2))
 param <- ScanBamParam(flag=scanBamFlag(isDuplicate=FALSE,
                                        isSecondaryAlignment=FALSE),
                       what=c("qual", "flag"))
-gal3 <- readGAlignmentsFromBam(bamfile, param=param)
+gal3 <- readGAlignments(bamfile, param=param)
 gal3
 mcols(gal3)
 
@@ -336,20 +292,20 @@ mcols(gal3)
 which <- RangesList(seq1=IRanges(1000, 2000),
                     seq2=IRanges(c(100, 1000), c(1000, 2000)))
 param <- ScanBamParam(which=which)
-gal4 <- readGAlignmentsFromBam(bamfile, param=param)
+gal4 <- readGAlignments(bamfile, param=param)
 gal4
 
 ## Note that a given record is loaded one time for each region it
-## belongs to (this is a scanBam() feature, readGAlignmentsFromBam()
+## belongs to (this is a scanBam() feature, readGAlignments()
 ## is based on scanBam()):
 which <- IRangesList(seq2=IRanges(c(1563, 1567), width=1))
 param <- ScanBamParam(which=which)
-gal5 <- readGAlignmentsFromBam(bamfile, param=param)
+gal5 <- readGAlignments(bamfile, param=param)
 gal5
 
 ## Use 'with.which_label=TRUE' to identify the range in 'which'
 ## where each element in 'gal5' originates from.
-gal5 <- readGAlignmentsFromBam(bamfile, param=param,
+gal5 <- readGAlignments(bamfile, param=param,
                                with.which_label=TRUE)
 gal5
 
@@ -358,7 +314,7 @@ gal5
 ## of predefined tags and their meaning).
 param <- ScanBamParam(tag=c("MF", "Aq", "NM", "UQ", "H0", "H1"),
                       what="isize")
-gal6 <- readGAlignmentsFromBam(bamfile, param=param)
+gal6 <- readGAlignments(bamfile, param=param)
 mcols(gal6)  # "tag" cols always after "what" cols
 
 ## With a BamViews object:
@@ -367,18 +323,18 @@ fls <- system.file("extdata", "ex1.bam", package="Rsamtools",
 bv <- BamViews(fls,
                bamSamples=DataFrame(info="test", row.names="ex1"),
                auto.range=TRUE)
-## Note that the "readGAlignmentsFromBam" method for BamViews objects
+## Note that the "readGAlignments" method for BamViews objects
 ## requires the ShortRead package to be installed.
-aln <- readGAlignmentsFromBam(bv)
+aln <- readGAlignments(bv)
 aln
 aln[[1]]
 aln[colnames(bv)]
 mcols(aln)
 
 ## ---------------------------------------------------------------------
-## B. readGAlignmentPairsFromBam()
+## B. readGAlignmentPairs()
 ## ---------------------------------------------------------------------
-galp1 <- readGAlignmentPairsFromBam(bamfile)
+galp1 <- readGAlignmentPairs(bamfile)
 head(galp1)
 names(galp1)
 ## Using the 'param' arg to drop PCR or optical duplicates as well as
@@ -386,19 +342,19 @@ names(galp1)
 ## pairing algorithm run significantly faster, see ?findMateAlignment):
 param <- ScanBamParam(flag=scanBamFlag(isDuplicate=FALSE,
                                        isSecondaryAlignment=FALSE))
-galp2 <- readGAlignmentPairsFromBam(bamfile, use.names=TRUE, param=param)
+galp2 <- readGAlignmentPairs(bamfile, use.names=TRUE, param=param)
 galp2
 head(galp2)
 head(names(galp2))
 
 ## ---------------------------------------------------------------------
-## C. readGAlignmentsListFromBam()
+## C. readGAlignmentsList()
 ## ---------------------------------------------------------------------
 library(pasillaBamSubset)
 
 ## 'file' as character.
 fl <- untreated3_chr4() 
-galist1 <- readGAlignmentsListFromBam(fl)
+galist1 <- readGAlignmentsList(fl)
 galist1[1:3]
 length(galist1)
 table(elementLengths(galist1))
@@ -412,17 +368,17 @@ readGAlignmentsList(bf)
 
 ## Use a 'param' to fine tune the results.
 param <- ScanBamParam(flag=scanBamFlag(isProperPair=TRUE))
-galist2 <- readGAlignmentsListFromBam(fl, param=param)
+galist2 <- readGAlignmentsList(fl, param=param)
 length(galist2)
 
 ## ---------------------------------------------------------------------
-## D. readGappedReadsFromBam()
+## D. readGappedReads()
 ## ---------------------------------------------------------------------
-greads1 <- readGappedReadsFromBam(bamfile)
+greads1 <- readGappedReads(bamfile)
 greads1
 names(greads1)
 qseq(greads1)
-greads2 <- readGappedReadsFromBam(bamfile, use.names=TRUE)
+greads2 <- readGappedReads(bamfile, use.names=TRUE)
 head(greads2)
 head(names(greads2))
 }

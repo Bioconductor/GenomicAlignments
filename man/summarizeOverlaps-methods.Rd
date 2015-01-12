@@ -202,7 +202,7 @@ IntersectionNotEmpty(features, reads, algorithm=c("nclist", "intervaltree"),
     and other fragments are kept and counted. Because more records are kept,
     generally counts will be  higher with \code{fragments=TRUE}.
 
-    See \code{?\link{readGAlignmentsListFromBam}} for the count algorithm
+    See \code{?\link{readGAlignmentsList}} for the count algorithm
     details.
   }
   \item{param}{An optional \code{\link[Rsamtools]{ScanBamParam}} instance to

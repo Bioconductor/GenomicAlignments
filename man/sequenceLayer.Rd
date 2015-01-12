@@ -114,7 +114,7 @@ sequenceLayer(x, cigar, from="query", to="reference",
           for stacking the read sequences (or their quality strings)
           stored in a BAM file on a region of interest.
 
-    \item The \code{\link{readGAlignmentsFromBam}} function for loading read
+    \item The \code{\link{readGAlignments}} function for loading read
           sequences from a BAM file (via a \link{GAlignments} object).
 
     \item The \code{\link[Biostrings]{extractAt}} and
@@ -136,7 +136,7 @@ sequenceLayer(x, cigar, from="query", to="reference",
 ## GAlignments object):
 bamfile <- system.file("extdata", "ex1.bam", package="Rsamtools")
 param <- ScanBamParam(what="seq")
-gal <- readGAlignmentsFromBam(bamfile, param=param)
+gal <- readGAlignments(bamfile, param=param)
 qseq <- mcols(gal)$seq  # the read sequences (aka query sequences)
 
 ## Lay the query sequences alongside the reference space. This will
@@ -188,7 +188,7 @@ cs_by_chrom <- lapply(cm_by_chrom,
 ## Finally, note that the read quality strings can also be used as
 ## input for sequenceLayer():
 param <- ScanBamParam(what="qual")
-gal <- readGAlignmentsFromBam(bamfile, param=param)
+gal <- readGAlignments(bamfile, param=param)
 qual <- mcols(gal)$qual  # the read quality strings
 qual_on_ref <- sequenceLayer(qual, cigar(gal))
 ## Note that since the "-" letter is a valid quality code, there is
@@ -223,7 +223,7 @@ library(RNAseqData.HNRNPC.bam.chr14)
 bamfile <- RNAseqData.HNRNPC.bam.chr14_BAMFILES[1]
 param <- ScanBamParam(what="seq",
                       which=GRanges("chr14", IRanges(1, 25000000)))
-gal <- readGAlignmentsFromBam(bamfile, param=param)
+gal <- readGAlignments(bamfile, param=param)
 qseq <- mcols(gal)$seq  # the read sequences (aka query sequences)
 
 ## Load the corresponding reference sequences from the appropriate

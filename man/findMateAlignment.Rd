@@ -15,11 +15,10 @@
   Utilities for pairing the elements of a \link{GAlignments} object.
 
   NOTE: Until BioC 2.13, \code{findMateAlignment} was the power horse used
-  by \code{\link{readGAlignmentPairsFromBam}} for pairing the records loaded
+  by \code{\link{readGAlignmentPairs}} for pairing the records loaded
   from a BAM file containing aligned paired-end reads.
-  Starting with BioC 2.14, \code{\link{readGAlignmentPairsFromBam}} relies
-  on \code{\link{readGAlignmentsListFromBam}} which itself relies on
-  \code{\link[Rsamtools]{scanBam}(BamFile(asMates=TRUE), ...)} for the
+  Starting with BioC 2.14, \code{\link{readGAlignmentPairs}} relies
+  on \code{\link[Rsamtools]{scanBam}(BamFile(asMates=TRUE), ...)} for the
   pairing.
 }
 
@@ -40,7 +39,7 @@ flushDumpedAlignments()
     paired-end reads from a BAM file with:
     \preformatted{
     param <- ScanBamParam(what=c("flag", "mrnm", "mpos"))
-    x <- readGAlignmentsFromBam(..., use.names=TRUE, param=param)
+    x <- readGAlignments(..., use.names=TRUE, param=param)
     }
   }
   \item{use.names}{
@@ -117,8 +116,8 @@ the file contains only primary reads) is optimal for the pairing algorithm.
 A greater value, say > 3, will significantly degrade its performance.
 An easy way to avoid this degradation is to load only primary alignments
 by setting the \code{isSecondaryAlignment} flag to \code{FALSE} in
-ScanBamParam().  See examples in
-\code{?\link{readGAlignmentPairsFromBam}} for how to do this.
+ScanBamParam().  See examples in \code{?\link{readGAlignmentPairs}} for how
+to do this.
 }
 
 \subsection{Ambiguous pairing}{
@@ -242,8 +241,7 @@ automatically flushed at the beginning of a call to \code{findMateAlignment}.
   \itemize{
     \item \link{GAlignments} and \link{GAlignmentPairs} objects.
 
-    \item \code{\link{readGAlignmentsFromBam}} and
-          \code{\link{readGAlignmentPairsFromBam}}.
+    \item \code{\link{readGAlignments}} and \code{\link{readGAlignmentPairs}}.
   }
 }
 
@@ -251,7 +249,7 @@ automatically flushed at the beginning of a call to \code{findMateAlignment}.
 bamfile <- system.file("extdata", "ex1.bam", package="Rsamtools",
                        mustWork=TRUE)
 param <- ScanBamParam(what=c("flag", "mrnm", "mpos"))
-x <- readGAlignmentsFromBam(bamfile, use.names=TRUE, param=param)
+x <- readGAlignments(bamfile, use.names=TRUE, param=param)
 
 mate <- findMateAlignment(x)
 head(mate)

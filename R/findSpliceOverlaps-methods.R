@@ -350,9 +350,9 @@ setMethod("findSpliceOverlaps", c("BamFile", "ANY"),
     if (!"XS" %in% bamTag(param))
         bamTag(param) <- c(bamTag(param), "XS")
     if (singleEnd)
-        reads <- readGAlignmentsFromBam(bam, param=param)
+        reads <- readGAlignments(bam, param=param)
     else {
-        reads <- readGAlignmentPairsFromBam(path(bam), param=param)
+        reads <- readGAlignmentPairs(path(bam), param=param)
         first_xs <- mcols(first(reads))$XS
         last_xs <- mcols(last(reads))$XS
         if (!is.null(first_xs) && !is.null(last_xs)) {

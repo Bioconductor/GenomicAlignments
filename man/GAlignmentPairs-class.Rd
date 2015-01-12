@@ -130,9 +130,9 @@
       Get the name of the reference sequence for each alignment pair
       in \code{x}. When reading the alignments from a BAM file, this comes
       from the RNAME field which has the same value for the 2 records in a
-      pair (\code{\link{makeGAlignmentPairs}}, the function used by
-      \code{\link{readGAlignmentPairsFromBam}} for doing the pairing,
-      rejects pairs with incompatible RNAME values).
+      pair (\code{\link{readGAlignmentPairs}}, the function used for reading
+      paired-end reads from a BAM file as a GAlignmentPairs object, rejects
+      pairs with incompatible RNAME values).
     }
     \item{}{
       \code{strand(x)}, \code{strand(x) <- value}:
@@ -142,10 +142,10 @@
       In a GAlignmentPairs object, the strand of the "last" alignment
       in a pair is typically (but not always) the opposite of the strand
       of the "first" alignment. Note that, currently,
-      \code{\link{readGAlignmentPairsFromBam}}, the function used internally
-      by \code{\link{readGAlignmentPairs}} for doing the pairing, rejects
+      \code{\link{readGAlignmentPairs}}, the function used for reading
+      paired-end reads from a BAM file as a GAlignmentPairs object, rejects
       pairs where the "first" and "last" alignments are on the same strand,
-      but those pairs might be supported in the future.
+      but this could change in the future.
     }
     \item{}{
       \code{njunc(x)}:

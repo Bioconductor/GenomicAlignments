@@ -61,8 +61,8 @@ stackStringsFromBam <- function(file, index=file, param,
     param_what <- bamWhat(param)
     if (!(what %in% param_what))
         bamWhat(param) <- c(param_what, what)
-    gal <- readGAlignmentsFromBam(file, index=index,
-                                  use.names=use.names, param=param)
+    gal <- readGAlignments(file, index=index,
+                           use.names=use.names, param=param)
     gal_mcols <- mcols(gal)
     what_col_idx <- match(what, colnames(gal_mcols))
     what_col <- gal_mcols[[what_col_idx]]
@@ -95,7 +95,7 @@ alphabetFrequencyFromBam <- function(file, index=file, param,
     region_seqname <- names(bamWhich(param))
     what <- match.arg(what, c("seq", "qual"))
     bamWhat(param) <- what
-    gal <- readGAlignmentsFromBam(file, index=index, param=param)
+    gal <- readGAlignments(file, index=index, param=param)
     seqlevels(gal) <- region_seqname
     what_col <- mcols(gal)[ , what]
     if (what == "qual")
