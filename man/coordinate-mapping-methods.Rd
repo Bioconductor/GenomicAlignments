@@ -38,10 +38,13 @@
 \arguments{
   \item{x}{
     \code{\linkS4class{GenomicRanges}} object of positions to be mapped.
+    \code{x} must have names when mapping to the genome.
   }
   \item{alignments}{
-    A \code{\linkS4class{GAlignments}} object that represents the alignment 
-    of \code{x} to the genome.
+    A \code{\linkS4class{GAlignments}} object that represents the alignment of
+    \code{x} to the genome. The \code{aligments} object must have names. When
+    mapping to the genome names are used to determine mapping pairs and in the
+    reverse direction they are used as the seqlevels of the output object.
   }
   \item{\dots}{
     Arguments passed to other methods.
@@ -103,10 +106,10 @@
       i-th range in \code{alignments}; \code{x} and \code{alignments} must 
       have the same length.
 
-      Ranges in \code{x} that do not map (out of bounds or strand mismatch) 
-      are returned as zero-width ranges starting at 1. These ranges are given
-      the special seqname of "unmapped". Note the non-parallel methods do not 
-      return unmapped ranges so the "unmapped" seqname is unique to 
+      Ranges in \code{x} that do not map (out of bounds) are returned as
+      zero-width ranges starting at 0. These ranges are given the special
+      seqname of "UNMAPPED". Note the non-parallel methods do not return
+      unmapped ranges so the "UNMAPPED" seqname is unique to
       \code{pmapToAlignments} and \code{pmapFromAlignments}.
     }
     \item{strand}{
@@ -123,7 +126,7 @@
 
   Parallel methods return an object the same shape as \code{x}. Ranges that
   cannot be mapped (out of bounds) are returned as zero-width ranges starting 
-  at 1 with a seqname of "unmapped".
+  at 0 with a seqname of "UNMAPPED".
 
   Non-parallel methods return an object that varies in length similar to a
   Hits object. The result only contains mapped records, out of bound ranges 
@@ -131,9 +134,9 @@
   indicate the elements of \code{x} and \code{alignments} used in the mapping.
 
   When present, names from \code{x} are propagated to the output. When
-  mapping locally, the seqlevels of the output are the names of 
-  \code{alignment}; when mapping globally the seqlevels are the seqlevels 
-  of \code{alignment} (chromosome names).
+  mapping locally, the seqlevels of the output are the names on the 
+  \code{alignment} object. When mapping globally, the output seqlevels are 
+  the seqlevels of \code{alignment} which are usually chromosome names.
 }
 
 \seealso{
@@ -165,7 +168,7 @@ x <- GRanges("chr1", IRanges(c(12, 12), width=c(6, 20)))
 mapToAlignments(x, alignments)
 
 ## The element-wise version of the function returns the second range
-## with a seqlevel of "unmapped":
+## with a seqlevel of "UNMAPPED":
 pmapToAlignments(x, c(alignments, alignments))
 
 ## Mapping the same range through different alignments demonstrates 

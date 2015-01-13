@@ -59,10 +59,10 @@ test_pmapToAlignments <- function() {
     ans <- pmapToAlignments(x, align)
     checkIdentical(length(ans), length(x))
     checkIdentical(width(ans), c(0L, 2L, 0L, 0L))
-    checkIdentical(start(ans), rep(1L, 4))
-    checkIdentical(end(ans), c(0L, 2L, 0L, 0L))
+    checkIdentical(start(ans), c(0L, 1L, 0L, 0L))
+    checkIdentical(end(ans), c(-1L, 2L, -1L, -1L))
     checkIdentical(names(ans), names(x))
-    checkTrue(all(seqlevels(ans) %in% c("a", "unmapped"))) 
+    checkTrue(all(seqlevels(ans) %in% c("a", "UNMAPPED"))) 
 
     x <- rep(x2[2], length(align3))
     align <- align3
@@ -81,9 +81,9 @@ test_pmapFromAlignments <- function() {
     checkTrue(ncol(mcols(ans)) == 0L)
     checkTrue(length(ans) == length(x1))
     checkIdentical(width(ans), c(2L, 2L, 0L, 0L))
-    checkIdentical(start(ans), c(14L, 19L, 1L, 1L))
+    checkIdentical(start(ans), c(14L, 19L, 0L, 0L))
     checkIdentical(names(ans), names(x))
-    checkTrue(all(seqlevels(ans) %in% c("chr1", "unmapped"))) 
+    checkTrue(all(seqlevels(ans) %in% c("chr1", "UNMAPPED"))) 
 
     x <- rep(x2[1], length(align2))
     names(x) <- LETTERS[seq_along(x)]

@@ -89,9 +89,9 @@ setGeneric("pmapFromAlignments", signature=c("x", "alignments"),
         seqname <- names(alignments)[alignmentsHits]
         ## non-hits
         if (any(skip <- is.na(starts) | is.na(ends))) {
-            starts[skip] <- 1L 
-            ends[skip] <- 0L
-            seqname[skip] <- "unmapped"
+            starts[skip] <- 0L 
+            ends[skip] <- -1L
+            seqname[skip] <- "UNMAPPED"
         }
         GRanges(Rle(seqname), IRanges(starts, ends, names=names(x)[xHits]), 
                 strand="*", DataFrame(xHits, alignmentsHits))
@@ -147,9 +147,9 @@ setMethod("mapFromAlignments", c("GenomicRanges", "GAlignments"),
 
         ## non-hits
         if (any(skip <- is.na(s) | is.na(e))) {
-            s[skip] <- 1L 
-            e[skip] <- 0L
-            seqname[skip] <- "unmapped"
+            s[skip] <- 0L 
+            e[skip] <- -1L
+            seqname[skip] <- "UNMAPPED"
         }
         GRanges(Rle(seqname), IRanges(s, e, names=names(x)))
     } else {
