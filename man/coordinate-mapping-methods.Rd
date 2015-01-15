@@ -160,15 +160,14 @@
 ## 1. Map to local space with mapToAlignments()
 ## ---------------------------------------------------------------------
 
-## Mapping to local coordinates requires 'x' to be within the
-## 'alignments' range. In this example only the first 'x' range
-## can be mapped because the width of the second is too large.
+## Mapping to local coordinates requires 'x' to be within 'alignments'.
+## In this 'x', the second range is too long and can't be mapped.
 alignments <- GAlignments("chr1", 10L, "11M", strand("*"), names="read_A")
 x <- GRanges("chr1", IRanges(c(12, 12), width=c(6, 20)))
 mapToAlignments(x, alignments)
 
-## The element-wise version of the function returns the second range
-## with a seqlevel of "UNMAPPED":
+## The element-wise version of the function returns unmapped ranges
+## as zero-width ranges with a seqlevel of "UNMAPPED":
 pmapToAlignments(x, c(alignments, alignments))
 
 ## Mapping the same range through different alignments demonstrates 
@@ -176,32 +175,33 @@ pmapToAlignments(x, c(alignments, alignments))
 ops <- c("no-op", "junction", "insertion", "deletion")
 x <- GRanges(rep("chr1", 4), IRanges(rep(12, 4), width=rep(6, 4), names=ops)) 
 alignments <- GAlignments(rep("chr1", 4), rep(10L, 4), 
-                         cigar = c("11M", "5M2N4M", "5M2I4M", "5M2D4M"),
-                         strand = strand(rep("*", 4)),
-                         names = paste0("region_", 1:4))
+                          cigar = c("11M", "5M2N4M", "5M2I4M", "5M2D4M"),
+                          strand = strand(rep("*", 4)),
+                          names = paste0("region_", 1:4))
 pmapToAlignments(x, alignments)
 
 ## 2. Map to genome space with mapFromAlignments()
 ## ---------------------------------------------------------------------
 
-## Mapping to genomic coordinates requires the shifted 'x' to fall
-## within the 'alignments' range. The first 'x' range has a shifted
-## start value of 14 (5 + 10 - 1 = 14) with a width of 2 and is
-## successfully mapped. The second has a shifted start of 29
+## One of the criteria when mapping to genomic coordinates is that the
+## shifted 'x' range falls within 'alignments'. Here the first 'x' 
+## range has a shifted start value of 14 (5 + 10 - 1 = 14) with a width of 
+## 2 and so is successfully mapped. The second has a shifted start of 29
 ## (20 + 10 - 1 = 29) which is outside the range of 'alignments'.
-x <- GRanges("chr1", IRanges(c(5, 20), width = 2, 
-             names = rep("region_A", 2)))
-alignments <- GAlignments("chr1", 10L, "11M", strand("*"), names = "region_A")
+x <- GRanges("chr1", IRanges(c(5, 20), width=2, names=rep("region_A", 2)))
+alignments <- GAlignments("chr1", 10L, "11M", strand("*"), names="region_A")
 mapFromAlignments(x, alignments)
 
-## When mapping to the genome, a map is only attempted between ranges with 
-## the same name. Changing the name of the first 'x' range makes it
-## incompatible with 'alignments' so we get an empty result.
+## Another characteristic of mapping this direction is the name matching
+## used to determine pairs. Mapping is only attempted between ranges in 'x' 
+## and 'alignments' with the same name. If we change the name of the first 'x' 
+## range, only the second will be mapped to 'alignment'. We know the second
+## range fails to map so we get an empty result.
 names(x) <- c("region_B", "region_A")
 mapFromAlignments(x, alignments)
 
-## In this direction a CIGAR insertion reduces the width of the result 
-## while junctions and deletions increase it.
+## CIGAR operations: insertions reduce the width of the output while
+## junctions and deletions increase it.
 ops <- c("no-op", "junction", "insertion", "deletion")
 x <- GRanges(rep("chr1", 4), IRanges(rep(3, 4), width=rep(5, 4), names=ops)) 
 alignments <- GAlignments(rep("chr1", 4), rep(10L, 4), 
@@ -210,10 +210,72 @@ alignments <- GAlignments(rep("chr1", 4), rep(10L, 4),
 pmapFromAlignments(x, alignments)
 
 ## ---------------------------------------------------------------------
-## B. Round-trip from read -> genome -> transcript 
+## B. TATA box motif: mapping from read -> genome -> transcript
 ## ---------------------------------------------------------------------
 
-## TODO
+## The TATA box motif is a conserved DNA sequence in the core promoter
+## region. Many eukaryotic genes have a TATA box located approximately
+## 25-35 base pairs upstream of the transcription start site. The motif is 
+## the binding site of general transcription factors or histones and
+## plays a key role in transcription.
+
+## In this example, the position of the TATA box motif (if present) is 
+## located in the DNA sequence corresponding to read ranges. The local 
+## motif positions are mapped to genome coordinates and then mapped
+## to gene features such as promoters regions.
+
+## Load reads from chromosome 4 of D. melanogaster (dm3):
+library(pasillaBamSubset)
+fl <- untreated1_chr4()
+gal <- readGAlignments(fl)
+
+## Extract DNA sequences corresponding to the read ranges:
+library(GenomicFeatures)
+library(BSgenome.Dmelanogaster.UCSC.dm3)
+dna <- extractTranscriptSeqs(BSgenome.Dmelanogaster.UCSC.dm3, grglist(gal))
+
+## Search for the consensus motif TATAAA in the sequences:
+box <- vmatchPattern("TATAAA", dna)
+
+## Some sequences had more than one match:
+table(elementLengths(box))
+
+## The element-wise function we'll use for mapping to genome coordinates
+## requires the two input argument to have the same length. We need to
+## replicate the read ranges to match the number of motifs found.
+
+## Expand the read ranges to match motifs found:
+motif <- elementLengths(box) != 0
+alignments <- rep(gal[motif], elementLengths(box)[motif])
+
+## We make the IRanges into a GRanges object so the seqlevels can
+## propagate to the output. Seqlevels are needed in the last mapping step.
+readCoords <- GRanges(seqnames(alignments), unlist(box, use.names=FALSE))
+
+## Map the local position of the motif to genome coordinates:
+genomeCoords <- pmapFromAlignments(readCoords, alignments) 
+genomeCoords
+
+## We are interested in the location of the TATA box motifs in the
+## promoter regions. To perform the mapping we need the promoter ranges 
+## as a GRanges or GRangesList.
+
+## Extract promoter regions 50 bp upstream from the transcription start site:
+library(TxDb.Dmelanogaster.UCSC.dm3.ensGene)
+txdb <- TxDb.Dmelanogaster.UCSC.dm3.ensGene
+promoters <- promoters(txdb, upstream=50, downstream=0)
+
+## Map the genome coordinates to the promoters:
+names(promoters) <- mcols(promoters)$tx_name  ## must be named 
+mapToTranscripts(genomeCoords, promoters) 
+
+
+
+
+
+
+
+
 
 }
 

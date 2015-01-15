@@ -1,8 +1,7 @@
 ## CIGAR ops M, =, X
 x1 <- GRanges("chr1", IRanges(c(5, 10, 20, 25), width=2, names=LETTERS[1:4]))
-align1 <- GAlignments(rep("chr1", 3), rep(10L, 3), 
-                      c("11M", "11=", "11X"), strand(rep("+", 3)),
-                      names=letters[1:3])
+align1 <- GAlignments(rep("chr1", 3), rep(10L, 3), c("11M", "11=", "11X"), 
+                      strand(rep("+", 3)), names=letters[1:3])
 
 ## CIGAR ops S, N, D, I, H, P
 x2 <- GRanges("chr1", IRanges(c(1, 20), width=6, names=LETTERS[1:2]))
