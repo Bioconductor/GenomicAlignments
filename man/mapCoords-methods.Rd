@@ -6,6 +6,8 @@
 \title{Mapping ranges between sequences}
 
 \description{
+  Deprecated. Use \code{mapToTranscript} instead.
+
   A method for translating a set of input ranges through a
   \link{GAlignments} object. Returns a \linkS4class{GenomicRanges}
   object.
@@ -41,6 +43,8 @@
 }
 
 \details{
+  Deprecated. Use \code{mapToTranscript} instead.
+
   Each element in \code{to} is taken to represent the
   alignment of a (read) sequence. The CIGAR string is used to
   translate the input ranges to be relative to the read start. This
