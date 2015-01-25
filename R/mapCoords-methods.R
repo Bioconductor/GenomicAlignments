@@ -30,7 +30,7 @@ setMethod("mapCoords", c("GenomicRanges", "GAlignments"),
 setMethod("pmapCoords", c("Ranges", "GAlignments"), 
     function(from, to, ...) 
     {
-        .Deprecated("pmapToTranscript")
+        .Deprecated("pmapToTranscripts")
         starts <- .Call("ref_locs_to_query_locs", start(from), cigar(to), 
                         start(to), FALSE, PACKAGE="GenomicAlignments")
         ends <- .Call("ref_locs_to_query_locs", end(from), cigar(to), 
@@ -47,7 +47,7 @@ setGeneric("prmap", function(from, to) standardGeneric("prmap"))
 setMethod("prmap", c("Ranges", "GAlignments"),
     function(from, to) 
     {
-        .Deprecated("pmapFromTranscript")
+        .Deprecated("pmapFromTranscripts")
         starts <- .Call("query_locs_to_ref_locs", start(from), cigar(to), 
                         start(to), FALSE, PACKAGE="GenomicAlignments")
         ends <- .Call("query_locs_to_ref_locs", end(from), cigar(to), 
