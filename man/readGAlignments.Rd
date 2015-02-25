@@ -244,8 +244,8 @@ readGappedReads(file, index=file, use.names=FALSE, param=NULL,
   drop them).
 }
 
-\author{H. Pages <hpages@fhcrc.org> and
-        Valerie Obenchain <vobencha@fhcrc.org>}
+\author{H. Pages <hpages@fredhutch.org> and
+        Valerie Obenchain <vobencha@fredhutch.org>}
 
 \seealso{
   \itemize{

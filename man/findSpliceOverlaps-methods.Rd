@@ -114,7 +114,7 @@ findSpliceOverlaps(query, subject, algorithm=c("nclist", "intervaltree"),
 }
 
 \author{
-  Michael Lawrence and Valerie Obenchain <vobencha@fhcrc.org> 
+  Michael Lawrence and Valerie Obenchain <vobencha@fredhutch.org> 
 }
  
 \seealso{

@@ -298,7 +298,7 @@ IntersectionNotEmpty(features, reads, algorithm=c("nclist", "intervaltree"),
   \url{http://www-huber.embl.de/users/anders/HTSeq/doc/count.html}
 }
 
-\author{Valerie Obenchain <vobencha@fhcrc.org>}
+\author{Valerie Obenchain <vobencha@fredhutch.org>}
 
 \seealso{
   \itemize{
