@@ -286,28 +286,55 @@ gal3 <- readGAlignments(bamfile, param=param)
 gal3
 mcols(gal3)
 
-## Using the 'param' arg to load reads from particular regions.
+## Using the 'param' arg to load alignments from particular regions.
 ## Note that if we weren't providing a 'what' argument here, all the
 ## BAM fields would be loaded:
-which <- RangesList(seq1=IRanges(1000, 2000),
-                    seq2=IRanges(c(100, 1000), c(1000, 2000)))
+which <- RangesList(seq1=IRanges(1000, 1100),
+                    seq2=IRanges(c(1546, 1555, 1567), width=10))
 param <- ScanBamParam(which=which)
-gal4 <- readGAlignments(bamfile, param=param)
+gal4 <- readGAlignments(bamfile, use.names=TRUE, param=param)
 gal4
 
-## Note that a given record is loaded one time for each region it
-## belongs to (this is a scanBam() feature, readGAlignments()
-## is based on scanBam()):
-which <- IRangesList(seq2=IRanges(c(1563, 1567), width=1))
+## IMPORTANT NOTE: A given record is loaded one time for each region
+## it overlaps with. We call this "duplicated record selection" (this
+## is a scanBam() feature, readGAlignments() is based on scanBam()):
+which <- IRangesList(seq2=IRanges(c(1555, 1567), width=10))
 param <- ScanBamParam(which=which)
-gal5 <- readGAlignments(bamfile, param=param)
+gal5 <- readGAlignments(bamfile, use.names=TRUE, param=param)
+gal5  # record EAS114_26:7:37:79:581 was loaded twice
+
+## This becomes clearer if we use 'with.which_label=TRUE' to identify
+## the region in 'which' where each element in 'gal5' originates from.
+gal5 <- readGAlignments(bamfile, use.names=TRUE, param=param,
+                                 with.which_label=TRUE)
 gal5
 
-## Use 'with.which_label=TRUE' to identify the range in 'which'
-## where each element in 'gal5' originates from.
-gal5 <- readGAlignments(bamfile, param=param,
-                               with.which_label=TRUE)
-gal5
+## Not surprisingly, we also get "duplicated record selection" when
+## 'which' contains repeated or overlapping regions. Using the same
+## regions as we did for 'gal4' above, except that now we're
+## repeating the region on seq1:
+which <- RangesList(seq1=rep(IRanges(1000, 1100), 2),
+                    seq2=IRanges(c(1546, 1555, 1567), width=10))
+param <- ScanBamParam(which=which)
+gal4b <- readGAlignments(bamfile, use.names=TRUE, param=param)
+length(gal4b)  # > length(gal4), because all the records overlapping
+               # with bases 1000 to 1100 on seq1 are now duplicated
+
+## The "duplicated record selection" will artificially increase the
+## coverage or affect other downstream results. It can be mitigated
+## (but not completely eliminated) by first "reducing" the set of
+## regions:
+which <- reduce(which)
+which
+param <- ScanBamParam(which=which)
+gal4c <- readGAlignments(bamfile, use.names=TRUE, param=param)
+length(gal4c)  # < length(gal4), because the 2 first original regions
+               # on seq2 were merged into a single one
+
+## Note that reducing the set of regions didn't completely eliminate
+## "duplicated record selection". Records that overlap the 2 reduced
+## regions on seq2 (which$seq2) are loaded twice (like for 'gal5'
+## above).
 
 ## Using the 'param' arg to load tags. Except for MF and Aq, the tags
 ## specified below are predefined tags (see the SAM Spec for the list
