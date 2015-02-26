@@ -256,7 +256,8 @@ readGappedReads(file, index=file, use.names=FALSE, param=NULL,
     \item \link{GAlignments}, \link{GAlignmentPairs}, \link{GAlignmentsList},
           and \link{GappedReads} objects.
 
-    \item \code{\link{findMateAlignment}}.
+    \item \link[IRanges]{RangesList} objects (used in the examples below
+          to specify the \code{which} regions) in the \pkg{IRanges} package.
   }
 }
 
@@ -366,7 +367,7 @@ head(galp1)
 names(galp1)
 ## Using the 'param' arg to drop PCR or optical duplicates as well as
 ## secondary alignments (dropping secondary alignments can help make the
-## pairing algorithm run significantly faster, see ?findMateAlignment):
+## pairing algorithm run significantly faster):
 param <- ScanBamParam(flag=scanBamFlag(isDuplicate=FALSE,
                                        isSecondaryAlignment=FALSE))
 galp2 <- readGAlignmentPairs(bamfile, use.names=TRUE, param=param)
