@@ -59,10 +59,7 @@
 }
 
 \examples{
-bf <- system.file("extdata", "ex1.bam", package="Rsamtools", mustWork=TRUE)
-gal <- readGAlignments(bf)
-gr <- GRanges(c("seq1", "seq1", "seq2"), IRanges(c(3, 69, 1529), width=5)) 
-mapCoords(gr, gal)
+## See examples at ?mapToAlignments and ?mapToTranscripts in GenomicFeatures. 
 }
 
 \author{M. Lawrence}
