@@ -302,7 +302,7 @@ setMethod("summarizeOverlaps", c("GRangesList", "BamFile"),
              fragments=FALSE, param=ScanBamParam(), preprocess.reads=NULL, ...)
 {
     if (!file.exists(reads))
-        stop("file does not exist:")
+        stop("file does not exist")
     if (is.null(names(reads))) {
         if (any(duplicated(reads)))
             stop("duplicate 'reads' paths not allowed; use distinct names()")
