@@ -226,6 +226,10 @@ IntersectionNotEmpty <-  function(features, reads,
              singleEnd=TRUE, fragments=FALSE,
              param=ScanBamParam(), preprocess.reads=NULL, ...)
 {
+    exist <- sapply(reads, function(bf) file.exists(path(bf)))
+    if (!all(exist))
+        stop(paste0("file(s): ", paste(path(reads)[!exist], collapse=","), 
+                    " do not exist"))
     FUN <- .getReadFunction(singleEnd, fragments)
 
     cts <- bplapply(setNames(seq_along(reads), names(reads)),
@@ -297,6 +301,8 @@ setMethod("summarizeOverlaps", c("GRangesList", "BamFile"),
              yieldSize=1000000L, inter.feature=TRUE, singleEnd=TRUE,
              fragments=FALSE, param=ScanBamParam(), preprocess.reads=NULL, ...)
 {
+    if (!file.exists(reads))
+        stop("file does not exist:")
     if (is.null(names(reads))) {
         if (any(duplicated(reads)))
             stop("duplicate 'reads' paths not allowed; use distinct names()")

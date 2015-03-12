@@ -109,8 +109,8 @@ IntersectionNotEmpty(features, reads, algorithm=c("nclist", "intervaltree"),
   \item{mode}{
     \code{mode} can be one of the pre-defined count methods such as
     "Union", "IntersectionStrict", or "IntersectionNotEmpty" or
-    it can be a user supplied count function. For a custom count
-    funtion, the input arguments must match those of the pre-defined 
+    it a user supplied count function. For a custom count
+    function, the input arguments must match those of the pre-defined 
     options and the function must return a vector of counts the same
     length as the annotation ('features' argument). See examples for
     details.
