@@ -188,22 +188,25 @@ IntersectionNotEmpty(features, reads, algorithm=c("nclist", "intervaltree"),
     \code{singleEnd=FALSE}.
   }
   \item{fragments}{
-    (Default FALSE) A logical value indicating if singletons, reads with
-    unmapped pairs and other fragments should be included in counting.  Applies
-    to paired-end data only.
+    (Default FALSE) A logical; applied to paired-end data only.
+    \code{fragments} controls which function is used to read the data which
+    subsequently affects which records are included in counting.
 
-    When \code{fragments=FALSE} the \code{\link{readGAlignmentPairs}} function
-    is used to read in the data. Only the read pairs mated by the algorithm are
-    kept and counted.
+    When \code{fragments=FALSE}, data are read with
+    \code{\link{readGAlignmentPairs}} and returned in a \code{GAlignmentPairs}
+    class. This class only holds \sQuote{mated pairs} from opposite strands;
+    same-strand pairs singletons, reads with unmapped pairs and other fragments
+    are dropped.
 
-    When \code{fragments=TRUE} \code{singleEnd} should be FALSE.
-    \code{\link{readGAlignmentsList}} is used to read in the data. Read pairs
-    mated by the algorithm as well as all singletons, reads with unmapped pairs
-    and other fragments are kept and counted. Because more records are kept,
-    generally counts will be  higher with \code{fragments=TRUE}.
+    When \code{fragments=TRUE}, data are read with
+    \code{\link{readGAlignmentsList}} and returned in a \code{GAlignmentsList}
+    class. This class holds \sQuote{mated pairs} as well as same-strand pairs,
+    singletons, reads with unmapped pairs and other fragments. Because more
+    records are kept, generally counts will be higher when
+    \code{fragments=TRUE}.
 
-    See \code{?\link{readGAlignmentsList}} for the count algorithm
-    details.
+    The term \sQuote{mated pairs} refers to records paired with the algorithm
+    described on the \code{?\link{readGAlignmentsList}} man page.
   }
   \item{param}{An optional \code{\link[Rsamtools]{ScanBamParam}} instance to
     further influence scanning, counting, or filtering.
