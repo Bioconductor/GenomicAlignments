@@ -56,7 +56,7 @@ setGeneric("summarizeOverlaps", signature=c("features", "reads"),
                          records=length(reads),
                          row.names="reads")
     SummarizedExperiment(assays=SimpleList(counts=as.matrix(counts)),
-                         rowData=features, colData=colData)
+                         rowRanges=features, colData=colData)
 }
 
 setMethod("summarizeOverlaps", c("GRanges", "GAlignments"),
@@ -259,7 +259,7 @@ IntersectionNotEmpty <-  function(features, reads,
         colData <- DataFrame(row.names=colnames(counts))
     }
     SummarizedExperiment(assays=SimpleList(counts=counts),
-                         rowData=features, colData=colData)
+                         rowRanges=features, colData=colData)
 }
 
 setMethod("summarizeOverlaps", c("GRanges", "BamFile"),
