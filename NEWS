@@ -1,0 +1,153 @@
+CHANGES IN VERSION 1.4.0
+------------------------
+
+NEW FEATURES
+
+    o Add 'algorithm' argument to all "findOverlaps" methods 
+
+    o Rsamtools scanBamFlag isSecondaryAlignment replaces isNotPrimaryRead
+
+
+MODIFICATIONS
+
+    o Clarify use of 'fragments' in summarizeOverlaps() man page
+
+    o Resync with replacement of RangeAE and RangeAEAE C data structs
+      with IntPairAE and IntPairAEAE in S4Vectors 0.5.4
+
+    o Modify show() for GAlignments objects to display a shorter
+      version of long CIGARs
+
+    o Rename mapCoords() argument 'from' -> 'x' 
+
+    o Rename mapCoords() argument 'to' -> 'alignment' 
+
+    o Rename mapCoords() metadata cols:
+      queryHits -> fromHits
+      subjectHits -> toHits
+
+    o Move internal utility makeclassinfoRowForCompactPrinting() to S4Vectors
+
+    o Change 'algorithm' default from "intervaltree" to "nclist" in
+      findOverlaps-based methods
+
+    o All "findOverlaps" methods now support 'select' equal "last" or
+      "arbitrary" as well as "all" and "first"
+
+    o Add 'algorithm' argument to summarizeOverlaps(), 
+      findCompatibleOverlaps(), countCompatibleOverlaps() and
+      findSpliceOverlaps()
+
+    o Remove redundant "findOverlaps" methods:
+      GAlignments#GRangesList (keep GAlignments#Vector)
+      GRangesList#GAlignments (keep Vector#GAlignments)
+
+    o Add "mapToGenome", "pmapToGenome", "mapToTranscript" and 
+      "pmapToTranscript" methods
+
+    o Use auto-extending buffers in coordinate mapping code
+
+    o Remove static declaration from next_cigar_OP() so it can be used
+      in other compilation units
+
+    o Rename next_cigar_OP() to _next_cigar_OP()
+
+    o Add "mapFromAlignments" and "pmapFromAlignments" methods
+
+    o "mapToGenome" methods use name matching to determine map pairs
+
+    o Deprecate readGAlignment*FromBam() functions in favor of 
+      readGAlignments(), readGAlignmentPairs(), readGAlignmentsList() and
+      readGappedReads()
+
+    o Coordinate mapping:
+      - change seqname for non-hits from 'unmapped' to 'UNMAPPED'
+      - range representing non-hits is 0,-1 (no overlap with 1-based ranges)
+
+    o Deprecate "mapCoords" methods
+
+    o Add examples describing the "duplicated record selection" problem
+      as a follow-up to discussion on bioc-devel
+
+    o Add checks and more helpful error message for summarizeOverlaps() when
+      "file does not exist"
+
+    o Replace rowData argument with rowRanges
+
+BUG FIXES
+
+    o Fix off-by-one error when processing 'S' in query_locs_to_ref_locs() 
+
+    o Fix definition of summarizeOverlaps() generic 
+      (was nonstandardGenericFunction) 
+
+
+CHANGES IN VERSION 1.2.0
+------------------------
+
+NEW FEATURES
+
+    o Add 'preprocess.reads' argument to "summarizeOverlaps" methods
+
+    o Add links to BAM file videos 
+
+    o Add alphabetFrequencyFromBam() 
+
+MODIFICATIONS
+
+    o Export GappedReads() constructor 
+
+    o Replace extractTranscriptsFromGenome() with extractTranscriptSeqs() 
+
+    o vignette enhancements:
+      - add paragraph on yieldSize / parallel processing
+      - use assay(.) rather than assays(.)$count
+      - MIAME(.) rather than new("MIAME", .)
+
+    o Clarify contents of 'colData' on summarizedOverlaps() man page
+
+    o coverage,Bamfile-method now returns empty RleList rather than NULL 
+
+    o Add recommended biocViews 
+
+    o Update "map" methods documentation to clarify 'RangesMapping'
+      class was moved from IRanges to GenomicRanges and renamed 'GRangesMapping'
+
+    o Add "mapCoords", "pmapCoords"
+
+    o Defunct "map", "pmap" (skip deprecation) 
+
+    o Speedup "[" method for GAlignmentPairs objects by 35% 
+
+    o Rename internal helper fillGaps() -> fillJunctionGaps()
+
+    o Follow renaming of TranscriptDb class -> TxDb
+
+    o Follow List move from IRanges to S4Vectors 
+
+    o Modify show() for GAlignments, GAlignmentPairs, and GAlignmentsList
+      classes to print a 1-line summary of seqinfo instead of the seqlengths
+
+BUG FIXES
+
+    o Bug fix in flipQuery()
+
+    o Fix issue with show() for GAlignments and GAlignmentPairs objects
+      when 'showHeadLines' global option is set to Inf
+
+    o Update precomputed exbytx object used in OverlapEncodings.Rnw vignette
+
+
+CHANGES IN VERSION 1.0.0
+------------------------
+
+The first version of GenomicAlignments was included in Bioconductor 2.14. 
+The package was created from existing code in IRanges, ShortRead, 
+Rsamtools and GenomicRanges. 
+
+NEW FEATURES
+
+    o coverage,BamFile-method uses \code{yieldSize} to iterate through 
+      large files
+
+    o coverage,character-method calculates coverage from a BAM file
