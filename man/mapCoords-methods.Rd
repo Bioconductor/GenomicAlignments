@@ -6,7 +6,7 @@
 \title{Mapping ranges between sequences}
 
 \description{
-  Deprecated. Use \code{mapToTranscript} instead.
+  DEPRECATED! Use \code{\link{mapToAlignments}} instead.
 
   A method for translating a set of input ranges through a
   \link{GAlignments} object. Returns a \linkS4class{GenomicRanges}
@@ -43,7 +43,7 @@
 }
 
 \details{
-  Deprecated. Use \code{mapToTranscript} instead.
+  DEPRECATED! Use \code{\link{mapToAlignments}} instead.
 
   Each element in \code{to} is taken to represent the
   alignment of a (read) sequence. The CIGAR string is used to
@@ -59,7 +59,7 @@
 }
 
 \examples{
-## See examples at ?mapToAlignments and ?mapToTranscripts in GenomicFeatures. 
+## DEPRECATED! See ?mapToAlignments for a replacement.
 }
 
 \author{M. Lawrence}
