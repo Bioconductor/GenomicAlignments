@@ -424,25 +424,25 @@ setMethod("readGappedReads", "character",
 
 readGAlignmentsFromBam <- function(...)
 {
-    .Deprecated("readGAlignments")
+    .Defunct("readGAlignments")
     readGAlignments(...)
 }
 
 readGAlignmentPairsFromBam <- function(...)
 {
-    .Deprecated("readGAlignmentPairs")
+    .Defunct("readGAlignmentPairs")
     readGAlignmentPairs(...)
 }
 
 readGAlignmentsListFromBam <- function(...)
 {
-    .Deprecated("readGAlignmentsList")
+    .Defunct("readGAlignmentsList")
     readGAlignmentsList(...)
 }
 
 readGappedReadsFromBam <- function(...)
 {
-    .Deprecated("readGappedReads")
+    .Defunct("readGappedReads")
     readGappedReads(...)
 }
 
