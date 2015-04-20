@@ -152,8 +152,8 @@
     regions <- setdiff(intronflt, txflt, ignore.strand = TRUE)
     #map <- findOverlaps(regions, intronflt)
     #mcols(regions)$tx_id <-
-    #  seqsplit(names(tx)[togroup(introns)][subjectHits(intronic_to_tx)],
-    #           queryHits(intronic_to_tx))
+    #  splitAsList(names(tx)[togroup(introns)][subjectHits(intronic_to_tx)],
+    #              queryHits(intronic_to_tx))
     regions
 }
 
