@@ -163,8 +163,8 @@
       \pkg{Rsubread} package.
 
       Also note that 3rd party software TopHat2 and Cufflinks have a
-      --library-type option to let the user specify which protocol was used.
-      See their documentation for more information. 
+      \code{--library-type} option to let the user specify which protocol
+      was used. Please refer to their documentation for more information.
     }
     \item{}{
       \code{strand(x)}, \code{strand(x) <- value}:
