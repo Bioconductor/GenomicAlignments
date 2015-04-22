@@ -13,10 +13,12 @@ setClass("GAlignmentPairs",
         NAMES="characterORNULL",      # R doesn't like @names !!
         first="GAlignments",          # of length N, no names, no elt metadata
         last="GAlignments",           # of length N, no names, no elt metadata
+        strandMode="integer",         # single integer (0L, 1L, or 2L)
         isProperPair="logical",       # of length N
         elementMetadata="DataFrame"   # N rows
     ),
     prototype(
+        strandMode=1L,
         elementType="GAlignments"
     )
 )
@@ -35,7 +37,15 @@ setClass("GAlignmentPairs",
 ###                 are stored in the GAlignments returned by left(x) or
 ###                 right(x).
 ###   seqnames(x) - same as 'seqnames(first(x))' or 'seqnames(last(x))'.
-###   strand(x)   - same as 'strand(first(x))' (opposite of 'strand(last(x))').
+###   strandMode(x) - indicates how to infer the strand of a pair from the
+###                 strand of the first and last alignments in the pair:
+###                   0: strand of the pair is always *;
+###                   1: strand of the pair is strand of its first alignment;
+###                   2: strand of the pair is strand of its last alignment.
+###                 These modes are equivalent to 'strandSpecific' equal 0, 1,
+###                 and 2, respectively, for the featureCounts() function
+###                 defined in the Rsubread package.
+###   strand(x)   - obeys strandMode(x) (see above).
 ###   njunc(x)    - same as 'njunc(first(x)) + njunc(last(x))'.
 ###   isProperPair(x) - returns "isProperPair" slot.
 ###   seqinfo(x)  - returns 'seqinfo(first(x))' (same as 'seqinfo(last(x))').
@@ -49,8 +59,15 @@ setClass("GAlignmentPairs",
 
 setGeneric("first", function(x, ...) standardGeneric("first"))
 setGeneric("last", function(x, ...) standardGeneric("last"))
+
 setGeneric("left", function(x, ...) standardGeneric("left"))
 setGeneric("right", function(x, ...) standardGeneric("right"))
+
+setGeneric("strandMode", function(x) standardGeneric("strandMode"))
+setGeneric("strandMode<-", signature="x",
+    function(x, value) standardGeneric("strandMode<-")
+)
+
 setGeneric("isProperPair", function(x) standardGeneric("isProperPair"))
 
 
@@ -124,8 +141,20 @@ setMethod("seqnames", "GAlignmentPairs",
     function(x) seqnames(x@first)
 )
 
+setMethod("strandMode", "GAlignmentPairs",
+    function(x) x@strandMode
+)
+
 setMethod("strand", "GAlignmentPairs",
-    function(x) strand(x@first)
+    function(x)
+    {
+        if (strandMode(x) == 0L)
+            return(strand(Rle("*", length(x))))
+        if (strandMode(x) == 1L)
+            strand(x@first)
+        else
+            strand(x@last)
+    }
 )
 
 setMethod("njunc", "GAlignmentPairs",
@@ -156,16 +185,49 @@ setReplaceMethod("names", "GAlignmentPairs",
     }
 )
 
+.normarg_strandMode_replace_value <- function(value)
+{
+    if (!isSingleNumber(value))
+        stop("invalid strand mode (must be 0, 1, or 2)")
+    if (!is.integer(value))
+        value <- as.integer(value)
+    if (!(value %in% 0:2))
+        stop("invalid strand mode (must be 0, 1, or 2)")
+    value
+}
+
+setReplaceMethod("strandMode", "GAlignmentPairs",
+    function(x, value)
+    {
+        x@strandMode <- .normarg_strandMode_replace_value(value)
+        x
+    }
+)
+
 setReplaceMethod("strand", "GAlignmentPairs",
     function(x, value)
     {
+        if (strandMode(x) == 0L)
+            stop("cannot alter the strand of a ", class(GAlignmentPairs),
+                 " object that has its strand mode set to 0")
         same_strand <- strand(x@first) == strand(x@last)
-        ## Set the first strand.
-        strand(x@first) <- value
-        ## Then set the last strand to preserve the original relationship
-        ## between first and last strand (i.e. if they were the same, they
-        ## remain the same, if they were opposite, they remain opposite).
-        strand(x@last) <- strand(same_strand == (strand(x@first) == "-"))
+        if (strandMode(x) == 1L) {
+            ## Set the strand of the first alignment.
+            strand(x@first) <- value
+            ## Then set the strand of the last alignment to preserve the
+            ## original relationship between first and last strand (i.e. if
+            ## they were the same, they remain the same, if they were opposite,
+            ## they remain opposite).
+            strand(x@last) <- strand(same_strand == (strand(x@first) == "-"))
+        } else {
+            ## Set the strand of the last alignment.
+            strand(x@last) <- value
+            ## Then set the strand of the first alignment to preserve the
+            ## original relationship between first and last strand (i.e. if
+            ## they were the same, they remain the same, if they were opposite,
+            ## they remain opposite).
+            strand(x@first) <- strand(same_strand == (strand(x@last) == "-"))
+        }
         x
     }
 )
@@ -252,6 +314,13 @@ setReplaceMethod("seqinfo", "GAlignmentPairs",
     NULL
 }
 
+.valid.GAlignmentPairs.strandMode <- function(x)
+{
+    if (!(isSingleInteger(x@strandMode) && x@strandMode %in% 0:2))
+        return("'x@strandMode' must be 0L, 1L, or 2L")
+    NULL
+}
+
 .valid.GAlignmentPairs.isProperPair <- function(x)
 {
     x_isProperPair <- x@isProperPair
@@ -272,6 +341,7 @@ setReplaceMethod("seqinfo", "GAlignmentPairs",
     c(.valid.GAlignmentPairs.names(x),
       .valid.GAlignmentPairs.first(x),
       .valid.GAlignmentPairs.last(x),
+      .valid.GAlignmentPairs.strandMode(x),
       .valid.GAlignmentPairs.isProperPair(x))
 }
 
@@ -283,11 +353,20 @@ setValidity2("GAlignmentPairs", .valid.GAlignmentPairs,
 ### Constructor.
 ###
 
-GAlignmentPairs <- function(first, last, isProperPair, names=NULL)
+GAlignmentPairs <- function(first, last,
+                            strandMode=1L, isProperPair=TRUE, names=NULL)
 {
+    if (!(is(first, "GAlignments") && is(last, "GAlignments")))
+        stop("'first' and 'last' must be GAlignments objects")
+    if (length(first) != length(last))
+        stop("'first' and 'last' must have the same length")
+    strandMode <- .normarg_strandMode_replace_value(strandMode)
+    if (identical(isProperPair, TRUE))
+        isProperPair <- rep.int(isProperPair, length(first))
     new2("GAlignmentPairs",
          NAMES=names,
          first=first, last=last,
+         strandMode=strandMode,
          isProperPair=isProperPair,
          elementMetadata=new("DataFrame", nrows=length(first)),
          check=TRUE)
@@ -383,6 +462,8 @@ shrinkByHalf <- function(x)
     ans
 }
 
+### FIXME: Behavior is currently undefined (and undocumented) when
+### strandMode(x) is 0. Fix this!
 setMethod("grglist", "GAlignmentPairs",
     function(x, use.mcols=FALSE, order.as.in.query=FALSE, drop.D.ranges=FALSE)
     {
@@ -394,7 +475,12 @@ setMethod("grglist", "GAlignmentPairs",
         if (use.mcols && "query.break" %in% colnames(x_mcols))
             stop("'mcols(x)' cannot have reserved column \"query.break\"")
         x_first <- x@first
-        x_last <- invertRleStrand(x@last)
+        x_last <- x@last
+        if (strandMode(x) == 1L) {
+            x_last <- invertRleStrand(x@last)
+        } else if (strandMode(x) == 2L) {
+            x_first <- invertRleStrand(x@first)
+        }
         ## Not the same as doing 'unlist(x, use.names=FALSE)'.
         collate_subscript <-
             S4Vectors:::make_XYZxyz_to_XxYyZz_subscript(length(x))
@@ -410,6 +496,10 @@ setMethod("grglist", "GAlignmentPairs",
             i <- which(strand(x) == "-")
             ans <- revElements(ans, i)
             ans_nelt1[i] <- ans_nelt2[i]
+        } else if (strandMode(x) == 2L) {
+            ans_nelt2 <- mcols(ans)$nelt2
+            ans <- revElements(ans)
+            ans_nelt1 <- ans_nelt2
         }
         names(ans) <- names(x)
         ans_mcols <- DataFrame(query.break=ans_nelt1)
@@ -514,8 +604,9 @@ showGAlignmentPairs <- function(x, margin="",
     lx <- length(x)
     nc <- ncol(mcols(x))
     cat(class(x), " object with ",
-        lx, " alignment ", ifelse(lx == 1L, "pair", "pairs"),
-        " and ",
+        lx, " ", ifelse(lx == 1L, "pair", "pairs"),
+        ", strandMode=", strandMode(x),
+        ", and ",
         nc, " metadata ", ifelse(nc == 1L, "column", "columns"),
         ":\n", sep="")
     out <- S4Vectors:::makePrettyMatrixForCompactPrinting(x,

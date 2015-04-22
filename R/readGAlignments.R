@@ -165,14 +165,15 @@ setMethod("readGAlignments", "BamViews",
 
 setGeneric("readGAlignmentPairs", signature="file",
     function(file, index=file, use.names=FALSE, param=NULL,
-                   with.which_label=FALSE)
+                   with.which_label=FALSE, strandMode=1)
         standardGeneric("readGAlignmentPairs")
 )
 
 ### 'use.mcols' can be TRUE, FALSE, or a character vector specifying the
 ### *inner* metadata columns to return, i.e., the metadata columns to set on
 ### the 2 halves of the returned GAlignmentPairs object.
-.make_GAlignmentPairs_from_GAlignments <- function(gal, use.mcols=FALSE)
+.make_GAlignmentPairs_from_GAlignments <- function(gal, strandMode=1L,
+                                                   use.mcols=FALSE)
 {
     mate_status <- mcols(gal)[ , "mate_status"]
 
@@ -247,7 +248,7 @@ setGeneric("readGAlignmentPairs", signature="file",
                 "  Note that a GAlignmentPairs object can only hold ",
                 "concordant pairs at the\n  moment, that is, pairs where ",
                 "the 2 alignments are on the opposite strands\n  of the same ",
-                "chromosome.")
+                "reference sequence.")
         keep_idx <- which(!is_discordant)
         ans_first <- ans_first[keep_idx]
         ans_last <- ans_last[keep_idx]
@@ -262,13 +263,14 @@ setGeneric("readGAlignmentPairs", signature="file",
     } else if (!use.mcols) {
         mcols(ans_first) <- mcols(ans_last) <- NULL
     }
-    GAlignmentPairs(ans_first, ans_last, as.logical(is_proper1),
-                    names=ans_names)
+    GAlignmentPairs(ans_first, ans_last, strandMode=strandMode,
+                    isProperPair=as.logical(is_proper1), names=ans_names)
 }
 
 .readGAlignmentPairs.BamFile <- function(file, index=file,
                                          use.names=FALSE, param=NULL,
-                                         with.which_label=FALSE)
+                                         with.which_label=FALSE,
+                                         strandMode=1)
 {
     if (!asMates(file)) {
         asMates(file) <- TRUE
@@ -286,20 +288,22 @@ setGeneric("readGAlignmentPairs", signature="file",
     use.mcols <- c(bamWhat(param), bamTag(param))
     if (with.which_label)
         use.mcols <- c(use.mcols, "which_label")
-    .make_GAlignmentPairs_from_GAlignments(gal, use.mcols=use.mcols)
+    .make_GAlignmentPairs_from_GAlignments(gal, strandMode=strandMode,
+                                           use.mcols=use.mcols)
 }
 
 setMethod("readGAlignmentPairs", "BamFile", .readGAlignmentPairs.BamFile)
 
 setMethod("readGAlignmentPairs", "character",
     function(file, index=file, use.names=FALSE, param=NULL,
-                   with.which_label=FALSE)
+                   with.which_label=FALSE, strandMode=1)
     {
         bam <- .open_BamFile(file, index=index, asMates=TRUE, param=param)
         on.exit(close(bam))
         readGAlignmentPairs(bam, character(0),
                             use.names=use.names, param=param,
-                            with.which_label=with.which_label)
+                            with.which_label=with.which_label,
+                            strandMode=strandMode)
     }
 )
 

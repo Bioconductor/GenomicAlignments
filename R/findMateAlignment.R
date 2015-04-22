@@ -415,7 +415,8 @@ findMateAlignment2 <- function(x, y=NULL)
     .isLastSegment.integer(mcols(x)$flag)
 
 ### 'x' must be a GAlignments objects.
-makeGAlignmentPairs <- function(x, use.names=FALSE, use.mcols=FALSE)
+makeGAlignmentPairs <- function(x, use.names=FALSE, use.mcols=FALSE,
+                                   strandMode=1)
 {
     if (!isTRUEorFALSE(use.names))
         stop("'use.names' must be TRUE or FALSE")
@@ -483,6 +484,7 @@ makeGAlignmentPairs <- function(x, use.names=FALSE, use.mcols=FALSE)
     } else if (!use.mcols) {
         mcols(ans_first) <- mcols(ans_last) <- NULL
     }
-    GAlignmentPairs(ans_first, ans_last, ans_is_proper, names=ans_names)
+    GAlignmentPairs(ans_first, ans_last, strandMode=strandMode,
+                    isProperPair=ans_is_proper, names=ans_names)
 }
 

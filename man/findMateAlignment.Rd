@@ -24,7 +24,7 @@
 
 \usage{
 findMateAlignment(x)
-makeGAlignmentPairs(x, use.names=FALSE, use.mcols=FALSE)
+makeGAlignmentPairs(x, use.names=FALSE, use.mcols=FALSE, strandMode=1)
 
 ## Related low-level utilities:
 getDumpedAlignments()
@@ -49,6 +49,10 @@ flushDumpedAlignments()
   \item{use.mcols}{
     Names of the metadata columns to propagate to the returned
     \link{GAlignmentPairs} object.
+  }
+  \item{strandMode}{
+    Strand mode to set on the returned \link{GAlignmentPairs} object.
+    See \code{?\link{strandMode}} for more information.
   }
 }
 

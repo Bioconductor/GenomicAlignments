@@ -37,7 +37,7 @@ readGAlignments(file, index=file, use.names=FALSE, param=NULL,
                       with.which_label=FALSE)
 
 readGAlignmentPairs(file, index=file, use.names=FALSE, param=NULL,
-                          with.which_label=FALSE)
+                          with.which_label=FALSE, strandMode=1)
 
 readGAlignmentsList(file, index=file, use.names=FALSE, param=ScanBamParam(),
                           with.which_label=FALSE)
@@ -85,8 +85,8 @@ readGappedReads(file, index=file, use.names=FALSE, param=NULL,
     and \code{scanBamFlag(isUnmappedQuery=FALSE, isPaired=TRUE,
     hasUnmappedMate=FALSE)} for \code{readGAlignmentPairs}
     (i.e. only records corresponding to paired-end reads with both ends
-    mapped are loaded).}
-
+    mapped are loaded).
+  }
   \item{with.which_label}{\code{TRUE} or \code{FALSE} (the default).
     If \code{TRUE} and if \code{param} has a \code{which} component,
     a \code{"which_label"} metadata column is added to the returned
@@ -106,7 +106,12 @@ readGappedReads(file, index=file, use.names=FALSE, param=NULL,
     return if called with the same \code{param} argument. If some ranges
     are duplicated, then the labels are made unique by appending a unique
     suffix to all of them. The \code{"which_label"} metadata column is
-    represented as a factor-\link[S4Vectors]{Rle}.}
+    represented as a factor-\link[S4Vectors]{Rle}.
+  }
+  \item{strandMode}{
+    Strand mode to set on the returned \link{GAlignmentPairs} object.
+    See \code{?\link{strandMode}} for more information.
+  }
 }
 
 \details{

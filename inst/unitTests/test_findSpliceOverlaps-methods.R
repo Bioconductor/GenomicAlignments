@@ -231,7 +231,7 @@ test_findSpliceOverlaps_compatible <- function()
 #    ## query = GAlignmentPairs
 #    gal1 <- GAlignments("chr1", 5L, "11M4N6M", strand("+"))
 #    gal2 <- GAlignments("chr1", 50L, "6M", strand("-"))
-#    galp <- GAlignmentPairs(gal1, gal2, TRUE)
+#    galp <- GAlignmentPairs(gal1, gal2)
 #    GALPres <- findSpliceOverlaps(galp, genes)
 #    checkIdentical(c(TRUE, TRUE), .extract(GALPres, "novelJunction"))
 #    checkIdentical(c(FALSE, FALSE), .extract(GALPres, "novelSite"))

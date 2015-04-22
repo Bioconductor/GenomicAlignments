@@ -143,7 +143,7 @@ export(
     rname, "rname<-", cigar, qwidth, njunc,
 
     ## GAlignmentPairs-class.R:
-    first, last, left, right, isProperPair,
+    first, last, left, right, strandMode, "strandMode<-", isProperPair,
 
     ## GappedReads-class.R:
     qseq,
@@ -189,7 +189,7 @@ export(
 ### Exactly the same list as above.
 exportMethods(
     rname, "rname<-", cigar, qwidth, njunc,
-    first, last, left, right, isProperPair,
+    first, last, left, right, strandMode, "strandMode<-", isProperPair,
     qseq,
     Loffset, Roffset, flippedQuery,
     Lencoding, Rencoding, Lnjunc, Rnjunc,

@@ -21,6 +21,10 @@
 \alias{right}
 \alias{right,GAlignmentPairs-method}
 \alias{seqnames,GAlignmentPairs-method}
+\alias{strandMode}
+\alias{strandMode,GAlignmentPairs-method}
+\alias{strandMode<-}
+\alias{strandMode<-,GAlignmentPairs-method}
 \alias{strand,GAlignmentPairs-method}
 \alias{strand<-,GAlignmentPairs-method}
 \alias{njunc,GAlignmentPairs-method}
@@ -53,6 +57,10 @@
 
 \description{
   The GAlignmentPairs class is a container for "genomic alignment pairs".
+
+  IMPORTANT NOTE: The GAlignmentPairs container can only hold \emph{concordant}
+  pairs at the moment, that is, pairs where the 2 alignments are on the
+  opposite strands of the same reference sequence.
 }
 
 \details{
@@ -79,7 +87,8 @@
 \section{Constructor}{
   \describe{
     \item{}{
-      \code{GAlignmentPairs(first, last, isProperPair, names=NULL)}:
+      \code{GAlignmentPairs(first, last, strandMode=1,
+                            isProperPair=TRUE, names=NULL)}:
       Low-level GAlignmentPairs constructor. Generally not used directly.
     }
   }
@@ -135,17 +144,32 @@
       pairs with incompatible RNAME values).
     }
     \item{}{
+      \code{strandMode(x)}, \code{strandMode(x) <- value}:
+      The strand mode indicates how to infer the strand of a pair from the
+      strand of the first and last alignments in the pair:
+      \itemize{
+        \item 0: strand of the pair is always *.
+        \item 1: strand of the pair is strand of its first alignment.
+              This mode should be used when the paired-end data was obtained
+              using one of the following stranded protocols:
+              Directional Illumina (Ligation), Standard SOLiD.
+        \item 2: strand of the pair is strand of its last alignment.
+              This mode should be used when the paired-end data was obtained
+              using one of the following stranded protocols:
+              dUTP, NSR, NNSR, Illumina stranded TruSeq PE protocol.
+      }
+      These modes are equivalent to \code{strandSpecific} equal 0, 1, and 2,
+      respectively, for the \code{featureCounts} function defined in the
+      \pkg{Rsubread} package.
+
+      Also note that 3rd party software TopHat2 and Cufflinks have a
+      --library-type option to let the user specify which protocol was used.
+      See their documentation for more information. 
+    }
+    \item{}{
       \code{strand(x)}, \code{strand(x) <- value}:
       Get or set the strand for each alignment pair in \code{x}.
-      By definition (and in a somewhat arbitrary way) the strand of an
-      alignment pair is the strand of the \emph{"first"} alignment in the pair.
-      In a GAlignmentPairs object, the strand of the "last" alignment
-      in a pair is typically (but not always) the opposite of the strand
-      of the "first" alignment. Note that, currently,
-      \code{\link{readGAlignmentPairs}}, the function used for reading
-      paired-end reads from a BAM file as a GAlignmentPairs object, rejects
-      pairs where the "first" and "last" alignments are on the same strand,
-      but this could change in the future.
+      Obeys \code{strandMode(x)} above to infer the strand of a pair.
     }
     \item{}{
       \code{njunc(x)}:
@@ -252,8 +276,10 @@
       (accessible with \code{mcols(x)}), they're propagated to the returned
       object.
 
-      IMPORTANT: The strand of the ranges coming from the "last" alignment
-      in the pair is \emph{always} inverted.
+      IMPORTANT: If \code{strandMode(x)} is 1, the strand of the ranges
+      coming from the "first" alignment in a pair is preserved and the
+      strand of those coming from the "last" alignment in a pair is
+      inverted. If \code{strandMode(x)} is 2, it's the other way around.
 
       The \code{order.as.in.query} toggle affects the order of the ranges
       \emph{within} each top-level element of the returned object.
@@ -371,7 +397,7 @@
 \examples{
 library(Rsamtools)  # for the ex1.bam file
 ex1_file <- system.file("extdata", "ex1.bam", package="Rsamtools")
-galp <- readGAlignmentPairs(ex1_file, use.names=TRUE)
+galp <- readGAlignmentPairs(ex1_file, use.names=TRUE, strandMode=1)
 galp
 
 length(galp)
@@ -383,7 +409,13 @@ last(galp, invert.strand=TRUE)
 left(galp)
 right(galp)
 seqnames(galp)
+
+strandMode(galp)
 strand(galp)
+
+strandMode(galp) <- 2
+strand(galp)
+
 head(njunc(galp))
 table(isProperPair(galp))
 seqlevels(galp)
@@ -396,6 +428,10 @@ galp[[1]]
 unlist(galp)
 
 grglist(galp)  # a GRangesList object
+
+strandMode(galp) <- 1
+grglist(galp)
+
 grglist(galp, order.as.in.query=TRUE)
 stopifnot(identical(unname(elementLengths(grglist(galp))), njunc(galp) + 2L))
 
