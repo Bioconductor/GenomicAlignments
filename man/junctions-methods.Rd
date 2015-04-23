@@ -127,8 +127,14 @@ readSTARJunctions(file)
   On a \code{x} is a \link{GAlignmentPairs} object, it's equivalent to (but
   faster than):
 \preformatted{
-  mendoapply(c, junctions(first(x)), junctions(last(x)))
+  mendoapply(c, junctions(first(x, real.strand=TRUE)),
+                junctions(last(x, real.strand=TRUE)))
 }
+  Note that starting with BioC 3.2, the behavior of \code{junctions} on a
+  \link{GAlignmentPairs} object has been slightly modified so that the
+  returned ranges now have the \emph{real strand} set on them. See the
+  documentation of the \code{real.strand} argument in the man page of
+  \link{GAlignmentPairs} objects for more information.
 
   \code{NATURAL_INTRON_MOTIFS} is a predefined character vector containing
   the 5 natural intron motifs described at

@@ -30,16 +30,12 @@ setMethod("junctions", "GAlignmentPairs",
     {
         if (!isTRUEorFALSE(use.mcols))
             stop("'use.mcols' must be TRUE or FALSE")
-        first_junctions <- junctions(x@first)
-        last_junctions <- junctions(x@last)
-        ## Fast way of doing mendoapply(c, first_junctions, last_junctions)
-        ## on 2 CompressedList objects.
-        ans <- c(first_junctions, last_junctions)
-        collate_subscript <-
-            S4Vectors:::make_XYZxyz_to_XxYyZz_subscript(length(x))
-        ans <- ans[collate_subscript]
-        ans <- shrinkByHalf(ans)
-        names(ans) <- names(x)
+        first_junctions <- junctions(first(x, real.strand=TRUE))
+        last_junctions <- junctions(last(x, real.strand=TRUE))
+        ## pc() is a fast "parallel c()" for list-like objects.
+        ## In the case below, it's equivalent to (but faster than) doing
+        ## 'mendoapply(c, first_junctions, last_junctions)'.
+        ans <- pc(first_junctions, last_junctions)
         if (use.mcols) {
             mcols(ans) <- mcols(x)
         } else {
