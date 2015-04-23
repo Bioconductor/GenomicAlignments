@@ -10,11 +10,11 @@
 setMethod("mapCoords", c("GenomicRanges", "GAlignments"), 
     function(from, to, ...) 
     {
-        msg <- c("mapCoords() is deprecated. ",
+        msg <- c("mapCoords() is defunct. ",
                  "Use 'mapToTranscripts' from the GenomicFeatures package ",
                  "or 'mapToAlignments' from the GenomicAlignments package ",
                  "instead.")
-        .Deprecated(msg=wmsg(msg))
+        .Defunct(msg=wmsg(msg))
         to_grl <- grglist(to, drop.D.ranges=TRUE)
         from_ol <- findOverlaps(from, to_grl, ignore.strand=TRUE, type="within")
         to_hits <- to[subjectHits(from_ol)]
@@ -34,11 +34,11 @@ setMethod("mapCoords", c("GenomicRanges", "GAlignments"),
 setMethod("pmapCoords", c("Ranges", "GAlignments"), 
     function(from, to, ...) 
     {
-        msg <- c("'pmapCoords' is deprecated. ",
+        msg <- c("'pmapCoords' is defunct. ",
                  "Use 'pmapToTranscripts' from the GenomicFeatures package ",
                  "or 'pmapToAlignments' from the GenomicAlignments package ",
                  "instead.")
-        .Deprecated(msg=wmsg(msg))
+        .Defunct(msg=wmsg(msg))
         starts <- .Call("ref_locs_to_query_locs", start(from), cigar(to), 
                         start(to), FALSE, PACKAGE="GenomicAlignments")
         ends <- .Call("ref_locs_to_query_locs", end(from), cigar(to), 
@@ -55,7 +55,7 @@ setGeneric("prmap", function(from, to) standardGeneric("prmap"))
 setMethod("prmap", c("Ranges", "GAlignments"),
     function(from, to) 
     {
-        .Deprecated("pmapFromTranscripts", old="prmap")
+        .Defunct("pmapFromTranscripts", old="prmap")
         starts <- .Call("query_locs_to_ref_locs", start(from), cigar(to), 
                         start(to), FALSE, PACKAGE="GenomicAlignments")
         ends <- .Call("query_locs_to_ref_locs", end(from), cigar(to), 
