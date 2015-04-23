@@ -10,10 +10,10 @@
 setClass("GAlignmentPairs",
     contains="List",
     representation(
+        strandMode="integer",         # single integer (0L, 1L, or 2L)
         NAMES="characterORNULL",      # R doesn't like @names !!
         first="GAlignments",          # of length N, no names, no elt metadata
         last="GAlignments",           # of length N, no names, no elt metadata
-        strandMode="integer",         # single integer (0L, 1L, or 2L)
         isProperPair="logical",       # of length N
         elementMetadata="DataFrame"   # N rows
     ),
@@ -24,19 +24,6 @@ setClass("GAlignmentPairs",
 )
 
 ### Formal API:
-###   length(x)   - single integer N. Nb of pairs in 'x'.
-###   names(x)    - NULL or character vector.
-###   first(x)    - returns "first" slot.
-###   last(x)     - returns "last" slot.
-###   left(x)     - GAlignments made of the "left alignments" (if first
-###                 alignment is on + strand then it's considered to be the
-###                 "left alignment", otherwise, it's considered the "right
-###                 alignment").
-###   right(x)    - GAlignments made of the "right alignments".
-###                 The strand of the last alignments is inverted before they
-###                 are stored in the GAlignments returned by left(x) or
-###                 right(x).
-###   seqnames(x) - same as 'seqnames(first(x))' or 'seqnames(last(x))'.
 ###   strandMode(x) - indicates how to infer the strand of a pair from the
 ###                 strand of the first and last alignments in the pair:
 ###                   0: strand of the pair is always *;
@@ -45,6 +32,11 @@ setClass("GAlignmentPairs",
 ###                 These modes are equivalent to 'strandSpecific' equal 0, 1,
 ###                 and 2, respectively, for the featureCounts() function
 ###                 defined in the Rsubread package.
+###   length(x)   - single integer N. Nb of pairs in 'x'.
+###   names(x)    - NULL or character vector.
+###   first(x)    - returns "first" slot.
+###   last(x)     - returns "last" slot.
+###   seqnames(x) - same as 'seqnames(first(x))' or 'seqnames(last(x))'.
 ###   strand(x)   - obeys strandMode(x) (see above).
 ###   njunc(x)    - same as 'njunc(first(x)) + njunc(last(x))'.
 ###   isProperPair(x) - returns "isProperPair" slot.
@@ -57,16 +49,13 @@ setClass("GAlignmentPairs",
 ###                 (endomorphism).
 ###
 
-setGeneric("first", function(x, ...) standardGeneric("first"))
-setGeneric("last", function(x, ...) standardGeneric("last"))
-
-setGeneric("left", function(x, ...) standardGeneric("left"))
-setGeneric("right", function(x, ...) standardGeneric("right"))
-
 setGeneric("strandMode", function(x) standardGeneric("strandMode"))
 setGeneric("strandMode<-", signature="x",
     function(x, value) standardGeneric("strandMode<-")
 )
+
+setGeneric("first", function(x, ...) standardGeneric("first"))
+setGeneric("last", function(x, ...) standardGeneric("last"))
 
 setGeneric("isProperPair", function(x) standardGeneric("isProperPair"))
 
@@ -74,6 +63,10 @@ setGeneric("isProperPair", function(x) standardGeneric("isProperPair"))
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Getters.
 ###
+
+setMethod("strandMode", "GAlignmentPairs",
+    function(x) x@strandMode
+)
 
 setMethod("length", "GAlignmentPairs",
     function(x) length(x@first)
@@ -84,65 +77,65 @@ setMethod("names", "GAlignmentPairs",
 )
 
 setMethod("first", "GAlignmentPairs",
-    function(x, invert.strand=FALSE)
+    function(x, real.strand=FALSE, invert.strand=FALSE)
     {
-        if (!isTRUEorFALSE(invert.strand))
-            stop("'invert.strand' must be TRUE or FALSE")
+        if (!isTRUEorFALSE(real.strand))
+            stop("'real.strand' must be TRUE or FALSE")
+        if (!identical(invert.strand, FALSE)) {
+            msg <- c("Using the 'invert.strand' argument when calling ",
+                     "first() on a GAlignmentPairs object is deprecated.")
+            .Deprecated(msg=wmsg(msg))
+            if (!isTRUEorFALSE(invert.strand))
+                stop("'invert.strand' must be TRUE or FALSE")
+            if (real.strand && invert.strand)
+                stop(wmsg("one of 'real.strand' or 'invert.strand' can ",
+                          "be set to TRUE but not both"))
+        }
         ans <- setNames(x@first, names(x))
         if (invert.strand)
-            ans <- invertRleStrand(ans)
+            return(invertRleStrand(ans))
+        if (real.strand) {
+            if (strandMode(x) == 0L) {
+                strand(ans) <- "*"
+            } else if (strandMode(x) == 2L) {
+                ans <- invertRleStrand(ans)
+            }
+        }
         ans
     }
 )
 
 setMethod("last", "GAlignmentPairs",
-    function(x, invert.strand=FALSE)
+    function(x, real.strand=FALSE, invert.strand=FALSE)
     {
-        if (!isTRUEorFALSE(invert.strand))
-            stop("'invert.strand' must be TRUE or FALSE")
+        if (!isTRUEorFALSE(real.strand))
+            stop("'real.strand' must be TRUE or FALSE")
+        if (!identical(invert.strand, FALSE)) {
+            msg <- c("Using the 'invert.strand' argument when calling ",
+                     "last() on a GAlignmentPairs object is deprecated.")
+            .Deprecated(msg=wmsg(msg))
+            if (!isTRUEorFALSE(invert.strand))
+                stop("'invert.strand' must be TRUE or FALSE")
+            if (real.strand && invert.strand)
+                stop(wmsg("one of 'real.strand' or 'invert.strand' can ",
+                          "be set to TRUE but not both"))
+        }
         ans <- setNames(x@last, names(x))
         if (invert.strand)
-            ans <- invertRleStrand(ans)
+            return(invertRleStrand(ans))
+        if (real.strand) {
+            if (strandMode(x) == 0L) {
+                strand(ans) <- "*"
+            } else if (strandMode(x) == 1L) {
+                ans <- invertRleStrand(ans)
+            }
+        }
         ans
-    }
-)
-
-setMethod("left", "GAlignmentPairs",
-    function(x, ...)
-    {
-        x_first <- x@first
-        x_last <- invertRleStrand(x@last)
-
-        left_is_last <- which(strand(x_first) == "-")
-        idx <- seq_len(length(x))
-        idx[left_is_last] <- idx[left_is_last] + length(x)
-
-        ans <- c(x_first, x_last)[idx]
-        setNames(ans, names(x))
-    }
-)
-
-setMethod("right", "GAlignmentPairs",
-    function(x, ...)
-    {
-        x_first <- x@first
-        x_last <- invertRleStrand(x@last)
-
-        right_is_first <- which(strand(x_first) == "-")
-        idx <- seq_len(length(x))
-        idx[right_is_first] <- idx[right_is_first] + length(x)
-
-        ans <- c(x_last, x_first)[idx]
-        setNames(ans, names(x))
     }
 )
 
 setMethod("seqnames", "GAlignmentPairs",
     function(x) seqnames(x@first)
-)
-
-setMethod("strandMode", "GAlignmentPairs",
-    function(x) x@strandMode
 )
 
 setMethod("strand", "GAlignmentPairs",
@@ -174,17 +167,6 @@ setMethod("seqinfo", "GAlignmentPairs",
 ### Setters.
 ###
 
-setReplaceMethod("names", "GAlignmentPairs",
-    function(x, value)
-    {
-        if (!is.null(value))
-            value <- as.character(value)
-        x@NAMES <- value
-        validObject(x)
-        x
-    }
-)
-
 .normarg_strandMode_replace_value <- function(value)
 {
     if (!isSingleNumber(value))
@@ -204,9 +186,26 @@ setReplaceMethod("strandMode", "GAlignmentPairs",
     }
 )
 
+setReplaceMethod("names", "GAlignmentPairs",
+    function(x, value)
+    {
+        if (!is.null(value))
+            value <- as.character(value)
+        x@NAMES <- value
+        validObject(x)
+        x
+    }
+)
+
 setReplaceMethod("strand", "GAlignmentPairs",
     function(x, value)
     {
+        msg <- c("The strand setter for GAlignmentPairs objects ",
+                 "is deprecated. You can use strandMode() to control the ",
+                 "behavior of the strand() getter in accordance with the ",
+                 "stranded protocol that was used to generate the ",
+                 "paired-end data (see '?strandMode').")
+        .Deprecated(msg=wmsg(msg))
         if (strandMode(x) == 0L)
             stop("cannot alter the strand of a ", class(GAlignmentPairs),
                  " object that has its strand mode set to 0")
@@ -278,6 +277,13 @@ setReplaceMethod("seqinfo", "GAlignmentPairs",
 ### Validity.
 ###
 
+.valid.GAlignmentPairs.strandMode <- function(x)
+{
+    if (!(isSingleInteger(x@strandMode) && x@strandMode %in% 0:2))
+        return("'x@strandMode' must be 0L, 1L, or 2L")
+    NULL
+}
+
 .valid.GAlignmentPairs.names <- function(x)
 {
     x_names <- names(x)
@@ -314,13 +320,6 @@ setReplaceMethod("seqinfo", "GAlignmentPairs",
     NULL
 }
 
-.valid.GAlignmentPairs.strandMode <- function(x)
-{
-    if (!(isSingleInteger(x@strandMode) && x@strandMode %in% 0:2))
-        return("'x@strandMode' must be 0L, 1L, or 2L")
-    NULL
-}
-
 .valid.GAlignmentPairs.isProperPair <- function(x)
 {
     x_isProperPair <- x@isProperPair
@@ -338,10 +337,10 @@ setReplaceMethod("seqinfo", "GAlignmentPairs",
 
 .valid.GAlignmentPairs <- function(x)
 {
-    c(.valid.GAlignmentPairs.names(x),
+    c(.valid.GAlignmentPairs.strandMode(x),
+      .valid.GAlignmentPairs.names(x),
       .valid.GAlignmentPairs.first(x),
       .valid.GAlignmentPairs.last(x),
-      .valid.GAlignmentPairs.strandMode(x),
       .valid.GAlignmentPairs.isProperPair(x))
 }
 
@@ -364,9 +363,9 @@ GAlignmentPairs <- function(first, last,
     if (identical(isProperPair, TRUE))
         isProperPair <- rep.int(isProperPair, length(first))
     new2("GAlignmentPairs",
+         strandMode=strandMode,
          NAMES=names,
          first=first, last=last,
-         strandMode=strandMode,
          isProperPair=isProperPair,
          elementMetadata=new("DataFrame", nrows=length(first)),
          check=TRUE)
@@ -469,8 +468,14 @@ setMethod("grglist", "GAlignmentPairs",
     {
         if (!isTRUEorFALSE(use.mcols))
             stop("'use.mcols' must be TRUE or FALSE")
-        if (!isTRUEorFALSE(order.as.in.query))
-            stop("'order.as.in.query' must be TRUE or FALSE")
+        if (!identical(order.as.in.query, FALSE)) {
+            msg <- c("Starting with BioC 3.2, the \"grglist\" method for ",
+                     "GAlignmentPairs objects *always* returns the ranges ",
+                     "\"ordered as in query\". Therefore the ",
+                     "'order.as.in.query' argument is now ignored (and ",
+                     "deprecated).")
+            .Deprecated(msg=wmsg(msg))
+        }
         x_mcols <- mcols(x)
         if (use.mcols && "query.break" %in% colnames(x_mcols))
             stop("'mcols(x)' cannot have reserved column \"query.break\"")
@@ -478,31 +483,21 @@ setMethod("grglist", "GAlignmentPairs",
         x_last <- x@last
         if (strandMode(x) == 1L) {
             x_last <- invertRleStrand(x@last)
+            x_unlisted <- c(x_first, x_last)
         } else if (strandMode(x) == 2L) {
             x_first <- invertRleStrand(x@first)
+            x_unlisted <- c(x_last, x_first)
         }
         ## Not the same as doing 'unlist(x, use.names=FALSE)'.
         collate_subscript <-
             S4Vectors:::make_XYZxyz_to_XxYyZz_subscript(length(x))
-        x_unlisted <- c(x_first, x_last)[collate_subscript]
+        x_unlisted <- x_unlisted[collate_subscript]
         grl <- grglist(x_unlisted,
                        order.as.in.query=TRUE,
                        drop.D.ranges=drop.D.ranges)
         ans <- shrinkByHalf(grl)
-        ans_nelt1 <- mcols(ans)$nelt1
-        if (!order.as.in.query) {
-            ans_nelt2 <- mcols(ans)$nelt2
-            ## Yes, we reorder *again* when 'order.as.in.query' is FALSE.
-            i <- which(strand(x) == "-")
-            ans <- revElements(ans, i)
-            ans_nelt1[i] <- ans_nelt2[i]
-        } else if (strandMode(x) == 2L) {
-            ans_nelt2 <- mcols(ans)$nelt2
-            ans <- revElements(ans)
-            ans_nelt1 <- ans_nelt2
-        }
         names(ans) <- names(x)
-        ans_mcols <- DataFrame(query.break=ans_nelt1)
+        ans_mcols <- DataFrame(query.break=mcols(ans)$nelt1)
         if (use.mcols)
             ans_mcols <- cbind(ans_mcols, x_mcols)
         mcols(ans) <- ans_mcols
@@ -760,6 +755,52 @@ setMethod("c", "GAlignmentPairs",
         combine_GAlignmentPairs_objects(class(x), objects,
                                         use.names=FALSE, 
                                         ignore.mcols=ignore.mcols)
+    }
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Old stuff (deprecated & defunct)
+###
+
+setGeneric("left", function(x, ...) standardGeneric("left"))
+setGeneric("right", function(x, ...) standardGeneric("right"))
+
+setMethod("left", "GAlignmentPairs",
+    function(x, ...)
+    {
+        msg <- c("The left() and right() getters are deprecated ",
+                 "for GAlignmentPairs objects.")
+        .Deprecated(msg=wmsg(msg))
+
+        x_first <- x@first
+        x_last <- invertRleStrand(x@last)
+
+        left_is_last <- which(strand(x_first) == "-")
+        idx <- seq_len(length(x))
+        idx[left_is_last] <- idx[left_is_last] + length(x)
+
+        ans <- c(x_first, x_last)[idx]
+        setNames(ans, names(x))
+    }
+)
+
+setMethod("right", "GAlignmentPairs",
+    function(x, ...)
+    {
+        msg <- c("The left() and right() getters are deprecated ",
+                 "for GAlignmentPairs objects.")
+        .Deprecated(msg=wmsg(msg))
+
+        x_first <- x@first
+        x_last <- invertRleStrand(x@last)
+
+        right_is_first <- which(strand(x_first) == "-")
+        idx <- seq_len(length(x))
+        idx[right_is_first] <- idx[right_is_first] + length(x)
+
+        ans <- c(x_last, x_first)[idx]
+        setNames(ans, names(x))
     }
 )
 

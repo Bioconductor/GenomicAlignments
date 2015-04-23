@@ -11,7 +11,7 @@ BiocStyle::latex()
 
 \title{Overlap encodings}
 \author{Herv\'e Pag\`es}
-\date{Last modified: December 2014; Compiled: \today}
+\date{Last modified: April 2015; Compiled: \today}
 
 \begin{document}
 
@@ -565,7 +565,7 @@ document.
 Let's encode the overlaps in \Rcode{U3.OV00}:
 
 <<U3.ovenc>>=
-U3.grl <- grglist(U3.GALP, order.as.in.query=TRUE)
+U3.grl <- grglist(U3.GALP)
 U3.ovenc <- encodeOverlaps(U3.grl, exbytx, hits=U3.OV00, flip.query.if.wrong.strand=TRUE)
 U3.ovenc
 @
@@ -928,8 +928,8 @@ jargon) and those corresponding to their {\it last} ends (aka {\it last}
 segments in BAM jargon):
 
 <<U3.grl_first-and-U3.grl_last>>=
-U3.grl_first <- grglist(first(U3.GALP), order.as.in.query=TRUE)
-U3.grl_last <- grglist(last(U3.GALP, invert.strand=TRUE), order.as.in.query=TRUE)
+U3.grl_first <- grglist(first(U3.GALP, real.strand=TRUE), order.as.in.query=TRUE)
+U3.grl_last <- grglist(last(U3.GALP, real.strand=TRUE), order.as.in.query=TRUE)
 @
 
 Then we extract the portions of the reference genome corresponding to the

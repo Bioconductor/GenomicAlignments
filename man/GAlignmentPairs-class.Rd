@@ -9,6 +9,10 @@
 \alias{GAlignmentPairs}
 
 % Accessors:
+\alias{strandMode}
+\alias{strandMode,GAlignmentPairs-method}
+\alias{strandMode<-}
+\alias{strandMode<-,GAlignmentPairs-method}
 \alias{length,GAlignmentPairs-method}
 \alias{names,GAlignmentPairs-method}
 \alias{names<-,GAlignmentPairs-method}
@@ -16,15 +20,7 @@
 \alias{first,GAlignmentPairs-method}
 \alias{last}
 \alias{last,GAlignmentPairs-method}
-\alias{left}
-\alias{left,GAlignmentPairs-method}
-\alias{right}
-\alias{right,GAlignmentPairs-method}
 \alias{seqnames,GAlignmentPairs-method}
-\alias{strandMode}
-\alias{strandMode,GAlignmentPairs-method}
-\alias{strandMode<-}
-\alias{strandMode<-,GAlignmentPairs-method}
 \alias{strand,GAlignmentPairs-method}
 \alias{strand<-,GAlignmentPairs-method}
 \alias{njunc,GAlignmentPairs-method}
@@ -52,11 +48,17 @@
 % Combining:
 \alias{c,GAlignmentPairs-method}
 
+% old stuff (Deprecated or Defunct)
+\alias{left}
+\alias{left,GAlignmentPairs-method}
+\alias{right}
+\alias{right,GAlignmentPairs-method}
+
 
 \title{GAlignmentPairs objects}
 
 \description{
-  The GAlignmentPairs class is a container for "genomic alignment pairs".
+  The GAlignmentPairs class is a container for \emph{genomic alignment pairs}.
 
   IMPORTANT NOTE: The GAlignmentPairs container can only hold \emph{concordant}
   pairs at the moment, that is, pairs where the 2 alignments are on the
@@ -99,6 +101,38 @@
 
   \describe{
     \item{}{
+      \code{strandMode(x)}, \code{strandMode(x) <- value}:
+      The strand mode is a per-object switch on GAlignmentPairs objects
+      that controls the behavior of the \code{strand} getter.
+      More precisely, it indicates how the strand of a pair should be
+      inferred from the strand of the first and last alignments in the pair:
+      \itemize{
+        \item 0: strand of the pair is always *.
+        \item 1: strand of the pair is strand of its first alignment.
+              This mode should be used when the paired-end data was generated
+              using one of the following stranded protocols:
+              Directional Illumina (Ligation), Standard SOLiD.
+        \item 2: strand of the pair is strand of its last alignment.
+              This mode should be used when the paired-end data was generated
+              using one of the following stranded protocols:
+              dUTP, NSR, NNSR, Illumina stranded TruSeq PE protocol.
+      }
+      These modes are equivalent to \code{strandSpecific} equal 0, 1, and 2,
+      respectively, for the \code{featureCounts} function defined in the
+      \pkg{Rsubread} package.
+
+      Note that, by default, the \code{\link{readGAlignmentPairs}} function
+      sets the strand mode to 1 on the returned GAlignmentPairs object. The
+      function has a \code{strandMode} argument to let the user set a different
+      strand mode. The strand mode can also be changed any time with the
+      \code{strandMode} setter.
+
+      Also note that 3rd party programs TopHat2 and Cufflinks have a
+      \code{--library-type} option to let the user specify which protocol
+      was used. Please refer to the documentation of these programs for more
+      information.
+    }
+    \item{}{
       \code{length(x)}:
       Return the number of alignment pairs in \code{x}.
     }
@@ -109,30 +143,20 @@
       and set the names when reading the alignments from a file.
     }
     \item{}{
-      \code{first(x, invert.strand=FALSE)},
-      \code{last(x, invert.strand=FALSE)}:
+      \code{first(x, real.strand=FALSE)},
+      \code{last(x, real.strand=FALSE)}:
       Get the "first" or "last" alignment for each alignment pair in
-      \code{x}.
-      The result is a \link{GAlignments} object of the same length
+      \code{x}. The result is a \link{GAlignments} object of the same length
       as \code{x}.
-      If \code{invert.strand=TRUE}, then the strand is inverted on-the-fly,
-      i.e. "+" becomes "-", "-" becomes "+", and "*" remains unchanged.
-    }
-    \item{}{
-      \code{left(x)}:
-      Get the "left" alignment for each alignment pair in \code{x}.
-      By definition, the "left" alignment in a pair is the alignment that
-      is on the + strand. If this is the "first" alignment, then it's returned
-      as-is by \code{left(x)}, but if this is the "last" alignment, then it's
-      returned by \code{left(x)} with the strand inverted.
-    }
-    \item{}{
-      \code{right(x)}:
-      Get the "right" alignment for each alignment pair in \code{x}.
-      By definition, the "right" alignment in a pair is the alignment that
-      is on the - strand. If this is the "first" alignment, then it's returned
-      as-is by \code{right(x)}, but if this is the "last" alignment, then it's
-      returned by \code{right(x)} with the strand inverted.
+
+      If \code{real.strand=TRUE}, then the strand is inverted on-the-fly
+      according to the strand mode currently set on the object (see
+      \code{strandMode(x)} above). More precisely, if \code{strandMode(x)}
+      is 0, then the strand is set to * for the \link{GAlignments} object
+      returned by both, \code{first()} and \code{last()}.
+      If \code{strandMode(x)} is 1, then the strand of the object returned
+      by \code{last()} is inverted. If \code{strandMode(x)} is 2, then the
+      strand of the object returned by \code{first()} is inverted.
     }
     \item{}{
       \code{seqnames(x)}:
@@ -142,29 +166,6 @@
       pair (\code{\link{readGAlignmentPairs}}, the function used for reading
       paired-end reads from a BAM file as a GAlignmentPairs object, rejects
       pairs with incompatible RNAME values).
-    }
-    \item{}{
-      \code{strandMode(x)}, \code{strandMode(x) <- value}:
-      The strand mode indicates how to infer the strand of a pair from the
-      strand of the first and last alignments in the pair:
-      \itemize{
-        \item 0: strand of the pair is always *.
-        \item 1: strand of the pair is strand of its first alignment.
-              This mode should be used when the paired-end data was obtained
-              using one of the following stranded protocols:
-              Directional Illumina (Ligation), Standard SOLiD.
-        \item 2: strand of the pair is strand of its last alignment.
-              This mode should be used when the paired-end data was obtained
-              using one of the following stranded protocols:
-              dUTP, NSR, NNSR, Illumina stranded TruSeq PE protocol.
-      }
-      These modes are equivalent to \code{strandSpecific} equal 0, 1, and 2,
-      respectively, for the \code{featureCounts} function defined in the
-      \pkg{Rsubread} package.
-
-      Also note that 3rd party software TopHat2 and Cufflinks have a
-      \code{--library-type} option to let the user specify which protocol
-      was used. Please refer to their documentation for more information.
     }
     \item{}{
       \code{strand(x)}, \code{strand(x) <- value}:
@@ -264,55 +265,29 @@
 
   \describe{
     \item{}{
-      \code{grglist(x, use.mcols=FALSE,
-                       order.as.in.query=FALSE,
-                       drop.D.ranges=FALSE)}:
+      \code{grglist(x, use.mcols=FALSE, drop.D.ranges=FALSE)}:
 
       Return a \link{GRangesList} object of length \code{length(x)}
       where the i-th element represents the ranges (with respect to the
-      reference) of the i-th alignment pair in \code{x}.
+      reference) of the i-th alignment pair in \code{x}. The strand of
+      the returned ranges obeys the strand mode currently set on the
+      object (see \code{strandMode(x)} above).
+
+      More precisely, if \code{grl1} and \code{grl2} are
+      \code{grglist(first(x, real.strand=TRUE), order.as.in.query=TRUE)} and
+      \code{grglist(last(x, real.strand=TRUE), order.as.in.query=TRUE)},
+      respectively, then the i-th element in the returned \link{GRangesList}
+      object is \code{c(grl1[[i]], grl2[[i]])}, if \code{strandMode(x)} is 1,
+      or \code{c(grl2[[i]], grl1[[i]])}, if \code{strandMode(x)} is 2.
+
+      Note that this results in the ranges being \emph{always} ordered
+      consistently with the original "query template", that is, being in the
+      order defined by walking the "query template" from the beginning to
+      the end.
 
       If \code{use.mcols} is TRUE and \code{x} has metadata columns on it
       (accessible with \code{mcols(x)}), they're propagated to the returned
       object.
-
-      IMPORTANT: If \code{strandMode(x)} is 1, the strand of the ranges
-      coming from the "first" alignment in a pair is preserved and the
-      strand of those coming from the "last" alignment in a pair is
-      inverted. If \code{strandMode(x)} is 2, it's the other way around.
-
-      The \code{order.as.in.query} toggle affects the order of the ranges
-      \emph{within} each top-level element of the returned object.
-
-      If \code{FALSE} (the default), then the "left" ranges are placed before
-      the "right" ranges, and, within each left or right group, are ordered
-      from 5' to 3' in elements associated with the plus strand and from 3'
-      to 5' in elements associated with the minus strand.
-      More formally, the i-th element in the returned \link{GRangesList}
-      object can be defined as \code{c(grl1[[i]], grl2[[i]])}, where
-      \code{grl1} is \code{grglist(left(x))} and \code{grl2} is
-      \code{grglist(right(x))}.
-
-      If \code{TRUE}, then the "first" ranges are placed before the "last"
-      ranges, and, within each first or last group, are \emph{always}
-      ordered from 5' to 3', whatever the strand is.
-      More formally, the i-th element in the returned \link{GRangesList}
-      object can be defined as \code{c(grl1[[i]], grl2[[i]])}, where
-      \code{grl1} is \code{grglist(first(x),
-                                   order.as.in.query=TRUE)}
-      and
-      \code{grl2} is \code{grglist(last(x, invert.strand=TRUE),
-                                   order.as.in.query=TRUE)}.
-
-      Note that the relationship between the 2 \link{GRangesList} objects
-      obtained with \code{order.as.in.query} being respectively
-      \code{FALSE} or \code{TRUE} is simpler than it sounds: the only
-      difference is that the order of the ranges in elements associated
-      with the \emph{minus} strand is reversed.
-
-      Finally note that, in the latter, the ranges are \emph{always} ordered
-      consistently with the original "query template", that is, in the order
-      defined by walking the "query template" from the beginning to the end.
 
       If \code{drop.D.ranges} is \code{TRUE}, then deletions (Ds in the
       CIGAR) are treated like junctions (Ns in the CIGAR), that is, the
@@ -403,18 +378,21 @@ galp
 length(galp)
 head(galp)
 head(names(galp))
+
 first(galp)
 last(galp)
-last(galp, invert.strand=TRUE)
-left(galp)
-right(galp)
-seqnames(galp)
 
 strandMode(galp)
+first(galp, real.strand=TRUE)
+last(galp, real.strand=TRUE)
 strand(galp)
 
 strandMode(galp) <- 2
+first(galp, real.strand=TRUE)
+last(galp, real.strand=TRUE)
 strand(galp)
+
+seqnames(galp)
 
 head(njunc(galp))
 table(isProperPair(galp))
@@ -432,7 +410,6 @@ grglist(galp)  # a GRangesList object
 strandMode(galp) <- 1
 grglist(galp)
 
-grglist(galp, order.as.in.query=TRUE)
 stopifnot(identical(unname(elementLengths(grglist(galp))), njunc(galp) + 2L))
 
 granges(galp)  # a GRanges object

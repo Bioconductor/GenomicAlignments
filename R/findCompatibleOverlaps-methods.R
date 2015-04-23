@@ -12,7 +12,12 @@ setGeneric("findCompatibleOverlaps",
 .GAlignmentsORGAlignmentPairs.findCompatibleOverlaps <-
     function(query, subject, algorithm=c("nclist", "intervaltree"))
 {
-    grl <- grglist(query, order.as.in.query=TRUE)
+    ## Starting with BioC 3.2, the 'order.as.in.query' argument is not
+    ## supported anymore for GAlignmentPairs objects.
+    if (is(query, "GAlignmentPairs"))
+        grl <- grglist(query)
+    else
+        grl <- grglist(query, order.as.in.query=TRUE)
     ## TODO: Use 'type="within"' when it's supported for circular
     ## sequences like the mitochondrial chromosome.
     ov <- findOverlaps(grl, subject, algorithm=match.arg(algorithm),
