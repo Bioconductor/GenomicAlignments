@@ -55,7 +55,7 @@ setGeneric("prmap", function(from, to) standardGeneric("prmap"))
 setMethod("prmap", c("Ranges", "GAlignments"),
     function(from, to) 
     {
-        .Defunct("pmapFromTranscripts", old="prmap")
+        .Defunct("pmapFromTranscripts")
         starts <- .Call("query_locs_to_ref_locs", start(from), cigar(to), 
                         start(to), FALSE, PACKAGE="GenomicAlignments")
         ends <- .Call("query_locs_to_ref_locs", end(from), cigar(to), 
