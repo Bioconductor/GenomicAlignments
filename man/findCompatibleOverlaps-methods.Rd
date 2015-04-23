@@ -30,6 +30,13 @@ countCompatibleOverlaps(query, subject, algorithm=c("nclist", "intervaltree"))
   \item{subject}{
     A \link{GRangesList} object representing the transcripts.
   }
+  \item{algorithm}{
+    This argument is passed to \code{\link{findOverlaps}}, which
+    \code{findCompatibleOverlaps} and \code{countCompatibleOverlaps} use
+    internally. See \code{?\link{findOverlaps}} for more information.
+    Note that it will be removed in BioC 3.3 so please don't use it unless
+    you have a good reason to do so (e.g. troubleshooting).
+  }
 }
 
 \details{

@@ -141,6 +141,13 @@ IntersectionNotEmpty(features, reads, algorithm=c("nclist", "intervaltree"),
             \code{features}. 
     }
   }
+  \item{algorithm}{
+    This argument is passed to \code{\link{findOverlaps}}, which the mode
+    functions use internally.
+    See \code{?\link{findOverlaps}} for more information.
+    Note that it will be removed in BioC 3.3 so please don't use it unless
+    you have a good reason to do so (e.g. troubleshooting).
+  }
   \item{ignore.strand}{
     A logical indicating if strand should be considered when matching.
   }

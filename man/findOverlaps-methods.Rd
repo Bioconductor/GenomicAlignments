@@ -97,7 +97,7 @@
     object for either \code{query} or \code{subject}.
     A vector-like object containing ranges for the other one.
   }
-  \item{maxgap, minoverlap, type, select}{
+  \item{maxgap, minoverlap, type, select, algorithm}{
     See \code{\link[IRanges]{findOverlaps}} in the \pkg{IRanges} package
     for a description of these arguments.
   }

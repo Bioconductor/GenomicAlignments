@@ -54,6 +54,13 @@ findSpliceOverlaps(query, subject, algorithm=c("nclist", "intervaltree"),
     A \link[GenomicRanges]{GRangesList} containing the annotations.
     This list is expected to contain exons grouped by transcripts. 
   }
+  \item{algorithm}{
+    This argument is passed to \code{\link{findOverlaps}}, which
+    \code{findSpliceOverlaps} uses internally.
+    See \code{?\link{findOverlaps}} for more information.
+    Note that it will be removed in BioC 3.3 so please don't use it unless
+    you have a good reason to do so (e.g. troubleshooting).
+  }
   \item{ignore.strand}{
     When set to \code{TRUE}, strand information is ignored in the
     overlap calculations.
