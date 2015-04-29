@@ -166,7 +166,7 @@ static void drop_or_append_or_merge_range(int start, int width,
 		IntPairAE *range_buf, const char *OP, CharAEAE *OP_buf)
 {
 	int buf_nelt, buf_nelt_minus_1, prev_end_plus_1;
-	CharAE OP_buf_new_elt, *OP_buf_prev_elt;
+	CharAE *OP_buf_new_elt, *OP_buf_prev_elt;
 
 	if (drop_empty_range && width == 0)  /* Drop. */
 		return;
@@ -176,14 +176,14 @@ static void drop_or_append_or_merge_range(int start, int width,
 		   incoming range i.e. 'start' should always be > the end of
 		   the previous incoming range. */
 		buf_nelt_minus_1 = buf_nelt - 1;
-		prev_end_plus_1 = range_buf->a.elts[buf_nelt_minus_1] +
-				  range_buf->b.elts[buf_nelt_minus_1];
+		prev_end_plus_1 = range_buf->a->elts[buf_nelt_minus_1] +
+				  range_buf->b->elts[buf_nelt_minus_1];
 		if (start == prev_end_plus_1) {
 			/* Merge. */
-			range_buf->b.elts[buf_nelt_minus_1] += width;
+			range_buf->b->elts[buf_nelt_minus_1] += width;
 			if (OP_buf != NULL) {
-				OP_buf_prev_elt = OP_buf->elts +
-						  buf_nelt_minus_1;
+				OP_buf_prev_elt =
+					OP_buf->elts[buf_nelt_minus_1];
 				CharAE_insert_at(OP_buf_prev_elt,
 					CharAE_get_nelt(OP_buf_prev_elt), *OP);
 			}
@@ -194,8 +194,8 @@ static void drop_or_append_or_merge_range(int start, int width,
 	IntPairAE_insert_at(range_buf, buf_nelt, start, width);
 	if (OP_buf != NULL) {
 		OP_buf_new_elt = new_CharAE(1);
-		CharAE_insert_at(&OP_buf_new_elt, 0, *OP);
-		CharAEAE_insert_at(OP_buf, buf_nelt, &OP_buf_new_elt);
+		CharAE_insert_at(OP_buf_new_elt, 0, *OP);
+		CharAEAE_insert_at(OP_buf, buf_nelt, OP_buf_new_elt);
 	}
 	return;
 }
@@ -352,7 +352,7 @@ SEXP explode_cigar_ops(SEXP cigar, SEXP ops)
 {
 	SEXP ans, cigar_elt, ans_elt, ans_elt_elt;
 	int cigar_len, ans_elt_len, i, j;
-	CharAE OPbuf;
+	CharAE *OPbuf;
 	const char *cigar_string, *errmsg;
 
 	cigar_len = LENGTH(cigar);
@@ -370,16 +370,16 @@ SEXP explode_cigar_ops(SEXP cigar, SEXP ops)
 			UNPROTECT(1);
 			error("'cigar[%d]' is \"*\"", i + 1);
 		}
-		CharAE_set_nelt(&OPbuf, 0);
-		errmsg = split_cigar_string(cigar_string, &OPbuf, NULL);
+		CharAE_set_nelt(OPbuf, 0);
+		errmsg = split_cigar_string(cigar_string, OPbuf, NULL);
 		if (errmsg != NULL) {
 			UNPROTECT(1);
 			error("in 'cigar[%d]': %s", i + 1, errmsg);
 		}
-		ans_elt_len = CharAE_get_nelt(&OPbuf);
+		ans_elt_len = CharAE_get_nelt(OPbuf);
 		PROTECT(ans_elt = NEW_CHARACTER(ans_elt_len));
 		for (j = 0; j < ans_elt_len; j++) {
-			PROTECT(ans_elt_elt = mkCharLen(OPbuf.elts + j, 1));
+			PROTECT(ans_elt_elt = mkCharLen(OPbuf->elts + j, 1));
 			SET_STRING_ELT(ans_elt, j, ans_elt_elt);
 			UNPROTECT(1);
 		}
@@ -394,7 +394,7 @@ SEXP explode_cigar_op_lengths(SEXP cigar, SEXP ops)
 {
 	SEXP ans, cigar_elt, ans_elt;
 	int cigar_len, i;
-	IntAE OPLbuf;
+	IntAE *OPLbuf;
 	const char *cigar_string, *errmsg;
 
 	cigar_len = LENGTH(cigar);
@@ -412,13 +412,13 @@ SEXP explode_cigar_op_lengths(SEXP cigar, SEXP ops)
 			UNPROTECT(1);
 			error("'cigar[%d]' is \"*\"", i + 1);
 		}
-		IntAE_set_nelt(&OPLbuf, 0);
-		errmsg = split_cigar_string(cigar_string, NULL, &OPLbuf);
+		IntAE_set_nelt(OPLbuf, 0);
+		errmsg = split_cigar_string(cigar_string, NULL, OPLbuf);
 		if (errmsg != NULL) {
 			UNPROTECT(1);
 			error("in 'cigar[%d]': %s", i + 1, errmsg);
 		}
-		PROTECT(ans_elt = new_INTEGER_from_IntAE(&OPLbuf));
+		PROTECT(ans_elt = new_INTEGER_from_IntAE(OPLbuf));
 		SET_VECTOR_ELT(ans, i, ans_elt);
 		UNPROTECT(1);
 	}
@@ -587,9 +587,9 @@ SEXP cigar_ranges(SEXP cigar, SEXP flag, SEXP space, SEXP pos, SEXP f,
 	SEXP ans, ans_breakpoints, f_levels, cigar_elt;
 	int cigar_len, space0, pos_len, f_is_NULL, ans_len, *breakpoint,
 	    drop_empty_ranges0, reduce_ranges0, with_ops0, i;
-	IntPairAE range_buf1, *range_buf_p;
-	IntPairAEAE range_buf2;
-	CharAEAE OP_buf, *OP_buf_p;
+	IntPairAE *range_buf1;
+	IntPairAEAE *range_buf2;
+	CharAEAE *OP_buf;
 	const int *flag_elt, *pos_elt, *f_elt;
 	const char *cigar_string, *errmsg;
 
@@ -605,7 +605,6 @@ SEXP cigar_ranges(SEXP cigar, SEXP flag, SEXP space, SEXP pos, SEXP f,
 		ans_len = cigar_len;
 		/* We will typically generate at least 'cigar_len' ranges. */
 		range_buf1 = new_IntPairAE(ans_len, 0);
-		range_buf_p = &range_buf1;
 		PROTECT(ans_breakpoints = NEW_INTEGER(ans_len));
 		breakpoint = INTEGER(ans_breakpoints);
 	} else {
@@ -619,9 +618,8 @@ SEXP cigar_ranges(SEXP cigar, SEXP flag, SEXP space, SEXP pos, SEXP f,
 	with_ops0 = LOGICAL(with_ops)[0];
 	if (with_ops0 && f_is_NULL) {
 		OP_buf = new_CharAEAE(cigar_len, 0);
-		OP_buf_p = &OP_buf;
 	} else {
-		OP_buf_p = NULL;
+		OP_buf = NULL;
 	}
 	for (i = 0; i < cigar_len; i++) {
 		if (flag != R_NilValue) {
@@ -657,11 +655,11 @@ SEXP cigar_ranges(SEXP cigar, SEXP flag, SEXP space, SEXP pos, SEXP f,
 		if (!f_is_NULL) {
 			if (*f_elt == NA_INTEGER)
 				error("'f[%d]' is NA", i + 1);
-			range_buf_p = range_buf2.elts + *f_elt - 1;
+			range_buf1 = range_buf2->elts[*f_elt - 1];
 		}
 		errmsg = parse_cigar_ranges(cigar_string, space0, *pos_elt,
 				drop_empty_ranges0, reduce_ranges0,
-				range_buf_p, OP_buf_p);
+				range_buf1, OP_buf);
 		if (errmsg != NULL) {
 			if (f_is_NULL)
 				UNPROTECT(1);
@@ -673,13 +671,13 @@ for_tail:
 		if (pos_len != 1)
 			pos_elt++;
 		if (f_is_NULL)
-			*(breakpoint++) = IntPairAE_get_nelt(range_buf_p);
+			*(breakpoint++) = IntPairAE_get_nelt(range_buf1);
 		else
 			f_elt++;
 	}
 	if (!f_is_NULL)
-		return make_list_of_IRanges(&range_buf2, f_levels);
-	PROTECT(ans = make_CompressedIRangesList(range_buf_p, OP_buf_p,
+		return make_list_of_IRanges(range_buf2, f_levels);
+	PROTECT(ans = make_CompressedIRangesList(range_buf1, OP_buf,
 						 ans_breakpoints));
 	UNPROTECT(2);
 	return ans;

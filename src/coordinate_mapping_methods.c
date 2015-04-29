@@ -120,7 +120,7 @@ SEXP ref_locs_to_query_locs(SEXP ref_locs, SEXP cigar, SEXP pos,
 SEXP map_ref_locs_to_query_locs(SEXP start, SEXP end, SEXP cigar, SEXP pos)
 {
         SEXP ans, ans_start, ans_end, ans_qhits, ans_shits;
-        IntAE sbuf, ebuf, qhbuf, shbuf;
+        IntAE *sbuf, *ebuf, *qhbuf, *shbuf;
         int i, j, s, e;
         int nlocs = LENGTH(start);
         int ncigar = LENGTH(cigar);
@@ -139,18 +139,18 @@ SEXP map_ref_locs_to_query_locs(SEXP start, SEXP end, SEXP cigar, SEXP pos)
                         e = to_query(INTEGER(end)[i], cig_j, pos_j, TRUE); 
                         if (e == NA_INTEGER)
                                 break;
-                        IntAE_insert_at(&sbuf, IntAE_get_nelt(&sbuf), s);
-                        IntAE_insert_at(&ebuf, IntAE_get_nelt(&ebuf), e);
-                        IntAE_insert_at(&qhbuf, IntAE_get_nelt(&qhbuf), i + 1);
-                        IntAE_insert_at(&shbuf, IntAE_get_nelt(&shbuf), j + 1);
+                        IntAE_insert_at(sbuf, IntAE_get_nelt(sbuf), s);
+                        IntAE_insert_at(ebuf, IntAE_get_nelt(ebuf), e);
+                        IntAE_insert_at(qhbuf, IntAE_get_nelt(qhbuf), i + 1);
+                        IntAE_insert_at(shbuf, IntAE_get_nelt(shbuf), j + 1);
                 }
         }
 
         PROTECT(ans = NEW_LIST(4));
-        PROTECT(ans_start = new_INTEGER_from_IntAE(&sbuf));
-        PROTECT(ans_end = new_INTEGER_from_IntAE(&ebuf));
-        PROTECT(ans_qhits = new_INTEGER_from_IntAE(&qhbuf));
-        PROTECT(ans_shits = new_INTEGER_from_IntAE(&shbuf));
+        PROTECT(ans_start = new_INTEGER_from_IntAE(sbuf));
+        PROTECT(ans_end = new_INTEGER_from_IntAE(ebuf));
+        PROTECT(ans_qhits = new_INTEGER_from_IntAE(qhbuf));
+        PROTECT(ans_shits = new_INTEGER_from_IntAE(shbuf));
         SET_VECTOR_ELT(ans, 0, ans_start);
         SET_VECTOR_ELT(ans, 1, ans_end);
         SET_VECTOR_ELT(ans, 2, ans_qhits);
@@ -273,7 +273,7 @@ SEXP query_locs_to_ref_locs(SEXP query_locs, SEXP cigar, SEXP pos,
 SEXP map_query_locs_to_ref_locs(SEXP start, SEXP end, SEXP cigar, SEXP pos)
 {
         SEXP ans, ans_start, ans_end, ans_qhits, ans_shits;
-        IntAE sbuf, ebuf, qhbuf, shbuf;
+        IntAE *sbuf, *ebuf, *qhbuf, *shbuf;
         int i, j, s, e, nlocs, ncigar;
 
         nlocs = LENGTH(start);
@@ -292,18 +292,18 @@ SEXP map_query_locs_to_ref_locs(SEXP start, SEXP end, SEXP cigar, SEXP pos)
                         e = to_ref(INTEGER(end)[i], cig_j, pos_j, TRUE); 
                         if (e == NA_INTEGER)
                                 break;
-                        IntAE_insert_at(&sbuf, IntAE_get_nelt(&sbuf), s);
-                        IntAE_insert_at(&ebuf, IntAE_get_nelt(&ebuf), e);
-                        IntAE_insert_at(&qhbuf, IntAE_get_nelt(&qhbuf), i + 1);
-                        IntAE_insert_at(&shbuf, IntAE_get_nelt(&shbuf), j + 1);
+                        IntAE_insert_at(sbuf, IntAE_get_nelt(sbuf), s);
+                        IntAE_insert_at(ebuf, IntAE_get_nelt(ebuf), e);
+                        IntAE_insert_at(qhbuf, IntAE_get_nelt(qhbuf), i + 1);
+                        IntAE_insert_at(shbuf, IntAE_get_nelt(shbuf), j + 1);
                 }
         }
 
         PROTECT(ans = NEW_LIST(4));
-        PROTECT(ans_start = new_INTEGER_from_IntAE(&sbuf));
-        PROTECT(ans_end = new_INTEGER_from_IntAE(&ebuf));
-        PROTECT(ans_qhits = new_INTEGER_from_IntAE(&qhbuf));
-        PROTECT(ans_shits = new_INTEGER_from_IntAE(&shbuf));
+        PROTECT(ans_start = new_INTEGER_from_IntAE(sbuf));
+        PROTECT(ans_end = new_INTEGER_from_IntAE(ebuf));
+        PROTECT(ans_qhits = new_INTEGER_from_IntAE(qhbuf));
+        PROTECT(ans_shits = new_INTEGER_from_IntAE(shbuf));
         SET_VECTOR_ELT(ans, 0, ans_start);
         SET_VECTOR_ELT(ans, 1, ans_end);
         SET_VECTOR_ELT(ans, 2, ans_qhits);

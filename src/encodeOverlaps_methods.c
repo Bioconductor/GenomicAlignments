@@ -307,7 +307,7 @@ SEXP encode_overlaps1(SEXP query_start, SEXP query_width, SEXP query_space,
 		SEXP as_matrix, SEXP as_raw)
 {
 	int query_break0, flip_query0, as_matrix0, as_raw0, Loffset, Roffset;
-	CharAE buf;
+	CharAE *buf;
 	SEXP encoding, ans_Loffset, ans_Roffset, ans;
 
 	query_break0 = INTEGER(query_break)[0];
@@ -319,8 +319,8 @@ SEXP encode_overlaps1(SEXP query_start, SEXP query_width, SEXP query_space,
 		query_start, query_width, query_space,
 		query_break0, flip_query0,
 		subject_start, subject_width, subject_space,
-		as_matrix0, &Loffset, &Roffset, &buf);
-	PROTECT(encoding = make_encoding_from_CharAE(&buf,
+		as_matrix0, &Loffset, &Roffset, buf);
+	PROTECT(encoding = make_encoding_from_CharAE(buf,
 						as_raw0 ? 2 : 1, as_matrix0,
 						LENGTH(query_start),
 						query_break0,
@@ -395,7 +395,7 @@ SEXP RangesList_encode_overlaps(SEXP query_starts, SEXP query_widths,
 {
 	int q_len, s_len, ans_len, i, j, k;
 	SEXP ans_Loffset, ans_Roffset, ans_encoding, ans_encoding_elt, ans;
-	CharAE buf;
+	CharAE *buf;
 
 	/* TODO: Add some basic checking of the input values. */
 	q_len = LENGTH(query_starts);
@@ -420,10 +420,10 @@ SEXP RangesList_encode_overlaps(SEXP query_starts, SEXP query_widths,
 				i, j, 0,
 				INTEGER(ans_Loffset) + k,
 				INTEGER(ans_Roffset) + k,
-				&buf));
+				buf));
 		SET_STRING_ELT(ans_encoding, k, ans_encoding_elt);
 		UNPROTECT(1);
-		CharAE_set_nelt(&buf, 0);
+		CharAE_set_nelt(buf, 0);
 	}
 	if (ans_len != 0 && (i != q_len || j != s_len))
 		warning("longer object length is not a multiple "
@@ -448,7 +448,7 @@ SEXP Hits_encode_overlaps(SEXP query_starts, SEXP query_widths,
 	int q_len, s_len, ans_len, i, j, k;
 	const int *q_hits, *s_hits;
 	SEXP ans_Loffset, ans_Roffset, ans_encoding, ans_encoding_elt, ans;
-	CharAE buf;
+	CharAE *buf;
 
 	/* TODO: Add some basic checking of the input values. */
 	q_len = LENGTH(query_starts);
@@ -478,10 +478,10 @@ SEXP Hits_encode_overlaps(SEXP query_starts, SEXP query_widths,
 				i, j, LOGICAL(flip_query)[k],
 				INTEGER(ans_Loffset) + k,
 				INTEGER(ans_Roffset) + k,
-				&buf));
+				buf));
 		SET_STRING_ELT(ans_encoding, k, ans_encoding_elt);
 		UNPROTECT(1);
-		CharAE_set_nelt(&buf, 0);
+		CharAE_set_nelt(buf, 0);
 	}
 	PROTECT(ans = make_LIST_from_ovenc_parts(ans_Loffset, ans_Roffset,
 						 ans_encoding));
