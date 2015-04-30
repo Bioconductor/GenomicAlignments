@@ -72,6 +72,14 @@ test_GAlignmentsList_coercion <- function() {
     checkTrue(length(galist) == length(grl))
     checkTrue(length(grl[[1]]) == 0L)
     checkTrue(length(grl[[2]]) == 4L)
+
+    ## empty ranges
+    galist <- GAlignmentsList(
+        GAlignments("chr1", 20L, "10M", strand("+")), GAlignments())
+    checkTrue(length(ranges(galist)) == 1L)
+    checkTrue(length(rglist(galist)) == 2L)
+    checkTrue(length(granges(galist)) == 1L)
+    checkTrue(length(grglist(galist)) == 2L)
 }
 
 test_GAlignmentsList_accessors <- function() {

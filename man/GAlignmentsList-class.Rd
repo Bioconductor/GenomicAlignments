@@ -198,8 +198,9 @@
       object.
 
       \code{grglist} coercion supports \code{ignore.strand} to allow 
-      ranges of opposite strand to be combined (see examples). All 
-      ranges in the resulting GRangesList will have strand \sQuote{*}.
+      ranges of opposite strand to be combined (see examples). When
+      \code{ignore.strand} is TRUE all ranges in the resulting 
+      GRangesList have strand \sQuote{*}.
     }
     \item{}{
       \code{as(x, "GRangesList")}, \code{as(x, "GRanges")},
@@ -386,7 +387,7 @@ length(galist2)
 ## ---------------------------------------------------------------------
 
 ## The granges() and grlist() coercions support 'ignore.strand' to 
-## allow ranges from different strand to be combined. In this example 
+## allow ranges from different strands to be combined. In this example 
 ## paired-end reads aligned to opposite strands were read into a 
 ## GAlignmentsList. If the desired operation is to combine these ranges, 
 ## regardless of gaps or the space between pairs, 'ignore.strand' must be TRUE.

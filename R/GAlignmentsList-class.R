@@ -203,29 +203,31 @@ setMethod("updateObject", "GAlignmentsList",
 ### Coercion.
 ###
 
-## FIXME (H.P. Feb 25, 2014):
-## This is broken if 'x' has empty elements:
-##   > grglist(GAlignmentsList(GAlignments("chr1", 20L, "10M", strand("+")),
-##                             GAlignments()))
-##   Error in relist(gr, .shiftPartition(...)) :
-##     shape of 'skeleton' is not compatible with 'NROW(flesh)'
 setMethod("grglist", "GAlignmentsList",
-    function(x, use.mcols=FALSE, order.as.in.query=FALSE, drop.D.ranges=FALSE,
-                ignore.strand=FALSE) 
+    function(x, use.mcols=FALSE, order.as.in.query=FALSE, 
+             drop.D.ranges=FALSE, ignore.strand=FALSE) 
     {
         if (!isTRUEorFALSE(use.mcols))
             stop("'use.mcols' must be TRUE or FALSE")
+        if (!identical(order.as.in.query, FALSE)) {
+            msg <- c("Starting with BioC 3.2, the \"grglist\" method for ",
+                     "GAlignmentsList objects *always* returns the ranges ",
+                     "\"ordered as in query\". Therefore the ",
+                     "'order.as.in.query' argument is now ignored (and ",
+                     "deprecated).")
+            .Deprecated(msg=wmsg(msg))
+        }
+        if (!identical(drop.D.ranges, FALSE)) {
+            msg <- c("Starting with BioC 3.2, the 'drop.D.ranges' ",
+                     "argument is ignored and deprecated in the ",
+                     "\"grglist\" method for GAlignmentsList objects.")
+            .Deprecated(msg=wmsg(msg))
+        }
         if (ignore.strand)
             strand(x@unlistData) <- "*"
-        rgl <- rglist(x@unlistData,
-                      order.as.in.query=order.as.in.query,
-                      drop.D.ranges=drop.D.ranges)
-        eltlen <- elementLengths(rgl)
-        gr <- GRanges(rep.int(seqnames(x@unlistData), eltlen), 
-                      ranges=unlist(rgl), 
-                      strand=rep.int(strand(x@unlistData), eltlen),
-                      seqinfo=seqinfo(x@unlistData))
-        ans <- relist(gr, .shiftPartition(x@partitioning, rgl@partitioning))
+        gr <- granges(x@unlistData, use.mcols=use.mcols)
+        ans <- relist(gr, x@partitioning)
+        names(ans) <- names(x)
         if (use.mcols)
             mcols(ans) <- mcols(x)
         ans
@@ -246,7 +248,7 @@ setMethod("granges", "GAlignmentsList",
                       "is not parallel to 'x'.")
         rg <- range(grglist(x, ignore.strand=ignore.strand))
         is_one_to_one <- all(elementLengths(rg) == 1L)
-        if (!is_one_to_one) {
+        if (!is_one_to_one && all(width(x@partitioning) > 0)) {
             if (ignore.strand)
                 warning(msg)
             else
@@ -259,54 +261,21 @@ setMethod("granges", "GAlignmentsList",
     }
 )
 
-## FIXME (H.P. Feb 25, 2014):
-## This is broken if 'x' has empty elements:
-##   > rglist(GAlignmentsList(GAlignments("chr1", 20L, "10M", strand("+")),
-##                            GAlignments()))
-##   Error in relist(rgl@unlistData, partitioning) :
-##     shape of 'skeleton' is not compatible with 'NROW(flesh)'
 setMethod("rglist", "GAlignmentsList",
     function(x, use.mcols=FALSE, order.as.in.query=FALSE, drop.D.ranges=FALSE)
     {
         if (!isTRUEorFALSE(use.mcols))
             stop("'use.mcols' must be TRUE or FALSE")
-        rgl <- rglist(x@unlistData)
-        partitioning <- .shiftPartition(x@partitioning, rgl@partitioning) 
-        ans <- relist(rgl@unlistData, partitioning)
+        ans <- relist(ranges(x@unlistData), x@partitioning)
         if (use.mcols)
             mcols(ans) <- mcols(x)
         ans
     }
 )
 
-## Adjust the widths of 'partition1' to accomodate the 
-## increased / decreased number of splits in 'partition2'.
-## The return value is a PartitioningByEnd object the same 
-## length as 'partition1'.
-.shiftPartition <- function(partition1, partition2)
-{
-    f <- rep(seq_along(partition1), width(partition1))
-    w <- sapply(split(width(partition2), f), sum)
-    if (any(w < 0))
-        stop("width of 'partition2' cannot be negative")
-    wdiff <- w - width(partition1)
-    PartitioningByEnd(end(partition1) + cumsum(wdiff), names=names(partition1))
-}
-
-## FIXME (H.P. Feb 25, 2014):
-## This is broken if 'x' has empty elements:
-##   > ranges(GAlignmentsList(GAlignments("chr1", 20L, "10M", strand("+")),
-##                            GAlignments()))
-##   Error in relist(unlist(rgl), .shiftPartition(...)) : 
-##     shape of 'skeleton' is not compatible with 'NROW(flesh)'
 setMethod("ranges", "GAlignmentsList",
     function(x) 
-    {
-        rgl <- rglist(x@unlistData)
-        lst <- relist(unlist(rgl), 
-                      .shiftPartition(x@partitioning, rgl@partitioning))
-        unlist(range(lst), use.names=FALSE)
-    }
+        unlist(range(rglist(x)), use.names=FALSE)
 )
 
 setAs("GAlignmentsList", "GRangesList", 
