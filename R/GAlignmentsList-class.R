@@ -144,6 +144,15 @@ setReplaceMethod("elementMetadata", "GAlignmentsList",
 setReplaceMethod("strand", "GAlignmentsList",
     GenomicRanges:::replaceStrandList
 )
+setReplaceMethod("strand", c("GAlignmentsList", "character"), 
+    function(x, ..., value)
+    {
+        if (length(value) > 1L)
+            stop("length(value) must be 1")
+        strand(x@unlistData) <- value
+        x
+    }
+)
 
 setReplaceMethod("seqinfo", "GAlignmentsList",
     GenomicRanges:::replaceSeqinfoList

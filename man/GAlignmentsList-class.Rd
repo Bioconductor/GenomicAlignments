@@ -19,6 +19,7 @@
 \alias{rname<-,GAlignmentsList-method}
 \alias{strand,GAlignmentsList-method}
 \alias{strand<-,GAlignmentsList-method}
+\alias{strand<-,GAlignmentsList,character-method}
 \alias{cigar,GAlignmentsList-method}
 \alias{qwidth,GAlignmentsList-method}
 \alias{njunc,GAlignmentsList-method}
