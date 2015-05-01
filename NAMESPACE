@@ -59,6 +59,7 @@ exportMethods(
     coverage,
     pintersect,
     findOverlaps, countOverlaps, overlapsAny, subsetByOverlaps,
+    mapCoords,
 
     ## Generics defined in GenomicRanges:
     seqinfo, "seqinfo<-",
