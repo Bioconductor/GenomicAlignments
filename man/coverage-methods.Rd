@@ -3,16 +3,18 @@
 
 \alias{coverage}
 \alias{coverage,GAlignments-method}
+\alias{coverage,GAlignmentsList-method}
 \alias{coverage,GAlignmentPairs-method}
 \alias{coverage,BamFile-method}
 \alias{coverage,character-method}
 
 
-\title{Coverage of a GAlignments or GAlignmentPairs object}
+\title{Coverage of a GAlignments, GAlignmentsList or GAlignmentPairs object}
 
 \description{
   \code{\link[IRanges]{coverage}} methods for \link{GAlignments},
-  \link{GAlignmentPairs}, and \link[Rsamtools]{BamFile} objects.
+  \link{GAlignmentsList}, \link{GAlignmentPairs}, and 
+  \link[Rsamtools]{BamFile} objects.
 
   NOTE: The \code{\link[IRanges]{coverage}} generic function and methods
   for \link[IRanges]{Ranges} and \link[IRanges]{RangesList} objects
@@ -26,6 +28,10 @@
 \S4method{coverage}{GAlignments}(x, shift=0L, width=NULL, weight=1L,
          method=c("auto", "sort", "hash"), drop.D.ranges=FALSE)
 
+\S4method{coverage}{GAlignmentsList}(x, shift=0L, width=NULL, weight=1L,
+         method=c("auto", "sort", "hash"), drop.D.ranges=FALSE,
+         ignore.strand=FALSE)
+
 \S4method{coverage}{GAlignmentPairs}(x, shift=0L, width=NULL, weight=1L,
          method=c("auto", "sort", "hash"), drop.D.ranges=FALSE)
 
@@ -38,8 +44,8 @@
 
 \arguments{
   \item{x}{
-    A \link{GAlignments}, \link{GAlignmentPairs}, \link[Rsamtools]{BamFile}
-    or \code{character(1)} object.
+    A \link{GAlignments}, \link{GAlignmentsList}, \link{GAlignmentPairs},
+    \link[Rsamtools]{BamFile} or \code{character(1)} object.
   }
   \item{shift, width, weight}{
     See \code{coverage} method for \link[GenomicRanges]{GRanges} objects
@@ -52,6 +58,11 @@
   \item{drop.D.ranges}{
     Whether the coverage calculation should ignore ranges corresponding
     to D (deletion) in the CIGAR string.
+  }
+  \item{ignore.strand}{
+    Applies to the GAlignmentsList method only. When \code{ignore.strand}
+    is TRUE, ranges on opposite strands are combined in the \code{grglist} 
+    coercion. See ?\code{GAlignmentsList} man page for details.
   }
   \item{...}{
     Additional arguments passed to the \code{coverage} method for
@@ -109,6 +120,9 @@
 ex1_file <- system.file("extdata", "ex1.bam", package="Rsamtools")
 
 gal <- readGAlignments(ex1_file)
+stopifnot(identical(coverage(gal), coverage(as(gal, "GRangesList"))))
+
+galist <- readGAlignmentsList(ex1_file)
 stopifnot(identical(coverage(gal), coverage(as(gal, "GRangesList"))))
 
 galp <- readGAlignmentPairs(ex1_file)

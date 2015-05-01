@@ -10,6 +10,16 @@ setMethod("coverage", "GAlignments",
                  shift=shift, width=width, weight=weight, method=method)
 )
 
+setMethod("coverage", "GAlignmentsList",
+    function(x, shift=0L, width=NULL, weight=1L,
+                method=c("auto", "sort", "hash"), drop.D.ranges=FALSE,
+                ignore.strand=FALSE) 
+{
+        x <- grglist(x, drop.D.ranges=drop.D.ranges,
+                     ignore.strand=ignore.strand)
+        coverage(x, shift=shift, width=width, weight=weight, method=method)
+})
+
 setMethod("coverage", "GAlignmentPairs",
     function(x, shift=0L, width=NULL, weight=1L,
                 method=c("auto", "sort", "hash"), drop.D.ranges=FALSE)
