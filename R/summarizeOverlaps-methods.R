@@ -369,7 +369,7 @@ setMethod("summarizeOverlaps", c("BamViews", "missing"),
                       preprocess.reads=preprocess.reads, ...)
     colData(se)$bamSamples <- bamSamples(features)
     colData(se)$bamIndices <- bamIndicies(features)
-    exptData(se)$bamExperiment <- bamExperiment(features)
+    metadata(se)$bamExperiment <- bamExperiment(features)
     se
 })
 

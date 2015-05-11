@@ -214,8 +214,9 @@ data.frame(union = assay(summarizeOverlaps(lst, reads)),
 
 If desired, users can supply their own counting function as the \Rcode{mode}
 argument and take advantage of the infrastructure for counting over multiple 
-BAM files and parsing the results into a \Rclass{SummarizedExperiment}.
-See \Rcode{?'BamViews-class' or ?'BamFile-class'} in \Biocpkg{Rsamtools}.
+BAM files and parsing the results into a \Rclass{RangedSummarizedExperiment}
+object. See \Rcode{?'BamViews-class'} or \Rcode{?'BamFile-class'} in the
+\Biocpkg{Rsamtools} package.
 
 \section{\Rcode{pasilla} Data}
 In this excercise we count the \Biocpkg{pasilla} data by gene and by

@@ -91,8 +91,8 @@ IntersectionNotEmpty(features, reads, algorithm=c("nclist", "intervaltree"),
     argument is missing. Features are extracted from the \code{bamRanges} 
     and the \code{reads} from \code{bamPaths}. Metadata from \code{bamPaths} 
     and \code{bamSamples} are stored in the \code{colData} of the 
-    resulting \link[GenomicRanges]{SummarizedExperiment} object.
-    \code{bamExperiment} metadata are stored in the \code{exptData}. 
+    resulting \link[SummarizedExperiment]{RangedSummarizedExperiment} object.
+    \code{bamExperiment} metadata are stored in the \code{metadata} slot. 
   } 
   \item{reads}{
     A \link[GenomicRanges]{GRanges}, \link[GenomicRanges]{GRangesList}
@@ -284,8 +284,9 @@ IntersectionNotEmpty(features, reads, algorithm=c("nclist", "intervaltree"),
 }
 
 \value{
-  A \link[GenomicRanges]{SummarizedExperiment} object. The \code{assays} slot
-  holds the counts, \code{rowData} holds the annotation from \code{features}.
+  A \link[SummarizedExperiment]{RangedSummarizedExperiment} object. The
+  \code{assays} slot holds the counts, \code{rowRanges} holds the annotation
+  from \code{features}.
 
   When \code{reads} is a \code{BamFile} or \code{BamFileList} \code{colData} 
   is an empty DataFrame with a single row named \sQuote{counts}. If 
@@ -313,6 +314,9 @@ IntersectionNotEmpty(features, reads, algorithm=c("nclist", "intervaltree"),
 \seealso{
   \itemize{
     \item The \pkg{DESeq}, \pkg{DEXSeq} and \pkg{edgeR} packages.
+
+    \item The \link[SummarizedExperiment]{RangedSummarizedExperiment} class
+          defined in the \pkg{SummarizedExperiment} package.
 
     \item The \link{GAlignments} and \link{GAlignmentPairs} classes.
 
@@ -547,14 +551,14 @@ summarizeOverlaps(grl, reads, mode=Union, preprocess.reads=ResizeReads,
 ## ---------------------------------------------------------------------
 
 ## bamSamples and bamPaths metadata are included in the colData.
-## bamExperiment metadata is put into the exptData slot.
+## bamExperiment metadata is put into the metadata slot.
 fl <- system.file("extdata", "ex1.bam", package="Rsamtools", mustWork=TRUE)
 rngs <- GRanges(c("seq1", "seq2"), IRanges(1, c(1575, 1584)))
 samp <- DataFrame(info="test", row.names="ex1")
 view <- BamViews(fl, bamSamples=samp, bamRanges=rngs)
 se <- summarizeOverlaps(view, mode=Union, ignore.strand=TRUE)
 colData(se)
-exptData(se)
+metadata(se)
 }
 
 \keyword{methods}
