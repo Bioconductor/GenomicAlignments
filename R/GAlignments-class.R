@@ -540,12 +540,13 @@ setMethod("extractROWS", "GAlignments",
         ans_cigar <- extractROWS(x@cigar, i)
         ans_strand <- extractROWS(x@strand, i)
         ans_elementMetadata <- extractROWS(x@elementMetadata, i)
-        GenomicRanges:::clone(x, NAMES=ans_NAMES,
-                                 seqnames=ans_seqnames,
-                                 start=ans_start,
-                                 cigar=ans_cigar,
-                                 strand=ans_strand,
-                                 elementMetadata=ans_elementMetadata)
+        BiocGenerics:::updateS4(x,
+            NAMES=ans_NAMES,
+            seqnames=ans_seqnames,
+            start=ans_start,
+            cigar=ans_cigar,
+            strand=ans_strand,
+            elementMetadata=ans_elementMetadata)
     }
 )
 
