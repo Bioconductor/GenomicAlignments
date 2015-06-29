@@ -389,7 +389,7 @@ setMethod("updateObject", "GAlignments",
 setMethod("update", "GAlignments",
           function(object, ...)
           {
-            BiocGenerics:::updateS4(object, ...)
+            BiocGenerics:::replaceSlots(object, ...)
           })
 
 
@@ -540,7 +540,7 @@ setMethod("extractROWS", "GAlignments",
         ans_cigar <- extractROWS(x@cigar, i)
         ans_strand <- extractROWS(x@strand, i)
         ans_elementMetadata <- extractROWS(x@elementMetadata, i)
-        BiocGenerics:::updateS4(x,
+        BiocGenerics:::replaceSlots(x,
             NAMES=ans_NAMES,
             seqnames=ans_seqnames,
             start=ans_start,

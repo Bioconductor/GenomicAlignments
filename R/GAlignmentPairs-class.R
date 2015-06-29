@@ -385,7 +385,7 @@ setMethod("extractROWS", "GAlignmentPairs",
         ans_last <- extractROWS(x@last, i)
         ans_isProperPair <- extractROWS(x@isProperPair, i)
         ans_elementMetadata <- extractROWS(x@elementMetadata, i)
-        BiocGenerics:::updateS4(x,
+        BiocGenerics:::replaceSlots(x,
             NAMES=ans_NAMES,
             first=ans_first,
             last=ans_last,
