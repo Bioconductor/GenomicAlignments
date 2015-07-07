@@ -271,7 +271,7 @@ chr4genes <- split(gff, mcols(gff)$gene_id)
 @
 
 \subsection{counting}
-The \Rcode{params} argument can be used to subset the reads in the bam file
+The \Rcode{param} argument can be used to subset the reads in the bam file
 on characteristics such as position, unmapped or paired-end reads. Quality 
 scores or the "NH" tag, which identifies reads with multiple mappings, can be
 included as metadata columns for further subsetting. See \Rcode{?ScanBamParam} 
