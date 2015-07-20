@@ -370,10 +370,12 @@ mcols(aln)
 galp1 <- readGAlignmentPairs(bamfile)
 head(galp1)
 names(galp1)
-## Using the 'param' arg to drop PCR or optical duplicates as well as
-## secondary alignments (dropping secondary alignments can help make the
-## pairing algorithm run significantly faster):
-param <- ScanBamParam(flag=scanBamFlag(isDuplicate=FALSE,
+## Here we use the 'param' to filter by proper pair, drop PCR / optical 
+## duplicates and drop secondary alignments. Dropping secondary alignments 
+## and filtering by proper pair can help make the pairing algorithm run 
+## significantly faster.
+param <- ScanBamParam(flag=scanBamFlag(isProperPair=TRUE,
+                                       isDuplicate=FALSE,
                                        isSecondaryAlignment=FALSE))
 galp2 <- readGAlignmentPairs(bamfile, use.names=TRUE, param=param)
 galp2
