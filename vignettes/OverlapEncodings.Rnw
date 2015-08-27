@@ -33,6 +33,11 @@ options(width=100)
     precomputed_obj <- .loadPrecomputed(objname)
     if (ignore.metadata)
         metadata(obj) <- metadata(precomputed_obj) <- list()
+    ## Replace NAs with FALSE in circularity flag (because having the flag set
+    ## to NA instead of FALSE (or vice-versa) is not considered a significant
+    ## difference between the 2 objects).
+    isCircular(obj) <- isCircular(obj) %in% TRUE
+    isCircular(precomputed_obj) <- isCircular(precomputed_obj) %in% TRUE
     if (!identical(obj, precomputed_obj))
         stop("'", objname, "' is not identical to precomputed version")
 }
