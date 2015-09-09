@@ -293,8 +293,6 @@ gal3
 mcols(gal3)
 
 ## Using the 'param' arg to load alignments from particular regions.
-## Note that if we weren't providing a 'what' argument here, all the
-## BAM fields would be loaded:
 which <- RangesList(seq1=IRanges(1000, 1100),
                     seq2=IRanges(c(1546, 1555, 1567), width=10))
 param <- ScanBamParam(which=which)
@@ -340,7 +338,8 @@ length(gal4c)  # < length(gal4), because the 2 first original regions
 ## Note that reducing the set of regions didn't completely eliminate
 ## "duplicated record selection". Records that overlap the 2 reduced
 ## regions on seq2 (which$seq2) are loaded twice (like for 'gal5'
-## above).
+## above). See example D. below for how to completely eliminate
+## "duplicated record selection".
 
 ## Using the 'param' arg to load tags. Except for MF and Aq, the tags
 ## specified below are predefined tags (see the SAM Spec for the list
@@ -389,8 +388,8 @@ head(names(galp2))
 library(pasillaBamSubset)
 
 ## 'file' as character.
-fl <- untreated3_chr4() 
-galist1 <- readGAlignmentsList(fl)
+bam <- untreated3_chr4() 
+galist1 <- readGAlignmentsList(bam)
 galist1[1:3]
 length(galist1)
 table(elementLengths(galist1))
@@ -399,16 +398,68 @@ table(elementLengths(galist1))
 ## the data are treated as single-end and each list element of the
 ## GAlignmentsList will be of length 1. For single-end data 
 ## use readGAlignments().
-bf <- BamFile(fl, yieldSize=3, asMates=TRUE)
-readGAlignmentsList(bf)
+bamfile <- BamFile(bam, yieldSize=3, asMates=TRUE)
+readGAlignmentsList(bamfile)
 
 ## Use a 'param' to fine tune the results.
 param <- ScanBamParam(flag=scanBamFlag(isProperPair=TRUE))
-galist2 <- readGAlignmentsList(fl, param=param)
+galist2 <- readGAlignmentsList(bam, param=param)
 length(galist2)
 
 ## ---------------------------------------------------------------------
-## D. readGappedReads()
+## D. COMPARING 4 STRATEGIES FOR LOADING THE ALIGNMENTS THAT OVERLAP
+##    WITH THE EXONIC REGIONS ON FLY CHROMMOSOME 4
+## ---------------------------------------------------------------------
+library(pasillaBamSubset)
+bam <- untreated1_chr4()
+
+library(TxDb.Dmelanogaster.UCSC.dm3.ensGene)
+txdb <- TxDb.Dmelanogaster.UCSC.dm3.ensGene
+ex <- exons(txdb)
+seqlevels(ex, force=TRUE) <- "chr4"
+length(ex)
+
+## Some of the exons overlap with each other:
+isDisjoint(ex)  # FALSE
+exonic_regions <- reduce(ex)
+isDisjoint(exonic_regions)  # no more overlaps
+length(exonic_regions)
+
+## Strategy #1: slow and loads a lot of records more than once (see
+## "duplicated record selection" in example A. above).
+param1 <- ScanBamParam(which=ex)
+gal1 <- readGAlignments(bam, param=param1)
+length(gal1)  # many "duplicated records"
+
+## Strategy #2: faster and generates less duplicated records but
+## doesn't eliminate them.
+param2 <- ScanBamParam(which=exonic_regions)
+gal2 <- readGAlignments(bam, param=param2)
+length(gal2)  # less "duplicated records"
+
+## Strategy #3: fast and completely eliminates duplicated records.
+gal0 <- readGAlignments(bam)
+gal3 <- subsetByOverlaps(gal0, exonic_regions, ignore.strand=TRUE)
+length(gal3)  # no "duplicated records"
+
+## Note that, in this case using 'exonic_regions' or 'ex' makes no
+## difference:
+gal3b <- subsetByOverlaps(gal0, ex, ignore.strand=TRUE)
+stopifnot(identical(gal3, gal3b))
+
+## Strategy #4: strategy #3 however can require a lot of memory if the
+## file is big because we load all the alignments into memory before we
+## select those that overlap with the exonic regions. Strategy #4
+## addresses this by loading the file by chunks.
+bamfile <- BamFile(bam, yieldSize=50000)
+open(bamfile)
+while (length(chunk <- readGAlignments(bamfile))) {
+    cat(length(chunk), "\n")
+    ## ... do something with 'chunk' ...
+}
+
+## ---------------------------------------------------------------------
+## E. readGappedReads()
 ## ---------------------------------------------------------------------
 greads1 <- readGappedReads(bamfile)
 greads1
