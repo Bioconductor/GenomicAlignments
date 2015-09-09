@@ -255,7 +255,7 @@ fl <- paste0("ftp://ftp.ensembl.org/pub/release-62/",
              "Drosophila_melanogaster.BDGP5.25.62.gtf.gz")
 gffFile <- file.path(tempdir(), basename(fl))
 download.file(fl, gffFile)
-gff0 <- import(gffFile, asRangedData=FALSE)
+gff0 <- import(gffFile)
 @
 
 Subset on the protein-coding, exon regions of chromosome 4
