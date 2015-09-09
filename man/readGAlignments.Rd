@@ -453,10 +453,12 @@ stopifnot(identical(gal3, gal3b))
 ## addresses this by loading the file by chunks.
 bamfile <- BamFile(bam, yieldSize=50000)
 open(bamfile)
-while (length(chunk <- readGAlignments(bamfile))) {
-    cat(length(chunk), "\n")
+while (length(chunk0 <- readGAlignments(bamfile))) {
+    chunk <- subsetByOverlaps(chunk0, ex, ignore.strand=TRUE)
+    cat("chunk0:", length(chunk0), "- chunk:", length(chunk), "\n")
     ## ... do something with 'chunk' ...
 }
+close(bamfile)
 
 ## ---------------------------------------------------------------------
 ## E. readGappedReads()
