@@ -3,17 +3,17 @@
 
 \alias{coverage}
 \alias{coverage,GAlignments-method}
-\alias{coverage,GAlignmentsList-method}
 \alias{coverage,GAlignmentPairs-method}
+\alias{coverage,GAlignmentsList-method}
 \alias{coverage,BamFile-method}
 \alias{coverage,character-method}
 
 
-\title{Coverage of a GAlignments, GAlignmentsList or GAlignmentPairs object}
+\title{Coverage of a GAlignments, GAlignmentPairs, or GAlignmentsList object}
 
 \description{
   \code{\link[IRanges]{coverage}} methods for \link{GAlignments},
-  \link{GAlignmentsList}, \link{GAlignmentPairs}, and 
+  \link{GAlignmentPairs}, \link{GAlignmentsList}, and
   \link[Rsamtools]{BamFile} objects.
 
   NOTE: The \code{\link[IRanges]{coverage}} generic function and methods
@@ -28,12 +28,10 @@
 \S4method{coverage}{GAlignments}(x, shift=0L, width=NULL, weight=1L,
          method=c("auto", "sort", "hash"), drop.D.ranges=FALSE)
 
-\S4method{coverage}{GAlignmentsList}(x, shift=0L, width=NULL, weight=1L,
-         method=c("auto", "sort", "hash"), drop.D.ranges=FALSE,
-         ignore.strand=FALSE)
-
 \S4method{coverage}{GAlignmentPairs}(x, shift=0L, width=NULL, weight=1L,
          method=c("auto", "sort", "hash"), drop.D.ranges=FALSE)
+
+\S4method{coverage}{GAlignmentsList}(x, shift=0L, width=NULL, weight=1L, ...)
 
 \S4method{coverage}{BamFile}(x, shift=0L, width=NULL, weight=1L, ...,
          param=ScanBamParam())
@@ -44,8 +42,8 @@
 
 \arguments{
   \item{x}{
-    A \link{GAlignments}, \link{GAlignmentsList}, \link{GAlignmentPairs},
-    \link[Rsamtools]{BamFile} or \code{character(1)} object.
+    A \link{GAlignments}, \link{GAlignmentPairs}, \link{GAlignmentsList},
+    or \link[Rsamtools]{BamFile} object, or the path to a BAM file.
   }
   \item{shift, width, weight}{
     See \code{coverage} method for \link[GenomicRanges]{GRanges} objects
@@ -58,11 +56,6 @@
   \item{drop.D.ranges}{
     Whether the coverage calculation should ignore ranges corresponding
     to D (deletion) in the CIGAR string.
-  }
-  \item{ignore.strand}{
-    Applies to the GAlignmentsList method only. When \code{ignore.strand}
-    is TRUE, ranges on opposite strands are combined in the \code{grglist} 
-    coercion. See ?\code{GAlignmentsList} man page for details.
   }
   \item{...}{
     Additional arguments passed to the \code{coverage} method for
@@ -81,14 +74,18 @@
 \details{
   The methods for \link{GAlignments} and \link{GAlignmentPairs} objects
   do:
-\preformatted{  coverage(grglist(x), ...)
+\preformatted{  coverage(grglist(x, drop.D.ranges=drop.D.ranges), ...)
+}
+
+  The method for \link{GAlignmentsList} objects does:
+\preformatted{  coverage(unlist(x), ...)
 }
 
   The method for \link[Rsamtools]{BamFile} objects iterates through a
   BAM file, reading \code{yieldSize(x)} records (or all records, if
   \code{is.na(yieldSize(x))}) and calculating:
-\preformatted{  aln <- readGAlignments(x, param=param)
-  coverage(aln, shift=shift, width=width, weight=weight, ...)
+\preformatted{  gal <- readGAlignments(x, param=param)
+  coverage(gal, shift=shift, width=width, weight=weight, ...)
 }
 
   The method for \code{character} vectors of length 1 creates a
@@ -113,21 +110,67 @@
     \item \link{GAlignments} and \link{GAlignmentPairs} objects.
 
     \item \code{\link{readGAlignments}}.
+
+    \item \link[Rsamtools]{BamFile} objects in the \pkg{Rsamtools} package.
   }
 }
 
 \examples{
+## ---------------------------------------------------------------------
+## A. EXAMPLE WITH TOY DATA
+## ---------------------------------------------------------------------
+
 ex1_file <- system.file("extdata", "ex1.bam", package="Rsamtools")
 
+## Coverage of a GAlignments object:
 gal <- readGAlignments(ex1_file)
-stopifnot(identical(coverage(gal), coverage(as(gal, "GRangesList"))))
+cvg1 <- coverage(gal)
+cvg1
 
-galist <- readGAlignmentsList(ex1_file)
-stopifnot(identical(coverage(gal), coverage(as(gal, "GRangesList"))))
-
+## Coverage of a GAlignmentPairs object:
 galp <- readGAlignmentPairs(ex1_file)
-stopifnot(identical(coverage(galp), coverage(as(galp, "GRangesList"))))
-}
+cvg2 <- coverage(galp)
+cvg2
 
+## Coverage of a GAlignmentsList object:
+galist <- readGAlignmentsList(ex1_file)
+cvg3 <- coverage(galist)
+cvg3
+
+table(mcols(galist)$mate_status)
+mated_idx <- which(mcols(galist)$mate_status == "mated")
+mated_galist <- galist[mated_idx]
+mated_cvg3 <- coverage(mated_galist)
+mated_cvg3
+
+## Sanity checks:
+stopifnot(identical(cvg1, cvg3))
+stopifnot(identical( cvg2, mated_cvg3))
+
+## ---------------------------------------------------------------------
+## B. EXAMPLE WITH REAL DATA
+## ---------------------------------------------------------------------
+
+library(pasillaBamSubset)
+## See '?pasillaBamSubset' for more information about the 2 BAM files
+## included in this package.
+reads <- readGAlignments(untreated3_chr4())
+table(njunc(reads))  # data contains junction reads
+
+## Junctions do NOT contribute to the coverage:
+read1 <- reads[which(njunc(reads) != 0L)[1]]  # 1st read with a junction
+read1  # cigar shows a "skipped region" of length 15306
+grglist(read1)[[1]]  # the junction is between pos 4500 and 19807
+coverage(read1)$chr4  # junction is not covered
+
+## Sanity checks:
+cvg <- coverage(reads)
+read_chunks <- unlist(grglist(reads), use.names=FALSE)
+read_chunks_per_chrom <- split(read_chunks, seqnames(read_chunks))
+stopifnot(identical(sum(cvg), sum(width(read_chunks_per_chrom))))
+
+galist <- readGAlignmentsList(untreated3_chr4())
+stopifnot(identical(cvg, coverage(galist)))
+}
 \keyword{methods}
 \keyword{utilities}

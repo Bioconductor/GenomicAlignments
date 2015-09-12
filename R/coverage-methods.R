@@ -6,25 +6,27 @@
 setMethod("coverage", "GAlignments",
     function(x, shift=0L, width=NULL, weight=1L,
                 method=c("auto", "sort", "hash"), drop.D.ranges=FALSE)
-        coverage(grglist(x, drop.D.ranges=drop.D.ranges),
-                 shift=shift, width=width, weight=weight, method=method)
-)
-
-setMethod("coverage", "GAlignmentsList",
-    function(x, shift=0L, width=NULL, weight=1L,
-                method=c("auto", "sort", "hash"), drop.D.ranges=FALSE,
-                ignore.strand=FALSE) 
-{
-        x <- grglist(x, drop.D.ranges=drop.D.ranges,
-                     ignore.strand=ignore.strand)
+    {
+        x <- grglist(x, drop.D.ranges=drop.D.ranges)
         coverage(x, shift=shift, width=width, weight=weight, method=method)
-})
+    }
+)
 
 setMethod("coverage", "GAlignmentPairs",
     function(x, shift=0L, width=NULL, weight=1L,
                 method=c("auto", "sort", "hash"), drop.D.ranges=FALSE)
-        coverage(grglist(x, drop.D.ranges=drop.D.ranges),
-                 shift=shift, width=width, weight=weight, method=method)
+    {
+        x <- grglist(x, drop.D.ranges=drop.D.ranges)
+        coverage(x, shift=shift, width=width, weight=weight, method=method)
+    }
+)
+
+setMethod("coverage", "GAlignmentsList",
+    function(x, shift=0L, width=NULL, weight=1L, ...)
+    {
+        x <- unlist(x, use.names=FALSE)
+        callGeneric()
+    }
 )
 
 setMethod("coverage", "BamFile",
@@ -57,7 +59,8 @@ setMethod("coverage", "character",
     function(x, shift=0L, width=NULL, weight=1L, ..., yieldSize=2500000L)
 {
     if (!isSingleString(x))
-        stop("'x' must be character(1) for coverage,character-method")
+        stop("'x' must be a single string for coverage,character-method")
     bf <- BamFile(x, yieldSize=yieldSize)
     coverage(bf, shift=shift, width=width, weight=weight, ...)
 })
+

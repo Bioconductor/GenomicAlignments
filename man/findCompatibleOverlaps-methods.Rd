@@ -18,8 +18,10 @@
 }
 
 \usage{
-findCompatibleOverlaps(query, subject, algorithm=c("nclist", "intervaltree"))
-countCompatibleOverlaps(query, subject, algorithm=c("nclist", "intervaltree"))
+findCompatibleOverlaps(query, subject,
+                       algorithm=c("nclist", "intervaltree"))
+countCompatibleOverlaps(query, subject,
+                        algorithm=c("nclist", "intervaltree"))
 }
 
 \arguments{
@@ -55,7 +57,8 @@ countCompatibleOverlaps(query, subject, algorithm=c("nclist", "intervaltree"))
 \value{
   A \link[S4Vectors]{Hits} object for \code{findCompatibleOverlaps}.
 
-  An integer vector \emph{parallel} to (i.e. same length as) \code{query}.
+  An integer vector \emph{parallel} to (i.e. same length as) \code{query}
+  for \code{countCompatibleOverlaps}.
 }
 
 \author{
@@ -105,7 +108,8 @@ gal <- readGAlignments(sm_treated1, use.names=TRUE, param=param0)
 ## of the transcripts must be *exactly* the same as the reference
 ## genome used to align the reads):
 library(TxDb.Dmelanogaster.UCSC.dm3.ensGene)
-exbytx <- exonsBy(TxDb.Dmelanogaster.UCSC.dm3.ensGene, by="tx", use.names=TRUE)
+txdb <- TxDb.Dmelanogaster.UCSC.dm3.ensGene
+exbytx <- exonsBy(txdb, by="tx", use.names=TRUE)
 
 ## Number of "compatible" transcripts per alignment in 'gal':
 gal_ncomptx <- countCompatibleOverlaps(gal, exbytx)
