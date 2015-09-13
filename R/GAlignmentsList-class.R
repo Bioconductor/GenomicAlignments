@@ -61,69 +61,44 @@ setClass("GAlignmentsList",
 ###
 
 setMethod("seqnames", "GAlignmentsList", 
-    function(x) 
-        new2("CompressedRleList",
-             unlistData=x@unlistData@seqnames, 
-             partitioning=x@partitioning, check=FALSE)
+    function(x) relist(seqnames(unlist(x, use.names=FALSE)), x)
 )
 
 setMethod("rname", "GAlignmentsList", 
-    function(x) 
-        new2("CompressedRleList",
-             unlistData=x@unlistData@seqnames, 
-             partitioning=x@partitioning, check=FALSE)
+    function(x) relist(rname(unlist(x, use.names=FALSE)), x)
 )
 
 setMethod("cigar", "GAlignmentsList", 
-    function(x) 
-        new2("CompressedCharacterList",
-             unlistData=x@unlistData@cigar, 
-             partitioning=x@partitioning, check=FALSE)
+    function(x) relist(cigar(unlist(x, use.names=FALSE)), x)
 )
 
 setMethod("strand", "GAlignmentsList",
-    function(x)
-        new2("CompressedRleList",
-             unlistData=x@unlistData@strand, 
-             partitioning=x@partitioning, check=FALSE)
+    function(x) relist(strand(unlist(x, use.names=FALSE)), x)
 )
 
 setMethod("qwidth", "GAlignmentsList",
-    function(x)
-        new2("CompressedIntegerList",
-             unlistData=cigarWidthAlongQuerySpace(x@unlistData@cigar),
-             partitioning=x@partitioning, check=FALSE)
+    function(x) relist(qwidth(unlist(x, use.names=FALSE)), x)
 )
 
 setMethod("njunc", "GAlignmentsList",
-    function(x)
-        new2("CompressedIntegerList",
-             unlistData=unname(elementLengths(rglist(x@unlistData))) - 1L,
-             partitioning=x@partitioning, check=FALSE)
+    function(x) relist(njunc(unlist(x, use.names=FALSE)), x)
 )
 
 setMethod("start", "GAlignmentsList",
-    function(x, ...)
-        new2("CompressedIntegerList",
-             unlistData=x@unlistData@start,
-             partitioning=x@partitioning, check=FALSE)
+    function(x, ...) relist(start(unlist(x, use.names=FALSE), ...), x)
 )
 
 setMethod("end", "GAlignmentsList",
-    function(x, ...)
-        new2("CompressedIntegerList",
-             unlistData=end(x@unlistData),
-             partitioning=x@partitioning, check=FALSE)
+    function(x, ...) relist(end(unlist(x, use.names=FALSE), ...), x)
 )
 
 setMethod("width", "GAlignmentsList",
-    function(x)
-        new2("CompressedIntegerList",
-             unlistData=cigarWidthAlongReferenceSpace(x@unlistData@cigar),
-             partitioning=x@partitioning, check=FALSE)
+    function(x) relist(width(unlist(x, use.names=FALSE)), x)
 )
 
-setMethod("seqinfo", "GAlignmentsList", function(x) seqinfo(x@unlistData))
+setMethod("seqinfo", "GAlignmentsList",
+    function(x) seqinfo(unlist(x, use.names=FALSE))
+)
 
 setMethod("elementMetadata", "GAlignmentsList",
     GenomicRanges:::getElementMetadataList
@@ -219,24 +194,18 @@ setMethod("grglist", "GAlignmentsList",
         if (!isTRUEorFALSE(use.mcols))
             stop("'use.mcols' must be TRUE or FALSE")
         if (!identical(order.as.in.query, FALSE)) {
-            msg <- c("Starting with BioC 3.2, the \"grglist\" method for ",
-                     "GAlignmentsList objects *always* returns the ranges ",
-                     "\"ordered as in query\". Therefore the ",
-                     "'order.as.in.query' argument is now ignored (and ",
-                     "deprecated).")
+            msg <- c("Starting with BioC 3.2, the 'order.as.in.query' ",
+                     "argument of the \"grglist\" method for ",
+                     "GAlignmentsList objects is deprecated and ignored.")
             .Deprecated(msg=wmsg(msg))
         }
-        if (!identical(drop.D.ranges, FALSE)) {
-            msg <- c("Starting with BioC 3.2, the 'drop.D.ranges' ",
-                     "argument is ignored and deprecated in the ",
-                     "\"grglist\" method for GAlignmentsList objects.")
-            .Deprecated(msg=wmsg(msg))
-        }
+        if (!isTRUEorFALSE(ignore.strand))
+            stop("'ignore.strand' must be TRUE or FALSE")
         if (ignore.strand)
             strand(x@unlistData) <- "*"
-        gr <- granges(x@unlistData, use.mcols=use.mcols)
-        ans <- relist(gr, x@partitioning)
-        names(ans) <- names(x)
+        unlisted_x <- unlist(x, use.names=FALSE)
+        grl <- grglist(unlisted_x, drop.D.ranges=drop.D.ranges)
+        ans <- IRanges:::regroupBySupergroup(grl, x)
         if (use.mcols)
             mcols(ans) <- mcols(x)
         ans
@@ -275,7 +244,15 @@ setMethod("rglist", "GAlignmentsList",
     {
         if (!isTRUEorFALSE(use.mcols))
             stop("'use.mcols' must be TRUE or FALSE")
-        ans <- relist(ranges(x@unlistData), x@partitioning)
+        if (!identical(order.as.in.query, FALSE)) {
+            msg <- c("Starting with BioC 3.2, the 'order.as.in.query' ",
+                     "argument of the \"rglist\" method for ",
+                     "GAlignmentsList objects is deprecated and ignored.")
+            .Deprecated(msg=wmsg(msg))
+        }
+        unlisted_x <- unlist(x, use.names=FALSE)
+        rgl <- rglist(unlisted_x, drop.D.ranges=drop.D.ranges)
+        ans <- IRanges:::regroupBySupergroup(rgl, x)
         if (use.mcols)
             mcols(ans) <- mcols(x)
         ans

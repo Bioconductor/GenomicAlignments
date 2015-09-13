@@ -176,7 +176,7 @@
       Return either a \link{GRanges} or a \link[IRanges]{IRanges}
       object of length \code{length(x)}. Note this coercion IGNORES 
       the cigar information. The resulting ranges span the entire
-      range, including any gaps or spaces between paired-end reads.
+      range, including any junctions or spaces between paired-end reads.
 
       If \code{use.mcols} is TRUE and \code{x} has metadata columns on it
       (accessible with \code{mcols(x)}), they're propagated to the returned
@@ -189,10 +189,10 @@
     \item{}{
       \code{grglist(x, use.mcols=FALSE, ignore.strand=FALSE)}, 
       \code{rglist(x, use.mcols=FALSE)}:
-      Return either a \link{GRangesList} or a \link[IRanges]{IRangesList}
+      Return either a \link{GRangesList} or an \link[IRanges]{IRangesList}
       object of length \code{length(x)}. This coercion RESPECTS the cigar 
       information. The resulting ranges are fragments of the original ranges 
-      that do not include gaps or spaces between paired-end reads.
+      that do not include junctions or spaces between paired-end reads.
  
       If \code{use.mcols} is TRUE and \code{x} has metadata columns on it
       (accessible with \code{mcols(x)}), they're propagated to the returned
@@ -391,11 +391,12 @@ length(galist2)
 ## allow ranges from different strands to be combined. In this example 
 ## paired-end reads aligned to opposite strands were read into a 
 ## GAlignmentsList. If the desired operation is to combine these ranges, 
-## regardless of gaps or the space between pairs, 'ignore.strand' must be TRUE.
+## regardless of junctions or the space between pairs, 'ignore.strand'
+## must be TRUE.
 granges(galist[1])
 granges(galist[1], ignore.strand=TRUE)
 
-## grglist() splits ranges by gap and the space between list elements.
+## grglist()
 galist <- GAlignmentsList(noGaps=gal1, Gaps=gal2)
 grglist(galist)
 grglist(galist, ignore.strand=TRUE)

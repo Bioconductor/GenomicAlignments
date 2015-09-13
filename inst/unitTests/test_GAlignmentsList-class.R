@@ -25,14 +25,21 @@ test_GAlignmentsList_construction <- function() {
 test_GAlignmentsList_coercion <- function() {
     galist <- GAlignmentsList(a=.noGaps[seqnames(.noGaps) == "chr3"], 
                               b=.Gaps[seqnames(.Gaps) == "chr4"])
-    ## Lists
+    ## RangesList
     rgl <- rglist(galist)
+    checkIdentical(length(galist), length(rgl))
+    for (i in seq_along(galist)) {
+        target <- unlist(rglist(galist[[i]]), use.names=FALSE)
+        checkIdentical(target, rgl[[i]])
+    }
+
+    ## GRangesList
     grl <- grglist(galist)
-    checkIdentical(length(rgl), length(galist))
-    checkIdentical(length(grl), length(galist))
-    checkIdentical(elementLengths(rgl), elementLengths(grl))
-    checkIdentical(elementLengths(rgl)[1], elementLengths(galist)[1])
-    checkIdentical(elementLengths(grl)[1], elementLengths(galist)[1])
+    checkIdentical(length(galist), length(grl))
+    for (i in seq_along(galist)) {
+        target <- unlist(grglist(galist[[i]]), use.names=FALSE)
+        checkIdentical(target, grl[[i]])
+    }
 
     ## Ranges
     checkIdentical(length(ranges(galist)), 
