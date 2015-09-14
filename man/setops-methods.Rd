@@ -1,6 +1,7 @@
 \name{setops-methods}
 \alias{setops-methods}
 
+\alias{pintersect}
 \alias{pintersect,GAlignments,GRanges-method}
 \alias{pintersect,GRanges,GAlignments-method}
 
@@ -9,6 +10,13 @@
 
 \description{
   Performs set operations on \link{GAlignments} objects.
+
+  NOTE: The \code{\link[IRanges]{pintersect}} generic function and method
+  for \link[IRanges]{Ranges} objects is defined and documented in the
+  \pkg{IRanges} package.
+  Methods for \link[GenomicRanges]{GRanges} and
+  \link[GenomicRanges]{GRangesList} objects are defined and
+  documented in the \pkg{GenomicRanges} package.
 }
 
 \usage{
