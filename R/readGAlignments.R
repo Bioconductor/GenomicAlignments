@@ -64,7 +64,7 @@
 
 .load_seqlengths_from_BamFile <- function(file, seqlevels)
 {
-    seqlengths <- scanBamHeader(file)[["targets"]]
+    seqlengths <- seqlengths(file)
     if (is.null(seqlengths))
         return(NULL)
     bad <- setdiff(seqlevels, names(seqlengths))
