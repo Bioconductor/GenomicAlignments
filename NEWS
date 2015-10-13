@@ -1,3 +1,71 @@
+CHANGES IN VERSION 1.6.0
+------------------------
+
+NEW FEATURES
+
+    o Add strandMode() getter and setter for GAlignmentPairs objects in
+      response to the following post:
+
+        https://support.bioconductor.org/p/65844/
+
+      See ?strandMode for more information.
+
+    o The readGAlignment*() functions now allow repeated seqnames in the BAM
+      header.
+
+    o Add "coverage" method for GAlignmentsList objects.
+
+    o The strand setter now works on a GAlignmentsList object in a restricted
+      way (only strand(x) <- "+" or "-" or "*" is supported).
+
+SIGNIFICANT USER-LEVEL CHANGES
+
+    o summarizeOverlaps() now returns a RangedSummarizedExperiment object
+      (defined in the new SummarizedExperiment package) instead of an "old"
+      SummarizedExperiment object (defined in the GenomicRanges package).
+
+    o Slightly modify the behavior of junctions() on a GAlignmentPairs object
+      so that the returned ranges now have the "real strand" set on them.
+      See ?junctions and the documentation of the 'real.strand' argument in
+      the man page of GAlignmentPairs objects for more information.
+
+    o Add 'real.strand' argument to first() and last() getters for
+      GAlignmentPairs objects.
+
+DEPRECATED AND DEFUNCT
+
+    o Deprecate left() and right() getters and strand() setter for
+      GAlignmentPairs objects.
+
+    o Deprecate 'invert.strand' argument of first() and last() getters for
+      GAlignmentPairs objects.
+
+    o Deprecate 'order.as.in.query' argument of "grglist" method for
+      GAlignmentPairs objects.
+
+    o Deprecate 'order.as.in.query' argument in "rglist" method for
+      GAlignmentsList objects (this concept is not defined for these objects
+      in general and the argument was ignored anyway).
+
+    o After being deprecated in BioC 3.1, the "mapCoords" and "pmapCoords"
+      methods are now defunct. mapToAlignments() should be used instead.
+
+    o After being deprecated in BioC 3.1, the readGAlignment*FromBam()
+      functions are now defunct. Everybody says "Let's all use the
+      readGAlignment*() functions instead! (no FromBam suffix). Yeah!"
+
+BUG FIXES
+
+    o Various fixes to grglist/granges/rglist/ranges methods for
+      GAlignmentsList objects:
+      - Respect cigar information (as claimed in man page).
+      - Restore 'drop.D.ranges' argument in "grglist" method (mistakenly got
+        deprecated at the beginning of BioC 3.2 devel cycle).
+      - The 'drop.D.ranges' argument in "rglist" method now works (was
+        ignored).
+      - Handle empty list elements.
+
+
 CHANGES IN VERSION 1.4.0
 ------------------------
 
