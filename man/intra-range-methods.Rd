@@ -109,19 +109,30 @@
 ## A. ON A GAlignments OBJECT
 ## ---------------------------------------------------------------------
 ex1_file <- system.file("extdata", "ex1.bam", package="Rsamtools")
-gal <- readGAlignments(ex1_file, param=ScanBamParam(what="flag"))
+param <- ScanBamParam(what=c("seq", "qual"))
+gal <- readGAlignments(ex1_file, param=param)
 gal
 
 ## This trims 3 nucleotides on the left and 5 nucleotides on the right
 ## of each alignment:
-qnarrow(gal, start=4, end=-6)
-## Note that the 'start' and 'end' arguments specify what part of each
-## query sequence should be kept (negative values being relative to the
-## right end of the query sequence), not what part should be trimmed.
+gal2 <- qnarrow(gal, start=4, end=-6)
+gal2
 
-## Trimming on the left doesn't change the "end" of the queries.
-qnarrow(gal, start=21)
-stopifnot(identical(end(qnarrow(gal, start=21)), end(gal)))
+## Note that the 'start' and 'end' values are relative to the query
+## sequences and specify the query substring that must be kept for each
+## alignment. Negative values are relative to the right end of the query
+## sequence.
+
+## Also note that the metadata columns on 'gal' are propagated as-is so
+## the "seq" and "qual" matadata columns must be adjusted "by hand" with
+## narrow();
+mcols(gal2)$seq <- narrow(mcols(gal)$seq, start=4, end=-6)
+mcols(gal2)$qual <- narrow(mcols(gal)$qual, start=4, end=-6)
+gal2
+
+## Sanity checks:
+stopifnot(identical(qwidth(gal2), width(mcols(gal2)$seq)))
+stopifnot(identical(qwidth(gal2), width(mcols(gal2)$qual)))
 
 ## ---------------------------------------------------------------------
 ## B. ON A GAlignmentsList OBJECT
