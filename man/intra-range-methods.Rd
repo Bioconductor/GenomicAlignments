@@ -90,7 +90,7 @@
   all the alignments have a simple CIGAR (i.e. no indels or junctions).
 }
 
-\author{H. Pages and V. Obenchain <vobencha@fredhutch.org>}
+\author{Hervé Pagès and V. Obenchain <vobencha@fredhutch.org>}
 
 \seealso{
   \itemize{

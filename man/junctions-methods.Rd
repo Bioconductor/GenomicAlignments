@@ -216,7 +216,7 @@ readSTARJunctions(file)
   information.
 }
 
-\author{H. Pages}
+\author{Hervé Pagès}
 
 \references{
   \url{http://www.ncbi.nlm.nih.gov/pmc/articles/PMC84117/} for the 5 natural

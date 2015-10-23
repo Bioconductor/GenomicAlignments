@@ -275,9 +275,7 @@ queryLocs2refLocs(qlocs, cigar, pos=1L, flag=NULL)
   \url{http://samtools.sourceforge.net/}
 }
 
-\author{
-  H. Pages and P. Aboyoun
-}
+\author{Hervé Pagès & P. Aboyoun}
 
 \seealso{
   \itemize{

@@ -6,7 +6,8 @@ Description: Provides efficient containers for storing and manipulating
 	coverage, junction detection, and working with the nucleotide content
 	of the alignments.
 Version: 1.7.2
-Author: Herv\'e Pag\`es, Valerie Obenchain, Martin Morgan
+Encoding: UTF-8
+Author: Hervé Pagès, Valerie Obenchain, Martin Morgan
 Maintainer: Bioconductor Package Maintainer <maintainer@bioconductor.org>
 biocViews: Genetics, Infrastructure, DataImport, Sequencing, RNASeq, SNP,
            Coverage, Alignment

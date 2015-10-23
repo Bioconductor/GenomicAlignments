@@ -182,9 +182,7 @@ extractQueryStartInTranscript(query, subject, hits=NULL, ovenc=NULL,
   For \code{extractQueryStartInTranscript}: TODO
 }
 
-\author{
-  H. Pages
-}
+\author{Hervé Pagès}
 
 \seealso{
   \itemize{

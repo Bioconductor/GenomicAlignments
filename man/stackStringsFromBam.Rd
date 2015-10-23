@@ -114,7 +114,7 @@ alphabetFrequencyFromBam(file, index=file, param, what="seq", ...)
   Paired-end reads are treated as single-end reads (i.e. they're not paired).
 }
 
-\author{H. Pages}
+\author{Hervé Pagès}
 
 \seealso{
   \itemize{

@@ -61,9 +61,7 @@ countCompatibleOverlaps(query, subject,
   for \code{countCompatibleOverlaps}.
 }
 
-\author{
-  H. Pages
-}
+\author{Hervé Pagès}
 
 \seealso{
   \itemize{

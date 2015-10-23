@@ -386,9 +386,7 @@
   \url{http://samtools.sourceforge.net/}
 }
 
-\author{
-  H. Pages and P. Aboyoun
-}
+\author{Hervé Pagès and P. Aboyoun}
 
 \seealso{
   \itemize{

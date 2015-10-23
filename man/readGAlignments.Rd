@@ -243,7 +243,7 @@ readGappedReads(file, index=file, use.names=FALSE, param=NULL,
   drop them).
 }
 
-\author{H. Pages <hpages@fredhutch.org> and
+\author{Hervé Pagès <hpages@fredhutch.org> and
         Valerie Obenchain <vobencha@fredhutch.org>}
 
 \seealso{

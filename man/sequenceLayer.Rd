@@ -106,7 +106,7 @@ sequenceLayer(x, cigar, from="query", to="reference",
   An \link{XStringSet} object of the same class and length as \code{x}.
 }
 
-\author{H. Pages}
+\author{Hervé Pagès}
 
 \seealso{
   \itemize{

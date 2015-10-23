@@ -239,7 +239,7 @@ automatically flushed at the beginning of a call to \code{findMateAlignment}.
   Nothing for \code{flushDumpedAlignments}.
 }
 
-\author{H. Pages}
+\author{Hervé Pagès}
 
 \seealso{
   \itemize{

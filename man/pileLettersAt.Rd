@@ -57,7 +57,7 @@ pileLettersAt(x, seqnames, pos, cigar, at)
   genomic position).
 }
 
-\author{H. Pages}
+\author{Hervé Pagès}
 
 \seealso{
   \itemize{
