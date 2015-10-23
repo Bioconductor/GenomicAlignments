@@ -60,7 +60,6 @@ exportMethods(
     coverage,
     pintersect,
     findOverlaps, countOverlaps, overlapsAny, subsetByOverlaps,
-    mapCoords,
 
     ## Generics defined in GenomeInfoDb:
     seqinfo, "seqinfo<-",

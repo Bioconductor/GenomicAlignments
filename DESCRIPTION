@@ -41,7 +41,6 @@ Collate: utils.R
 	coverage-methods.R
 	setops-methods.R
 	findOverlaps-methods.R
-	mapCoords-methods.R
 	coordinate-mapping-methods.R
 	encodeOverlaps-methods.R
 	findCompatibleOverlaps-methods.R
