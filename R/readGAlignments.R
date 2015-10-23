@@ -421,32 +421,3 @@ setMethod("readGappedReads", "character",
     }
 )
 
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Old stuff (deprecated & defunct)
-###
-
-readGAlignmentsFromBam <- function(...)
-{
-    .Defunct("readGAlignments")
-    readGAlignments(...)
-}
-
-readGAlignmentPairsFromBam <- function(...)
-{
-    .Defunct("readGAlignmentPairs")
-    readGAlignmentPairs(...)
-}
-
-readGAlignmentsListFromBam <- function(...)
-{
-    .Defunct("readGAlignmentsList")
-    readGAlignmentsList(...)
-}
-
-readGappedReadsFromBam <- function(...)
-{
-    .Defunct("readGappedReads")
-    readGappedReads(...)
-}
-

@@ -126,13 +126,7 @@ export(
 
     countCompatibleOverlaps,
 
-    Union, IntersectionNotEmpty, IntersectionStrict,
-
-    ## Old stuff (Deprecated or Defunct):
-    readGAlignmentsFromBam,
-    readGAlignmentPairsFromBam,
-    readGAlignmentsListFromBam,
-    readGappedReadsFromBam
+    Union, IntersectionNotEmpty, IntersectionStrict
 )
 
 
