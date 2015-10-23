@@ -83,13 +83,8 @@ setMethod("first", "GAlignmentPairs",
             stop("'real.strand' must be TRUE or FALSE")
         if (!identical(invert.strand, FALSE)) {
             msg <- c("Using the 'invert.strand' argument when calling ",
-                     "first() on a GAlignmentPairs object is deprecated.")
-            .Deprecated(msg=wmsg(msg))
-            if (!isTRUEorFALSE(invert.strand))
-                stop("'invert.strand' must be TRUE or FALSE")
-            if (real.strand && invert.strand)
-                stop(wmsg("one of 'real.strand' or 'invert.strand' can ",
-                          "be set to TRUE but not both"))
+                     "first() on a GAlignmentPairs object is defunct.")
+            .Defunct(msg=wmsg(msg))
         }
         ans <- setNames(x@first, names(x))
         if (invert.strand)
@@ -112,13 +107,8 @@ setMethod("last", "GAlignmentPairs",
             stop("'real.strand' must be TRUE or FALSE")
         if (!identical(invert.strand, FALSE)) {
             msg <- c("Using the 'invert.strand' argument when calling ",
-                     "last() on a GAlignmentPairs object is deprecated.")
-            .Deprecated(msg=wmsg(msg))
-            if (!isTRUEorFALSE(invert.strand))
-                stop("'invert.strand' must be TRUE or FALSE")
-            if (real.strand && invert.strand)
-                stop(wmsg("one of 'real.strand' or 'invert.strand' can ",
-                          "be set to TRUE but not both"))
+                     "last() on a GAlignmentPairs object is defunct.")
+            .Defunct(msg=wmsg(msg))
         }
         ans <- setNames(x@last, names(x))
         if (invert.strand)
@@ -201,33 +191,11 @@ setReplaceMethod("strand", "GAlignmentPairs",
     function(x, value)
     {
         msg <- c("The strand setter for GAlignmentPairs objects ",
-                 "is deprecated. You can use strandMode() to control the ",
+                 "is defunct. You can use strandMode() to control the ",
                  "behavior of the strand() getter in accordance with the ",
                  "stranded protocol that was used to generate the ",
                  "paired-end data (see '?strandMode').")
-        .Deprecated(msg=wmsg(msg))
-        if (strandMode(x) == 0L)
-            stop("cannot alter the strand of a ", class(GAlignmentPairs),
-                 " object that has its strand mode set to 0")
-        same_strand <- strand(x@first) == strand(x@last)
-        if (strandMode(x) == 1L) {
-            ## Set the strand of the first alignment.
-            strand(x@first) <- value
-            ## Then set the strand of the last alignment to preserve the
-            ## original relationship between first and last strand (i.e. if
-            ## they were the same, they remain the same, if they were opposite,
-            ## they remain opposite).
-            strand(x@last) <- strand(same_strand == (strand(x@first) == "-"))
-        } else {
-            ## Set the strand of the last alignment.
-            strand(x@last) <- value
-            ## Then set the strand of the first alignment to preserve the
-            ## original relationship between first and last strand (i.e. if
-            ## they were the same, they remain the same, if they were opposite,
-            ## they remain opposite).
-            strand(x@first) <- strand(same_strand == (strand(x@last) == "-"))
-        }
-        x
+        .Defunct(msg=wmsg(msg))
     }
 )
 
@@ -474,8 +442,8 @@ setMethod("grglist", "GAlignmentPairs",
                      "GAlignmentPairs objects *always* returns the ranges ",
                      "\"ordered as in query\". Therefore the ",
                      "'order.as.in.query' argument is now ignored (and ",
-                     "deprecated).")
-            .Deprecated(msg=wmsg(msg))
+                     "defunct).")
+            .Defunct(msg=wmsg(msg))
         }
         x_mcols <- mcols(x)
         if (use.mcols && "query.break" %in% colnames(x_mcols))
@@ -770,38 +738,18 @@ setGeneric("right", function(x, ...) standardGeneric("right"))
 setMethod("left", "GAlignmentPairs",
     function(x, ...)
     {
-        msg <- c("The left() and right() getters are deprecated ",
+        msg <- c("The left() and right() getters are defunct ",
                  "for GAlignmentPairs objects.")
-        .Deprecated(msg=wmsg(msg))
-
-        x_first <- x@first
-        x_last <- invertRleStrand(x@last)
-
-        left_is_last <- which(strand(x_first) == "-")
-        idx <- seq_len(length(x))
-        idx[left_is_last] <- idx[left_is_last] + length(x)
-
-        ans <- c(x_first, x_last)[idx]
-        setNames(ans, names(x))
+        .Defunct(msg=wmsg(msg))
     }
 )
 
 setMethod("right", "GAlignmentPairs",
     function(x, ...)
     {
-        msg <- c("The left() and right() getters are deprecated ",
+        msg <- c("The left() and right() getters are defunct ",
                  "for GAlignmentPairs objects.")
-        .Deprecated(msg=wmsg(msg))
-
-        x_first <- x@first
-        x_last <- invertRleStrand(x@last)
-
-        right_is_first <- which(strand(x_first) == "-")
-        idx <- seq_len(length(x))
-        idx[right_is_first] <- idx[right_is_first] + length(x)
-
-        ans <- c(x_last, x_first)[idx]
-        setNames(ans, names(x))
+        .Defunct(msg=wmsg(msg))
     }
 )
 

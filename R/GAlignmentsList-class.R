@@ -194,10 +194,9 @@ setMethod("grglist", "GAlignmentsList",
         if (!isTRUEorFALSE(use.mcols))
             stop("'use.mcols' must be TRUE or FALSE")
         if (!identical(order.as.in.query, FALSE)) {
-            msg <- c("Starting with BioC 3.2, the 'order.as.in.query' ",
-                     "argument of the \"grglist\" method for ",
-                     "GAlignmentsList objects is deprecated and ignored.")
-            .Deprecated(msg=wmsg(msg))
+            msg <- c("the 'order.as.in.query' argument of the \"grglist\" ",
+                     "method for GAlignmentsList objects is defunct")
+            .Defunct(msg=wmsg(msg))
         }
         if (!isTRUEorFALSE(ignore.strand))
             stop("'ignore.strand' must be TRUE or FALSE")
@@ -245,10 +244,9 @@ setMethod("rglist", "GAlignmentsList",
         if (!isTRUEorFALSE(use.mcols))
             stop("'use.mcols' must be TRUE or FALSE")
         if (!identical(order.as.in.query, FALSE)) {
-            msg <- c("Starting with BioC 3.2, the 'order.as.in.query' ",
-                     "argument of the \"rglist\" method for ",
-                     "GAlignmentsList objects is deprecated and ignored.")
-            .Deprecated(msg=wmsg(msg))
+            msg <- c("the 'order.as.in.query' argument of the \"rglist\" ",
+                     "method for GAlignmentsList objects is defunct")
+            .Defunct(msg=wmsg(msg))
         }
         unlisted_x <- unlist(x, use.names=FALSE)
         rgl <- rglist(unlisted_x, drop.D.ranges=drop.D.ranges)
