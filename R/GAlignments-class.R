@@ -483,28 +483,25 @@ setAs("GAlignments", "GRanges", function(from) granges(from, use.mcols=TRUE))
 setAs("GAlignments", "RangesList", function(from) rglist(from, use.mcols=TRUE))
 setAs("GAlignments", "Ranges", function(from) ranges(from))
 
+setAs("GAlignments", "DataFrame", function(from) {
+          DataFrame(seqnames=seqnames(from),
+                    strand=strand(from),
+                    cigar=cigar(from),
+                    qwidth=qwidth(from),
+                    start=start(from),
+                    end=end(from),
+                    width=width(from),
+                    njunc=njunc(from),
+                    mcols(from),
+                    row.names=names(from),
+                    check.names=FALSE)
+      })
+
 setMethod("as.data.frame", "GAlignments",
     function(x, row.names=NULL, optional=FALSE, ...)
     {
-        if (is.null(row.names))
-            row.names <- names(x)
-        else if (!is.character(row.names))
-            stop("'row.names' must be NULL or a character vector")
-        ans <- data.frame(seqnames=as.character(seqnames(x)),
-                          strand=as.character(strand(x)),
-                          cigar=cigar(x),
-                          qwidth=qwidth(x),
-                          start=start(x),
-                          end=end(x),
-                          width=width(x),
-                          njunc=njunc(x),
-                          row.names=row.names,
-                          check.rows=TRUE,
-                          check.names=FALSE,
-                          stringsAsFactors=FALSE)
-        if (ncol(mcols(x)))
-            ans <- cbind(ans, as.data.frame(mcols(x)))
-        return(ans)
+        as.data.frame(as(x, "DataFrame"), row.names=row.names,
+                      optional=optional)
     }
 )
 

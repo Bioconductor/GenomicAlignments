@@ -501,6 +501,33 @@ setAs("GAlignmentPairs", "GAlignments",
     function(from) unlist(from, use.names=TRUE)
 )
 
+setAs("GAlignmentPairs", "DataFrame", function(from) {
+          firstDF <- as(first(from), "DataFrame")
+          colnames(firstDF) <- paste0(colnames(firstDF), ".first")
+          lastDF <- as(last(from), "DataFrame")
+          colnames(lastDF) <- paste0(colnames(lastDF), ".last")
+          DataFrame(firstDF, lastDF, mcols(from))
+      })
+
+setMethod("as.data.frame", "GAlignmentPairs",
+          function(x, row.names = NULL, optional = FALSE) {
+              as.data.frame(as(x, "DataFrame"), row.names=row.names,
+                            optional=optional)
+          })
+
+setAs("GAlignmentsList", "GAlignmentPairs", function(from) {
+          ga <- unlist(from[mcols(from)$mate_status != "unmated"])
+          first <- c(TRUE, FALSE)
+          last <- c(FALSE, TRUE)
+          isProperPair <- if (!is.null(mcols(ga)$flag)) {
+              bamFlagTest(mcols(ga)$flag[first], "isProperPair")
+          } else {
+              TRUE
+          }
+          GAlignmentPairs(ga[first], ga[last],
+                          isProperPair=isProperPair,
+                          names=names(ga)[first])
+      })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### fillJunctionGaps()
