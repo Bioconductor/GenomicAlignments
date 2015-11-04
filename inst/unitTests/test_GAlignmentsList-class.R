@@ -62,12 +62,13 @@ test_GAlignmentsList_coercion <- function() {
     galist <- GAlignmentsList(a=.noGaps[1:2], b=.Gaps[1:2])
     df <- data.frame(group=togroup(galist),
                      group_name=names(galist)[togroup(galist)],
-                     seqnames=c("chr1", rep("chr2", 3)), 
-                     strand=c("-", "+", "-", "-"),
+                     seqnames=factor(c("chr1", rep("chr2", 3)),
+                         seqlevels(galist)), 
+                     strand=strand(c("-", "+", "-", "-")),
                      cigar=c("10M", "9M", "5M", "3M2N3M2N3M"),
-                     qwidth=c(10, 9 , 5, 9), start=c(1, 2, 1, 2),
-                     end=c(10, 10, 5, 14), width=c(10, 9, 5, 13),
-                     njunc=c(0, 0, 0, 2), score=c(1, 2, 1, 2), 
+                     qwidth=c(10L, 9L, 5L, 9L), start=c(1L, 2L, 1L, 2L),
+                     end=c(10L, 10L, 5L, 14L), width=c(10L, 9L, 5L, 13L),
+                     njunc=c(0L, 0L, 0L, 2L), score=c(1L, 2L, 1L, 2L), 
                      row.names=c("a", "b", "t", "u"),
                      stringsAsFactors=FALSE)
     checkTrue(all.equal(as.data.frame(galist), df))
