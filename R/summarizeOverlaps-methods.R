@@ -246,6 +246,8 @@ IntersectionNotEmpty <-  function(features, reads,
                inter.feature=inter.feature, param=param, 
                preprocess.reads=preprocess.reads, ...
            )
+    if (length(error <- which(!bpok(cts))))
+        stop(paste0("error in bplapply(): ", cts[error[1]])) 
 
     counts <- as.matrix(do.call(cbind, cts))
     if (count.mapped.reads) {
