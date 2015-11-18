@@ -10,7 +10,7 @@ import(GenomicRanges)
 import(SummarizedExperiment)
 import(Biostrings)
 import(Rsamtools)
-importFrom(BiocParallel, bplapply, bpok)
+importFrom(BiocParallel, bplapply)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
