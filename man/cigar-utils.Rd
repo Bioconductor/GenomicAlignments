@@ -371,7 +371,65 @@ cigarRangesAlongPairwiseSpace(cigar2, with.ops=TRUE)
 cigarRangesAlongPairwiseSpace(cigar2, dense=TRUE, with.ops=TRUE)
 
 ## ---------------------------------------------------------------------
-## C. PERFORMANCE
+## C. COMPUTE THE COVERAGE OF THE READS STORED IN A BAM FILE
+## ---------------------------------------------------------------------
+## The information stored in a BAM file can be used to compute the
+## "coverage" of the mapped reads i.e. the number of reads that hit any
+## given position in the reference genome.
+## The following function takes the path to a BAM file and returns an
+## object representing the coverage of the mapped reads that are stored
+## in the file. The returned object is an RleList object named with the
+## names of the reference sequences that actually receive some coverage.
+
+flag0 <- scanBamFlag(isUnmappedQuery=FALSE, isDuplicate=FALSE)
+
+extractCoverageFromBAM <- function(bamfile)
+{
+  stopifnot(is(bamfile, "BamFile"))
+  ## This ScanBamParam object allows us to load only the necessary
+  ## information from the file.
+  param <- ScanBamParam(flag=flag0, what=c("rname", "pos", "cigar"))
+  bam <- scanBam(bamfile, param=param)[[1]]
+  ## Note that unmapped reads and reads that are PCR/optical duplicates
+  ## have already been filtered out by using the ScanBamParam object
+  ## above.
+  f <- factor(bam$rname, levels=seqlevels(bamfile))
+  irl <- extractAlignmentRangesOnReference(bam$cigar, pos=bam$pos, f=f)
+  coverage(irl, width=seqlengths(bamfile))
+}
+
+library(Rsamtools)
+f1 <- system.file("extdata", "ex1.bam", package="Rsamtools")
+cvg <- extractCoverageFromBAM(BamFile(f1))
+
+## extractCoverageFromBAM() is equivalent but slightly more efficient
+## than loading a GAlignments object and computing its coverage:
+cvg2 <- coverage(readGAlignments(f1, param=ScanBamParam(flag=flag0)))
+stopifnot(identical(cvg, cvg2))
+
+## ---------------------------------------------------------------------
+## D. cigarNarrow() and cigarQNarrow()
+## ---------------------------------------------------------------------
+
+## cigarNarrow():
+cigarNarrow(cigar1)  # only drops the soft/hard clipping
+cigarNarrow(cigar1, start=10)
+cigarNarrow(cigar1, start=15)
+cigarNarrow(cigar1, start=15, width=57)
+cigarNarrow(cigar1, start=16)
+#cigarNarrow(cigar1, start=16, width=55)  # ERROR! (empty cigar)
+cigarNarrow(cigar1, start=71)
+cigarNarrow(cigar1, start=72)
+cigarNarrow(cigar1, start=75)
+
+## cigarQNarrow():
+cigarQNarrow(cigar1, start=4, end=-3)
+cigarQNarrow(cigar1, start=10)
+cigarQNarrow(cigar1, start=19)
+cigarQNarrow(cigar1, start=24)
+
+## ---------------------------------------------------------------------
+## E. PERFORMANCE
 ## ---------------------------------------------------------------------
 
 if (interactive()) {
@@ -406,58 +464,6 @@ if (interactive()) {
   object.size(irl1)
   object.size(irl2)
 }
-
-## ---------------------------------------------------------------------
-## D. COMPUTE THE COVERAGE OF THE READS STORED IN A BAM FILE
-## ---------------------------------------------------------------------
-## The information stored in a BAM file can be used to compute the
-## "coverage" of the mapped reads i.e. the number of reads that hit any
-## given position in the reference genome.
-## The following function takes the path to a BAM file and returns an
-## object representing the coverage of the mapped reads that are stored
-## in the file. The returned object is an RleList object named with the
-## names of the reference sequences that actually receive some coverage.
-
-extractCoverageFromBAM <- function(file)
-{
-  ## This ScanBamParam object allows us to load only the necessary
-  ## information from the file.
-  param <- ScanBamParam(flag=scanBamFlag(isUnmappedQuery=FALSE,
-                                         isDuplicate=FALSE),
-                        what=c("rname", "pos", "cigar"))
-  bam <- scanBam(file, param=param)[[1]]
-  ## Note that unmapped reads and reads that are PCR/optical duplicates
-  ## have already been filtered out by using the ScanBamParam object above.
-  irl <- extractAlignmentRangesOnReference(bam$cigar, pos=bam$pos,
-                                           f=bam$rname)
-  irl <- irl[elementLengths(irl) != 0]  # drop empty elements
-  coverage(irl)
-}
-
-library(Rsamtools)
-f1 <- system.file("extdata", "ex1.bam", package="Rsamtools")
-extractCoverageFromBAM(f1)
-
-## ---------------------------------------------------------------------
-## E. cigarNarrow() and cigarQNarrow()
-## ---------------------------------------------------------------------
-
-## cigarNarrow():
-cigarNarrow(cigar1)  # only drops the soft/hard clipping
-cigarNarrow(cigar1, start=10)
-cigarNarrow(cigar1, start=15)
-cigarNarrow(cigar1, start=15, width=57)
-cigarNarrow(cigar1, start=16)
-#cigarNarrow(cigar1, start=16, width=55)  # ERROR! (empty cigar)
-cigarNarrow(cigar1, start=71)
-cigarNarrow(cigar1, start=72)
-cigarNarrow(cigar1, start=75)
-
-## cigarQNarrow():
-cigarQNarrow(cigar1, start=4, end=-3)
-cigarQNarrow(cigar1, start=10)
-cigarQNarrow(cigar1, start=19)
-cigarQNarrow(cigar1, start=24)
 }
 
 \keyword{manip}
