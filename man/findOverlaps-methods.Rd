@@ -69,25 +69,21 @@
     maxgap=0L, minoverlap=1L,
     type=c("any", "start", "end", "within"),
     select=c("all", "first", "last", "arbitrary"),
-    algorithm=c("nclist", "intervaltree"),
     ignore.strand=FALSE)
 
 \S4method{countOverlaps}{GAlignments,GAlignments}(query, subject,
     maxgap=0L, minoverlap=1L,
     type=c("any", "start", "end", "within"),
-    algorithm=c("nclist", "intervaltree"),
     ignore.strand=FALSE)
 
 \S4method{overlapsAny}{GAlignments,GAlignments}(query, subject,
     maxgap=0L, minoverlap=1L,
     type=c("any", "start", "end", "within"),
-    algorithm=c("nclist", "intervaltree"),
     ignore.strand=FALSE)
 
 \S4method{subsetByOverlaps}{GAlignments,GAlignments}(query, subject,
     maxgap=0L, minoverlap=1L,
     type=c("any", "start", "end", "within"),
-    algorithm=c("nclist", "intervaltree"),
     ignore.strand=FALSE)
 }
 
@@ -97,7 +93,7 @@
     object for either \code{query} or \code{subject}.
     A vector-like object containing ranges for the other one.
   }
-  \item{maxgap, minoverlap, type, select, algorithm}{
+  \item{maxgap, minoverlap, type, select}{
     See \code{\link[IRanges]{findOverlaps}} in the \pkg{IRanges} package
     for a description of these arguments.
   }

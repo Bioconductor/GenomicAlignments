@@ -36,44 +36,44 @@
 
 \usage{
 \S4method{summarizeOverlaps}{GRanges,GAlignments}(
-  features, reads, mode=Union, algorithm=c("nclist", "intervaltree"),
+  features, reads, mode=Union,
   ignore.strand=FALSE, inter.feature=TRUE, preprocess.reads=NULL, ...)
 
 \S4method{summarizeOverlaps}{GRangesList,GAlignments}(
-  features, reads, mode=Union, algorithm=c("nclist", "intervaltree"),
+  features, reads, mode=Union,
   ignore.strand=FALSE, inter.feature=TRUE, preprocess.reads=NULL, ...)
 
 \S4method{summarizeOverlaps}{GRanges,GRanges}(
-  features, reads, mode=Union, algorithm=c("nclist", "intervaltree"),
+  features, reads, mode=Union,
   ignore.strand=FALSE, inter.feature=TRUE, preprocess.reads=NULL, ...)
 
 \S4method{summarizeOverlaps}{GRangesList,GRanges}(
-  features, reads, mode=Union, algorithm=c("nclist", "intervaltree"),
+  features, reads, mode=Union,
   ignore.strand=FALSE, inter.feature=TRUE, preprocess.reads=NULL, ...)
 
 \S4method{summarizeOverlaps}{GRanges,GAlignmentPairs}(
-  features, reads, mode=Union, algorithm=c("nclist", "intervaltree"),
+  features, reads, mode=Union,
   ignore.strand=FALSE, inter.feature=TRUE, preprocess.reads=NULL, ...)
 
 \S4method{summarizeOverlaps}{GRangesList,GAlignmentPairs}(
-  features, reads, mode=Union, algorithm=c("nclist", "intervaltree"),
+  features, reads, mode=Union,
   ignore.strand=FALSE, inter.feature=TRUE, preprocess.reads=NULL, ...)
 
 ## mode funtions
-Union(features, reads, algorithm=c("nclist", "intervaltree"),
-      ignore.strand=FALSE, inter.feature=TRUE)
-IntersectionStrict(features, reads, algorithm=c("nclist", "intervaltree"),
-      ignore.strand=FALSE, inter.feature=TRUE)
-IntersectionNotEmpty(features, reads, algorithm=c("nclist", "intervaltree"),
-      ignore.strand=FALSE, inter.feature=TRUE)
+Union(features, reads, ignore.strand=FALSE,
+                       inter.feature=TRUE)
+IntersectionStrict(features, reads, ignore.strand=FALSE,
+                                    inter.feature=TRUE)
+IntersectionNotEmpty(features, reads, ignore.strand=FALSE,
+                                      inter.feature=TRUE)
 
 \S4method{summarizeOverlaps}{GRanges,BamFile}(
-  features, reads, mode=Union, algorithm=c("nclist", "intervaltree"),
+  features, reads, mode=Union,
   ignore.strand=FALSE, inter.feature=TRUE, singleEnd=TRUE,
   fragments=FALSE, param=ScanBamParam(), preprocess.reads=NULL, ...)
 
 \S4method{summarizeOverlaps}{BamViews,missing}(
-  features, reads, mode=Union, algorithm=c("nclist", "intervaltree"),
+  features, reads, mode=Union,
   ignore.strand=FALSE, inter.feature=TRUE, singleEnd=TRUE,
   fragments=FALSE, param=ScanBamParam(), preprocess.reads=NULL, ...)
 }
@@ -140,13 +140,6 @@ IntersectionNotEmpty(features, reads, algorithm=c("nclist", "intervaltree"),
             and (2) return a vector of counts the same length as
             \code{features}. 
     }
-  }
-  \item{algorithm}{
-    This argument is passed to \code{\link{findOverlaps}}, which the mode
-    functions use internally.
-    See \code{?\link{findOverlaps}} for more information.
-    Note that it will be removed in BioC 3.3 so please don't use it unless
-    you have a good reason to do so (e.g. troubleshooting).
   }
   \item{ignore.strand}{
     A logical indicating if strand should be considered when matching.
@@ -499,11 +492,10 @@ edger <- DGEList(assays(se)$counts, group=rownames(colData(se)))
 ## (i.e., Union, IntersectionNotEmpty, IntersectionStrict). 
 ## In this example records are filtered by map quality before counting.
 
-mapq_filter <- function(features, reads, algorithm,
-                        ignore.strand, inter.feature)
+mapq_filter <- function(features, reads, ignore.strand, inter.feature)
 { 
     require(GenomicAlignments) # needed for parallel evaluation
-    Union(features, reads[mcols(reads)$mapq >= 20], algorithm,
+    Union(features, reads[mcols(reads)$mapq >= 20],
           ignore.strand, inter.feature) 
 }
 

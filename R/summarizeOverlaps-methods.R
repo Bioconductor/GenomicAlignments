@@ -4,9 +4,7 @@
 
 
 setGeneric("summarizeOverlaps", signature=c("features", "reads"),
-    function(features, reads, mode=Union,
-             algorithm=c("nclist", "intervaltree"),
-             ignore.strand=FALSE, ...)
+    function(features, reads, mode=Union, ignore.strand=FALSE, ...)
         standardGeneric("summarizeOverlaps")
 )
 
@@ -16,7 +14,6 @@ setGeneric("summarizeOverlaps", signature=c("features", "reads"),
 ###
 
 .dispatchOverlaps <- function(features, reads, mode,
-                              algorithm,
                               ignore.strand,
                               inter.feature, preprocess.reads, ...)
 {
@@ -31,12 +28,11 @@ setGeneric("summarizeOverlaps", signature=c("features", "reads"),
     }
     if (!is.null(preprocess.reads))
         reads <- preprocess.reads(reads, ...)
-    mode(features, reads, algorithm=algorithm,
+    mode(features, reads,
          ignore.strand=ignore.strand, inter.feature=inter.feature)
 }
 
 .summarizeOverlaps <- function(features, reads, mode=Union,
-                               algorithm=c("nclist", "intervaltree"),
                                ignore.strand=FALSE,
                                inter.feature=TRUE, preprocess.reads=NULL, ...)
 {
@@ -49,7 +45,6 @@ setGeneric("summarizeOverlaps", signature=c("features", "reads"),
     }
     mode <- match.fun(mode)
     counts <- .dispatchOverlaps(features, reads, mode,
-                                match.arg(algorithm),
                                 ignore.strand,
                                 inter.feature, preprocess.reads, ...)
     colData <- DataFrame(object=class(reads),
@@ -104,11 +99,9 @@ setMethod("summarizeOverlaps", c("GRangesList", "GRangesList"),
 ###
 
 Union <- function(features, reads,
-                  algorithm=c("nclist", "intervaltree"),
                   ignore.strand=FALSE, inter.feature=TRUE)
 {
     ov <- findOverlaps(features, reads,
-                       algorithm=match.arg(algorithm),
                        ignore.strand=ignore.strand)
     if (inter.feature) {
         ## Remove ambigous reads.
@@ -119,11 +112,9 @@ Union <- function(features, reads,
 }
 
 IntersectionStrict <- function(features, reads,
-                               algorithm=c("nclist", "intervaltree"),
                                ignore.strand=FALSE, inter.feature=TRUE)
 {
     ov <- findOverlaps(reads, features, type="within",
-                       algorithm=match.arg(algorithm),
                        ignore.strand=ignore.strand)
     if (inter.feature) {
         ## Remove ambigous reads.
@@ -133,9 +124,7 @@ IntersectionStrict <- function(features, reads,
     countSubjectHits(ov)
 }
 
-.removeSharedRegions <- function(features,
-                                 algorithm=c("nclist", "intervaltree"),
-                                 ignore.strand=FALSE)
+.removeSharedRegions <- function(features, ignore.strand=FALSE)
 {
     if (is(features, "GRanges")) {
         regions <- disjoin(features, ignore.strand=ignore.strand)
@@ -145,7 +134,6 @@ IntersectionStrict <- function(features, reads,
         stop("internal error")  # should never happen
     }
     ov <- findOverlaps(features, regions,
-                       algorithm=match.arg(algorithm),
                        ignore.strand=ignore.strand)
     regions_to_keep <- which(countSubjectHits(ov) == 1L)
     ov <- ov[subjectHits(ov) %in% regions_to_keep]
@@ -155,13 +143,10 @@ IntersectionStrict <- function(features, reads,
 }
 
 IntersectionNotEmpty <-  function(features, reads,
-                                  algorithm=c("nclist", "intervaltree"),
                                   ignore.strand=FALSE, inter.feature=TRUE)
 {
-    algorithm <- match.arg(algorithm)
-    features <- .removeSharedRegions(features, algorithm=algorithm,
-                                     ignore.strand=ignore.strand)
-    Union(features, reads, algorithm=algorithm,
+    features <- .removeSharedRegions(features, ignore.strand=ignore.strand)
+    Union(features, reads,
           ignore.strand=ignore.strand, inter.feature=inter.feature)
 }
 
@@ -197,13 +182,13 @@ IntersectionNotEmpty <-  function(features, reads,
 }
 
 .countWithYieldSize <- function(FUN, features, bf, mode,
-                                algorithm, ignore.strand,
+                                ignore.strand,
                                 inter.feature, param, preprocess.reads, ...)
 {
     if (is.na(yieldSize(bf))) {
         x <- FUN(bf, param=param)
         .dispatchOverlaps(features, x, mode,
-                          algorithm, ignore.strand,
+                          ignore.strand,
                           inter.feature, preprocess.reads, ...)
     } else {
         if (!isOpen(bf)) {
@@ -213,7 +198,7 @@ IntersectionNotEmpty <-  function(features, reads,
         ct <- integer(length(features))
         while (length(x <- FUN(bf, param=param))) {
             ct <- ct + .dispatchOverlaps(features, x, mode,
-                                         algorithm, ignore.strand,
+                                         ignore.strand,
                                          inter.feature, preprocess.reads, ...)
         }
         ct
@@ -221,7 +206,7 @@ IntersectionNotEmpty <-  function(features, reads,
 }
 
 .dispatchBamFiles <-
-    function(features, reads, mode, algorithm, ignore.strand,
+    function(features, reads, mode, ignore.strand,
              count.mapped.reads=FALSE, inter.feature=TRUE, 
              singleEnd=TRUE, fragments=FALSE,
              param=ScanBamParam(), preprocess.reads=NULL, ...)
@@ -234,15 +219,15 @@ IntersectionNotEmpty <-  function(features, reads,
 
     cts <- bplapply(setNames(seq_along(reads), names(reads)),
                function(i, FUN, reads, features, mode,
-                        algorithm, ignore.strand,
+                        ignore.strand,
                         inter.feature, param, preprocess.reads) {
                    bf <- reads[[i]]
                    .countWithYieldSize(FUN, features, bf, mode,
-                                       algorithm, ignore.strand,
+                                       ignore.strand,
                                        inter.feature, param, 
                                        preprocess.reads, ...)
                }, FUN, reads, features, mode=match.fun(mode),
-               algorithm=algorithm, ignore.strand=ignore.strand,
+               ignore.strand=ignore.strand,
                inter.feature=inter.feature, param=param, 
                preprocess.reads=preprocess.reads, ...
            )
@@ -264,14 +249,12 @@ IntersectionNotEmpty <-  function(features, reads,
 
 setMethod("summarizeOverlaps", c("GRanges", "BamFile"),
     function(features, reads, mode=Union,
-             algorithm=c("nclist", "intervaltree"),
              ignore.strand=FALSE,
              inter.feature=TRUE, singleEnd=TRUE,
              fragments=FALSE, param=ScanBamParam(), preprocess.reads=NULL, ...)
 {
     .checkArgs(reads, singleEnd, fragments)
     .dispatchBamFiles(features, BamFileList(reads), mode,
-                      match.arg(algorithm),
                       ignore.strand,
                       inter.feature=inter.feature, singleEnd=singleEnd,
                       fragments=fragments, param=param, 
@@ -280,14 +263,12 @@ setMethod("summarizeOverlaps", c("GRanges", "BamFile"),
 
 setMethod("summarizeOverlaps", c("GRangesList", "BamFile"),
     function(features, reads, mode=Union,
-             algorithm=c("nclist", "intervaltree"),
              ignore.strand=FALSE,
              inter.feature=TRUE, singleEnd=TRUE,
              fragments=FALSE, param=ScanBamParam(), preprocess.reads=NULL, ...)
 {
     .checkArgs(reads, singleEnd, fragments)
     .dispatchBamFiles(features, BamFileList(reads), mode,
-                      match.arg(algorithm),
                       ignore.strand,
                       inter.feature=inter.feature, singleEnd=singleEnd,
                       fragments=fragments, param=param,
@@ -296,7 +277,6 @@ setMethod("summarizeOverlaps", c("GRangesList", "BamFile"),
 
 .summarizeOverlaps_character <-
     function(features, reads, mode=Union,
-             algorithm=c("nclist", "intervaltree"),
              ignore.strand=FALSE,
              yieldSize=1000000L, inter.feature=TRUE, singleEnd=TRUE,
              fragments=FALSE, param=ScanBamParam(), preprocess.reads=NULL, ...)
@@ -313,7 +293,6 @@ setMethod("summarizeOverlaps", c("GRangesList", "BamFile"),
     reads <- BamFileList(reads, yieldSize=yieldSize, obeyQname=FALSE,
                          asMates=!singleEnd)
     summarizeOverlaps(features, reads, mode,
-                      algorithm=match.arg(algorithm),
                       ignore.strand=ignore.strand,
                       inter.feature=inter.feature, singleEnd=singleEnd,
                       fragments=fragments, param=param,
@@ -330,7 +309,6 @@ setMethod("summarizeOverlaps", c("GRangesList", "character"),
 
 .summarizeOverlaps_BamFileList <-
     function(features, reads, mode=Union,
-             algorithm=c("nclist", "intervaltree"),
              ignore.strand=FALSE,
              inter.feature=TRUE, singleEnd=TRUE,
              fragments=FALSE, param=ScanBamParam(), preprocess.reads=NULL, ...)
@@ -339,7 +317,6 @@ setMethod("summarizeOverlaps", c("GRangesList", "character"),
         stop("duplicate 'names(reads)' not allowed")
     .checkArgs(reads, singleEnd, fragments)
     .dispatchBamFiles(features, reads, mode,
-                      match.arg(algorithm),
                       ignore.strand,
                       inter.feature=inter.feature, singleEnd=singleEnd,
                       fragments=fragments, param=param, 
@@ -356,13 +333,12 @@ setMethod("summarizeOverlaps", c("GRangesList", "BamFileList"),
 
 setMethod("summarizeOverlaps", c("BamViews", "missing"),
     function(features, reads, mode=Union,
-             algorithm=c("nclist", "intervaltree"),
              ignore.strand=FALSE,
              inter.feature=TRUE, singleEnd=TRUE,
              fragments=FALSE, param=ScanBamParam(), preprocess.reads=NULL, ...)
 {
     se <- callGeneric(bamRanges(features), BamFileList(bamPaths(features)),
-                      mode=mode, algorithm=match.arg(algorithm),
+                      mode=mode,
                       ignore.strand=ignore.strand,
                       inter.feature=inter.feature, singleEnd=singleEnd,
                       fragments=fragments, param=param,

@@ -20,21 +20,16 @@
 }
 
 \usage{
-findSpliceOverlaps(query, subject, algorithm=c("nclist", "intervaltree"),
-                   ignore.strand=FALSE, ...)
+findSpliceOverlaps(query, subject, ignore.strand=FALSE, ...)
 
-\S4method{findSpliceOverlaps}{GRangesList,GRangesList}(query, subject, algorithm=c("nclist", "intervaltree"),
-                   ignore.strand=FALSE, ..., cds=NULL)
+\S4method{findSpliceOverlaps}{GRangesList,GRangesList}(query, subject, ignore.strand=FALSE, ..., cds=NULL)
 
-\S4method{findSpliceOverlaps}{GAlignments,GRangesList}(query, subject, algorithm=c("nclist", "intervaltree"),
-                   ignore.strand=FALSE, ..., cds=NULL)
+\S4method{findSpliceOverlaps}{GAlignments,GRangesList}(query, subject, ignore.strand=FALSE, ..., cds=NULL)
 
-\S4method{findSpliceOverlaps}{GAlignmentPairs,GRangesList}(query, subject, algorithm=c("nclist", "intervaltree"),
-                   ignore.strand=FALSE, ..., cds=NULL)
+\S4method{findSpliceOverlaps}{GAlignmentPairs,GRangesList}(query, subject, ignore.strand=FALSE, ..., cds=NULL)
 
-\S4method{findSpliceOverlaps}{BamFile,ANY}(query, subject, algorithm=c("nclist", "intervaltree"),
-                   ignore.strand=FALSE, ..., param=ScanBamParam(),
-                   singleEnd=TRUE)
+\S4method{findSpliceOverlaps}{BamFile,ANY}(query, subject, ignore.strand=FALSE, ...,
+                   param=ScanBamParam(), singleEnd=TRUE)
 }
 
 \arguments{
@@ -53,13 +48,6 @@ findSpliceOverlaps(query, subject, algorithm=c("nclist", "intervaltree"),
   \item{subject}{
     A \link[GenomicRanges]{GRangesList} containing the annotations.
     This list is expected to contain exons grouped by transcripts. 
-  }
-  \item{algorithm}{
-    This argument is passed to \code{\link{findOverlaps}}, which
-    \code{findSpliceOverlaps} uses internally.
-    See \code{?\link{findOverlaps}} for more information.
-    Note that it will be removed in BioC 3.3 so please don't use it unless
-    you have a good reason to do so (e.g. troubleshooting).
   }
   \item{ignore.strand}{
     When set to \code{TRUE}, strand information is ignored in the
