@@ -63,15 +63,10 @@ test_readGAlignments_BamViews <- function()
 
     fl <- c(fl, tempfile())
     bv <- BamViews(fl, bamRanges=rng)
-    msg <- NULL
-    suppressWarnings({
+    current <- suppressWarnings({
         tryCatch({
             aln <- readGAlignments(bv)
-        }, error=function(err) {
-            msg <<- conditionMessage(err)
-        })
+        }, error=identity)
     })
-    tst <- sprintf("'readGAlignments' failed on '%s'", names(bv)[3L])
-    checkIdentical(tst, msg)
+    checkTrue(is(current, "bperror"))
 }
-
