@@ -30,7 +30,6 @@
 \alias{width,GAlignments-method}
 \alias{njunc}
 \alias{njunc,GAlignments-method}
-\alias{elementMetadata<-,GAlignments-method}
 \alias{seqinfo,GAlignments-method}
 \alias{seqinfo<-,GAlignments-method}
 

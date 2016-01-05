@@ -188,16 +188,6 @@ setReplaceMethod("strand", "GAlignments",
     }
 )
 
-setReplaceMethod("elementMetadata", "GAlignments",
-    function(x, ..., value)
-    {
-        value <-
-            GenomicRanges:::normalizeMetadataColumnsReplacementValue(value, x)
-        x@elementMetadata <- value
-        x
-    }
-)
-
 setReplaceMethod("seqinfo", "GAlignments",
     function(x, new2old=NULL, force=FALSE, value)
     {
