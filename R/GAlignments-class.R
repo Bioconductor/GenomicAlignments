@@ -118,60 +118,11 @@ setReplaceMethod("names", "GAlignments",
     }
 )
 
-.normargSeqnamesReplaceValue <- function(x, value, ans.type=c("factor", "Rle"))
-{
-    ans.type <- match.arg(ans.type)
-    if (!is.factor(value)
-     && !is.character(value)
-     && (!is(value, "Rle") || !is.character(runValue(value))
-                              && !is.factor(runValue(value))))
-        stop("'seqnames' value must be a character factor/vector, ",
-             "or a 'character' Rle, or a 'factor' Rle")
-    if (ans.type == "factor") {
-        if (!is.factor(value))
-            value <- as.factor(value)
-    } else if (ans.type == "Rle") {
-        ## We want to return a 'factor' Rle.
-        if (!is(value, "Rle")) {
-            if (!is.factor(value))
-                value <- as.factor(value)
-            value <- Rle(value)
-        } else if (!is.factor(runValue(value))) {
-            runValue(value) <- as.factor(runValue(value))
-        }
-    }
-    if (length(value) != length(x))
-        stop("'seqnames' value must be the same length as the object")
-    value
-}
-
-### 'old_seqnames' and 'new_seqnames' must be 'factor' Rle.
-.getSeqnamesTranslationTable <- function(old_seqnames, new_seqnames)
-{
-    old <- runValue(old_seqnames)
-    new <- runValue(new_seqnames)
-    tmp <- unique(data.frame(old=old, new=new))
-    if (!identical(runLength(old_seqnames), runLength(new_seqnames)) ||
-        anyDuplicated(tmp$old) || anyDuplicated(tmp$new))
-        stop("mapping between old an new 'seqnames' values is not one-to-one")
-    if (isTRUE(all.equal(as.integer(tmp$old), as.integer(tmp$new)))) {
-        tr_table <- levels(new)
-        names(tr_table) <- levels(old)
-    } else {
-        tr_table <- tmp$new
-        names(tr_table) <- tmp$old
-    }
-    tr_table
-}
-
 setReplaceMethod("seqnames", "GAlignments",
     function(x, value)
     {
-        value <- .normargSeqnamesReplaceValue(x, value, ans.type="Rle")
-        tr_table <- .getSeqnamesTranslationTable(seqnames(x), value)
-        x@seqnames <- value
-        seqnames(x@seqinfo) <- tr_table[seqlevels(x)]
-        x
+        value <- GenomicRanges:::.normalize_seqnames_replacement_value(value, x)
+        BiocGenerics:::replaceSlots(x, seqnames=value)
     }
 )
 
@@ -232,11 +183,7 @@ setReplaceMethod("seqinfo", "GAlignments",
 
 .valid.GAlignments.seqnames <- function(x)
 {
-    x_seqnames <- seqnames(x)
-    if (!is(x_seqnames, "Rle") || !is.factor(runValue(x_seqnames))
-     || !is.null(names(x_seqnames)) || any(is.na(x_seqnames)))
-        return("'seqnames(x)' must be an unnamed 'factor' Rle with no NAs")
-    if (length(x_seqnames) != length(cigar(x)))
+    if (length(seqnames(x)) != length(cigar(x)))
         return("'seqnames(x)' and 'cigar(x)' must have the same length")
     NULL
 }
@@ -277,6 +224,7 @@ setReplaceMethod("seqinfo", "GAlignments",
 .valid.GAlignments <- function(x)
 {
     c(.valid.GAlignments.names(x),
+      GenomicRanges:::.valid.GenomicRanges.seqnames(x),
       .valid.GAlignments.seqnames(x),
       .valid.GAlignments.start(x),
       .valid.GAlignments.cigar(x),
