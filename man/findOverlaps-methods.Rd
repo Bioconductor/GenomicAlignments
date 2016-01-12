@@ -12,17 +12,6 @@
 \alias{findOverlaps,Vector,GAlignmentsList-method}
 \alias{findOverlaps,GAlignmentsList,GAlignmentsList-method}
 
-\alias{overlapsAny}
-\alias{overlapsAny,GAlignments,Vector-method}
-\alias{overlapsAny,Vector,GAlignments-method}
-\alias{overlapsAny,GAlignments,GAlignments-method}
-\alias{overlapsAny,GAlignmentPairs,Vector-method}
-\alias{overlapsAny,Vector,GAlignmentPairs-method}
-\alias{overlapsAny,GAlignmentPairs,GAlignmentPairs-method}
-\alias{overlapsAny,GAlignmentsList,Vector-method}
-\alias{overlapsAny,Vector,GAlignmentsList-method}
-\alias{overlapsAny,GAlignmentsList,GAlignmentsList-method}
-
 \alias{subsetByOverlaps}
 \alias{subsetByOverlaps,GAlignments,Vector-method}
 \alias{subsetByOverlaps,Vector,GAlignments-method}
@@ -54,11 +43,6 @@
     maxgap=0L, minoverlap=1L,
     type=c("any", "start", "end", "within"),
     select=c("all", "first", "last", "arbitrary"),
-    ignore.strand=FALSE)
-
-\S4method{overlapsAny}{GAlignments,GAlignments}(query, subject,
-    maxgap=0L, minoverlap=1L,
-    type=c("any", "start", "end", "within"),
     ignore.strand=FALSE)
 
 \S4method{subsetByOverlaps}{GAlignments,GAlignments}(query, subject,
@@ -99,10 +83,6 @@
 \value{
   For \code{findOverlaps} either a \link[S4Vectors]{Hits} object when
   \code{select = "all"} or an integer vector otherwise. 
-
-  For \code{overlapsAny} a logical vector of length equal to the number of
-  ranges in \code{query} indicating those that overlap any of the ranges
-  in \code{subject}.
 
   For \code{subsetByOverlaps} an object of the same class as \code{query}
   containing the subset that overlapped at least one entity in \code{subject}.

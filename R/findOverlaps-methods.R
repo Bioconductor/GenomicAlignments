@@ -152,10 +152,6 @@ setMethod("findOverlaps", c("GAlignmentsList", "GAlignmentsList"),
     c("GAlignmentsList", "GAlignmentsList")
 )
 
-setMethods("overlapsAny", .signatures1,
-    GenomicRanges:::overlapsAny.definition
-)
-
 setMethods("subsetByOverlaps", .signatures1,
     GenomicRanges:::subsetByOverlaps.definition1
 )
