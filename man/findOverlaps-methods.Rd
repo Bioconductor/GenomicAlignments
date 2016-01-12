@@ -12,17 +12,6 @@
 \alias{findOverlaps,Vector,GAlignmentsList-method}
 \alias{findOverlaps,GAlignmentsList,GAlignmentsList-method}
 
-\alias{subsetByOverlaps}
-\alias{subsetByOverlaps,GAlignments,Vector-method}
-\alias{subsetByOverlaps,Vector,GAlignments-method}
-\alias{subsetByOverlaps,GAlignments,GAlignments-method}
-\alias{subsetByOverlaps,GAlignmentPairs,Vector-method}
-\alias{subsetByOverlaps,Vector,GAlignmentPairs-method}
-\alias{subsetByOverlaps,GAlignmentPairs,GAlignmentPairs-method}
-\alias{subsetByOverlaps,GAlignmentsList,Vector-method}
-\alias{subsetByOverlaps,Vector,GAlignmentsList-method}
-\alias{subsetByOverlaps,GAlignmentsList,GAlignmentsList-method}
-
 
 \title{Finding overlapping genomic alignments}
 
@@ -36,6 +25,12 @@
   The methods for \link[GenomicRanges]{GRanges} and
   \link[GenomicRanges]{GRangesList} objects are defined and
   documented in the \pkg{GenomicRanges} package.
+
+  \link{GAlignments}, \link{GAlignmentPairs}, and \link{GAlignmentsList}
+  objects also support \code{countOverlaps}, \code{overlapsAny}, and
+  \code{subsetByOverlaps} thanks to the default methods defined in the
+  \pkg{IRanges} package and to the \code{findOverlaps} method defined in
+  this package and documented below.
 }
 
 \usage{
@@ -43,11 +38,6 @@
     maxgap=0L, minoverlap=1L,
     type=c("any", "start", "end", "within"),
     select=c("all", "first", "last", "arbitrary"),
-    ignore.strand=FALSE)
-
-\S4method{subsetByOverlaps}{GAlignments,GAlignments}(query, subject,
-    maxgap=0L, minoverlap=1L,
-    type=c("any", "start", "end", "within"),
     ignore.strand=FALSE)
 }
 
@@ -81,11 +71,8 @@
 }
 
 \value{
-  For \code{findOverlaps} either a \link[S4Vectors]{Hits} object when
-  \code{select = "all"} or an integer vector otherwise. 
-
-  For \code{subsetByOverlaps} an object of the same class as \code{query}
-  containing the subset that overlapped at least one entity in \code{subject}.
+  A \link[S4Vectors]{Hits} object when \code{select="all"} or an integer
+  vector otherwise. 
 }
 
 \seealso{

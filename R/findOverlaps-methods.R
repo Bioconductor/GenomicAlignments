@@ -133,26 +133,3 @@ setMethod("findOverlaps", c("GAlignmentsList", "GAlignmentsList"),
     }
 )
 
-
-### =========================================================================
-### findOverlaps-based methods
-### -------------------------------------------------------------------------
-
-.signatures1 <- list(
-    c("GAlignments", "Vector"),
-    c("Vector", "GAlignments"),
-    c("GAlignments", "GAlignments"),
-
-    c("GAlignmentPairs", "Vector"),
-    c("Vector", "GAlignmentPairs"),
-    c("GAlignmentPairs", "GAlignmentPairs"),
-
-    c("GAlignmentsList", "Vector"),
-    c("Vector", "GAlignmentsList"),
-    c("GAlignmentsList", "GAlignmentsList")
-)
-
-setMethods("subsetByOverlaps", .signatures1,
-    GenomicRanges:::subsetByOverlaps.definition1
-)
-
