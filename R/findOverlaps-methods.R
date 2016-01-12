@@ -152,17 +152,6 @@ setMethod("findOverlaps", c("GAlignmentsList", "GAlignmentsList"),
     c("GAlignmentsList", "GAlignmentsList")
 )
 
-.signatures2 <- list(
-    c("GAlignments", "GenomicRanges"),
-    c("GenomicRanges", "GAlignments"),
-    c("GAlignments", "GRangesList"),
-    c("GRangesList", "GAlignments")
-)
-
-setMethods("countOverlaps", c(.signatures1, .signatures2),
-    GenomicRanges:::countOverlaps.definition
-)
-
 setMethods("overlapsAny", .signatures1,
     GenomicRanges:::overlapsAny.definition
 )

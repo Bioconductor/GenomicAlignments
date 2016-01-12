@@ -12,21 +12,6 @@
 \alias{findOverlaps,Vector,GAlignmentsList-method}
 \alias{findOverlaps,GAlignmentsList,GAlignmentsList-method}
 
-\alias{countOverlaps}
-\alias{countOverlaps,GAlignments,Vector-method}
-\alias{countOverlaps,Vector,GAlignments-method}
-\alias{countOverlaps,GAlignments,GAlignments-method}
-\alias{countOverlaps,GAlignments,GenomicRanges-method}
-\alias{countOverlaps,GenomicRanges,GAlignments-method}
-\alias{countOverlaps,GAlignments,GRangesList-method}
-\alias{countOverlaps,GRangesList,GAlignments-method}
-\alias{countOverlaps,GAlignmentPairs,Vector-method}
-\alias{countOverlaps,Vector,GAlignmentPairs-method}
-\alias{countOverlaps,GAlignmentPairs,GAlignmentPairs-method}
-\alias{countOverlaps,GAlignmentsList,Vector-method}
-\alias{countOverlaps,Vector,GAlignmentsList-method}
-\alias{countOverlaps,GAlignmentsList,GAlignmentsList-method}
-
 \alias{overlapsAny}
 \alias{overlapsAny,GAlignments,Vector-method}
 \alias{overlapsAny,Vector,GAlignments-method}
@@ -69,11 +54,6 @@
     maxgap=0L, minoverlap=1L,
     type=c("any", "start", "end", "within"),
     select=c("all", "first", "last", "arbitrary"),
-    ignore.strand=FALSE)
-
-\S4method{countOverlaps}{GAlignments,GAlignments}(query, subject,
-    maxgap=0L, minoverlap=1L,
-    type=c("any", "start", "end", "within"),
     ignore.strand=FALSE)
 
 \S4method{overlapsAny}{GAlignments,GAlignments}(query, subject,
@@ -119,9 +99,6 @@
 \value{
   For \code{findOverlaps} either a \link[S4Vectors]{Hits} object when
   \code{select = "all"} or an integer vector otherwise. 
-
-  For \code{countOverlaps} an integer vector containing the tabulated
-  query overlap hits.
 
   For \code{overlapsAny} a logical vector of length equal to the number of
   ranges in \code{query} indicating those that overlap any of the ranges
