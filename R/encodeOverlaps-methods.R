@@ -197,8 +197,8 @@ setMethods("encodeOverlaps", list(c("RangesList", "RangesList"),
     if (!is(x, "RleList"))
         stop("'x' must be an RleList object")
     vals <- runValue(x)
-    elt_lens <- elementLengths(vals)
-    if (!all(elt_lens == 1L))
+    vals_eltNROWS <- elementNROWS(vals)
+    if (!all(vals_eltNROWS == 1L))
         stop(errmsg)
     unlist(vals, use.names=FALSE)
 }
@@ -263,7 +263,7 @@ flipQuery <- function(x, i)
     x <- replaceROWS(x, i, invertRleListStrand(revElements(xi)))
     xi_query.break <- mcols(xi)$query.break
     if (!is.null(xi_query.break)) {
-        revxi_query.break <- elementLengths(xi) - xi_query.break
+        revxi_query.break <- elementNROWS(xi) - xi_query.break
         mcols(x)$query.break <- replaceROWS(mcols(x)$query.break, i,
                                             revxi_query.break)
     }
@@ -590,10 +590,10 @@ setMethod("isCompatibleWithSkippedExons", "OverlapEncodings",
 {
     patterns <- paste0("^", encoding_patterns, "$")
     ii <- lapply(patterns, grep, encoding_blocks)
-    ii_elt_lens <- elementLengths(ii)
-    if (any(ii_elt_lens == 0L))
+    ii_eltNROWS <- elementNROWS(ii)
+    if (any(ii_eltNROWS == 0L))
         return(integer(0))
-    if (any(ii_elt_lens != 1L))
+    if (any(ii_eltNROWS != 1L))
         stop("cannot unambiguously extract stepped exon ranks from ",
              "encoding \"", paste0(encoding_blocks, collapse=":"), "\"")
     ans <- unlist(ii, use.names=FALSE)
@@ -628,7 +628,7 @@ setMethod("isCompatibleWithSkippedExons", "OverlapEncodings",
         stop(encoding, ": invalid encoding")
     ## Paired-end read.
     encoding_blocks <- strsplit(encoding_blocks, "--", fixed=TRUE)
-    if (!all(elementLengths(encoding_blocks) == 2L))  # should never happen
+    if (!all(elementNROWS(encoding_blocks) == 2L))  # should never happen
         stop(encoding, ": invalid encoding")
     encoding_blocks <- matrix(unlist(encoding_blocks, use.names=FALSE), nrow=2L)
     Lencoding_patterns <- .build_compatible_encoding_patterns(njunc[1L])
@@ -678,11 +678,11 @@ setMethod("extractSteppedExonRanks", "OverlapEncodings",
     {
         ranks <- extractSteppedExonRanks(encoding(x),
                      for.query.right.end=for.query.right.end)
-        ranks_elt_lens <- elementLengths(ranks)
+        ranks_eltNROWS <- elementNROWS(ranks)
         tmp <- unlist(unname(ranks), use.names=TRUE)  # we want the inner names
-        tmp <- tmp + rep.int(Loffset(x), ranks_elt_lens)
+        tmp <- tmp + rep.int(Loffset(x), ranks_eltNROWS)
         flevels <- seq_len(length(ranks))
-        f <- factor(rep.int(flevels, ranks_elt_lens), levels=flevels)
+        f <- factor(rep.int(flevels, ranks_eltNROWS), levels=flevels)
         unname(split(tmp, f))
     }
 )
@@ -796,11 +796,11 @@ setMethod("extractSkippedExonRanks", "OverlapEncodings",
     {
         ranks <- extractSkippedExonRanks(encoding(x),
                      for.query.right.end=for.query.right.end)
-        ranks_elt_lens <- elementLengths(ranks)
+        ranks_eltNROWS <- elementNROWS(ranks)
         tmp <- unlist(unname(ranks), use.names=TRUE)  # we want the inner names
-        tmp <- tmp + rep.int(Loffset(x), ranks_elt_lens)
+        tmp <- tmp + rep.int(Loffset(x), ranks_eltNROWS)
         flevels <- seq_len(length(ranks))
-        f <- factor(rep.int(flevels, ranks_elt_lens), levels=flevels)
+        f <- factor(rep.int(flevels, ranks_eltNROWS), levels=flevels)
         unname(split(tmp, f))
     }
 )
@@ -810,26 +810,26 @@ setMethod("extractSkippedExonRanks", "OverlapEncodings",
 ### extractQueryStartInTranscript().
 ###
 
-### TODO: Maybe put this in IRanges and rename it setElementLengths, or even
-### better introduce an "elementLengths<-" generic and make this the method
+### TODO: Maybe put this in IRanges and rename it setElementNROWS, or even
+### better introduce an "elementNROWS<-" generic and make this the method
 ### for CompressedList objects?
-.setElementLengths <- function(x, elt_lens)
+.setElementNROWS <- function(x, eltNROWS)
 {
     if (!is(x, "CompressedList"))
         stop("'x' must be a CompressedList object")
-    if (!is.numeric(elt_lens) || length(elt_lens) != length(x))
-        stop("'elt_lens' must be an integer vector of the same length as 'x'")
-    if (!is.integer(elt_lens))
-        elt_lens <- as.integer(elt_lens)
-    if (S4Vectors:::anyMissingOrOutside(elt_lens, lower=0L))
-        stop("'elt_lens' cannot contain NAs or negative values")
-    x_elt_lens <- elementLengths(x)
-    if (!all(elt_lens <= x_elt_lens))
-        stop("'all(elt_lens <= elementLengths(x))' must be TRUE")
-    offset <- cumsum(c(0L, x_elt_lens[-length(x_elt_lens)]))
-    ii <- S4Vectors:::fancy_mseq(elt_lens, offset=offset)
+    if (!is.numeric(eltNROWS) || length(eltNROWS) != length(x))
+        stop("'eltNROWS' must be an integer vector of the same length as 'x'")
+    if (!is.integer(eltNROWS))
+        eltNROWS <- as.integer(eltNROWS)
+    if (S4Vectors:::anyMissingOrOutside(eltNROWS, lower=0L))
+        stop("'eltNROWS' cannot contain NAs or negative values")
+    x_eltNROWS <- elementNROWS(x)
+    if (!all(eltNROWS <= x_eltNROWS))
+        stop("'all(eltNROWS <= elementNROWS(x))' must be TRUE")
+    offset <- cumsum(c(0L, x_eltNROWS[-length(x_eltNROWS)]))
+    ii <- S4Vectors:::fancy_mseq(eltNROWS, offset=offset)
     x@unlistData <- x@unlistData[ii]
-    x@partitioning@end <- unname(cumsum(elt_lens))
+    x@partitioning@end <- unname(cumsum(eltNROWS))
     x
 }
 
@@ -921,9 +921,9 @@ extractQueryStartInTranscript <- function(query, subject,
 
     ## Truncate each transcript in 'subject' right before the first spanned
     ## exon and compute the cumulated width of the truncated object.
-    subject2_elt_lens <- exrank - 1L
-    subject2_elt_lens[is.na(exrank)] <- 0L
-    subject2 <- .setElementLengths(subject, subject2_elt_lens)
+    subject2_eltNROWS <- exrank - 1L
+    subject2_eltNROWS[is.na(exrank)] <- 0L
+    subject2 <- .setElementNROWS(subject, subject2_eltNROWS)
     subject2_cumwidth <- unname(sum(width(subject2)))
     subject2_cumwidth[is.na(exrank)] <- NA_integer_
 

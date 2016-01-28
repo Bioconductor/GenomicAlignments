@@ -270,7 +270,7 @@ findMateAlignment <- function(x)
         subject_low2high <- S4Vectors:::reverseSelfmatchMapping(
                                 high2low(subject))
         extra_hits <- subject_low2high[subject_hits0]
-        query_nhits <- 1L + elementLengths(extra_hits)
+        query_nhits <- 1L + elementNROWS(extra_hits)
         query_hits <- rep.int(query_hits0, query_nhits)
         subject_hits <- integer(length(query_hits))
         idx0 <- cumsum(c(1L, query_nhits[-length(query_nhits)]))

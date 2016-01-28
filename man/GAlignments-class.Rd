@@ -209,7 +209,7 @@
       \code{njunc(x)}:
       Returns an integer vector of the same length as \code{x} containing
       the number of junctions (i.e. N operations in the CIGAR) in each
-      alignment. Equivalent to \code{unname(elementLengths(rglist(x))) - 1L}.
+      alignment. Equivalent to \code{unname(elementNROWS(rglist(x))) - 1L}.
     }
     \item{}{
       \code{seqinfo(x)}, \code{seqinfo(x) <- value}:
@@ -445,10 +445,10 @@ seqlevels(gal) <- sub("seq", "chr", seqlevels(gal))
 seqlevels(gal)
 
 grglist(gal)  # a GRangesList object
-stopifnot(identical(unname(elementLengths(grglist(gal))), njunc(gal) + 1L))
+stopifnot(identical(unname(elementNROWS(grglist(gal))), njunc(gal) + 1L))
 granges(gal)  # a GRanges object
 rglist(gal)   # a CompressedIRangesList object
-stopifnot(identical(unname(elementLengths(rglist(gal))), njunc(gal) + 1L))
+stopifnot(identical(unname(elementNROWS(rglist(gal))), njunc(gal) + 1L))
 ranges(gal)   # an IRanges object
 
 ## Modify the number of lines in 'show'

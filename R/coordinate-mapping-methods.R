@@ -44,7 +44,7 @@ setGeneric("pmapFromAlignments", signature=c("x", "alignments"),
     match1 <- match(xNames, alignmentsNames)
     group0 <- splitAsList(seq_along(alignmentsNames), match0)
     group1 <- group0[match(na.omit(match1), names(group0))]
-    xHits <- rep(which(!is.na(match1)), elementLengths(group1))
+    xHits <- rep(which(!is.na(match1)), elementNROWS(group1))
     alignmentsHits <- unlist(group1, use.names=FALSE)
     if (!length(xHits <- na.omit(xHits)))
         stop ("none of 'names(x)' are in 'names(alignments)'")

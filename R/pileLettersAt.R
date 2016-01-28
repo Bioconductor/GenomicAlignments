@@ -29,7 +29,7 @@
 
     ## 'ranges_on_ref' and 'ranges_on_query' are IRangesList objects parallel
     ## to 'x', 'pos', and 'cigar'. In addition, the 2 IRangesList objects
-    ## have the same "shape" (i.e. same elementLengths()), so, after
+    ## have the same "shape" (i.e. same elementNROWS()), so, after
     ## unlisting, the 2 unlisted objects are parallel IRanges objects.
     unlisted_ranges_on_ref <- unlist(ranges_on_ref, use.names=FALSE)
     unlisted_ranges_on_query <- unlist(ranges_on_query, use.names=FALSE)

@@ -238,15 +238,15 @@ dna <- extractTranscriptSeqs(BSgenome.Dmelanogaster.UCSC.dm3, grglist(gal))
 box <- vmatchPattern("TATAAA", dna)
 
 ## Some sequences had more than one match:
-table(elementLengths(box))
+table(elementNROWS(box))
 
 ## The element-wise function we'll use for mapping to genome coordinates
 ## requires the two input argument to have the same length. We need to
 ## replicate the read ranges to match the number of motifs found.
 
 ## Expand the read ranges to match motifs found:
-motif <- elementLengths(box) != 0
-alignments <- rep(gal[motif], elementLengths(box)[motif])
+motif <- elementNROWS(box) != 0
+alignments <- rep(gal[motif], elementNROWS(box)[motif])
 
 ## We make the IRanges into a GRanges object so the seqlevels can
 ## propagate to the output. Seqlevels are needed in the last mapping step.

@@ -245,7 +245,7 @@ rseq2 <- sequenceLayer(rseq, cigar(gal),
                        from="reference", to="pairwise")
 
 ## Sanity check: 'qseq2' and 'rseq2' should have the same shape.
-stopifnot(identical(elementLengths(qseq2), elementLengths(rseq2)))
+stopifnot(identical(elementNROWS(qseq2), elementNROWS(rseq2)))
 
 ## A closer look at reads with insertions and deletions:
 cigar_op_table <- cigarOpTable(cigar(gal))
@@ -273,7 +273,7 @@ rseq3 <- sequenceLayer(rseq, cigar(gal),
                        from="reference", to="pairwise-dense")
 
 ## Sanity check: 'qseq3' and 'rseq3' should have the same shape.
-stopifnot(identical(elementLengths(qseq3), elementLengths(rseq3)))
+stopifnot(identical(elementNROWS(qseq3), elementNROWS(rseq3)))
 
 ## Insertions were removed:
 qseq3[I_idx]

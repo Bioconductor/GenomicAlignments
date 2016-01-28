@@ -275,13 +275,13 @@ table(njunc(gal))  # some alignments have 3 junctions!
 juncs <- junctions(gal)
 juncs
 
-stopifnot(identical(unname(elementLengths(juncs)), njunc(gal)))
+stopifnot(identical(unname(elementNROWS(juncs)), njunc(gal)))
 
 galp <- readGAlignmentPairs(bamfile)
 juncs <- junctions(galp)
 juncs
 
-stopifnot(identical(unname(elementLengths(juncs)), njunc(galp)))
+stopifnot(identical(unname(elementNROWS(juncs)), njunc(galp)))
 
 ## ---------------------------------------------------------------------
 ## B. summarizeJunctions()

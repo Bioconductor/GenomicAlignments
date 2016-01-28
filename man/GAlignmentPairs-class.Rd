@@ -407,7 +407,7 @@ grglist(galp)  # a GRangesList object
 strandMode(galp) <- 1
 grglist(galp)
 
-stopifnot(identical(unname(elementLengths(grglist(galp))), njunc(galp) + 2L))
+stopifnot(identical(unname(elementNROWS(grglist(galp))), njunc(galp) + 2L))
 
 granges(galp)  # a GRanges object
 }

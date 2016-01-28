@@ -341,7 +341,7 @@ static const char *split_cigar_string(const char *cigar_string,
  * Both functions return a list of the same length as 'cigar' where each
  * list element is a character vector (for explode_cigar_ops()) or an integer
  * vector (for explode_cigar_op_lengths()). The 2 lists have the same shape,
- * that is, same length() and same elementLengths(). The i-th character vector
+ * that is, same length() and same elementNROWS(). The i-th character vector
  * in the list returned by explode_cigar_ops() contains one single-letter
  * string per CIGAR operation in 'cigar[i]'. The i-th integer vector in the
  * list returned by explode_cigar_op_lengths() contains the corresponding

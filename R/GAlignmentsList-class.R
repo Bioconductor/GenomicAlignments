@@ -224,7 +224,7 @@ setMethod("granges", "GAlignmentsList",
                       "As a consequence, the returned GRanges object ",
                       "is not parallel to 'x'.")
         rg <- range(grglist(x, ignore.strand=ignore.strand))
-        is_one_to_one <- all(elementLengths(rg) == 1L)
+        is_one_to_one <- all(elementNROWS(rg) == 1L)
         if (!is_one_to_one && all(width(x@partitioning) > 0)) {
             if (ignore.strand)
                 warning(msg)

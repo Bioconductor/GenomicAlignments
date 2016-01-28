@@ -97,7 +97,7 @@ setMethod("qwidth", "GAlignments",
 )
 
 setMethod("njunc", "GAlignments",
-    function(x) {unname(elementLengths(rglist(x))) - 1L}
+    function(x) {unname(elementNROWS(rglist(x))) - 1L}
 )
 
 setMethod("seqinfo", "GAlignments", function(x) x@seqinfo)
@@ -352,9 +352,9 @@ setMethod("update", "GAlignments",
 ### Names are propagated via 'x@partitioning' ('x' is a CompressedIRangesList).
 .CompressedIRangesListToGRangesList <- function(x, seqnames, strand, seqinfo)
 {
-    elt_lens <- elementLengths(x)
-    seqnames <- rep.int(seqnames, elt_lens)
-    strand <- rep.int(strand, elt_lens)
+    x_eltNROWS <- elementNROWS(x)
+    seqnames <- rep.int(seqnames, x_eltNROWS)
+    strand <- rep.int(strand, x_eltNROWS)
     unlisted_ans <- GRanges(seqnames=seqnames, ranges=x@unlistData,
                             strand=strand)
     seqinfo(unlisted_ans) <- seqinfo
@@ -613,7 +613,7 @@ combine_GAlignments_objects <- function(Class, objects,
         noname_idx <- which(has_no_names)
         if (length(noname_idx) != 0L)
             NAMES_slots[noname_idx] <-
-                lapply(elementLengths(objects[noname_idx]), character)
+                lapply(elementNROWS(objects[noname_idx]), character)
         ans_NAMES <- unlist(NAMES_slots, use.names=FALSE)
     }
 

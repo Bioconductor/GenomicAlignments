@@ -152,7 +152,7 @@ cigarToRleList <- function(cigar)
     ans_flesh <- Rle(unlisted_cigar_ops, unlisted_cigar_op_lengths)
 
     ## Prepare 'ans_skeleton'.
-    nops_per_cigar <- elementLengths(cigar_op_lengths)
+    nops_per_cigar <- elementNROWS(cigar_op_lengths)
     ans_breakpoints <- cumsum(unlisted_cigar_op_lengths)[cumsum(nops_per_cigar)]
     ans_skeleton <- PartitioningByEnd(ans_breakpoints)
 

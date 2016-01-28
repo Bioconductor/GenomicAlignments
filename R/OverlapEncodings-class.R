@@ -49,11 +49,11 @@ setMethod("length", "OverlapEncodings", function(x) length(encoding(x)))
     if (length(x) == 0L)
         return(character(0))
     encoding_blocks <- strsplit(x, ":", fixed=TRUE)
-    nblock <- elementLengths(encoding_blocks)
+    nblock <- elementNROWS(encoding_blocks)
     tmp <- strsplit(unlist(encoding_blocks, use.names=FALSE), "--", fixed=TRUE)
-    tmp_elt_lens <- elementLengths(tmp)
-    tmp_is_single_end <- tmp_elt_lens == 1L
-    tmp_is_paired_end <- tmp_elt_lens == 2L
+    tmp_eltNROWS <- elementNROWS(tmp)
+    tmp_is_single_end <- tmp_eltNROWS == 1L
+    tmp_is_paired_end <- tmp_eltNROWS == 2L
     nblock1 <- sum(LogicalList(relist(tmp_is_single_end, encoding_blocks)))
     nblock2 <- sum(LogicalList(relist(tmp_is_paired_end, encoding_blocks)))
     is_single_end_encoding <- nblock1 == nblock
@@ -125,9 +125,9 @@ setMethod("Rencoding", "OverlapEncodings", function(x) Rencoding(encoding(x)))
     if (length(x) == 0L)
         return(integer(0))
     tmp <- strsplit(sub(":.*", "", x), "--", fixed=TRUE)
-    elt_lens <- elementLengths(tmp)
-    is_single_end_encoding <- elt_lens == 1L
-    is_paired_end_encoding <- elt_lens == 2L
+    tmp_eltNROWS <- elementNROWS(tmp)
+    is_single_end_encoding <- tmp_eltNROWS == 1L
+    is_paired_end_encoding <- tmp_eltNROWS == 2L
     if (!all(is_single_end_encoding | is_paired_end_encoding))
         stop("'x' contains ill-formed encodings")
     any_single_end <- any(is_single_end_encoding)

@@ -26,8 +26,8 @@
         qrange <- restrict(qrng, start(bounds), end(bounds),
                            keep.all.ranges = TRUE)
     }
-    bnds <- elementLengths(setdiff(qrng, srng)) == 0L
-    splc <- elementLengths(intersect(srng, sprng)) == 0L
+    bnds <- elementNROWS(setdiff(qrng, srng)) == 0L
+    splc <- elementNROWS(intersect(srng, sprng)) == 0L
     bnds & splc
 }
 
@@ -70,12 +70,12 @@
 
 .novelExon <- function(splice, intronRegion)
 {
-    if (sum(elementLengths(splice)) == 0L)
+    if (sum(elementNROWS(splice)) == 0L)
         return(logical(length(splice)))
 
     ## subset on elements with splices
     ans <- logical(length(splice))
-    idx <- elementLengths(splice) > 0
+    idx <- elementNROWS(splice) > 0
     splice <- splice[idx]
     internal <- unlist(.gaps(splice), use.names=FALSE)
     if (sum(length(internal)) == 0L)
@@ -96,14 +96,14 @@
 
 .novelSpliceEvent <- function(splice, intron)
 {
-    if (sum(elementLengths(splice)) == 0L |
-        sum(elementLengths(intron)) == 0L)
+    if (sum(elementNROWS(splice)) == 0L |
+        sum(elementNROWS(intron)) == 0L)
         DataFrame(Site=rep.int(FALSE, length(splice)),
                   Junction=rep.int(FALSE, length(splice)))
 
     ## subset on elements with splices
     site <- junction <- rep.int(FALSE, length(splice))
-    idx <- elementLengths(splice) > 0
+    idx <- elementNROWS(splice) > 0
     splice <- splice[idx]
     intron <- intron[idx]
 
@@ -219,8 +219,8 @@
         end <- as.integer(end)
 
     ## seqname and strand consistent in list elements
-    if (all(elementLengths(runValue(seqnames(x))) == 1L) &&
-        all(elementLengths(runValue(strand(x))) == 1L)) {
+    if (all(elementNROWS(runValue(seqnames(x))) == 1L) &&
+        all(elementNROWS(runValue(strand(x))) == 1L)) {
         flat <- unlist(x, use.names=FALSE)
         gaps <- gaps(ranges(x), start, end)
 ### FIXME: this makes this function more of an 'introns' than a .gaps.
@@ -230,12 +230,12 @@
           gaps <- setdiff(gaps, insert_gaps)
         }
 
-        idx <- elementLengths(gaps) != 0
+        idx <- elementNROWS(gaps) != 0
         ## FIXME : can't handle lists with empty elements 
         ##         'start' and 'end' not quite right here
         firstseg <- start(PartitioningByWidth(x))
-        seqnms <- rep(seqnames(flat)[firstseg], elementLengths(gaps))
-        strand <- rep(strand(flat)[firstseg], elementLengths(gaps))
+        seqnms <- rep(seqnames(flat)[firstseg], elementNROWS(gaps))
+        strand <- rep(strand(flat)[firstseg], elementNROWS(gaps))
         gr <- relist(GRanges(seqnms, unlist(gaps, use.names=FALSE), strand), gaps)
         gr
     } else {
@@ -250,7 +250,7 @@
     ## adjust strand based on 'XS'
     if (!is.null(xs <- mcols(query)$XS)) {
         strand <- ifelse(!is.na(xs), xs, "*")
-        strand(query) <- relist(Rle(strand, elementLengths(query)),
+        strand(query) <- relist(Rle(strand, elementNROWS(query)),
                                 query)
     }
     ## NOTE: this misses reads completely within an intron, but this

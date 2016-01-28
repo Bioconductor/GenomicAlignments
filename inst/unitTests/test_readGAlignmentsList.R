@@ -73,7 +73,7 @@ test_readGAlignmentsList_compare_pairs <- function()
     checkIdentical(tbl[["unmated"]], 21227L)
 
     ## GAlignmentPairs holds concordant (opposite strand) pairs
-    samestrand <- galist[elementLengths(runValue(strand(galist))) == 1L]
+    samestrand <- galist[elementNROWS(runValue(strand(galist))) == 1L]
     samestrandp <- sum(mcols(samestrand)$mate_status == "mated")
     checkIdentical(tbl[["mated"]] - samestrandp, length(galp))
 }

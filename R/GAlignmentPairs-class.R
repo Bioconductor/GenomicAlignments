@@ -406,15 +406,15 @@ shrinkByHalf <- function(x)
 {
     if (length(x) %% 2L != 0L)
         stop("'x' must have an even length")
-    x_elt_lens <- elementLengths(x)
-    if (length(x_elt_lens) == 0L) {
+    x_eltNROWS <- elementNROWS(x)
+    if (length(x_eltNROWS) == 0L) {
         ans_nelt1 <- ans_nelt2 <- integer(0)
     } else {
-        ans_nelt1 <- x_elt_lens[c(TRUE, FALSE)]
-        ans_nelt2 <- x_elt_lens[c(FALSE, TRUE)]
+        ans_nelt1 <- x_eltNROWS[c(TRUE, FALSE)]
+        ans_nelt2 <- x_eltNROWS[c(FALSE, TRUE)]
     }
-    ans_elt_lens <- ans_nelt1 + ans_nelt2
-    ans_partitioning <- PartitioningByEnd(cumsum(ans_elt_lens))
+    ans_eltNROWS <- ans_nelt1 + ans_nelt2
+    ans_partitioning <- PartitioningByEnd(cumsum(ans_eltNROWS))
     ans <- relist(x@unlistData, ans_partitioning)
     mcols(ans) <- DataFrame(nelt1=ans_nelt1, nelt2=ans_nelt2)
     ans
@@ -470,7 +470,7 @@ setMethod("granges", "GAlignmentPairs",
         if (!isTRUEorFALSE(use.mcols))
             stop("'use.mcols' must be TRUE or FALSE")
         rg <- range(grglist(x))
-        if (!all(elementLengths(rg) == 1L))
+        if (!all(elementNROWS(rg) == 1L))
             stop("For some pairs in 'x', the first and last alignments ",
                  "are not aligned to the same chromosome and strand. ",
                  "Cannot extract a single range for them.")
@@ -526,8 +526,8 @@ fillJunctionGaps <- function(x)
     half1_partitioning <- PartitioningByEnd(cumsum(query.breaks))
     half1 <- relist(x@unlistData[idx], half1_partitioning)
     half1 <- range(half1)@unlistData
-    half2_eltlens <- elementLengths(x) - query.breaks
-    half2_partitioning <- PartitioningByEnd(cumsum(half2_eltlens))
+    half2_eltNROWS <- elementNROWS(x) - query.breaks
+    half2_partitioning <- PartitioningByEnd(cumsum(half2_eltNROWS))
     half2 <- relist(x@unlistData[-idx], half2_partitioning)
     half2 <- range(half2)@unlistData
     collate_subscript <- S4Vectors:::make_XYZxyz_to_XxYyZz_subscript(length(x))
@@ -672,7 +672,7 @@ combine_GAlignmentPairs_objects <- function(Class, objects,
         noname_idx <- which(has_no_names)
         if (length(noname_idx) != 0L)
             NAMES_slots[noname_idx] <-
-                lapply(elementLengths(objects[noname_idx]), character)
+                lapply(elementNROWS(objects[noname_idx]), character)
         ans_NAMES <- unlist(NAMES_slots, use.names=FALSE)
     }
 

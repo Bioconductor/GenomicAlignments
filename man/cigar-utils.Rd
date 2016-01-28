@@ -211,7 +211,7 @@ queryLocs2refLocs(qlocs, cigar, pos=1L, flag=NULL)
   Both functions return a list of the same length as \code{cigar} where each
   list element is a character vector (for \code{explodeCigarOps}) or an integer
   vector (for \code{explodeCigarOpLengths}). The 2 lists have the same shape,
-  that is, same \code{length()} and same \code{elementLengths()}. The i-th
+  that is, same \code{length()} and same \code{elementNROWS()}. The i-th
   character vector in the list returned by \code{explodeCigarOps} contains one
   single-letter string per CIGAR operation in \code{cigar[i]}. The i-th integer
   vector in the list returned by \code{explodeCigarOpLengths} contains the

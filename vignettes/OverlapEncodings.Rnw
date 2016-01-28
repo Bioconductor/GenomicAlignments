@@ -300,8 +300,8 @@ So we can extract the number of Rle runs for each transcript and make
 sure it's always 1:
 
 <<check-for-trans-splicing-in-exbytx>>=
-table(elementLengths(runLength(seqnames(exbytx))))
-table(elementLengths(runLength(strand(exbytx))))
+table(elementNROWS(runLength(seqnames(exbytx))))
+table(elementNROWS(runLength(strand(exbytx))))
 @
 
 Therefore the strand of any given transcript is unambiguously defined
@@ -1147,7 +1147,7 @@ findSequenceHits <- function(qseq, txseq, which.txseq=NULL, max.mismatch=0)
         query_hits <- unlist(x)
         if (is.null(query_hits))
             query_hits <- integer(0)
-        subject_hits <- rep.int(seq_len(length(x)), elementLengths(x))
+        subject_hits <- rep.int(seq_len(length(x)), elementNROWS(x))
         Hits(query_hits, subject_hits, pattern_length, length(x))
     }
 
@@ -1557,7 +1557,7 @@ exon per overlap):
 <<U1.nsjOV00_skippedex>>=
 U1.nsjOV00_skippedex <- extractSkippedExonRanks(U1.ovenc)[U1.OV00_is_nsj]
 names(U1.nsjOV00_skippedex) <- queryHits(U1.nsjOV00)
-table(elementLengths(U1.nsjOV00_skippedex))
+table(elementNROWS(U1.nsjOV00_skippedex))
 @
 
 Finally, we split \Rcode{U1.nsjOV00\_skippedex} by transcript names:

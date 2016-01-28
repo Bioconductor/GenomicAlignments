@@ -368,7 +368,7 @@ galist1 <- readGAlignmentsList(fl)
 
 galist1[1:3]
 length(galist1)
-table(elementLengths(galist1))
+table(elementNROWS(galist1))
 
 ## When 'file' is a BamFile, 'asMates' must be TRUE. If FALSE,
 ## the data are treated as single-end and each list element of the
