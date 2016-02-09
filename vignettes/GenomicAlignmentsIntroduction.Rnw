@@ -1,0 +1,171 @@
+%\VignetteIndexEntry{An Introduction to the GenomicAlignments Package}
+%\VignetteDepends{Rsamtools}
+%\VignetteKeywords{sequence, sequencing, alignments}
+%\VignettePackage{GenomicAlignments}
+\documentclass[10pt]{article}
+
+\usepackage{times}
+\usepackage{hyperref}
+
+\textwidth=6.5in
+\textheight=8.5in
+%\parskip=.3cm
+\oddsidemargin=-.1in
+\evensidemargin=-.1in
+\headheight=-.3in
+
+\newcommand{\Rfunction}[1]{{\texttt{#1}}}
+\newcommand{\Robject}[1]{{\texttt{#1}}}
+\newcommand{\Rpackage}[1]{{\textit{#1}}}
+\newcommand{\Rmethod}[1]{{\texttt{#1}}}
+\newcommand{\Rfunarg}[1]{{\texttt{#1}}}
+\newcommand{\Rclass}[1]{{\textit{#1}}}
+\newcommand{\Rcode}[1]{{\texttt{#1}}}
+
+\newcommand{\software}[1]{\textsf{#1}}
+\newcommand{\R}{\software{R}}
+\newcommand{\Bioconductor}{\software{Bioconductor}}
+\newcommand{\GenomicRanges}{\Rpackage{GenomicRanges}}
+
+
+\title{An Introduction to the GenomicAlignments Package}
+\author{Herv\'{e} Pag\`{e}s}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+<<options,echo=FALSE>>=
+options(width=72)
+@
+\tableofcontents
+
+\section{Introduction}
+
+The \Rpackage{GenomicAlignments} package serves as the foundation for
+representing genomic alignments within the \software{Bioconductor}
+project.  In the \software{Bioconductor} package hierarchy, it builds
+upon the \Rpackage{GenomicRanges} (infrastructure) package and provides
+support for many \software{Bioconductor} packages.
+
+This package defines three classes: \Rclass{GAlignments},
+\Rclass{GAlignmentPairs}, and \Rclass{GAlignmentsList}), which are used
+to represent genomic alignments, pairs of genomic alignments, and groups
+of genomic alignments.
+
+The \Rpackage{GenomicAlignments} package is available at bioconductor.org
+and can be downloaded via \Rfunction{biocLite}:
+
+<<biocLite, eval=FALSE>>=
+source("https://bioconductor.org/biocLite.R")
+biocLite("GenomicAlignments")
+@
+<<initialize, results=hide>>=
+library(GenomicAlignments)
+@
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{\Rclass{GAlignments}: Genomic Alignments} 
+
+The \Rclass{GAlignments} class which is a container for storing a set of
+genomic alignments. The class is intended to support alignments in general,
+not only those coming from a 'Binary Alignment Map' or 'BAM' files.
+Also alignments with gaps in the reference sequence (a.k.a.
+\emph{gapped alignments}) are supported which, for example, makes
+the class suited for storing junction reads from an RNA-seq experiment.
+
+More precisely, a \Rclass{GAlignments} object is a vector-like
+object where each element describes an \emph{alignment}, that is,
+how a given sequence (called \emph{query} or \emph{read}, typically
+short) aligns to a reference sequence (typically long).
+
+As shown later in this document, a \Rclass{GAlignments} object
+can be created from a 'BAM' file. In that case, each element in the
+resulting object will correspond to a record in the file.
+One important thing to note though is that not all the information
+present in the BAM/SAM records is stored in the object. In particular,
+for now, we discard the query sequences (SEQ field), the query ids
+(QNAME field), the query qualities (QUAL), the mapping qualities (MAPQ)
+and any other information that is not needed in order to support the
+basic set of operations described in this document.
+This also means that multi-reads (i.e. reads with multiple hits in the
+reference) don't receive any special treatment i.e. the various SAM/BAM
+records corresponding to a multi-read will show up in the \Rclass{GAlignments}
+object as if they were coming from different/unrelated queries.
+Also paired-end reads will be treated as single-end reads and the
+pairing information will be lost. This might change in the future.
+
+
+\subsection{Load a `BAM' file into a \Rclass{GAlignments} object}
+
+First we use the \Rfunction{readGAlignments} function from the
+\Rpackage{GenomicAlignments} package to load a toy `BAM' file into
+a \Rclass{GAlignments} object:
+<<readGAlignments>>=
+library(GenomicAlignments)
+aln1_file <- system.file("extdata", "ex1.bam", package="Rsamtools")
+aln1 <- readGAlignments(aln1_file)
+aln1
+length(aln1)
+@
+
+3271 `BAM' records were loaded into the object.
+
+Note that \Rfunction{readGAlignments} would have discarded
+any `BAM' record describing an unaligned query (see description
+of the <flag> field in the SAM Format Specification
+\footnote{\url{http://samtools.sourceforge.net/SAM1.pdf}}
+for more information).
+The reader interested in tracking down these events can always
+use the \Rfunction{scanBam} function but this goes beyond the scope
+of this document.
+
+\subsection{Simple accessor methods}
+
+There is one accessor per field displayed by the \Rmethod{show} method
+and it has the same name as the field. All of them return a vector or
+factor of the same length as the object:
+<<accessors>>=
+head(seqnames(aln1))
+seqlevels(aln1)
+head(strand(aln1))
+head(cigar(aln1))
+head(qwidth(aln1))
+head(start(aln1))
+head(end(aln1))
+head(width(aln1))
+head(njunc(aln1))
+@
+
+\subsection{More accessor methods}
+
+[coming soon...]
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{\Rclass{GAlignmentPairs}: Pairs of Genomic Alignments} 
+
+[coming soon...]
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{\Rclass{GAlignmentsList}: Groups of Genomic Alignments} 
+
+[coming soon...]
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Session Information}
+
+All of the output in this vignette was produced under the following
+conditions:
+
+\begin{small}
+<<SessionInfo>>=
+sessionInfo()
+@
+\end{small}
+
+\end{document}
