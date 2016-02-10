@@ -177,6 +177,11 @@ IntersectionNotEmpty(features, reads, ignore.strand=FALSE,
     (see below). Providing \code{count.mapped.reads=TRUE} include 
     additional passes through the BAM file to collect statistics 
     similar to those from \code{countBam}.
+
+    A \code{BPPARAM} argument can be passed down to the \code{bplapply} 
+    called by \code{summarizeOverlaps}. The argument can be MulticoreParam(),
+    SnowParam(), BatchJobsParam() or DoparParam(). See the
+    BiocParallel package for details in specifying the params.
   }
   \item{singleEnd}{
     (Default TRUE) A logical indicating if reads are single or 
