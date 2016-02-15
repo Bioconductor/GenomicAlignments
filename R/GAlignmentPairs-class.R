@@ -54,9 +54,6 @@ setGeneric("strandMode<-", signature="x",
     function(x, value) standardGeneric("strandMode<-")
 )
 
-setGeneric("first", function(x, ...) standardGeneric("first"))
-setGeneric("last", function(x, ...) standardGeneric("last"))
-
 setGeneric("isProperPair", function(x) standardGeneric("isProperPair"))
 
 

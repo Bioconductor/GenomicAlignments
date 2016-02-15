@@ -70,7 +70,10 @@ exportMethods(
     granges, grglist, rglist,
 
     ## Generics defined in Biostrings:
-    encoding
+    encoding,
+
+    ## Generics defined in S4Vectors:
+    first, last
 )
 
 
@@ -139,7 +142,7 @@ export(
     rname, "rname<-", cigar, qwidth, njunc,
 
     ## GAlignmentPairs-class.R:
-    first, last, left, right, strandMode, "strandMode<-", isProperPair,
+    left, right, strandMode, "strandMode<-", isProperPair,
 
     ## GappedReads-class.R:
     qseq,
