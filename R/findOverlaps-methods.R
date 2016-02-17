@@ -98,7 +98,11 @@ setMethod("findOverlaps", c("GAlignmentsList", "Vector"),
                              subject, maxgap = maxgap, minoverlap = minoverlap,
                              type = match.arg(type), select = match.arg(select),
                              ignore.strand = ignore.strand)
-        remapHits(hits, query.map=factor(togroup(query)))
+        ## TODO: Replace 'factor(togroup(PartitioningByWidth(...)))' with
+        ## 'as.factor(PartitioningByWidth(...))' when "as.factor" method for
+        ## ManyToOneGrouping objects becomes available.
+        query_map <- factor(togroup(PartitioningByWidth(query)))
+        remapHits(hits, query.map=query_map)
     }
 )
 
@@ -112,7 +116,11 @@ setMethod("findOverlaps", c("Vector", "GAlignmentsList"),
                              maxgap = maxgap, minoverlap = minoverlap,
                              type = match.arg(type), select = match.arg(select),
                              ignore.strand = ignore.strand)
-        remapHits(hits, subject.map=factor(togroup(subject)))
+        ## TODO: Replace 'factor(togroup(PartitioningByWidth(...)))' with
+        ## 'as.factor(PartitioningByWidth(...))' when "as.factor" method for
+        ## ManyToOneGrouping objects becomes available.
+        subject_map <- factor(togroup(PartitioningByWidth(subject)))
+        remapHits(hits, subject.map=subject_map)
     }
 )
 
@@ -128,8 +136,12 @@ setMethod("findOverlaps", c("GAlignmentsList", "GAlignmentsList"),
                              type = match.arg(type), 
                              select = match.arg(select),
                              ignore.strand = ignore.strand)
-        remapHits(hits, subject.map=factor(togroup(subject)),
-                  query.map=factor(togroup(query)))
+        ## TODO: Replace 'factor(togroup(PartitioningByWidth(...)))' with
+        ## 'as.factor(PartitioningByWidth(...))' when "as.factor" method for
+        ## ManyToOneGrouping objects becomes available.
+        query_map <- factor(togroup(PartitioningByWidth(query)))
+        subject_map <- factor(togroup(PartitioningByWidth(subject)))
+        remapHits(hits, query.map=query_map, subject.map=subject_map)
     }
 )
 

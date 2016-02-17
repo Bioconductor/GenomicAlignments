@@ -36,7 +36,7 @@
 
     ## 2 integer vectors parallel to IRanges objects 'unlisted_ranges_on_ref'
     ## and 'unlisted_ranges_on_query' above.
-    range_group <- togroup(ranges_on_ref)
+    range_group <- togroup(PartitioningByWidth(ranges_on_ref))
     query2ref_shift <- start(unlisted_ranges_on_ref) -
                        start(unlisted_ranges_on_query)
 

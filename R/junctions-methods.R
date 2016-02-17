@@ -141,7 +141,7 @@ summarizeJunctions <- function(x, with.revmap=FALSE, genome=NULL)
                            plus_score=ans_plus_score,
                            minus_score=ans_minus_score)
     if (with.revmap) {
-        crossed_by <- togroup(x_junctions)
+        crossed_by <- togroup(PartitioningByWidth(x_junctions))
         ans_revmap <- extractList(crossed_by, unq2dups)
         ## 'ans_revmap' should never contain duplicates when 'x' is a
         ## GAlignments object, because a given junction can show up at most

@@ -70,12 +70,13 @@
 
 .novelExon <- function(splice, intronRegion)
 {
-    if (sum(elementNROWS(splice)) == 0L)
+    splice_eltNROWS <- elementNROWS(splice)
+    if (sum(splice_eltNROWS) == 0L)
         return(logical(length(splice)))
 
     ## subset on elements with splices
     ans <- logical(length(splice))
-    idx <- elementNROWS(splice) > 0
+    idx <- splice_eltNROWS > 0L
     splice <- splice[idx]
     internal <- unlist(.gaps(splice), use.names=FALSE)
     if (sum(length(internal)) == 0L)
@@ -85,25 +86,27 @@
     hits <- findOverlaps(internal, intronRegion, ignore.strand=TRUE)
     if (length(hits) > 0L) {
         ans0 <- logical(length(splice))
-        ne <- table(togroup(splice)[queryHits(hits)]) == 1L
-        ans0[unique(togroup(splice)[queryHits(hits)])] <- ne
+        togroup <- togroup(PartitioningByWidth(splice), j=queryHits(hits))
+        ne <- table(togroup) == 1L
+        ans0[unique(togroup)] <- ne
         ans[idx] <- ans0
         ans
-    } else {
-        ans
-    }
+    } 
+    ans
 }
 
 .novelSpliceEvent <- function(splice, intron)
 {
-    if (sum(elementNROWS(splice)) == 0L |
-        sum(elementNROWS(intron)) == 0L)
+    splice_eltNROWS <- elementNROWS(splice)
+    intron_eltNROWS <- elementNROWS(intron)
+    if (sum(splice_eltNROWS) == 0L |
+        sum(intron_eltNROWS) == 0L)
         DataFrame(Site=rep.int(FALSE, length(splice)),
                   Junction=rep.int(FALSE, length(splice)))
 
     ## subset on elements with splices
     site <- junction <- rep.int(FALSE, length(splice))
-    idx <- elementNROWS(splice) > 0
+    idx <- splice_eltNROWS > 0L
     splice <- splice[idx]
     intron <- intron[idx]
 
@@ -116,12 +119,12 @@
 
 .spliceEvent <- function(type, iflat, sflat, splice)
 {
+    elt <- togroup(PartitioningByWidth(splice))
     if (type == "site") {
         combiner <- c
-        elt <- rep(togroup(splice), each=2)
+        elt <- rep(elt, each=2)
     } else if (type == "junction") {
         combiner <- paste
-        elt <- togroup(splice)
     }
     ikeys <- paste(seqnames(iflat), combiner(start(iflat),
                    end(iflat)), strand(iflat), sep = ":")
@@ -140,10 +143,10 @@
     hits <- findOverlaps(unlist(query, use.names=FALSE), intronRegion,
                         ignore.strand=TRUE)
     if (length(hits) > 0L) {
-        ans[unique(togroup(query)[queryHits(hits)])] <- TRUE
-    } else {
-        ans
+        togroup <- togroup(PartitioningByWidth(query), j=queryHits(hits))
+        ans[unique(togroup)] <- TRUE
     }
+    ans
 }
 
 .intronicRegions <- function(tx, intron) {

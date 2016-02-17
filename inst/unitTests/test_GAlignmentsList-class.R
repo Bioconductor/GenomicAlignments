@@ -60,8 +60,9 @@ test_GAlignmentsList_coercion <- function() {
 
     ## data.frame
     galist <- GAlignmentsList(a=.noGaps[1:2], b=.Gaps[1:2])
-    df <- data.frame(group=togroup(galist),
-                     group_name=names(galist)[togroup(galist)],
+    df_group <- togroup(PartitioningByWidth(galist))
+    df <- data.frame(group=df_group,
+                     group_name=names(galist)[df_group],
                      seqnames=factor(c("chr1", rep("chr2", 3)),
                          seqlevels(galist)), 
                      strand=strand(c("-", "+", "-", "-")),
@@ -109,7 +110,7 @@ test_GAlignmentsList_accessors <- function() {
 test_GAlignmentsList_subset_combine <- function()
 {
     galist <- GAList
-    score <- 1:length(togroup(galist))
+    score <- seq_len(nobj(PartitioningByWidth(galist)))
     meta <- DataFrame(score=score, more=score+10) 
     mcols(galist@unlistData) <- meta
 
