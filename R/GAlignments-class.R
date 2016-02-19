@@ -281,7 +281,7 @@ GAlignments <- function(seqnames=Rle(factor()), pos=integer(0),
     varlist <- list(...)
     elementMetadata <- 
         if (0L == length(varlist))
-            new("DataFrame", nrows=length(seqnames))
+            S4Vectors:::make_zero_col_DataFrame(length(seqnames))
         else
             do.call(DataFrame, varlist)
     ## Prepare the 'seqinfo' slot.
@@ -639,7 +639,7 @@ combine_GAlignments_objects <- function(Class, objects,
     ## IRanges:::rbind.mcols() for this because the "mcols" slot of a
     ## GAlignments object is guaranteed to be a DataFrame.
     if (ignore.mcols) {
-        ans_mcols <- new("DataFrame", nrows=length(ans_start))
+        ans_mcols <- S4Vectors:::make_zero_col_DataFrame(length(ans_start))
     } else  {
         mcols_slots <- lapply(objects, function(x) x@elementMetadata)
         ## Will fail if not all the GAlignments objects in 'objects' have

@@ -322,7 +322,7 @@ GAlignmentPairs <- function(first, last,
          NAMES=names,
          first=first, last=last,
          isProperPair=isProperPair,
-         elementMetadata=new("DataFrame", nrows=length(first)),
+         elementMetadata=S4Vectors:::make_zero_col_DataFrame(length(first)),
          check=TRUE)
 }
 
@@ -693,7 +693,7 @@ combine_GAlignmentPairs_objects <- function(Class, objects,
     ## IRanges:::rbind.mcols() for this because the "mcols" slot of a
     ## GAlignmentPairs object is guaranteed to be a DataFrame.
     if (ignore.mcols) {
-        ans_mcols <- new("DataFrame", nrows=length(ans_first))
+        ans_mcols <- S4Vectors:::make_zero_col_DataFrame(length(ans_first))
     } else  {
         mcols_slots <- lapply(objects, function(x) x@elementMetadata)
         ## Will fail if not all the GAlignmentPairs objects in 'objects' have
