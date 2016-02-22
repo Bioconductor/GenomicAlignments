@@ -278,7 +278,8 @@ findMateAlignment <- function(x)
         subject_hits[-idx0] <- unlist(extra_hits,
                                       recursive=FALSE, use.names=FALSE)
     }
-    Hits(query_hits, subject_hits, length(query), length(subject))
+    Hits(query_hits, subject_hits, length(query), length(subject),
+         sort.by.query=TRUE)
 }
 
 ### Use to find self matches in 'x'. Twice faster than

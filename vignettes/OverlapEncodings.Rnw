@@ -1143,7 +1143,8 @@ findSequenceHits <- function(qseq, txseq, which.txseq=NULL, max.mismatch=0)
         if (is.null(query_hits))
             query_hits <- integer(0)
         subject_hits <- rep.int(seq_len(length(x)), elementNROWS(x))
-        Hits(query_hits, subject_hits, pattern_length, length(x))
+        Hits(query_hits, subject_hits, pattern_length, length(x),
+             sort.by.query=TRUE)
     }
 
     .isHitInTranscriptBounds <- function(hits, qseq, txseq)
