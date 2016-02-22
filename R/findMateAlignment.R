@@ -290,9 +290,9 @@ findMateAlignment <- function(x)
     xo <- xo_and_GS$xo
     GS <- xo_and_GS$group.sizes
     ans <- S4Vectors:::makeAllGroupInnerHits(GS, hit.type=1L)
-    ans@queryHits <- xo[ans@queryHits]
-    ans@subjectHits <- xo[ans@subjectHits]
-    ans@queryLength <- ans@subjectLength <- length(x)
+    ans@from <- xo[ans@from]
+    ans@to <- xo[ans@to]
+    ans@nLnode <- ans@nRnode <- length(x)
     ans
 }
 

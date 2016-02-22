@@ -11,7 +11,7 @@ BiocStyle::latex()
 
 \title{Overlap encodings}
 \author{Herv\'e Pag\`es}
-\date{Last modified: April 2015; Compiled: \today}
+\date{Last modified: February 2016; Compiled: \today}
 
 \begin{document}
 
@@ -356,15 +356,10 @@ the overlaps in a given \Rclass{Hits} object (e.g. \Rcode{U1.OV00}), i.e. to
 count the number of overlaps for each element in the query or for each
 element in the subject:
 
-<<nhitPerQuery-and-nhitPerSubject>>=
-nhitPerQuery <- function(x) tabulate(queryHits(x), nbins=queryLength(x))
-nhitPerSubject <- function(x) tabulate(subjectHits(x), nbins=subjectLength(x))
-@
-
 Number of transcripts for each alignment in \Rcode{U1.GAL}:
 
 <<U1.GAL_ntx>>=
-U1.GAL_ntx <- nhitPerQuery(U1.OV00)
+U1.GAL_ntx <- countQueryHits(U1.OV00)
 mcols(U1.GAL)$ntx <- U1.GAL_ntx
 head(U1.GAL)
 table(U1.GAL_ntx)
@@ -387,8 +382,8 @@ per {\it original query} (aka read), we also count the number of transcripts
 for each read:
 
 <<U1.uqnames_ntx>>=
-U1.OV10 <- remapHits(U1.OV00, query.map=U1.GAL_qnames)
-U1.uqnames_ntx <- nhitPerQuery(U1.OV10)
+U1.OV10 <- remapHits(U1.OV00, Lnodes.remapping=U1.GAL_qnames)
+U1.uqnames_ntx <- countQueryHits(U1.OV10)
 names(U1.uqnames_ntx) <- U1.uqnames
 table(U1.uqnames_ntx)
 mean(U1.uqnames_ntx >= 1)
@@ -400,7 +395,7 @@ at least 1 transcript in \Rcode{exbytx}.
 Number of reads for each transcript:
 
 <<U1.exbytx_nOV10>>=
-U1.exbytx_nOV10 <- nhitPerSubject(U1.OV10)
+U1.exbytx_nOV10 <- countSubjectHits(U1.OV10)
 names(U1.exbytx_nOV10) <- names(exbytx)
 mean(U1.exbytx_nOV10 >= 50)
 @
@@ -439,7 +434,7 @@ length(U3.OV00)
 Number of transcripts for each alignment pair in \Rcode{U3.GALP}:
 
 <<U3.GALP_ntx>>=
-U3.GALP_ntx <- nhitPerQuery(U3.OV00)
+U3.GALP_ntx <- countQueryHits(U3.OV00)
 mcols(U3.GALP)$ntx <- U3.GALP_ntx
 head(U3.GALP)
 table(U3.GALP_ntx)
@@ -462,8 +457,8 @@ pair per {\it original query template}, we also count the number of
 transcripts for each template:
 
 <<U3.uqnames_ntx>>=
-U3.OV10 <- remapHits(U3.OV00, query.map=U3.GALP_qnames)
-U3.uqnames_ntx <- nhitPerQuery(U3.OV10)
+U3.OV10 <- remapHits(U3.OV00, Lnodes.remapping=U3.GALP_qnames)
+U3.uqnames_ntx <- countQueryHits(U3.OV10)
 names(U3.uqnames_ntx) <- U3.uqnames
 table(U3.uqnames_ntx)
 mean(U3.uqnames_ntx >= 1)
@@ -475,7 +470,7 @@ mean(U3.uqnames_ntx >= 1)
 Number of templates for each transcript:
 
 <<U3.exbytx_nOV10>>=
-U3.exbytx_nOV10 <- nhitPerSubject(U3.OV10)
+U3.exbytx_nOV10 <- countSubjectHits(U3.OV10)
 names(U3.exbytx_nOV10) <- names(exbytx)
 mean(U3.exbytx_nOV10 >= 50)
 @
@@ -692,7 +687,7 @@ stopifnot(identical(U1.compOV00_again, U1.compOV00))
 Number of ``compatible'' transcripts for each alignment in \Rcode{U1.GAL}:
 
 <<U1.GAL_ncomptx>>=
-U1.GAL_ncomptx <- nhitPerQuery(U1.compOV00)
+U1.GAL_ncomptx <- countQueryHits(U1.compOV00)
 mcols(U1.GAL)$ncomptx <- U1.GAL_ncomptx
 head(U1.GAL)
 table(U1.GAL_ncomptx)
@@ -714,8 +709,8 @@ stopifnot(identical(U1.GAL_ncomptx_again, U1.GAL_ncomptx))
 Number of ``compatible'' transcripts for each read:
 
 <<U1.uqnames_ncomptx>>=
-U1.compOV10 <- remapHits(U1.compOV00, query.map=U1.GAL_qnames)
-U1.uqnames_ncomptx <- nhitPerQuery(U1.compOV10)
+U1.compOV10 <- remapHits(U1.compOV00, Lnodes.remapping=U1.GAL_qnames)
+U1.uqnames_ncomptx <- countQueryHits(U1.compOV10)
 names(U1.uqnames_ncomptx) <- U1.uqnames
 table(U1.uqnames_ncomptx)
 mean(U1.uqnames_ncomptx >= 1)
@@ -727,7 +722,7 @@ mean(U1.uqnames_ncomptx >= 1)
 Number of ``compatible'' reads for each transcript:
 
 <<U1.exbytx_ncompOV10>>=
-U1.exbytx_ncompOV10 <- nhitPerSubject(U1.compOV10)
+U1.exbytx_ncompOV10 <- countSubjectHits(U1.compOV10)
 names(U1.exbytx_ncompOV10) <- names(exbytx)
 mean(U1.exbytx_ncompOV10 >= 50)
 @
@@ -833,7 +828,7 @@ Number of ``compatible'' transcripts for each alignment pair in
 \Rcode{U3.GALP}:
 
 <<U3.GALP_ncomptx>>=
-U3.GALP_ncomptx <- nhitPerQuery(U3.compOV00)
+U3.GALP_ncomptx <- countQueryHits(U3.compOV00)
 mcols(U3.GALP)$ncomptx <- U3.GALP_ncomptx
 head(U3.GALP)
 table(U3.GALP_ncomptx)
@@ -855,8 +850,8 @@ stopifnot(identical(U3.GALP_ncomptx_again, U3.GALP_ncomptx))
 Number of ``compatible'' transcripts for each template:
 
 <<U3.uqnames_ncomptx>>=
-U3.compOV10 <- remapHits(U3.compOV00, query.map=U3.GALP_qnames)
-U3.uqnames_ncomptx <- nhitPerQuery(U3.compOV10)
+U3.compOV10 <- remapHits(U3.compOV00, Lnodes.remapping=U3.GALP_qnames)
+U3.uqnames_ncomptx <- countQueryHits(U3.compOV10)
 names(U3.uqnames_ncomptx) <- U3.uqnames
 table(U3.uqnames_ncomptx)
 mean(U3.uqnames_ncomptx >= 1)
@@ -868,7 +863,7 @@ mean(U3.uqnames_ncomptx >= 1)
 Number of ``compatible'' templates for each transcript:
 
 <<U3.exbytx_ncompOV10>>=
-U3.exbytx_ncompOV10 <- nhitPerSubject(U3.compOV10)
+U3.exbytx_ncompOV10 <- countSubjectHits(U3.compOV10)
 names(U3.exbytx_ncompOV10) <- names(exbytx)
 mean(U3.exbytx_ncompOV10 >= 50)
 @
@@ -1178,16 +1173,16 @@ findSequenceHits <- function(qseq, txseq, which.txseq=NULL, max.mismatch=0)
     m0 <- vwhichPDict(pdict0, txseq,
                       max.mismatch=max.mismatch, fixed="pattern")
     hits0 <- .asHits(m0, length(qseq0))
-    hits0@queryLength <- length(qseq)
-    hits0@queryHits <- which(is_clean)[hits0@queryHits]
+    hits0@nLnode <- length(qseq)
+    hits0@from <- which(is_clean)[hits0@from]
 
     ## Find hits for non "clean" original queries.
     qseq1 <- qseq[!is_clean]
     m1 <- vwhichPDict(qseq1, txseq,
                       max.mismatch=max.mismatch, fixed=FALSE)
     hits1 <- .asHits(m1, length(qseq1))
-    hits1@queryLength <- length(qseq)
-    hits1@queryHits <- which(!is_clean)[hits1@queryHits]
+    hits1@nLnode <- length(qseq)
+    hits1@from <- which(!is_clean)[hits1@from]
 
     ## Combine the hits.
     query_hits <- c(queryHits(hits0), queryHits(hits1))
@@ -1197,13 +1192,13 @@ findSequenceHits <- function(qseq, txseq, which.txseq=NULL, max.mismatch=0)
         ## Remap the hits.
         txseq <- txseq0
         subject_hits <- which.txseq[subject_hits]
-        hits0@subjectLength <- length(txseq)
+        hits0@nRnode <- length(txseq)
     }
 
     ## Order the hits.
     oo <- S4Vectors:::orderIntegerPairs(query_hits, subject_hits)
-    hits0@queryHits <- query_hits[oo]
-    hits0@subjectHits <- subject_hits[oo]
+    hits0@from <- query_hits[oo]
+    hits0@to <- subject_hits[oo]
 
     if (max.mismatch != 0L) {
         ## Keep only "in bounds" hits.
@@ -1248,7 +1243,7 @@ U1.sbcompHITS <- union(U1.sbcompHITSa, U1.sbcompHITSb)
 Number of ``string-based compatible'' transcripts for each read:
 
 <<U1.uqnames_nsbcomptx>>=
-U1.uqnames_nsbcomptx <- nhitPerQuery(U1.sbcompHITS)
+U1.uqnames_nsbcomptx <- countQueryHits(U1.sbcompHITS)
 names(U1.uqnames_nsbcomptx) <- U1.uqnames
 table(U1.uqnames_nsbcomptx)
 mean(U1.uqnames_nsbcomptx >= 1)
@@ -1260,7 +1255,7 @@ transcript in \Rcode{exbytx}.
 Number of ``string-based compatible'' reads for each transcript:
 
 <<U1.exbytx_nsbcompHITS>>=
-U1.exbytx_nsbcompHITS <- nhitPerSubject(U1.sbcompHITS)
+U1.exbytx_nsbcompHITS <- countSubjectHits(U1.sbcompHITS)
 names(U1.exbytx_nsbcompHITS) <- names(exbytx)
 mean(U1.exbytx_nsbcompHITS >= 50)
 @
@@ -1387,7 +1382,7 @@ Number of ``almost compatible'' transcripts for each alignment in
 \Rcode{U1.GAL}:
 
 <<U1.GAL_nacomptx>>=
-U1.GAL_nacomptx <- nhitPerQuery(U1.acompOV00)
+U1.GAL_nacomptx <- countQueryHits(U1.acompOV00)
 mcols(U1.GAL)$nacomptx <- U1.GAL_nacomptx
 head(U1.GAL)
 table(U1.GAL_nacomptx)
@@ -1400,7 +1395,7 @@ with at least 1 transcript in \Rcode{exbytx}.
 Number of ``almost compatible'' alignments for each transcript:
 
 <<U1.exbytx_nacompOV00>>=
-U1.exbytx_nacompOV00 <- nhitPerSubject(U1.acompOV00)
+U1.exbytx_nacompOV00 <- countSubjectHits(U1.acompOV00)
 names(U1.exbytx_nacompOV00) <- names(exbytx)
 table(U1.exbytx_nacompOV00)
 mean(U1.exbytx_nacompOV00 >= 50)
@@ -1481,7 +1476,7 @@ Number of ``almost compatible'' transcripts for each alignment pair in
 \Rcode{U3.GALP}:
 
 <<U3.GALP_nacomptx>>=
-U3.GALP_nacomptx <- nhitPerQuery(U3.acompOV00)
+U3.GALP_nacomptx <- countQueryHits(U3.acompOV00)
 mcols(U3.GALP)$nacomptx <- U3.GALP_nacomptx
 head(U3.GALP)
 table(U3.GALP_nacomptx)
@@ -1494,7 +1489,7 @@ with at least 1 transcript in \Rcode{exbytx}.
 Number of ``almost compatible'' alignment pairs for each transcript:
 
 <<U3.exbytx_nacompOV00>>=
-U3.exbytx_nacompOV00 <- nhitPerSubject(U3.acompOV00)
+U3.exbytx_nacompOV00 <- countSubjectHits(U3.acompOV00)
 names(U3.exbytx_nacompOV00) <- names(exbytx)
 table(U3.exbytx_nacompOV00)
 mean(U3.exbytx_nacompOV00 >= 50)

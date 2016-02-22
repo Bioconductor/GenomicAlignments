@@ -102,7 +102,7 @@ setMethod("findOverlaps", c("GAlignmentsList", "Vector"),
         ## 'as.factor(PartitioningByWidth(...))' when "as.factor" method for
         ## ManyToOneGrouping objects becomes available.
         query_map <- factor(togroup(PartitioningByWidth(query)))
-        remapHits(hits, query.map=query_map)
+        remapHits(hits, Lnodes.remapping=query_map)
     }
 )
 
@@ -120,7 +120,7 @@ setMethod("findOverlaps", c("Vector", "GAlignmentsList"),
         ## 'as.factor(PartitioningByWidth(...))' when "as.factor" method for
         ## ManyToOneGrouping objects becomes available.
         subject_map <- factor(togroup(PartitioningByWidth(subject)))
-        remapHits(hits, subject.map=subject_map)
+        remapHits(hits, Rnodes.remapping=subject_map)
     }
 )
 
@@ -141,7 +141,8 @@ setMethod("findOverlaps", c("GAlignmentsList", "GAlignmentsList"),
         ## ManyToOneGrouping objects becomes available.
         query_map <- factor(togroup(PartitioningByWidth(query)))
         subject_map <- factor(togroup(PartitioningByWidth(subject)))
-        remapHits(hits, query.map=query_map, subject.map=subject_map)
+        remapHits(hits, Lnodes.remapping=query_map,
+                        Rnodes.remapping=subject_map)
     }
 )
 
