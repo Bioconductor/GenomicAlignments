@@ -18,6 +18,8 @@
 \alias{names<-,GAlignmentPairs-method}
 \alias{first}
 \alias{first,GAlignmentPairs-method}
+\alias{second}
+\alias{second,GAlignmentPairs-method}
 \alias{last}
 \alias{last,GAlignmentPairs-method}
 \alias{seqnames,GAlignmentPairs-method}
@@ -68,7 +70,7 @@
   A GAlignmentPairs object is a list-like object where each element
   describes a pair of genomic alignment.
 
-  An "alignment pair" is made of a "first" and a "last" alignment,
+  An "alignment pair" is made of a "first" and a "last"/"second" alignment,
   and is formally represented by a \link{GAlignments} object of
   length 2. It is typically representing a hit of a paired-end read to
   the reference genome that was used by the aligner. More precisely,
@@ -144,7 +146,8 @@
     \item{}{
       \code{first(x, real.strand=FALSE)},
       \code{last(x, real.strand=FALSE)}:
-      Get the "first" or "last" alignment for each alignment pair in
+      \code{second(x, real.strand=FALSE)}:
+      Get the "first" or "last"/"second" alignment for each alignment pair in
       \code{x}. The result is a \link{GAlignments} object of the same length
       as \code{x}.
 
@@ -378,6 +381,8 @@ head(names(galp))
 
 first(galp)
 last(galp)
+# or
+second(galp)
 
 strandMode(galp)
 first(galp, real.strand=TRUE)

@@ -73,7 +73,7 @@ exportMethods(
     encoding,
 
     ## Generics defined in S4Vectors:
-    first, last
+    first, second
 )
 
 
@@ -142,7 +142,7 @@ export(
     rname, "rname<-", cigar, qwidth, njunc,
 
     ## GAlignmentPairs-class.R:
-    left, right, strandMode, "strandMode<-", isProperPair,
+    last, left, right, strandMode, "strandMode<-", isProperPair,
 
     ## GappedReads-class.R:
     qseq,

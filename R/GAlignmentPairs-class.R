@@ -97,7 +97,11 @@ setMethod("first", "GAlignmentPairs",
     }
 )
 
-setMethod("last", "GAlignmentPairs",
+setGeneric("last", function(x, ...) standardGeneric("last"))
+
+setMethod("last", "GAlignmentPairs", function(x, ...) second(x, ...))
+
+setMethod("second", "GAlignmentPairs",
     function(x, real.strand=FALSE, invert.strand=FALSE)
     {
         if (!isTRUEorFALSE(real.strand))
@@ -121,6 +125,7 @@ setMethod("last", "GAlignmentPairs",
     }
 )
 
+          
 setMethod("seqnames", "GAlignmentPairs",
     function(x) seqnames(x@first)
 )
