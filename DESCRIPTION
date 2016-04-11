@@ -15,8 +15,8 @@ Depends: R (>= 2.10), methods, BiocGenerics (>= 0.15.3),
 	S4Vectors (>= 0.9.40), IRanges (>= 2.5.36), GenomeInfoDb (>= 1.1.20),
 	GenomicRanges (>= 1.23.26), SummarizedExperiment (>= 0.3.1),
 	Biostrings (>= 2.37.1), Rsamtools (>= 1.21.4)
-Imports: methods, stats, BiocGenerics, S4Vectors, IRanges, GenomicRanges,
-	Biostrings, Rsamtools, BiocParallel
+Imports: methods, utils, stats, BiocGenerics, S4Vectors,
+	IRanges, GenomicRanges, Biostrings, Rsamtools, BiocParallel
 LinkingTo: S4Vectors, IRanges
 Suggests: ShortRead, rtracklayer, BSgenome, GenomicFeatures,
 	RNAseqData.HNRNPC.bam.chr14, pasillaBamSubset,
