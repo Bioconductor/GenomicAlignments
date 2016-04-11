@@ -22,7 +22,7 @@ Suggests: ShortRead, rtracklayer, BSgenome, GenomicFeatures,
 	RNAseqData.HNRNPC.bam.chr14, pasillaBamSubset,
 	TxDb.Hsapiens.UCSC.hg19.knownGene, TxDb.Dmelanogaster.UCSC.dm3.ensGene,
 	BSgenome.Dmelanogaster.UCSC.dm3, BSgenome.Hsapiens.UCSC.hg19,
-	DESeq, edgeR,
+	DESeq2, edgeR,
 	RUnit, BiocStyle
 License: Artistic-2.0
 Collate: cigar-utils.R

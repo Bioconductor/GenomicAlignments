@@ -1,5 +1,5 @@
 %\VignetteIndexEntry{Counting reads with summarizeOverlaps}
-%\VignetteDepends{}
+%\VignetteDepends{GenomicAlignments, DESeq2, edgeR, rtracklayer}
 %\VignetteKeywords{sequence, sequencing, alignments}
 %\VignettePackage{GenomicAlignments}
 
@@ -11,7 +11,7 @@ BiocStyle::latex()
 
 \title{Counting reads with \Rfunction{summarizeOverlaps}}
 \author{Valerie Obenchain}
-\date{Edited: May 2014; Compiled: \today}
+\date{Edited: April 2016; Compiled: \today}
 
 \begin{document}
 
@@ -38,10 +38,10 @@ methods found in the HTSeq package by Simon Anders (see references).
 
 In this example reads are counted from a list of BAM files and returned in
 a \Robject{matrix} for use in further analysis such as those offered in 
-\Biocpkg{DESeq} and \Biocpkg{edgeR}.
+\Biocpkg{DESeq2} and \Biocpkg{edgeR}.
 <<firstExample, eval=TRUE, keep.source=TRUE>>=
 library(GenomicAlignments)
-library(DESeq)
+library(DESeq2)
 library(edgeR)
 
 fls <- list.files(system.file("extdata", package="GenomicAlignments"),
@@ -55,7 +55,7 @@ features <- GRanges(
     group_id=c(rep("A", 4), rep("B", 5), rep("C", 2)))
 
 olap <- summarizeOverlaps(features, fls)
-deseq <- newCountDataSet(assay(olap), rownames(colData(olap)))
+deseq <- DESeqDataSet(olap, design= ~ 1)
 edger <- DGEList(assay(olap), group=rownames(colData(olap)))
 @
 %% 
@@ -220,8 +220,8 @@ object. See \Rcode{?'BamViews-class'} or \Rcode{?'BamFile-class'} in the
 
 \section{\Rcode{pasilla} Data}
 In this excercise we count the \Biocpkg{pasilla} data by gene and by
-transcript then create a \Rclass{CountDataSet}. This object can be used 
-in differential expression methods offered in the \Biocpkg{DESeq} 
+transcript then create a \Rclass{DESeqDataSet}. This object can be used 
+in differential expression methods offered in the \Biocpkg{DESeq2} 
 package. 
 
 \subsection{source files}
@@ -298,7 +298,7 @@ genehits <- summarizeOverlaps(chr4genes, bamlst, mode="Union")
 A \Rcode{CountDataSet} is constructed from the counts and experiment
 data in \Rclass{pasilla}.
 <<pasilla_exoncountset, eval=FALSE>>=
-expdata = MIAME(
+expdata <- MIAME(
               name="pasilla knockdown",
               lab="Genetics and Developmental Biology, University of 
                   Connecticut Health Center",
@@ -318,12 +318,7 @@ design <- data.frame(
               type=rep("single-read", 3),
               countfiles=path(colData(genehits)[,1]), stringsAsFactors=TRUE)
 
-geneCDS <- newCountDataSet(
-                  countData=assay(genehits),
-                  conditions=design)
-
-experimentData(geneCDS) <- expdata
-sampleNames(geneCDS) = colnames(genehits)
+geneCDS <- DESeqDataSet(genehits, design=design, metadata=list(expdata=expdata))
 @
 
 If the primary interest is to count by transcript instead of by gene, 
@@ -331,8 +326,7 @@ the annotation file can be split on transcript id.
 <<pasilla_genes, eval=FALSE>>=
 chr4tx <- split(gff, mcols(gff)$transcript_id)
 txhits <- summarizeOverlaps(chr4tx, bamlst)
-txCDS <- newCountDataSet(assay(txhits), design) 
-experimentData(txCDS) <- expdata
+txCDS <- DESeqDataSet(txhits, design=design, metadata=list(expdata=expdata))
 @
 
 \section{References}

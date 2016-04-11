@@ -311,7 +311,7 @@ IntersectionNotEmpty(features, reads, ignore.strand=FALSE,
 
 \seealso{
   \itemize{
-    \item The \pkg{DESeq}, \pkg{DEXSeq} and \pkg{edgeR} packages.
+    \item The \pkg{DESeq2}, \pkg{DEXSeq} and \pkg{edgeR} packages.
 
     \item The \link[SummarizedExperiment]{RangedSummarizedExperiment} class
           defined in the \pkg{SummarizedExperiment} package.
@@ -462,7 +462,8 @@ sum(assays(nofrag)$counts)
 sum(assays(frag)$counts)
 
 ## ---------------------------------------------------------------------
-## Count tables for DESeq or edgeR.
+## Use ouput of summarizeOverlaps() for differential expression analysis
+## with DESeq2 or edgeR.
 ## ---------------------------------------------------------------------
 
 fls <- list.files(system.file("extdata", package="GenomicAlignments"),
@@ -481,9 +482,10 @@ se <- summarizeOverlaps(genes, bf)
 ## information from a call to countBam().
 colData(se)
 
-## Create count tables.
-library(DESeq)
-deseq <- newCountDataSet(assays(se)$counts, rownames(colData(se)))
+## Start differential expression analysis with the DESeq2 or edgeR
+## package:
+library(DESeq2)
+deseq <- DESeqDataSet(se, design= ~ 1)
 library(edgeR)
 edger <- DGEList(assays(se)$counts, group=rownames(colData(se)))
 
