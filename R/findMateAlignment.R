@@ -90,10 +90,9 @@
 ### Puts NAs last.
 .getCharacterOrderAndGroupSizes <- function(x)
 {
-    x2 <- match(x, x,
-                nomatch=.Machine$integer.max,
-                incomparables=NA_character_)
-    xo <- S4Vectors:::orderInteger(x2)
+    x2 <- match(x, x, nomatch=.Machine$integer.max,
+                      incomparables=NA_character_)
+    xo <- base::order(x2)
     ox2 <- Rle(x2[xo])
     group.sizes <- runLength(ox2)
     ngroup <- length(group.sizes)
