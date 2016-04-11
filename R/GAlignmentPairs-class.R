@@ -85,12 +85,12 @@ setMethod("first", "GAlignmentPairs",
         }
         ans <- setNames(x@first, names(x))
         if (invert.strand)
-            return(invertRleStrand(ans))
+            return(invertStrand(ans))
         if (real.strand) {
             if (strandMode(x) == 0L) {
                 strand(ans) <- "*"
             } else if (strandMode(x) == 2L) {
-                ans <- invertRleStrand(ans)
+                ans <- invertStrand(ans)
             }
         }
         ans
@@ -113,12 +113,12 @@ setMethod("second", "GAlignmentPairs",
         }
         ans <- setNames(x@last, names(x))
         if (invert.strand)
-            return(invertRleStrand(ans))
+            return(invertStrand(ans))
         if (real.strand) {
             if (strandMode(x) == 0L) {
                 strand(ans) <- "*"
             } else if (strandMode(x) == 1L) {
-                ans <- invertRleStrand(ans)
+                ans <- invertStrand(ans)
             }
         }
         ans
@@ -443,10 +443,10 @@ setMethod("grglist", "GAlignmentPairs",
         x_first <- x@first
         x_last <- x@last
         if (strandMode(x) == 1L) {
-            x_last <- invertRleStrand(x@last)
+            x_last <- invertStrand(x@last)
             x_unlisted <- c(x_first, x_last)
         } else if (strandMode(x) == 2L) {
-            x_first <- invertRleStrand(x@first)
+            x_first <- invertStrand(x@first)
             x_unlisted <- c(x_last, x_first)
         }
         ## Not the same as doing 'unlist(x, use.names=FALSE)'.

@@ -260,7 +260,7 @@ flipQuery <- function(x, i)
         stop("'x' must be a GRangesList object")
     i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
     xi <- extractROWS(x, i)
-    x <- replaceROWS(x, i, invertRleListStrand(revElements(xi)))
+    x <- replaceROWS(x, i, invertStrand(revElements(xi)))
     xi_query.break <- mcols(xi)$query.break
     if (!is.null(xi_query.break)) {
         revxi_query.break <- elementNROWS(xi) - xi_query.break

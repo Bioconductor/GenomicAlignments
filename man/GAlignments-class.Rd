@@ -440,6 +440,9 @@ head(width(gal))
 head(njunc(gal))
 seqlevels(gal)
 
+## Invert the strand:
+invertStrand(gal)
+
 ## Rename the reference sequences:
 seqlevels(gal) <- sub("seq", "chr", seqlevels(gal))
 seqlevels(gal)
