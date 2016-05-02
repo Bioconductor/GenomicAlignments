@@ -1,3 +1,42 @@
+CHANGES IN VERSION 1.8.0
+------------------------
+
+NEW FEATURES
+
+    o Add coercion from GAlignments or GAlignmentPairs to DataFrame, and from
+      GAlignmentsList to GAlignmentPairs.
+
+SIGNIFICANT USER-LEVEL CHANGES
+
+    o Use DESeq2 instead of DESeq in summarizeOverlaps examples (better late
+      than never).
+
+DEPRECATED AND DEFUNCT
+
+    o After being deprecated in BioC 3.2, the left() and right() getters and
+      strand() setter for GAlignmentPairs objects are now defunct.
+
+    o After being deprecated in BioC 3.2, the 'invert.strand' argument of the
+      first() and last() getters for GAlignmentPairs objects are now defunct.
+
+    o After being deprecated in BioC 3.2, the 'order.as.in.query' argument of
+      the "grglist" method for GAlignmentPairs objects is now defunct.
+
+    o After being deprecated in BioC 3.2, the 'order.as.in.query' argument of
+      the "rglist" and "grglist" methods for GAlignmentsList objects are now
+      defunct.
+
+    o Remove the "mapCoords" and "pmapCoords" methods (were defunct in BioC
+      3.2).
+
+    o Remove the readGAlignment*FromBam() functions (were defunct in BioC 3.2).
+
+BUG FIXES
+
+    o seqnames() setter for GAlignments objects is now consistent with
+      seqnames() setter for GRanges objects.
+
+
 CHANGES IN VERSION 1.6.0
 ------------------------
 
