@@ -11,8 +11,8 @@
 ### be an integer vector where 'pos[i]' is the 1-based position on the
 ### reference sequence of the first aligned letter in 'x[[i]]'. 'cigar'
 ### must be a character vector containing the extended CIGAR strings.
-### 'at': must be an integer vector containing the individual positions of
-### interest with respect to the reference sequence.
+### 'at': must be an integer vector containing the positions of interest
+### with respect to the reference sequence.
 ### Returns an XStringSet (typically DNAStringSet) object parallel to
 ### 'at' (i.e. with 1 string per position of interest).
 .pileLettersOnSingleRefAt <- function(x, pos, cigar, at)
@@ -45,7 +45,7 @@
     hits_group <- range_group[subjectHits(hits)]
     unlisted_piles <- subseq(x[hits_group], start=hits_at_in_x, width=1L)
     piles_skeleton <- PartitioningByEnd(queryHits(hits), NG=length(at),
-                                       names=names(at))
+                                        names=names(at))
     piles <- relist(unlisted_piles, piles_skeleton)
     unstrsplit(piles)
 }
@@ -54,9 +54,8 @@
 ### aligned strings. 'x', 'pos', and 'cigar' as above. 'seqnames' must
 ### be a factor-Rle where 'seqnames[i]' is the name of the reference
 ### sequence of the i-th alignment.
-### 'at': must be a GRanges object containing the individual genomic
-### positions of interest. 'seqlevels(at)' must be identical to
-### 'levels(seqnames)'.
+### 'at': must be a GPos object containing the genomic positions of
+### interest. 'seqlevels(at)' must be identical to 'levels(seqnames)'.
 ### Returns an XStringSet (typically DNAStringSet) object parallel to
 ### 'at' (i.e. with 1 string per genomic position of interest).
 pileLettersAt <- function(x, seqnames, pos, cigar, at)
@@ -68,8 +67,8 @@ pileLettersAt <- function(x, seqnames, pos, cigar, at)
     stopifnot(length(seqnames) == N)
     stopifnot(is.integer(pos) && length(pos) == N)
     stopifnot(is.character(cigar) && length(cigar) == N)
-    stopifnot(is(at, "GRanges"))
-    stopifnot(all(width(at) == 1L))
+    if (!is(at, "GPos"))
+        at <- GPos(at)
     stopifnot(identical(seqlevels(at), levels(seqnames)))
 
     ## We process 1 chromosome at a time. So we start by splitting

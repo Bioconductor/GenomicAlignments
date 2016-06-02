@@ -108,8 +108,8 @@ alphabetFrequencyFromBam(file, index=file, param, what="seq", ...)
   Specifying a big genomic region, say >= 100000 bp, can require a lot of
   memory (especially with high coverage reads) and is not recommended.
   See the \code{\link{pileLettersAt}} function for piling the read letters
-  on top of a set of individual genomic positions, which is more
-  flexible and more memory efficient.
+  on top of a set of genomic positions, which is more flexible and more
+  memory efficient.
 
   Paired-end reads are treated as single-end reads (i.e. they're not paired).
 }
@@ -119,8 +119,7 @@ alphabetFrequencyFromBam(file, index=file, param, what="seq", ...)
 \seealso{
   \itemize{
     \item The \code{\link{pileLettersAt}} function for piling the letters
-          of a set of aligned reads on top of a set of individual genomic
-          positions.
+          of a set of aligned reads on top of a set of genomic positions.
 
     \item The \code{\link{readGAlignments}} function for loading read
           sequences (or their quality strings) from a BAM file (via a
