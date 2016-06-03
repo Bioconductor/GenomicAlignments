@@ -48,7 +48,7 @@ pileLettersAt(x, seqnames, pos, cigar, at)
     \code{pileLettersAt} will first try to turn it into one by calling
     the \link[GenomicRanges]{GPos()} constructor on it. So for example
     \code{at} can be a \link[GenomicRanges]{GRanges} object (or any other
-    \link[GenomicRanges]{GenomicRanges} derivative) and, in that case,
+    \link[GenomicRanges]{GenomicRanges} derivative), and, in that case,
     each range in it will be interpreted as a run of adjacent genomic
     positions. See \code{?\link[GenomicRanges]{GPos}} in the
     \pkg{GenomicRanges} package for more information.
