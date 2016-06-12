@@ -40,6 +40,7 @@
 \alias{ranges,GAlignments-method}
 \alias{coerce,GAlignments,GRangesList-method}
 \alias{coerce,GAlignments,GRanges-method}
+\alias{coerce,GAlignments,GenomicRanges-method}
 \alias{coerce,GAlignments,RangesList-method}
 \alias{coerce,GAlignments,Ranges-method}
 \alias{as.data.frame,GAlignments-method}
