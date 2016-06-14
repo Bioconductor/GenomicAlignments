@@ -219,7 +219,7 @@ setMethod("granges", "GAlignmentsList",
         if (ignore.strand)
             strand(x@unlistData) <- "*"
         msg <- paste0("For some list elements in 'x', the ranges are ",
-                      "not aligned to the same chromosome and strand. ",
+                      "not on the same chromosome and strand. ",
                       "Cannot extract a single range for them. ",
                       "As a consequence, the returned GRanges object ",
                       "is not parallel to 'x'.")

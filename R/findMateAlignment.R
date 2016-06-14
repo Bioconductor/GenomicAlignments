@@ -452,18 +452,16 @@ makeGAlignmentPairs <- function(x, use.names=FALSE, use.mcols=FALSE,
                                                  bitnames="isProperPair"))
     ans_is_proper <- x_is_proper[first_idx]
 
-    ## Drop pairs with discordant seqnames or strand.
+    ## Drop pairs with discordant seqnames.
     idx_is_discordant <- (as.character(seqnames(x)[first_idx]) !=
-                          as.character(seqnames(x)[last_idx])) |
-                         (as.character(strand(x)[first_idx]) ==
-                          as.character(strand(x)[last_idx]))
+                          as.character(seqnames(x)[last_idx]))
     if (any(idx_is_discordant) != 0L) {
         nb_discordant_proper <- sum(ans_is_proper[idx_is_discordant])
         if (nb_discordant_proper != 0L) {
             ratio <- 100.0 * nb_discordant_proper / sum(idx_is_discordant)
-            warning(ratio, "% of the pairs with discordant seqnames or ",
-                    "strand were flagged\n",
-                    "  as proper pairs by the aligner. Dropping them anyway.")
+            warning(wmsg(ratio, "% of the pairs with discordant seqnames ",
+                         "were flagged as proper pairs by the aligner. ",
+                         "Dropping them anyway."))
         }
         keep <- -which(idx_is_discordant)
         first_idx <- first_idx[keep]

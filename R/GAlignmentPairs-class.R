@@ -125,9 +125,19 @@ setMethod("second", "GAlignmentPairs",
     }
 )
 
-          
 setMethod("seqnames", "GAlignmentPairs",
-    function(x) seqnames(x@first)
+    function(x)
+    {
+        ans <- seqnames(x@first)
+        if (any(ans != seqnames(x@last)))
+            stop(wmsg("For some pairs in 'x', the 2 alignments are not on ",
+                      "the same chromosome. Cannot associate a sequence name ",
+                      "to them. ",
+                      "Note that the GAlignmentPairs container only supports ",
+                      "pairs where the 2 alignments are on the same ",
+                      "chromosome at the moment."))
+        ans
+    }
 )
 
 setMethod("strand", "GAlignmentPairs",
@@ -135,10 +145,15 @@ setMethod("strand", "GAlignmentPairs",
     {
         if (strandMode(x) == 0L)
             return(strand(Rle("*", length(x))))
-        if (strandMode(x) == 1L)
-            strand(x@first)
-        else
-            strand(x@last)
+        x_first_strand <- strand(x@first)
+        x_last_strand <- strand(x@last)
+        if (strandMode(x) == 1L) {
+            ans <- x_first_strand
+        } else {
+            ans <- x_last_strand
+        }
+        ans[x_first_strand == x_last_strand] <- "*"
+        ans
     }
 )
 
@@ -471,12 +486,18 @@ setMethod("granges", "GAlignmentPairs",
     {
         if (!isTRUEorFALSE(use.mcols))
             stop("'use.mcols' must be TRUE or FALSE")
-        rg <- range(grglist(x))
-        if (!all(elementNROWS(rg) == 1L))
-            stop("For some pairs in 'x', the first and last alignments ",
-                 "are not aligned to the same chromosome and strand. ",
-                 "Cannot extract a single range for them.")
-        ans <- unlist(rg)
+
+        x_first <- x@first
+        x_last <- x@last
+        ## We avoid calling ranges() on 'x_first' or 'x_last' because it
+        ## propagates the names (it doesn't support the 'use.names' argument
+        ## yet) and this could slow down things a bit.
+        x_first_ranges <- IRanges(start=start(x_first), width=width(x_first))
+        x_last_ranges <- IRanges(start=start(x_last), width=width(x_last))
+        ans_ranges <- punion(x_first_ranges, x_last_ranges, fill.gap=TRUE)
+        names(ans_ranges) <- names(x)
+
+        ans <- GRanges(seqnames(x), ans_ranges, strand(x), seqinfo=seqinfo(x))
         if (use.mcols)
             mcols(ans) <- mcols(x)
         ans

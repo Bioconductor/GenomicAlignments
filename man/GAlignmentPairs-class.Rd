@@ -62,9 +62,8 @@
 \description{
   The GAlignmentPairs class is a container for \emph{genomic alignment pairs}.
 
-  IMPORTANT NOTE: The GAlignmentPairs container can only hold \emph{concordant}
-  pairs at the moment, that is, pairs where the 2 alignments are on the
-  opposite strands of the same reference sequence.
+  IMPORTANT NOTE: The GAlignmentPairs container only supports pairs where the
+  2 alignments are on the same chromosome at the moment.
 }
 
 \details{

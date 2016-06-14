@@ -232,22 +232,20 @@ setGeneric("readGAlignmentPairs", signature="file",
     is_secondary2 <- bamFlagAsBitMatrix(flag2, bitnames="isSecondaryAlignment")
     stopifnot(identical(is_secondary1, is_secondary2))
 
-    ## Drop discordant pairs. 
-    is_discordant <- (seqnames(ans_first) != seqnames(ans_last)) |
-                     (strand(ans_first) == strand(ans_last))
+    ## Drop pairs where the 2 alignments are not on the same chromosome.
+    is_discordant <- seqnames(ans_first) != seqnames(ans_last)
     discordant_idx <- which(is_discordant)
     if (length(discordant_idx) != 0L) {
         nb_discordant_proper <- sum(is_proper1[discordant_idx])
         nb_discordant_not_proper <- length(discordant_idx) -
                                     nb_discordant_proper
-        warning(length(discordant_idx), " pairs (", nb_discordant_proper,
-                " proper, ", nb_discordant_not_proper, " not proper) were ",
-                "dropped because the seqname\n  or strand of the alignments ",
-                "in the pair were not concordant.\n",
-                "  Note that a GAlignmentPairs object can only hold ",
-                "concordant pairs at the\n  moment, that is, pairs where ",
-                "the 2 alignments are on the opposite strands\n  of the same ",
-                "reference sequence.")
+        warning(wmsg(length(discordant_idx), " pairs (", nb_discordant_proper,
+                     " proper, ", nb_discordant_not_proper, " not proper) ",
+                     "were dropped because the 2 alignments in the pair were ",
+                     "not on the same chromosome. ",
+                     "Note that the GAlignmentPairs container only supports ",
+                     "pairs where the 2 alignments are on the same ",
+                     "chromosome at the moment."))
         keep_idx <- which(!is_discordant)
         ans_first <- ans_first[keep_idx]
         ans_last <- ans_last[keep_idx]
