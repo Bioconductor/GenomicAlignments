@@ -243,7 +243,7 @@
         gr
     } else {
 ### FIXME: does not handle query.break column yet
-        psetdiff(range(x), x)
+        setdiff(range(x), x)
     }
 
 }

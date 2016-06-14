@@ -258,8 +258,7 @@ setMethod("rglist", "GAlignmentsList",
 )
 
 setMethod("ranges", "GAlignmentsList",
-    function(x) 
-        unlist(range(rglist(x)), use.names=FALSE)
+    function(x) unlist(range(rglist(x)), use.names=FALSE)
 )
 
 setAs("GAlignmentsList", "GRangesList", 
@@ -268,8 +267,8 @@ setAs("GAlignmentsList", "GRangesList",
 setAs("GAlignmentsList", "GRanges", 
     function(from) granges(from, use.mcols=TRUE)
 )
-setAs("GAlignments", "GenomicRanges",
-      function(from) as(from, "GRanges")
+setAs("GAlignmentsList", "GenomicRanges",
+    function(from) as(from, "GRanges")
 )
 setAs("GAlignmentsList", "RangesList", 
     function(from) rglist(from, use.mcols=TRUE)

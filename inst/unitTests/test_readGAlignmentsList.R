@@ -66,17 +66,11 @@ test_readGAlignmentsList_compare_pairs <- function()
     galist <- readGAlignmentsList(bamfile)
     mates <- galist[mcols(galist)$mate_status == "mated"]
     galp <- readGAlignmentPairs(bamfile)
-    checkIdentical(length(galp), 75346L)
+    checkIdentical(length(galp), 75409L)
     tbl <- table(mcols(galist))
     checkIdentical(tbl[["mated"]], 75409L)
     checkIdentical(tbl[["ambiguous"]], 0L)
     checkIdentical(tbl[["unmated"]], 21227L)
-
-    ## GAlignmentPairs holds concordant (opposite strand, same chromosome)
-    ## pairs
-    samestrand <- galist[elementNROWS(runValue(strand(galist))) == 1L]
-    samestrandp <- sum(mcols(samestrand)$mate_status == "mated")
-    checkIdentical(tbl[["mated"]] - samestrandp, length(galp))
 }
 
 test_readGAlignmentsList_flags <- function()
