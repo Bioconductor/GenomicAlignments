@@ -251,8 +251,8 @@ setMethod("grglist", "GAlignmentsList",
         unlisted_x <- unlist(x, use.names=FALSE)
         grl <- grglist(unlisted_x, drop.D.ranges=drop.D.ranges)
         ans <- IRanges:::regroupBySupergroup(grl, x)
-        if (use.names)
-            names(ans) <- names(x)
+        if (!use.names)
+            names(ans) <- NULL
         if (use.mcols)
             mcols(ans) <- mcols(x)
         ans
@@ -275,8 +275,8 @@ setMethod("rglist", "GAlignmentsList",
         unlisted_x <- unlist(x, use.names=FALSE)
         rgl <- rglist(unlisted_x, drop.D.ranges=drop.D.ranges)
         ans <- IRanges:::regroupBySupergroup(rgl, x)
-        if (use.names)
-            names(ans) <- names(x)
+        if (!use.names)
+            names(ans) <- NULL
         if (use.mcols)
             mcols(ans) <- mcols(x)
         ans
