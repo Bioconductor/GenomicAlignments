@@ -304,16 +304,12 @@ setMethod("findSpliceOverlaps", c("GAlignments", "GRangesList"),
 setMethod("findSpliceOverlaps", c("GAlignmentPairs", "GRangesList"),
     function(query, subject, ignore.strand=FALSE, ..., cds=NULL)
 {
-### FIXME: order.as.in.query = FALSE needed for .insertGaps(). If we
-### really want to use .insertGaps(), we need to make it robust to
-### different orderings.
-
 ### FIXME:
 ### instead of relying on query.break column, maybe we should add a
 ### 'splice = .gaps(query)' argument to .findSpliceOverlaps that we
 ### set to junctions(query) here. The downside is that a GRangesList
 ### derived from GAlignmentPairs will no longer work.
-    findSpliceOverlaps(grglist(query, order.as.in.query=FALSE), subject,
+    findSpliceOverlaps(grglist(query), subject,
                        ignore.strand, ..., cds=cds)
 })
 
