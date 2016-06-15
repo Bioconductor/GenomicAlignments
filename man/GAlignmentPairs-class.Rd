@@ -53,13 +53,6 @@
 % Combining:
 \alias{c,GAlignmentPairs-method}
 
-% old stuff (Deprecated or Defunct)
-\alias{left}
-\alias{left,GAlignmentPairs-method}
-\alias{right}
-\alias{right,GAlignmentPairs-method}
-
-
 \title{GAlignmentPairs objects}
 
 \description{

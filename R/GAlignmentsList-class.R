@@ -231,19 +231,13 @@ setMethod("granges", "GAlignmentsList",
 )
 
 setMethod("grglist", "GAlignmentsList",
-    function(x, use.names=TRUE, use.mcols=FALSE,
-                order.as.in.query=FALSE, drop.D.ranges=FALSE,
+    function(x, use.names=TRUE, use.mcols=FALSE, drop.D.ranges=FALSE,
                 ignore.strand=FALSE) 
     {
         if (!isTRUEorFALSE(use.names))
             stop("'use.names' must be TRUE or FALSE")
         if (!isTRUEorFALSE(use.mcols))
             stop("'use.mcols' must be TRUE or FALSE")
-        if (!identical(order.as.in.query, FALSE)) {
-            msg <- c("the 'order.as.in.query' argument of the \"grglist\" ",
-                     "method for GAlignmentsList objects is defunct")
-            .Defunct(msg=wmsg(msg))
-        }
         if (!isTRUEorFALSE(ignore.strand))
             stop("'ignore.strand' must be TRUE or FALSE")
         if (ignore.strand)
@@ -260,18 +254,12 @@ setMethod("grglist", "GAlignmentsList",
 )
  
 setMethod("rglist", "GAlignmentsList",
-    function(x, use.names=TRUE, use.mcols=FALSE,
-                order.as.in.query=FALSE, drop.D.ranges=FALSE)
+    function(x, use.names=TRUE, use.mcols=FALSE, drop.D.ranges=FALSE)
     {
         if (!isTRUEorFALSE(use.names))
             stop("'use.names' must be TRUE or FALSE")
         if (!isTRUEorFALSE(use.mcols))
             stop("'use.mcols' must be TRUE or FALSE")
-        if (!identical(order.as.in.query, FALSE)) {
-            msg <- c("the 'order.as.in.query' argument of the \"rglist\" ",
-                     "method for GAlignmentsList objects is defunct")
-            .Defunct(msg=wmsg(msg))
-        }
         unlisted_x <- unlist(x, use.names=FALSE)
         rgl <- rglist(unlisted_x, drop.D.ranges=drop.D.ranges)
         ans <- IRanges:::regroupBySupergroup(rgl, x)
