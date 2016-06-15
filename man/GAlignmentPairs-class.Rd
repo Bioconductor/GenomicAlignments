@@ -37,10 +37,13 @@
 \alias{unlist,GAlignmentPairs-method}
 
 % Coercion:
-\alias{grglist,GAlignmentPairs-method}
+\alias{ranges,GAlignmentPairs-method}
 \alias{granges,GAlignmentPairs-method}
-\alias{coerce,GAlignmentPairs,GRangesList-method}
+\alias{grglist,GAlignmentPairs-method}
+\alias{coerce,GAlignmentPairs,Ranges-method}
 \alias{coerce,GAlignmentPairs,GRanges-method}
+\alias{coerce,GAlignmentPairs,GRangesList-method}
+
 \alias{coerce,GAlignmentPairs,GenomicRanges-method}
 \alias{coerce,GAlignmentPairs,GAlignments-method}
 
@@ -267,6 +270,21 @@
 
   \describe{
     \item{}{
+      \code{granges(x, use.names=TRUE, use.mcols=FALSE)},
+      \code{ranges(x, use.names=TRUE, use.mcols=FALSE)}:
+
+      Return a \link{GRanges} object (for \code{granges()}) or
+      \link[IRanges]{IRanges}) object (for \code{ranges()}) \emph{parallel}
+      to \code{x} where the i-th element is the range of the genomic region
+      spanned by the i-th alignment in \code{x}. All gaps in the region are
+      ignored.
+
+      If \code{use.names} is TRUE, then the names on \code{x} 
+      (if any) are propagated to the returned object.
+      If \code{use.mcols} is TRUE, then the metadata columns on \code{x}
+      (if any) are propagated to the returned object.
+    }
+    \item{}{
       \code{grglist(x, use.mcols=FALSE, drop.D.ranges=FALSE)}:
 
       Return a \link{GRangesList} object of length \code{length(x)}
@@ -287,28 +305,22 @@
       order defined by walking the "query template" from the beginning to
       the end.
 
-      If \code{use.mcols} is TRUE and \code{x} has metadata columns on it
-      (accessible with \code{mcols(x)}), they're propagated to the returned
-      object.
+      If \code{use.names} is TRUE, then the names on \code{x} 
+      (if any) are propagated to the returned object.
+      If \code{use.mcols} is TRUE, then the metadata columns on \code{x}
+      (if any) are propagated to the returned object.
 
-      If \code{drop.D.ranges} is \code{TRUE}, then deletions (Ds in the
+      If \code{drop.D.ranges} is TRUE, then deletions (Ds in the
       CIGAR) are treated like junctions (Ns in the CIGAR), that is, the
       ranges corresponding to deletions are dropped.
     }
     \item{}{
-      \code{granges(x, use.mcols=FALSE)}: Return a \link{GRanges} object
-      of length \code{length(x)} where each range is obtained by merging
-      all the ranges within the corresponding top-level element in
-      \code{grglist(x)}.
-
-      If \code{use.mcols} is TRUE and \code{x} has metadata columns on it
-      (accessible with \code{mcols(x)}), they're propagated to the returned
-      object.
-    }
-    \item{}{
-      \code{as(x, "GRangesList")}, \code{as(x, "GRanges")}:
-      Alternate ways of doing \code{grglist(x, use.mcols=TRUE)} and
-      \code{granges(x, use.mcols=TRUE)}, respectively.
+      \code{as(x, "GRanges")}, \code{as(x, "Ranges")},
+      \code{as(x, "GRangesList")}:
+      Alternate ways of doing
+      \code{granges(x, use.names=TRUE, use.mcols=TRUE)},
+      \code{ranges(x, use.names=TRUE, use.mcols=TRUE)}, and
+      \code{grglist(x, use.names=TRUE, use.mcols=TRUE)}, respectively.
     }
     \item{}{
       \code{as(x, "GAlignments")}:

@@ -417,6 +417,39 @@ setMethod("unlist", "GAlignmentPairs",
 ### Coercion.
 ###
 
+setMethod("ranges", "GAlignmentPairs",
+    function(x, use.names=TRUE, use.mcols=FALSE)
+    {
+        if (!isTRUEorFALSE(use.names))
+            stop("'use.names' must be TRUE or FALSE")
+        if (!isTRUEorFALSE(use.mcols))
+            stop("'use.mcols' must be TRUE or FALSE")
+        x_first_ranges <- ranges(x@first, use.names=FALSE)
+        x_last_ranges <- ranges(x@last, use.names=FALSE)
+        ans <- punion(x_first_ranges, x_last_ranges, fill.gap=TRUE)
+        if (use.names)
+            names(ans) <- names(x)
+        if (use.mcols)
+            mcols(ans) <- mcols(x)
+        ans
+    }
+)
+
+setMethod("granges", "GAlignmentPairs",
+    function(x, use.names=TRUE, use.mcols=FALSE)
+    {
+        if (!isTRUEorFALSE(use.mcols))
+            stop("'use.mcols' must be TRUE or FALSE")
+        ans <- GRanges(seqnames(x),
+                       ranges(x, use.names=use.names),
+                       strand(x),
+                       seqinfo=seqinfo(x))
+        if (use.mcols)
+            mcols(ans) <- mcols(x)
+        ans
+    }
+)
+
 ### Shrink CompressedList 'x' (typically a GRangesList) by half by combining
 ### pairs of consecutive top-level elements.
 shrinkByHalf <- function(x)
@@ -440,8 +473,11 @@ shrinkByHalf <- function(x)
 ### FIXME: Behavior is currently undefined (and undocumented) when
 ### strandMode(x) is 0. Fix this!
 setMethod("grglist", "GAlignmentPairs",
-    function(x, use.mcols=FALSE, order.as.in.query=FALSE, drop.D.ranges=FALSE)
+    function(x, use.names=TRUE, use.mcols=FALSE,
+                order.as.in.query=FALSE, drop.D.ranges=FALSE)
     {
+        if (!isTRUEorFALSE(use.names))
+            stop("'use.names' must be TRUE or FALSE")
         if (!isTRUEorFALSE(use.mcols))
             stop("'use.mcols' must be TRUE or FALSE")
         if (!identical(order.as.in.query, FALSE)) {
@@ -472,7 +508,8 @@ setMethod("grglist", "GAlignmentPairs",
                        order.as.in.query=TRUE,
                        drop.D.ranges=drop.D.ranges)
         ans <- shrinkByHalf(grl)
-        names(ans) <- names(x)
+        if (use.names)
+            names(ans) <- names(x)
         ans_mcols <- DataFrame(query.break=mcols(ans)$nelt1)
         if (use.mcols)
             ans_mcols <- cbind(ans_mcols, x_mcols)
@@ -481,37 +518,17 @@ setMethod("grglist", "GAlignmentPairs",
     }
 )
 
-setMethod("granges", "GAlignmentPairs",
-    function(x, use.mcols=FALSE)
-    {
-        if (!isTRUEorFALSE(use.mcols))
-            stop("'use.mcols' must be TRUE or FALSE")
-
-        x_first <- x@first
-        x_last <- x@last
-        ## We avoid calling ranges() on 'x_first' or 'x_last' because it
-        ## propagates the names (it doesn't support the 'use.names' argument
-        ## yet) and this could slow down things a bit.
-        x_first_ranges <- IRanges(start=start(x_first), width=width(x_first))
-        x_last_ranges <- IRanges(start=start(x_last), width=width(x_last))
-        ans_ranges <- punion(x_first_ranges, x_last_ranges, fill.gap=TRUE)
-        names(ans_ranges) <- names(x)
-
-        ans <- GRanges(seqnames(x), ans_ranges, strand(x), seqinfo=seqinfo(x))
-        if (use.mcols)
-            mcols(ans) <- mcols(x)
-        ans
-    }
-)
-
-setAs("GAlignmentPairs", "GRangesList",
-    function(from) grglist(from, use.mcols=TRUE)
+setAs("GAlignmentPairs", "Ranges",
+    function(from) ranges(from, use.names=TRUE, use.mcols=TRUE)
 )
 setAs("GAlignmentPairs", "GRanges",
-    function(from) granges(from, use.mcols=TRUE)
+    function(from) granges(from, use.names=TRUE, use.mcols=TRUE)
 )
 setAs("GAlignmentPairs", "GenomicRanges",
     function(from) as(from, "GRanges")
+)
+setAs("GAlignmentPairs", "GRangesList",
+    function(from) grglist(from, use.names=TRUE, use.mcols=TRUE)
 )
 setAs("GAlignmentPairs", "GAlignments",
     function(from) unlist(from, use.names=TRUE)

@@ -332,22 +332,8 @@ setMethod("update", "GAlignments",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Three helper functions used by higher level coercion functions.
+### Helper function used by higher level coercion functions.
 ###
-### Note that their arguments are the different components of a
-### GAlignments object instead of just the GAlignments object
-### itself (arg 'x'). This allows them to be used in many different contexts
-### e.g. when 'x' doesn't exist yet but is in the process of being constructed.
-###
-
-.GAlignmentsToGRanges <- function(seqnames, start, width, strand, seqinfo,
-                                  names=NULL)
-{
-    ranges <- IRanges(start=start, width=width, names=names)
-    ans <- GRanges(seqnames=seqnames, ranges=ranges, strand=strand)
-    seqinfo(ans) <- seqinfo
-    ans
-}
 
 ### Names are propagated via 'x@partitioning' ('x' is a CompressedIRangesList).
 .CompressedIRangesListToGRangesList <- function(x, seqnames, strand, seqinfo)
@@ -368,59 +354,90 @@ setMethod("update", "GAlignments",
 ### Coercion.
 ###
 
-setMethod("grglist", "GAlignments",
-    function(x, use.mcols=FALSE, order.as.in.query=FALSE, drop.D.ranges=FALSE)
+setMethod("ranges", "GAlignments",
+    function(x, use.names=TRUE, use.mcols=FALSE)
     {
-        rgl <- rglist(x, use.mcols=use.mcols,
-                         order.as.in.query=order.as.in.query,
-                         drop.D.ranges=drop.D.ranges)
-        .CompressedIRangesListToGRangesList(rgl, seqnames(x), strand(x),
-                                            seqinfo(x))
+        if (!isTRUEorFALSE(use.names))
+            stop("'use.names' must be TRUE or FALSE")
+        if (!isTRUEorFALSE(use.mcols))
+            stop("'use.mcols' must be TRUE or FALSE")
+        if (use.names) {
+            ans_names <- names(x)
+        } else {
+            ans_names <- NULL
+        }
+        ans <- IRanges(start=start(x), width=width(x), names=ans_names)
+        if (use.mcols)
+            mcols(ans) <- mcols(x)
+        ans
     }
 )
 
 setMethod("granges", "GAlignments",
-    function(x, use.mcols=FALSE)
+    function(x, use.names=TRUE, use.mcols=FALSE)
     {
         if (!isTRUEorFALSE(use.mcols))
             stop("'use.mcols' must be TRUE or FALSE")
-        ans <- .GAlignmentsToGRanges(seqnames(x), start(x), width(x),
-                                     strand(x), seqinfo(x), names(x))
+        ans <- GRanges(seqnames(x),
+                       ranges(x, use.names=use.names),
+                       strand(x),
+                       seqinfo=seqinfo(x))
         if (use.mcols)
             mcols(ans) <- mcols(x)
         ans
+    }
+)
+
+setMethod("grglist", "GAlignments",
+    function(x, use.names=TRUE, use.mcols=FALSE,
+                order.as.in.query=FALSE, drop.D.ranges=FALSE)
+    {
+        rgl <- rglist(x, use.names=use.names,
+                         use.mcols=use.mcols,
+                         order.as.in.query=order.as.in.query,
+                         drop.D.ranges=drop.D.ranges)
+        .CompressedIRangesListToGRangesList(rgl, seqnames(x), strand(x),
+                                                 seqinfo(x))
     }
 )
 
 setMethod("rglist", "GAlignments",
-    function(x, use.mcols=FALSE, order.as.in.query=FALSE, drop.D.ranges=FALSE)
+    function(x, use.names=TRUE, use.mcols=FALSE,
+                order.as.in.query=FALSE, drop.D.ranges=FALSE)
     {
+        if (!isTRUEorFALSE(use.names))
+            stop("'use.names' must be TRUE or FALSE")
         if (!isTRUEorFALSE(use.mcols))
             stop("'use.mcols' must be TRUE or FALSE")
         if (!isTRUEorFALSE(order.as.in.query))
-            stop("'reorder.ranges.from5to3' must be TRUE or FALSE")
+            stop("'order.as.in.query' must be TRUE or FALSE")
         ans <- extractAlignmentRangesOnReference(x@cigar, x@start,
                                                  drop.D.ranges=drop.D.ranges)
         if (order.as.in.query)
             ans <- revElements(ans, strand(x) == "-")
-        names(ans) <- names(x)
+        if (use.names)
+            names(ans) <- names(x)
         if (use.mcols)
             mcols(ans) <- mcols(x)
         ans
     }
 )
 
-setMethod("ranges", "GAlignments",
-    function(x) IRanges(start=start(x), width=width(x), names=names(x))
+setAs("GAlignments", "Ranges",
+    function(from) ranges(from, use.names=TRUE, use.mcols=TRUE)
 )
-
+setAs("GAlignments", "GRanges",
+    function(from) granges(from, use.names=TRUE, use.mcols=TRUE)
+)
+setAs("GAlignments", "GenomicRanges",
+    function(from) as(from, "GRanges")
+)
 setAs("GAlignments", "GRangesList",
-    function(from) grglist(from, use.mcols=TRUE)
+    function(from) grglist(from, use.names=TRUE, use.mcols=TRUE)
 )
-setAs("GAlignments", "GRanges", function(from) granges(from, use.mcols=TRUE))
-setAs("GAlignments", "GenomicRanges", function(from) as(from, "GRanges"))
-setAs("GAlignments", "RangesList", function(from) rglist(from, use.mcols=TRUE))
-setAs("GAlignments", "Ranges", function(from) ranges(from))
+setAs("GAlignments", "RangesList",
+    function(from) rglist(from, use.names=TRUE, use.mcols=TRUE)
+)
 
 setAs("GAlignments", "DataFrame", function(from) {
           DataFrame(seqnames=seqnames(from),

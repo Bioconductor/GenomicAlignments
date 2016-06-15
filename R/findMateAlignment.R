@@ -453,8 +453,8 @@ makeGAlignmentPairs <- function(x, use.names=FALSE, use.mcols=FALSE,
     ans_is_proper <- x_is_proper[first_idx]
 
     ## Drop pairs with discordant seqnames.
-    idx_is_discordant <- (as.character(seqnames(x)[first_idx]) !=
-                          as.character(seqnames(x)[last_idx]))
+    idx_is_discordant <- as.character(seqnames(x)[first_idx]) !=
+                         as.character(seqnames(x)[last_idx])
     if (any(idx_is_discordant) != 0L) {
         nb_discordant_proper <- sum(ans_is_proper[idx_is_discordant])
         if (nb_discordant_proper != 0L) {

@@ -187,32 +187,24 @@ setMethod("updateObject", "GAlignmentsList",
 ### Coercion.
 ###
 
-setMethod("grglist", "GAlignmentsList",
-    function(x, use.mcols=FALSE, order.as.in.query=FALSE, 
-             drop.D.ranges=FALSE, ignore.strand=FALSE) 
+setMethod("ranges", "GAlignmentsList",
+    function(x, use.names=TRUE, use.mcols=FALSE)
     {
+        if (!isTRUEorFALSE(use.names))
+            stop("'use.names' must be TRUE or FALSE")
         if (!isTRUEorFALSE(use.mcols))
             stop("'use.mcols' must be TRUE or FALSE")
-        if (!identical(order.as.in.query, FALSE)) {
-            msg <- c("the 'order.as.in.query' argument of the \"grglist\" ",
-                     "method for GAlignmentsList objects is defunct")
-            .Defunct(msg=wmsg(msg))
-        }
-        if (!isTRUEorFALSE(ignore.strand))
-            stop("'ignore.strand' must be TRUE or FALSE")
-        if (ignore.strand)
-            strand(x@unlistData) <- "*"
-        unlisted_x <- unlist(x, use.names=FALSE)
-        grl <- grglist(unlisted_x, drop.D.ranges=drop.D.ranges)
-        ans <- IRanges:::regroupBySupergroup(grl, x)
+        ans <- unlist(range(rglist(x)), use.names=FALSE)
+        if (use.names)
+            names(ans) <- names(x)
         if (use.mcols)
             mcols(ans) <- mcols(x)
         ans
     }
 )
- 
+
 setMethod("granges", "GAlignmentsList",
-    function(x, use.mcols=FALSE, ignore.strand=FALSE) 
+    function(x, use.names=TRUE, use.mcols=FALSE, ignore.strand=FALSE) 
     {
         if (!isTRUEorFALSE(use.mcols))
             stop("'use.mcols' must be TRUE or FALSE")
@@ -231,16 +223,48 @@ setMethod("granges", "GAlignmentsList",
             else
                 warning(paste0(msg, " Consider using 'ignore.strand=TRUE'."))
         }
-        ans <- unlist(rg)
+        ans <- unlist(rg, use.names=use.names)
         if (is_one_to_one && use.mcols)
             mcols(ans) <- mcols(x)
         ans
     }
 )
 
-setMethod("rglist", "GAlignmentsList",
-    function(x, use.mcols=FALSE, order.as.in.query=FALSE, drop.D.ranges=FALSE)
+setMethod("grglist", "GAlignmentsList",
+    function(x, use.names=TRUE, use.mcols=FALSE,
+                order.as.in.query=FALSE, drop.D.ranges=FALSE,
+                ignore.strand=FALSE) 
     {
+        if (!isTRUEorFALSE(use.names))
+            stop("'use.names' must be TRUE or FALSE")
+        if (!isTRUEorFALSE(use.mcols))
+            stop("'use.mcols' must be TRUE or FALSE")
+        if (!identical(order.as.in.query, FALSE)) {
+            msg <- c("the 'order.as.in.query' argument of the \"grglist\" ",
+                     "method for GAlignmentsList objects is defunct")
+            .Defunct(msg=wmsg(msg))
+        }
+        if (!isTRUEorFALSE(ignore.strand))
+            stop("'ignore.strand' must be TRUE or FALSE")
+        if (ignore.strand)
+            strand(x@unlistData) <- "*"
+        unlisted_x <- unlist(x, use.names=FALSE)
+        grl <- grglist(unlisted_x, drop.D.ranges=drop.D.ranges)
+        ans <- IRanges:::regroupBySupergroup(grl, x)
+        if (use.names)
+            names(ans) <- names(x)
+        if (use.mcols)
+            mcols(ans) <- mcols(x)
+        ans
+    }
+)
+ 
+setMethod("rglist", "GAlignmentsList",
+    function(x, use.names=TRUE, use.mcols=FALSE,
+                order.as.in.query=FALSE, drop.D.ranges=FALSE)
+    {
+        if (!isTRUEorFALSE(use.names))
+            stop("'use.names' must be TRUE or FALSE")
         if (!isTRUEorFALSE(use.mcols))
             stop("'use.mcols' must be TRUE or FALSE")
         if (!identical(order.as.in.query, FALSE)) {
@@ -251,30 +275,28 @@ setMethod("rglist", "GAlignmentsList",
         unlisted_x <- unlist(x, use.names=FALSE)
         rgl <- rglist(unlisted_x, drop.D.ranges=drop.D.ranges)
         ans <- IRanges:::regroupBySupergroup(rgl, x)
+        if (use.names)
+            names(ans) <- names(x)
         if (use.mcols)
             mcols(ans) <- mcols(x)
         ans
     }
 )
 
-setMethod("ranges", "GAlignmentsList",
-    function(x) unlist(range(rglist(x)), use.names=FALSE)
-)
-
-setAs("GAlignmentsList", "GRangesList", 
-    function(from) grglist(from, use.mcols=TRUE)
+setAs("GAlignmentsList", "Ranges", 
+    function(from) ranges(from, use.names=TRUE, use.mcols=TRUE)
 )
 setAs("GAlignmentsList", "GRanges", 
-    function(from) granges(from, use.mcols=TRUE)
+    function(from) granges(from, use.names=TRUE, use.mcols=TRUE)
 )
 setAs("GAlignmentsList", "GenomicRanges",
     function(from) as(from, "GRanges")
 )
-setAs("GAlignmentsList", "RangesList", 
-    function(from) rglist(from, use.mcols=TRUE)
+setAs("GAlignmentsList", "GRangesList", 
+    function(from) grglist(from, use.names=TRUE, use.mcols=TRUE)
 )
-setAs("GAlignmentsList", "Ranges", 
-    function(from) ranges(from)
+setAs("GAlignmentsList", "RangesList", 
+    function(from) rglist(from, use.names=TRUE, use.mcols=TRUE)
 )
 
 setAs("GAlignmentPairs", "GAlignmentsList", 

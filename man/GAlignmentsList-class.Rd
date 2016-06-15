@@ -32,16 +32,17 @@
 \alias{width,GAlignmentsList-method}
 
 % Coercion:
-\alias{coerce,GAlignmentsList,GRangesList-method}
+\alias{ranges,GAlignmentsList-method}
+\alias{granges,GAlignmentsList-method}
+\alias{grglist,GAlignmentsList-method}
+\alias{rglist,GAlignmentsList-method}
+\alias{coerce,GAlignmentsList,Ranges-method}
 \alias{coerce,GAlignmentsList,GRanges-method}
+\alias{coerce,GAlignmentsList,GRangesList-method}
 \alias{coerce,GAlignmentsList,GenomicRanges-method}
 \alias{coerce,GAlignmentsList,RangesList-method}
-\alias{coerce,GAlignmentsList,Ranges-method}
+
 \alias{coerce,GAlignmentPairs,GAlignmentsList-method}
-\alias{grglist,GAlignmentsList-method}
-\alias{granges,GAlignmentsList-method}
-\alias{rglist,GAlignmentsList-method}
-\alias{ranges,GAlignmentsList-method}
 
 % Combining:
 \alias{c,GAlignmentsList-method}
@@ -172,32 +173,36 @@
 
   \describe{
     \item{}{
-      \code{granges(x, use.mcols=FALSE, ignore.strand=FALSE)}, 
-      \code{ranges(x)}:
+      \code{granges(x, use.names=TRUE, use.mcols=FALSE, ignore.strand=FALSE)}, 
+      \code{ranges(x, use.names=TRUE, use.mcols=FALSE)}:
+
       Return either a \link{GRanges} or a \link[IRanges]{IRanges}
       object of length \code{length(x)}. Note this coercion IGNORES 
       the cigar information. The resulting ranges span the entire
       range, including any junctions or spaces between paired-end reads.
 
-      If \code{use.mcols} is TRUE and \code{x} has metadata columns on it
-      (accessible with \code{mcols(x)}), they're propagated to the returned
-      object.
+      If \code{use.names} is TRUE, then the names on \code{x}
+      (if any) are propagated to the returned object.
+      If \code{use.mcols} is TRUE, then the metadata columns on \code{x}
+      (if any) are propagated to the returned object.
 
       \code{granges} coercion supports \code{ignore.strand} to allow 
       ranges of opposite strand to be combined (see examples). All
       ranges in the resulting GRanges will have strand \sQuote{*}.
     }
     \item{}{
-      \code{grglist(x, use.mcols=FALSE, ignore.strand=FALSE)}, 
-      \code{rglist(x, use.mcols=FALSE)}:
+      \code{grglist(x, use.names=TRUE, use.mcols=FALSE, ignore.strand=FALSE)}, 
+      \code{rglist(x, use.names=TRUE, use.mcols=FALSE)}:
+
       Return either a \link{GRangesList} or an \link[IRanges]{IRangesList}
       object of length \code{length(x)}. This coercion RESPECTS the cigar 
       information. The resulting ranges are fragments of the original ranges 
       that do not include junctions or spaces between paired-end reads.
  
-      If \code{use.mcols} is TRUE and \code{x} has metadata columns on it
-      (accessible with \code{mcols(x)}), they're propagated to the returned
-      object.
+      If \code{use.names} is TRUE, then the names on \code{x}
+      (if any) are propagated to the returned object.
+      If \code{use.mcols} is TRUE, then the metadata columns on \code{x}
+      (if any) are propagated to the returned object.
 
       \code{grglist} coercion supports \code{ignore.strand} to allow 
       ranges of opposite strand to be combined (see examples). When
@@ -205,11 +210,13 @@
       GRangesList have strand \sQuote{*}.
     }
     \item{}{
-      \code{as(x, "GRangesList")}, \code{as(x, "GRanges")},
-      \code{as(x, "RangesList")}, \code{as(x, "Ranges")}:
-      Alternate ways of doing \code{grglist(x, use.mcols=TRUE)},
-      \code{granges(x, use.mcols=TRUE)}, \code{rglist(x, use.mcols=TRUE)},
-      and \code{ranges(x)}, respectively.
+      \code{as(x, "GRanges")}, \code{as(x, "Ranges")},
+      \code{as(x, "GRangesList")}, \code{as(x, "RangesList")}:
+      Alternate ways of doing
+      \code{granges(x, use.names=TRUE, use.mcols=TRUE)},
+      \code{ranges(x, use.names=TRUE, use.mcols=TRUE)},
+      \code{grglist(x, use.names=TRUE, use.mcols=TRUE)}, and
+      \code{rglist(x, use.names=TRUE, use.mcols=TRUE)}, respectively.
     }
     \item{}{
       \code{as.data.frame(x, row.names = NULL, optional = FALSE,

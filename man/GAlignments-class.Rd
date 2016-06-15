@@ -34,15 +34,16 @@
 \alias{seqinfo<-,GAlignments-method}
 
 % Coercion:
-\alias{grglist,GAlignments-method}
-\alias{granges,GAlignments-method}
-\alias{rglist,GAlignments-method}
 \alias{ranges,GAlignments-method}
-\alias{coerce,GAlignments,GRangesList-method}
+\alias{granges,GAlignments-method}
+\alias{grglist,GAlignments-method}
+\alias{rglist,GAlignments-method}
+\alias{coerce,GAlignments,Ranges-method}
 \alias{coerce,GAlignments,GRanges-method}
+\alias{coerce,GAlignments,GRangesList-method}
 \alias{coerce,GAlignments,GenomicRanges-method}
 \alias{coerce,GAlignments,RangesList-method}
-\alias{coerce,GAlignments,Ranges-method}
+
 \alias{as.data.frame,GAlignments-method}
 \alias{coerce,GenomicRanges,GAlignments-method}
 
@@ -263,12 +264,25 @@
 
   \describe{
     \item{}{
-      \code{grglist(x, use.mcols=FALSE,
-                       order.as.in.query=FALSE,
-                       drop.D.ranges=FALSE)},
-      \code{rglist(x, use.mcols=FALSE,
-                      order.as.in.query=FALSE,
-                      drop.D.ranges=FALSE)}:
+      \code{granges(x, use.names=TRUE, use.mcols=FALSE)},
+      \code{ranges(x, use.names=TRUE, use.mcols=FALSE)}:
+
+      Return a \link{GRanges} object (for \code{granges()}) or
+      \link[IRanges]{IRanges}) object (for \code{ranges()}) \emph{parallel}
+      to \code{x} where the i-th element is the range of the genomic region
+      spanned by the i-th alignment in \code{x}. All gaps in the region are
+      ignored.
+
+      If \code{use.names} is TRUE, then the names on \code{x} 
+      (if any) are propagated to the returned object.
+      If \code{use.mcols} is TRUE, then the metadata columns on \code{x}
+      (if any) are propagated to the returned object.
+    }
+    \item{}{
+      \code{grglist(x, use.names=TRUE, use.mcols=FALSE,
+                       order.as.in.query=FALSE, drop.D.ranges=FALSE)},
+      \code{rglist(x, use.names=TRUE, use.mcols=FALSE,
+                      order.as.in.query=FALSE, drop.D.ranges=FALSE)}:
 
       Return either a \link{GRangesList} or a \link[IRanges]{RangesList}
       object of length \code{length(x)} where the i-th element represents
@@ -278,20 +292,21 @@
       More precisely, the \link[IRanges]{RangesList} object returned by
       \code{rglist(x)} is a \link[IRanges]{CompressedIRangesList} object.
 
-      If \code{use.mcols} is TRUE and \code{x} has metadata columns on it
-      (accessible with \code{mcols(x)}), they're propagated to the returned
-      object.
+      If \code{use.names} is TRUE, then the names on \code{x} 
+      (if any) are propagated to the returned object.
+      If \code{use.mcols} is TRUE, then the metadata columns on \code{x}
+      (if any) are propagated to the returned object.
 
       The \code{order.as.in.query} toggle affects the order of the ranges
       \emph{within} each top-level element of the returned object.
 
-      If \code{FALSE} (the default), then the ranges are ordered from 5' to 3'
+      If FALSE (the default), then the ranges are ordered from 5' to 3'
       in elements associated with the plus strand (i.e. corresponding to
       alignments located on the plus strand), and from 3' to 5' in elements
       associated with the minus strand. So, whatever the strand is, the ranges
       are in ascending order (i.e. left-to-right).
 
-      If \code{TRUE}, then the order of the ranges in elements associated
+      If TRUE, then the order of the ranges in elements associated
       with the \emph{minus} strand is reversed. So they end up being
       ordered from 5' to 3' too, which means that they are now in decending
       order (i.e. right-to-left). It also means that, when
@@ -300,31 +315,20 @@
       that is, in the order defined by walking the "query template" from the
       beginning to the end.
  
-      If \code{drop.D.ranges} is \code{TRUE}, then deletions (D operations
+      If \code{drop.D.ranges} is TRUE, then deletions (D operations
       in the CIGAR) are treated like junctions (N operations in the CIGAR),
       that is, the ranges corresponding to deletions are dropped.
 
       See Details section above for more information.
     }
     \item{}{
-      \code{granges(x, use.mcols=FALSE)}, \code{ranges(x)}:
-      Return either a \link{GRanges} or a \link[IRanges]{Ranges}
-      object of length \code{length(x)} where each element represents the
-      regions in the reference to which a query is aligned.
-
-      More precisely, the \link[IRanges]{Ranges} object returned by
-      \code{ranges(x)} is an \link[IRanges]{IRanges} object.
-
-      If \code{use.mcols} is TRUE and \code{x} has metadata columns on it
-      (accessible with \code{mcols(x)}), they're propagated to the returned
-      object.
-    }
-    \item{}{
-      \code{as(x, "GRangesList")}, \code{as(x, "GRanges")},
-      \code{as(x, "RangesList")}, \code{as(x, "Ranges")}:
-      Alternate ways of doing \code{grglist(x, use.mcols=TRUE)},
-      \code{granges(x, use.mcols=TRUE)}, \code{rglist(x, use.mcols=TRUE)},
-      and \code{ranges(x)}, respectively.
+      \code{as(x, "GRanges")}, \code{as(x, "Ranges")},
+      \code{as(x, "GRangesList")}, \code{as(x, "RangesList")}:
+      Alternate ways of doing
+      \code{granges(x, use.names=TRUE, use.mcols=TRUE)},
+      \code{ranges(x, use.names=TRUE, use.mcols=TRUE)},
+      \code{grglist(x, use.names=TRUE, use.mcols=TRUE)}, and
+      \code{rglist(x, use.names=TRUE, use.mcols=TRUE)}, respectively.
     }
   }
 
