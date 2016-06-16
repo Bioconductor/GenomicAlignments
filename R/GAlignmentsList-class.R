@@ -277,9 +277,6 @@ setAs("GAlignmentsList", "Ranges",
 setAs("GAlignmentsList", "GRanges", 
     function(from) granges(from, use.names=TRUE, use.mcols=TRUE)
 )
-setAs("GAlignmentsList", "GenomicRanges",
-    function(from) as(from, "GRanges")
-)
 setAs("GAlignmentsList", "GRangesList", 
     function(from) grglist(from, use.names=TRUE, use.mcols=TRUE)
 )

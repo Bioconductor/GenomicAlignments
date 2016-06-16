@@ -39,7 +39,6 @@
 \alias{coerce,GAlignmentsList,Ranges-method}
 \alias{coerce,GAlignmentsList,GRanges-method}
 \alias{coerce,GAlignmentsList,GRangesList-method}
-\alias{coerce,GAlignmentsList,GenomicRanges-method}
 \alias{coerce,GAlignmentsList,RangesList-method}
 
 \alias{coerce,GAlignmentPairs,GAlignmentsList-method}

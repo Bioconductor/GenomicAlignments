@@ -44,7 +44,6 @@
 \alias{coerce,GAlignmentPairs,GRanges-method}
 \alias{coerce,GAlignmentPairs,GRangesList-method}
 
-\alias{coerce,GAlignmentPairs,GenomicRanges-method}
 \alias{coerce,GAlignmentPairs,GAlignments-method}
 
 % "show" method:
