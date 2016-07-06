@@ -53,7 +53,7 @@ exportMethods(
     c,
 
     ## Generics defined in BiocGenerics:
-    start, end, width,
+    start, end, width, strand, invertStrand,
  
     ## Generics defined in IRanges:
     relistToClass,

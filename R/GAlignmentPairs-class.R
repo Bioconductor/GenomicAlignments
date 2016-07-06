@@ -179,6 +179,16 @@ setReplaceMethod("strandMode", "GAlignmentPairs",
     }
 )
 
+setMethod("invertStrand", "GAlignmentPairs",
+    function(x)
+    {
+        strand_mode <- strandMode(x)
+        if (strand_mode != 0L)
+            strandMode(x) <- 3L - strand_mode
+        x
+    }
+)
+
 setReplaceMethod("names", "GAlignmentPairs",
     function(x, value)
     {

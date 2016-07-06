@@ -13,6 +13,7 @@
 \alias{strandMode,GAlignmentPairs-method}
 \alias{strandMode<-}
 \alias{strandMode<-,GAlignmentPairs-method}
+\alias{invertStrand,GAlignmentPairs-method}
 \alias{length,GAlignmentPairs-method}
 \alias{names,GAlignmentPairs-method}
 \alias{names<-,GAlignmentPairs-method}
@@ -98,7 +99,7 @@
   \describe{
     \item{}{
       \code{strandMode(x)}, \code{strandMode(x) <- value}:
-      The strand mode is a per-object switch on GAlignmentPairs objects
+      The \emph{strand mode} is a per-object switch on GAlignmentPairs objects
       that controls the behavior of the \code{strand} getter.
       More precisely, it indicates how the strand of a pair should be
       inferred from the strand of the first and last alignments in the pair:
@@ -118,10 +119,10 @@
       \pkg{Rsubread} package.
 
       Note that, by default, the \code{\link{readGAlignmentPairs}} function
-      sets the strand mode to 1 on the returned GAlignmentPairs object. The
-      function has a \code{strandMode} argument to let the user set a different
-      strand mode. The strand mode can also be changed any time with the
-      \code{strandMode} setter.
+      sets the \emph{strand mode} to 1 on the returned GAlignmentPairs object.
+      The function has a \code{strandMode} argument to let the user set a
+      different \emph{strand mode}. The \emph{strand mode} can also be changed
+      any time with the \code{strandMode} setter or with \code{invertStrand}.
 
       Also note that 3rd party programs TopHat2 and Cufflinks have a
       \code{--library-type} option to let the user specify which protocol
@@ -147,7 +148,7 @@
       as \code{x}.
 
       If \code{real.strand=TRUE}, then the strand is inverted on-the-fly
-      according to the strand mode currently set on the object (see
+      according to the \emph{strand mode} currently set on the object (see
       \code{strandMode(x)} above). More precisely, if \code{strandMode(x)}
       is 0, then the strand is set to * for the \link{GAlignments} object
       returned by both, \code{first()} and \code{last()}.
@@ -282,7 +283,7 @@
       Return a \link{GRangesList} object of length \code{length(x)}
       where the i-th element represents the ranges (with respect to the
       reference) of the i-th alignment pair in \code{x}. The strand of
-      the returned ranges obeys the strand mode currently set on the
+      the returned ranges obeys the \emph{strand mode} currently set on the
       object (see \code{strandMode(x)} above).
 
       More precisely, if \code{grl1} and \code{grl2} are
@@ -415,6 +416,9 @@ grglist(galp)  # a GRangesList object
 
 strandMode(galp) <- 1
 grglist(galp)
+
+## Alternatively the strand mode can be changed with invertStrand():
+invertStrand(galp)
 
 stopifnot(identical(unname(elementNROWS(grglist(galp))), njunc(galp) + 2L))
 
