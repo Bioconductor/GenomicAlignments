@@ -73,19 +73,41 @@ setMethod("names", "GAlignmentPairs",
     function(x) x@NAMES
 )
 
+.make_it_real <- function(strand, strand_mode)
+{
+    if (strand_mode == 0L) 
+        return(Rle(strand("*"), length(strand)))
+    invertStrand(strand)
+}
+
+.first_strand <- function(x, real.strand=FALSE)
+{
+    if (!isTRUEorFALSE(real.strand))
+        stop("'real.strand' must be TRUE or FALSE")
+    ans <- strand(x@first)
+    if (real.strand && strandMode(x) != 1L)
+        ans <- .make_it_real(ans, strandMode(x))
+    ans
+}
+
+.last_strand <- function(x, real.strand=FALSE)
+{
+    if (!isTRUEorFALSE(real.strand))
+        stop("'real.strand' must be TRUE or FALSE")
+    ans <- strand(x@last)
+    if (real.strand && strandMode(x) != 2L)
+        ans <- .make_it_real(ans, strandMode(x))
+    ans
+}
+
 setMethod("first", "GAlignmentPairs",
     function(x, real.strand=FALSE)
     {
         if (!isTRUEorFALSE(real.strand))
             stop("'real.strand' must be TRUE or FALSE")
         ans <- setNames(x@first, names(x))
-        if (real.strand) {
-            if (strandMode(x) == 0L) {
-                strand(ans) <- "*"
-            } else if (strandMode(x) == 2L) {
-                ans <- invertStrand(ans)
-            }
-        }
+        if (real.strand && strandMode(x) != 1L)
+            strand(ans) <- .first_strand(x, real.strand=TRUE)
         ans
     }
 )
@@ -100,13 +122,8 @@ setMethod("second", "GAlignmentPairs",
         if (!isTRUEorFALSE(real.strand))
             stop("'real.strand' must be TRUE or FALSE")
         ans <- setNames(x@last, names(x))
-        if (real.strand) {
-            if (strandMode(x) == 0L) {
-                strand(ans) <- "*"
-            } else if (strandMode(x) == 1L) {
-                ans <- invertStrand(ans)
-            }
-        }
+        if (real.strand && strandMode(x) != 2L)
+            strand(ans) <- .last_strand(x, real.strand=TRUE)
         ans
     }
 )
@@ -115,13 +132,7 @@ setMethod("seqnames", "GAlignmentPairs",
     function(x)
     {
         ans <- seqnames(x@first)
-        if (any(ans != seqnames(x@last)))
-            stop(wmsg("For some pairs in 'x', the 2 alignments are not on ",
-                      "the same chromosome. Cannot associate a sequence name ",
-                      "to them. ",
-                      "Note that the GAlignmentPairs container only supports ",
-                      "pairs where the 2 alignments are on the same ",
-                      "chromosome at the moment."))
+        ans[seqnames(x@last) != ans] <- NA
         ans
     }
 )
@@ -129,16 +140,9 @@ setMethod("seqnames", "GAlignmentPairs",
 setMethod("strand", "GAlignmentPairs",
     function(x)
     {
-        if (strandMode(x) == 0L)
-            return(strand(Rle("*", length(x))))
-        x_first_strand <- strand(x@first)
-        x_last_strand <- strand(x@last)
-        if (strandMode(x) == 1L) {
-            ans <- x_first_strand
-        } else {
-            ans <- x_last_strand
-        }
-        ans[x_first_strand == x_last_strand] <- "*"
+        ans <- .first_strand(x, real.strand=TRUE)
+        x_last_strand <- .last_strand(x, real.strand=TRUE)
+        ans[ans != x_last_strand] <- "*"
         ans
     }
 )
@@ -401,13 +405,89 @@ setMethod("unlist", "GAlignmentPairs",
 ### Coercion.
 ###
 
+### 'caller' must be "ranges" or "granges".
+.error_on_discordant_seqnames <- function(caller)
+{
+    if (caller == "ranges") {
+        range_type <- "range"
+        returned_object <- "IRanges"
+        a_returned_object <- "an IRanges"
+        alternate_caller <- "rglist"
+        alternate_returned_object <- "an IRangesList"
+    } else {
+        range_type <- "genomic range"
+        returned_object <- "GRanges"
+        a_returned_object <- "a GRanges"
+        alternate_caller <- "grglist"
+        alternate_returned_object <- "a GRangesList"
+    }
+    wmsg(
+        "For some pairs in 'x', the 2 alignments are not on the same ",
+        "chromosome. Cannot associate a unique ", range_type, " to ",
+        "such pairs. Please call ", caller, "() with ",
+        "'on.discordant.seqnames=\"drop\"' to drop these pairs, ",
+        "or with 'on.discordant.seqnames=\"split\"' to represent ",
+        "each of them with 2 ", range_type, "s in the returned ",
+        returned_object, " object. Note that in both cases the returned ",
+        "object won't be parallel to 'x'. Alternatively, please ",
+        "consider using ", alternate_caller, "() instead of ", caller, "() ",
+        "to turn 'x' into ", alternate_returned_object, " object instead of ",
+        a_returned_object, " object. See ?GAlignmentPairs for more ",
+        "information."
+    )
+}
+
+.make_split_IRanges_from_GAlignmentPairs <- function(x, use.names=TRUE,
+                                                        use.mcols=FALSE)
+{
+    x_first_ranges <- ranges(x@first, use.names=FALSE)
+    x_last_ranges <- ranges(x@last, use.names=FALSE)
+
+    x_len <- length(x)
+    collate_subscript <- S4Vectors:::make_XYZxyz_to_XxYyZz_subscript(x_len)
+    partitioning <- PartitioningByEnd(2L * seq_len(x_len))
+
+    range_pairs <- relist(c(x_first_ranges, x_last_ranges)[collate_subscript],
+                          partitioning)
+
+    x_first_seqnames <- seqnames(x@first)
+    x_last_seqnames <- seqnames(x@last)
+    merge_idx <- x_first_seqnames == x_last_seqnames
+
+    range_pairs[merge_idx] <- range(range_pairs[merge_idx])
+    if (use.names)
+        names(range_pairs) <- names(x)
+
+    ans <- unlist(range_pairs, use.names=use.names)
+    if (use.mcols) {
+        i <- rep.int(seq_len(x_len), elementNROWS(range_pairs))
+        mcols(ans) <- extractROWS(mcols(x), i)
+    }
+    ans
+}
+
 setMethod("ranges", "GAlignmentPairs",
-    function(x, use.names=TRUE, use.mcols=FALSE)
+    function(x, use.names=TRUE, use.mcols=FALSE,
+                on.discordant.seqnames=c("error", "drop", "split"))
     {
         if (!isTRUEorFALSE(use.names))
             stop("'use.names' must be TRUE or FALSE")
         if (!isTRUEorFALSE(use.mcols))
             stop("'use.mcols' must be TRUE or FALSE")
+        on.discordant.seqnames <- match.arg(on.discordant.seqnames)
+
+        ans_seqnames <- seqnames(x)
+        is_discordant <- is.na(ans_seqnames)
+        if (any(is_discordant)) {
+            if (on.discordant.seqnames == "error")
+                stop(.error_on_discordant_seqnames("ranges"))
+            if (on.discordant.seqnames == "split")
+                return(.make_split_IRanges_from_GAlignmentPairs(x,
+                           use.names=use.names, use.mcols=use.mcols))
+            ## on.discordant.seqnames == "drop"
+            x <- x[!is_discordant]
+        }
+
         x_first_ranges <- ranges(x@first, use.names=FALSE)
         x_last_ranges <- ranges(x@last, use.names=FALSE)
         ans <- punion(x_first_ranges, x_last_ranges, fill.gap=TRUE)
@@ -419,12 +499,63 @@ setMethod("ranges", "GAlignmentPairs",
     }
 )
 
+.make_split_GRanges_from_GAlignmentPairs <- function(x, use.names=TRUE,
+                                                        use.mcols=FALSE)
+{
+    x_first_seqnames <- seqnames(x@first)
+    x_last_seqnames <- seqnames(x@last)
+    is_discordant <- x_first_seqnames != x_last_seqnames
+    ndiscordant <- sum(is_discordant)
+    collate_subscript <-
+        S4Vectors:::make_XYZxyz_to_XxYyZz_subscript(ndiscordant)
+    partitioning <- PartitioningByEnd(2L * seq_len(ndiscordant))
+
+    seqnames1 <- x_first_seqnames[is_discordant]
+    seqnames2 <- x_last_seqnames[is_discordant]
+    discordant_seqnames <- relist(c(seqnames1, seqnames2)[collate_subscript],
+                                  partitioning)
+
+    ans_seqnames <- as(x_first_seqnames, "List")
+    ans_seqnames[is_discordant] <- discordant_seqnames
+
+    ans_ranges <- .make_split_IRanges_from_GAlignmentPairs(x,
+                      use.names=use.names, use.mcols=use.mcols)
+
+    strand1 <- .first_strand(x, real.strand=TRUE)[is_discordant]
+    strand2 <- .last_strand(x, real.strand=TRUE)[is_discordant]
+    discordant_strand <- relist(c(strand1, strand2)[collate_subscript],
+                                partitioning)
+    ans_strand <- as(strand(x), "List")
+    ans_strand[is_discordant] <- discordant_strand
+
+    GRanges(unlist(ans_seqnames, use.names=FALSE),
+            ans_ranges,
+            unlist(ans_strand, use.names=FALSE),
+            seqinfo=seqinfo(x))
+}
+
 setMethod("granges", "GAlignmentPairs",
-    function(x, use.names=TRUE, use.mcols=FALSE)
+    function(x, use.names=TRUE, use.mcols=FALSE,
+                on.discordant.seqnames=c("error", "drop", "split"))
     {
         if (!isTRUEorFALSE(use.mcols))
             stop("'use.mcols' must be TRUE or FALSE")
-        ans <- GRanges(seqnames(x),
+        on.discordant.seqnames <- match.arg(on.discordant.seqnames)
+
+        ans_seqnames <- seqnames(x)
+        is_discordant <- is.na(ans_seqnames)
+        if (any(is_discordant)) {
+            if (on.discordant.seqnames == "error")
+                stop(.error_on_discordant_seqnames("granges"))
+            if (on.discordant.seqnames == "split")
+                return(.make_split_GRanges_from_GAlignmentPairs(x,
+                           use.names=use.names, use.mcols=use.mcols))
+            ## on.discordant.seqnames == "drop"
+            x <- x[!is_discordant]
+            ans_seqnames <- seqnames(x)
+        }
+
+        ans <- GRanges(ans_seqnames,
                        ranges(x, use.names=use.names),
                        strand(x),
                        seqinfo=seqinfo(x))

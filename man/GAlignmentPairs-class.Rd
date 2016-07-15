@@ -25,7 +25,6 @@
 \alias{last,GAlignmentPairs-method}
 \alias{seqnames,GAlignmentPairs-method}
 \alias{strand,GAlignmentPairs-method}
-\alias{strand<-,GAlignmentPairs-method}
 \alias{njunc,GAlignmentPairs-method}
 \alias{isProperPair}
 \alias{isProperPair,GAlignmentPairs-method}
@@ -56,25 +55,23 @@
 \title{GAlignmentPairs objects}
 
 \description{
-  The GAlignmentPairs class is a container for \emph{genomic alignment pairs}.
-
-  IMPORTANT NOTE: The GAlignmentPairs container only supports pairs where the
-  2 alignments are on the same chromosome at the moment.
+  The GAlignmentPairs class is a container for storing \emph{pairs of genomic
+  alignments}. These pairs are typically obtained by aligning paired-end reads
+  to a reference genome or transcriptome.
 }
 
 \details{
-  A GAlignmentPairs object is a list-like object where each element
-  describes a pair of genomic alignment.
+  A GAlignmentPairs object is a list-like object where each list element
+  represents a pair of genomic alignment.
 
-  An "alignment pair" is made of a "first" and a "last"/"second" alignment,
-  and is formally represented by a \link{GAlignments} object of
-  length 2. It is typically representing a hit of a paired-end read to
-  the reference genome that was used by the aligner. More precisely,
-  in a given pair, the "first" alignment represents the hit of the first
-  end of the read (aka "first segment in the template", using SAM Spec
-  terminology), and the "last" alignment represents the hit of the second
-  end of the read (aka "last segment in the template", using SAM Spec
-  terminology).
+  An \emph{alignment pair} is made of a "first" and a "last"/"second"
+  alignment, and is formally represented by a \link{GAlignments} object of
+  length 2. In most applications, an \emph{alignment pair} will represent
+  an aligned paired-end read. In that case, the "first" member of the pair
+  represents the alignment of the first end of the read (aka "first segment
+  in the template", using SAM Spec terminology), and the "last" member of
+  the pair represents the alignment of the second end of the read (aka "last
+  segment in the template", using SAM Spec terminology).
 
   In general, a GAlignmentPairs object will be created by loading
   records from a BAM (or SAM) file containing aligned paired-end reads,
@@ -141,7 +138,7 @@
     }
     \item{}{
       \code{first(x, real.strand=FALSE)},
-      \code{last(x, real.strand=FALSE)}:
+      \code{last(x, real.strand=FALSE)},
       \code{second(x, real.strand=FALSE)}:
       Get the "first" or "last"/"second" alignment for each alignment pair in
       \code{x}. The result is a \link{GAlignments} object of the same length
@@ -158,17 +155,22 @@
     }
     \item{}{
       \code{seqnames(x)}:
-      Get the name of the reference sequence for each alignment pair
-      in \code{x}. When reading the alignments from a BAM file, this comes
-      from the RNAME field which has the same value for the 2 records in a
-      pair (\code{\link{readGAlignmentPairs}}, the function used for reading
-      paired-end reads from a BAM file as a GAlignmentPairs object, rejects
-      pairs with incompatible RNAME values).
+      Get the sequence names of the pairs in \code{x} i.e. the name of the
+      reference sequence for each alignment pair in \code{x}. The sequence
+      name of a pair is the sequence name of the 2 alignments in the pair
+      if they are the same (\emph{concordant seqnames}), or NA if they differ
+      (\emph{discordant seqnames}).
+
+      The sequence names are returned in a factor-\link[S4Vectors]{Rle}
+      object that is \emph{parallel} to \code{x}, i.e. the i-th element in
+      the returned object is the sequence name of the i-th pair in \code{x}.
     }
     \item{}{
-      \code{strand(x)}, \code{strand(x) <- value}:
-      Get or set the strand for each alignment pair in \code{x}.
-      Obeys \code{strandMode(x)} above to infer the strand of a pair.
+      \code{strand(x)}:
+      Get the strand for each alignment pair in \code{x}.
+      Obey \code{strandMode(x)} above to infer the strand of a pair.
+      Return \code{*} for pairs with \emph{discordant strand}, or for
+      all pairs if \code{strandMode(x)} is 0.
     }
     \item{}{
       \code{njunc(x)}:
@@ -263,14 +265,25 @@
 
   \describe{
     \item{}{
-      \code{granges(x, use.names=TRUE, use.mcols=FALSE)},
-      \code{ranges(x, use.names=TRUE, use.mcols=FALSE)}:
+      \code{granges(x, use.names=TRUE, use.mcols=FALSE,
+                       on.discordant.seqnames=c("error", "drop", "split"))},
+      \code{ranges(x, use.names=TRUE, use.mcols=FALSE,
+                      on.discordant.seqnames=c("error", "drop", "split"))}:
 
       Return a \link{GRanges} object (for \code{granges()}) or
-      \link[IRanges]{IRanges}) object (for \code{ranges()}) \emph{parallel}
-      to \code{x} where the i-th element is the range of the genomic region
-      spanned by the i-th alignment in \code{x}. All gaps in the region are
-      ignored.
+      \link[IRanges]{IRanges}) object (for \code{ranges()}).
+
+      If \code{x} contains no pairs with \emph{discordant seqnames}, the
+      operation is guaranteed to be successful and to return an object
+      \emph{parallel} to \code{x}, that is, an object where the i-th element
+      is the range of the genomic region spanned by the i-th alignment in
+      \code{x} (all gaps in the region are ignored).
+
+      If \code{x} contains pairs with discordant seqnames, then an error
+      is raised, unless the \code{on.discordant.seqnames} argument is set
+      to \code{"drop"} or \code{"split"}, in which case the pairs with
+      discordant seqnames are either dropped or represented with 2 genomic
+      ranges (or 2 ranges for \code{ranges()}) in the returned object.
 
       If \code{use.names} is TRUE, then the names on \code{x} 
       (if any) are propagated to the returned object.

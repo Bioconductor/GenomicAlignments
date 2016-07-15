@@ -199,9 +199,8 @@ IntersectionNotEmpty(features, reads, ignore.strand=FALSE,
 
     When \code{fragments=FALSE}, data are read with
     \code{\link{readGAlignmentPairs}} and returned in a \code{GAlignmentPairs}
-    class. This class only holds \sQuote{mated pairs} from opposite strands;
-    same-strand pairs singletons, reads with unmapped pairs and other fragments
-    are dropped.
+    class. In this case, singletons, reads with unmapped pairs, and other
+    fragments, are dropped.
 
     When \code{fragments=TRUE}, data are read with
     \code{\link{readGAlignmentsList}} and returned in a \code{GAlignmentsList}
