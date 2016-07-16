@@ -284,6 +284,7 @@
       to \code{"drop"} or \code{"split"}, in which case the pairs with
       discordant seqnames are either dropped or represented with 2 genomic
       ranges (or 2 ranges for \code{ranges()}) in the returned object.
+      In that case, the returned object is NOT \emph{parallel} to \code{x}.
 
       If \code{use.names} is TRUE, then the names on \code{x} 
       (if any) are propagated to the returned object.
