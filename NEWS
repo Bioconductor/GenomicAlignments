@@ -1,3 +1,52 @@
+CHANGES IN VERSION 1.10.0
+-------------------------
+
+NEW FEATURES
+
+    o The GAlignmentPairs container now supports pairs with discordant strand
+      and/or seqnames. The "granges" and "ranges" methods for GAlignmentPairs
+      objects get new argument 'on.discordant.seqnames' to let the user control
+      how to handle pairs with discordant seqnames.
+      See ?GAlignmentPairs for more information.
+
+    o Add "invertStrand" method for GAlignmentPairs objects.
+
+    o Add 'use.names' argument to the "ranges", "granges", "grglist" and
+      "rglist" methods for GAlignments and GAlignmentsList objects.
+
+    o Add 'use.names' argument to the "granges" and "grglist" methods for
+      GAlignmentPairs objects.
+
+    o Add "ranges" method for GAlignmentPairs objects.
+
+SIGNIFICANT USER-LEVEL CHANGES
+
+    o The 'at' argument of pileLettersAt() is now expected to be a GPos object
+      (GRanges still accepted).
+
+    o 50x speed-up of the granges() extractor for GAlignmentPairs object. The
+      improvement is based on a suggestion by Arne Muller. 
+
+DEPRECATED AND DEFUNCT
+
+    o Remove left() and right() generics and methods (were defunct in BioC 3.3).
+
+    o Remove 'invert.strand' argument from "first" and "last" methods for
+      GAlignmentPairs objects (was defunct in BioC 3.3).
+
+    o Remove strand() setter for GAlignmentPairs objects (was defunct in BioC
+      3.3).
+
+    o Remove 'order.as.in.query' argument from "grglist" method for
+      GAlignmentPairs objects and from "grglist" and "rglist" methods for
+      GAlignmentsList objects (was defunct in BioC 3.3).
+
+BUG FIXES
+
+    o Fix 'use.names=FALSE' in "grglist" and "rglist" methods for
+      GAlignmentsList objects.
+
+
 CHANGES IN VERSION 1.8.0
 ------------------------
 
