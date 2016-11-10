@@ -15,7 +15,7 @@ test_GAlignments_seqlevels <- function()
 
     ## Drop
     gal <- gal0
-    seqlevels(gal, force=TRUE) <- "chr2"
+    seqlevels(gal, pruning.mode="coarse") <- "chr2"
     checkIdentical("chr2", seqlevels(gal))
 
     ## Rename

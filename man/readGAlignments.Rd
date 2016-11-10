@@ -410,7 +410,7 @@ bam <- untreated1_chr4()
 library(TxDb.Dmelanogaster.UCSC.dm3.ensGene)
 txdb <- TxDb.Dmelanogaster.UCSC.dm3.ensGene
 ex <- exons(txdb)
-seqlevels(ex, force=TRUE) <- "chr4"
+seqlevels(ex, pruning.mode="coarse") <- "chr4"
 length(ex)
 
 ## Some of the exons overlap with each other:

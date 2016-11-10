@@ -380,7 +380,7 @@ th_junctions <- readTopHatJunctions(junctions_file)
 ## Comparing the "TopHat junctions" with the result of
 ## summarizeJunctions():
 th_junctions14 <- th_junctions
-seqlevels(th_junctions14, force=TRUE) <- "chr14"
+seqlevels(th_junctions14, pruning.mode="coarse") <- "chr14"
 mcols(th_junctions14)$intron_strand <- strand(th_junctions14)
 strand(th_junctions14) <- "*"
 
