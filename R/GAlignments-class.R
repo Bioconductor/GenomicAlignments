@@ -139,30 +139,41 @@ setReplaceMethod("strand", "GAlignments",
     }
 )
 
-setReplaceMethod("seqinfo", "GAlignments",
+### Does NOT suppoprt pruning mode "fine". Pruning modes "coarse" and "tidy"
+### are equivalent on a GAlignments object.
+### FIXME: This repeats most of the code in
+###        GenomicRanges:::set_GenomicRanges_seqinfo!
+set_GAlignments_seqinfo <-
     function(x, new2old=NULL, force=FALSE,
              pruning.mode=c("error", "coarse", "fine", "tidy"),
              value)
-    {
-        if (!is(value, "Seqinfo"))
-            stop("the supplied 'seqinfo' must be a Seqinfo object")
-        dangling_seqlevels <- GenomeInfoDb:::getDanglingSeqlevels(x,
-                                  new2old=new2old, force=force,
-                                  pruning.mode=pruning.mode,
-                                  seqlevels(value))
-        if (length(dangling_seqlevels) != 0L)
-            x <- x[!(seqnames(x) %in% dangling_seqlevels)]
-        old_seqinfo <- seqinfo(x)
-        x@seqnames <- GenomeInfoDb:::makeNewSeqnames(x,
-                                  new2old, seqlevels(value))
-        x@seqinfo <- value
-        geom_has_changed <- GenomeInfoDb:::sequenceGeometryHasChanged(
-                                  seqinfo(x), old_seqinfo, new2old=new2old)
-        if (any(geom_has_changed, na.rm=TRUE))
-            validObject(x)
-        x
+{
+    pruning.mode <- match.arg(pruning.mode)
+    if (pruning.mode == "fine")
+        stop(wmsg("\"fine\" pruning mode not supported on ",
+                  class(x), "objects"))
+    if (!is(value, "Seqinfo"))
+        stop("the supplied 'seqinfo' must be a Seqinfo object")
+    dangling_seqlevels <- GenomeInfoDb:::getDanglingSeqlevels(x,
+                              new2old=new2old, force=force,
+                              pruning.mode=pruning.mode,
+                              seqlevels(value))
+    if (length(dangling_seqlevels) != 0L) {
+        ## Prune 'x'.
+        non_dangling_range <- !(seqnames(x) %in% dangling_seqlevels)
+        x <- x[non_dangling_range]
     }
-)
+    old_seqinfo <- seqinfo(x)
+    x@seqnames <- GenomeInfoDb:::makeNewSeqnames(x,
+                              new2old, seqlevels(value))
+    x@seqinfo <- value
+    geom_has_changed <- GenomeInfoDb:::sequenceGeometryHasChanged(
+                              seqinfo(x), old_seqinfo, new2old=new2old)
+    if (any(geom_has_changed, na.rm=TRUE))
+        validObject(x)
+    x
+}
+setReplaceMethod("seqinfo", "GAlignments", set_GAlignments_seqinfo)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
