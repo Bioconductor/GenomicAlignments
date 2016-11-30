@@ -17,8 +17,10 @@ setMethod("junctions", "GAlignments",
     {
         if (!isTRUEorFALSE(use.mcols))
             stop("'use.mcols' must be TRUE or FALSE")
-        grl <- grglist(x, order.as.in.query=TRUE)
-        ans <- psetdiff(granges(x), grl)
+        rgl <- cigarRangesAlongReferenceSpace(cigar(x), pos=start(x), ops="N")
+        names(rgl) <- names(x)
+        ans <- CompressedIRangesListToGRangesList(rgl, seqnames(x), strand(x),
+                                                       seqinfo(x))
         if (use.mcols)
             mcols(ans) <- mcols(x)
         ans

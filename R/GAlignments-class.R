@@ -346,11 +346,13 @@ setMethod("update", "GAlignments",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Helper function used by higher level coercion functions.
+### Internal helper function used by higher level coercion functions.
+###
+### NOT exported.
 ###
 
 ### Names are propagated via 'x@partitioning' ('x' is a CompressedIRangesList).
-.CompressedIRangesListToGRangesList <- function(x, seqnames, strand, seqinfo)
+CompressedIRangesListToGRangesList <- function(x, seqnames, strand, seqinfo)
 {
     x_eltNROWS <- elementNROWS(x)
     seqnames <- rep.int(seqnames, x_eltNROWS)
@@ -410,8 +412,8 @@ setMethod("grglist", "GAlignments",
                          use.mcols=use.mcols,
                          order.as.in.query=order.as.in.query,
                          drop.D.ranges=drop.D.ranges)
-        .CompressedIRangesListToGRangesList(rgl, seqnames(x), strand(x),
-                                                 seqinfo(x))
+        CompressedIRangesListToGRangesList(rgl, seqnames(x), strand(x),
+                                                seqinfo(x))
     }
 )
 
