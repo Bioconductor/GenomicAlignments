@@ -229,7 +229,7 @@
 ### FIXME: this makes this function more of an 'introns' than a .gaps.
 ### FIXME: this breaks when the GRangesList is not ordered by position
         if (!is.null(mcols(x)$query.break)) {
-          insert_gaps <- split(ranges(.insertGaps(x)), seq_len(length(x)))
+          insert_gaps <- as(ranges(.insertGaps(x)), "RangesList")
           gaps <- setdiff(gaps, insert_gaps)
         }
 
