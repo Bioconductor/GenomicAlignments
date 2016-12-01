@@ -239,3 +239,79 @@ setMethod("show", "OverlapEncodings",
     }
 )
 
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Detection of "splice compatible" overlaps.
+###
+
+build_compatible_encoding_subpatterns <- function(njunc)
+{
+    ## Each "atom" must match exactly 1 code in the encoding.
+    ATOM0 <- "[fgij]"
+    if (njunc == 0L)
+        return(ATOM0)
+    #ntimes <- function(atom, n) rep.int(atom, n)
+    ntimes <- function(atom, n) {
+        if (n == 1L) atom else c(atom, "{", n, "}")
+    }
+    LEFT_ATOM <- "[jg]"
+    MIDDLE_ATOM <- "g"
+    RIGHT_ATOM <- "[gf]"
+    WILDCARD_ATOM <- "[^:-]"
+    sapply(seq_len(njunc + 1L),
+           function(i) {
+               if (i == 1L) {
+                   atoms <- c(LEFT_ATOM, ntimes(WILDCARD_ATOM, njunc))
+               } else if (i == njunc + 1L) {
+                   atoms <- c(ntimes(WILDCARD_ATOM, njunc), RIGHT_ATOM)
+               } else {
+                   atoms <- c(ntimes(WILDCARD_ATOM, i-1L),
+                              MIDDLE_ATOM,
+                              ntimes(WILDCARD_ATOM, njunc-i+1L))
+               }
+               paste0(atoms, collapse="")
+           })
+}
+
+.build_compatible_encoding_pattern <- function(max.njunc)
+{
+    subpatterns <- sapply(0:max.njunc,
+        function(njunc)
+            paste0(build_compatible_encoding_subpatterns(njunc), collapse=":")
+    )
+    paste0(":(", paste0(subpatterns, collapse="|"), "):")
+}
+
+### 'x' must be a character vector of single-end encodings.
+.is_compatible_with_splicing <- function(x)
+{
+    if (!is.character(x))
+        stop("'x' must be a character vector")
+    max.njunc <- max(c(0L, .njunc_single_end_encodings(x)))
+    pattern <- .build_compatible_encoding_pattern(max.njunc)
+    setNames(grepl(pattern, x), names(x))
+}
+
+setGeneric("isCompatibleWithSplicing",
+    function(x) standardGeneric("isCompatibleWithSplicing")
+)
+
+setMethod("isCompatibleWithSplicing", "character",
+    function(x)
+    {
+        halves <- encodingHalves(x, single.end.on.left=TRUE,
+                                    single.end.on.right=TRUE)
+        ans1 <- .is_compatible_with_splicing(halves[[1L]])
+        ans2 <- .is_compatible_with_splicing(halves[[2L]])
+        ans1 & ans2
+    }
+)
+
+setMethod("isCompatibleWithSplicing", "factor",
+    function(x) isCompatibleWithSplicing(levels(x))[as.integer(x)]
+)
+
+setMethod("isCompatibleWithSplicing", "OverlapEncodings",
+    function(x) isCompatibleWithSplicing(encoding(x))
+)
+

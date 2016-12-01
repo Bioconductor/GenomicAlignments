@@ -14,11 +14,6 @@
 
 \alias{selectEncodingWithCompatibleStrand}
 
-\alias{isCompatibleWithSplicing}
-\alias{isCompatibleWithSplicing,character-method}
-\alias{isCompatibleWithSplicing,factor-method}
-\alias{isCompatibleWithSplicing,OverlapEncodings-method}
-
 \alias{isCompatibleWithSkippedExons}
 \alias{isCompatibleWithSkippedExons,character-method}
 \alias{isCompatibleWithSkippedExons,factor-method}
@@ -72,7 +67,6 @@ flipQuery(x, i)
 selectEncodingWithCompatibleStrand(ovencA, ovencB,
                                    query.strand, subject.strand, hits=NULL)
 
-isCompatibleWithSplicing(x)
 isCompatibleWithSkippedExons(x, max.skipped.exons=NA)
 
 extractSteppedExonRanks(x, for.query.right.end=FALSE)
@@ -124,10 +118,9 @@ extractQueryStartInTranscript(query, subject, hits=NULL, ovenc=NULL,
   \item{x}{
     For \code{flipQuery}: a \link[GenomicRanges]{GRangesList} object.
 
-    For \code{isCompatibleWithSplicing}, \code{isCompatibleWithSkippedExons},
-    \code{extractSteppedExonRanks}, \code{extractSpannedExonRanks}, and
-    \code{extractSkippedExonRanks}: an \link{OverlapEncodings} object,
-    a factor, or a character vector.
+    For \code{isCompatibleWithSkippedExons}, \code{extractSteppedExonRanks},
+    \code{extractSpannedExonRanks}, and \code{extractSkippedExonRanks}:
+    an \link{OverlapEncodings} object, a factor, or a character vector.
   }
   \item{i}{
     Subscript specifying the elements in \code{x} to flip. If missing, all
@@ -173,8 +166,8 @@ extractQueryStartInTranscript(query, subject, hits=NULL, ovenc=NULL,
 
   For \code{selectEncodingWithCompatibleStrand}: TODO
 
-  For \code{isCompatibleWithSplicing} and \code{isCompatibleWithSkippedExons}:
-  A logical vector \emph{parallel} to \code{x}.
+  For \code{isCompatibleWithSkippedExons}: A logical vector \emph{parallel}
+  to \code{x}.
 
   For \code{extractSteppedExonRanks}, \code{extractSpannedExonRanks}, and
   \code{extractSkippedExonRanks}: TODO
@@ -234,17 +227,6 @@ subject <- IRangesList(tx)
 ovenc <- encodeOverlaps(query, subject)
 ovenc
 encoding(ovenc)
-
-## Reads that are "compatible" with the transcript can be detected with
-## a regular expression (the regular expression below assumes that
-## reads have at most 2 junctions):
-regex0 <- "(:[fgij]:|:[jg].:.[gf]:|:[jg]..:.g.:..[gf]:)"
-grepl(regex0, encoding(ovenc))  # read4 is NOT "compatible"
-
-## This was for illustration purpose only. In practise you don't need
-## (and should not) use this regular expression, but use instead the
-## isCompatibleWithSplicing() utility function:
-isCompatibleWithSplicing(ovenc)
 
 ## ---------------------------------------------------------------------
 ## B. BETWEEN 2 GRangesList OBJECTS

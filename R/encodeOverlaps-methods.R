@@ -272,7 +272,7 @@ flipQuery <- function(x, i)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Should we use a generic + methods for this?
+### Should we use generic + methods for this?
 ###
 
 .get_GRanges_spaces <- function(x)
@@ -359,122 +359,13 @@ selectEncodingWithCompatibleStrand <- function(ovencA, ovencB,
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### isCompatibleWithSplicing().
-###
-
-.build_compatible_encoding_patterns <- function(njunc)
-{
-    ## Each "atom" must match exactly 1 code in the encoding.
-    ATOM0 <- "[fgij]"
-    if (njunc == 0L)
-        return(ATOM0)
-    #ntimes <- function(atom, n) rep.int(atom, n)
-    ntimes <- function(atom, n) {
-        if (n == 1L) atom else c(atom, "{", n, "}")
-    }
-    LEFT_ATOM <- "[jg]"
-    MIDDLE_ATOM <- "g"
-    RIGHT_ATOM <- "[gf]"
-    WILDCARD_ATOM <- "[^:-]"
-    sapply(seq_len(njunc + 1L),
-           function(i) {
-               if (i == 1L) {
-                   atoms <- c(LEFT_ATOM, ntimes(WILDCARD_ATOM, njunc))
-               } else if (i == njunc + 1L) {
-                   atoms <- c(ntimes(WILDCARD_ATOM, njunc), RIGHT_ATOM)
-               } else {
-                   atoms <- c(ntimes(WILDCARD_ATOM, i-1L),
-                              MIDDLE_ATOM,
-                              ntimes(WILDCARD_ATOM, njunc-i+1L))
-               }
-               paste0(atoms, collapse="")
-           })
-}
-
-setGeneric("isCompatibleWithSplicing",
-    function(x) standardGeneric("isCompatibleWithSplicing")
-)
-
-.build_CompatibleWithSplicing_pattern0 <- function(max.njunc1,
-                                                   max.Lnjunc, max.Rnjunc)
-{
-    ## Subpattern for single-end reads.
-    subpattern1 <- sapply(0:max.njunc1,
-                     function(njunc)
-                       paste0(.build_compatible_encoding_patterns(njunc),
-                              collapse=":"))
-    subpattern1 <- paste0(":(", paste0(subpattern1, collapse="|"), "):")
-
-    ## Subpattern for paired-end reads.
-    Lsubpattern <- sapply(0:max.Lnjunc,
-                     function(njunc)
-                       paste0(":",
-                              .build_compatible_encoding_patterns(njunc),
-                              "-",
-                              collapse="-[^:-]*"))
-    Lsubpattern <- paste0("(", paste0(Lsubpattern, collapse="|"), ")")
-
-    Rsubpattern <- sapply(0:max.Rnjunc,
-                     function(njunc)
-                       paste0("-",
-                              .build_compatible_encoding_patterns(njunc),
-                              ":",
-                              collapse="[^:-]*-"))
-    Rsubpattern <- paste0("(", paste0(Rsubpattern, collapse="|"), ")")
-
-    LRsubpattern <- paste0(Lsubpattern, ".*", Rsubpattern)
-
-    ## Final pattern.
-    paste0("(", subpattern1, "|", LRsubpattern, ")")
-}
-
-.build_CompatibleWithSplicing_pattern <- function(x)
-{
-    njunc <- njunc(x)
-    Lnjunc <- Lnjunc(x)
-    Rnjunc <- Rnjunc(x)
-    max.njunc1 <- max(c(0L, njunc[is.na(Lnjunc)]))
-    max.Lnjunc <- max(c(0L, Lnjunc), na.rm=TRUE)
-    max.Rnjunc <- max(c(0L, Rnjunc), na.rm=TRUE)
-    .build_CompatibleWithSplicing_pattern0(max.njunc1, max.Lnjunc, max.Rnjunc)
-}
-
-.isCompatibleWithSplicing <- function(x)
-{
-    if (!is.character(x))
-        stop("'x' must be a character vector")
-    pattern <- .build_CompatibleWithSplicing_pattern(x)
-    grepl(pattern, x)
-}
-
-.whichCompatibleWithSplicing <- function(x)
-{
-    if (!is.character(x))
-        stop("'x' must be a character vector")
-    pattern <- .build_CompatibleWithSplicing_pattern(x)
-    grep(pattern, x)
-}
-
-setMethod("isCompatibleWithSplicing", "character", .isCompatibleWithSplicing)
-
-setMethod("isCompatibleWithSplicing", "factor",
-    function(x)
-    {
-        if (length(x) == 0L)
-            return(logical(0))
-        idx <- .whichCompatibleWithSplicing(levels(x))
-        as.integer(x) %in% idx
-    }
-)
-
-setMethod("isCompatibleWithSplicing", "OverlapEncodings",
-    function(x) isCompatibleWithSplicing(encoding(x))
-)
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### isCompatibleWithSkippedExons().
 ###
+
+### FIXME: Revisit this and make sure it's doing the right thing for
+### paired-end encodings. Maybe look at isCompatibleWithSplicing() for some
+### inspiration (used to suffer from similar issue on paired-end encodings but
+### was refactored).
 
 setGeneric("isCompatibleWithSkippedExons", signature="x",
     function(x, max.skipped.exons=NA)
@@ -493,7 +384,7 @@ setGeneric("isCompatibleWithSkippedExons", signature="x",
                                    ":(...:)*", ":(....:)*")
     subpattern1 <- sapply(0:max.njunc1,
                      function(njunc)
-                       paste0(.build_compatible_encoding_patterns(njunc),
+                       paste0(build_compatible_encoding_subpatterns(njunc),
                               collapse=skipped_exons_subpatterns[njunc+1L]))
     subpattern1 <- paste0(":(", paste0(subpattern1, collapse="|"), "):")
 
@@ -501,7 +392,7 @@ setGeneric("isCompatibleWithSkippedExons", signature="x",
     Lsubpattern <- sapply(0:max.Lnjunc,
                      function(njunc)
                        paste0(":",
-                              .build_compatible_encoding_patterns(njunc),
+                              build_compatible_encoding_subpatterns(njunc),
                               "-",
                               collapse=".*"))
     Lsubpattern <- paste0("(", paste0(Lsubpattern, collapse="|"), ")")
@@ -509,7 +400,7 @@ setGeneric("isCompatibleWithSkippedExons", signature="x",
     Rsubpattern <- sapply(0:max.Rnjunc,
                      function(njunc)
                        paste0("-",
-                              .build_compatible_encoding_patterns(njunc),
+                              build_compatible_encoding_subpatterns(njunc),
                               ":",
                               collapse=".*"))
     Rsubpattern <- paste0("(", paste0(Rsubpattern, collapse="|"), ")")
@@ -539,18 +430,7 @@ setGeneric("isCompatibleWithSkippedExons", signature="x",
         stop("'x' must be a character vector")
     pattern1 <- .build_CompatibleWithSkippedExons_pattern(x,
                                                           max.skipped.exons)
-    pattern2 <- .build_CompatibleWithSplicing_pattern(x)
-    grepl(pattern1, x) & !grepl(pattern2, x)
-}
-
-.whichCompatibleWithSkippedExons <- function(x, max.skipped.exons=NA)
-{
-    if (!is.character(x))
-        stop("'x' must be a character vector")
-    pattern1 <- .build_CompatibleWithSkippedExons_pattern(x,
-                                                          max.skipped.exons)
-    pattern2 <- .build_CompatibleWithSplicing_pattern(x)
-    setdiff(grep(pattern1, x), grep(pattern2, x))
+    grepl(pattern1, x) & !isCompatibleWithSplicing(x)
 }
 
 setMethod("isCompatibleWithSkippedExons", "character",
@@ -560,11 +440,9 @@ setMethod("isCompatibleWithSkippedExons", "character",
 setMethod("isCompatibleWithSkippedExons", "factor",
     function(x, max.skipped.exons=NA)
     {
-        if (length(x) == 0L)
-            return(logical(0))
-        idx <- .whichCompatibleWithSkippedExons(levels(x),
-                        max.skipped.exons=max.skipped.exons)
-        as.integer(x) %in% idx
+        ok <- isCompatibleWithSkippedExons(levels(x),
+                                           max.skipped.exons=max.skipped.exons)
+        ok[as.integer(x)]
     }
 )
 
@@ -620,7 +498,7 @@ setMethod("isCompatibleWithSkippedExons", "OverlapEncodings",
         if (for.query.right.end)
             stop("cannot use 'for.query.right.end=TRUE' ",
                  "on single-end encoding: ", encoding)
-        encoding_patterns <- .build_compatible_encoding_patterns(njunc)
+        encoding_patterns <- build_compatible_encoding_subpatterns(njunc)
         return(.extractSteppedExonRanksFromEncodingBlocks(encoding_blocks,
                                                           encoding_patterns))
     }
@@ -631,10 +509,10 @@ setMethod("isCompatibleWithSkippedExons", "OverlapEncodings",
     if (!all(elementNROWS(encoding_blocks) == 2L))  # should never happen
         stop(encoding, ": invalid encoding")
     encoding_blocks <- matrix(unlist(encoding_blocks, use.names=FALSE), nrow=2L)
-    Lencoding_patterns <- .build_compatible_encoding_patterns(njunc[1L])
+    Lencoding_patterns <- build_compatible_encoding_subpatterns(njunc[1L])
     Lranks <- .extractSteppedExonRanksFromEncodingBlocks(encoding_blocks[1L, ],
                                                          Lencoding_patterns)
-    Rencoding_patterns <- .build_compatible_encoding_patterns(njunc[2L])
+    Rencoding_patterns <- build_compatible_encoding_subpatterns(njunc[2L])
     Rranks <- .extractSteppedExonRanksFromEncodingBlocks(encoding_blocks[2L, ],
                                                          Rencoding_patterns)
     if (length(Lranks) == 0L || length(Rranks) == 0L ||

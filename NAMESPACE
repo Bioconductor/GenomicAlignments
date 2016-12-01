@@ -153,6 +153,7 @@ export(
     ## OverlapEncodings-class.R:
     Loffset, Roffset, flippedQuery,
     encodingHalves,
+    isCompatibleWithSplicing,
 
     ## readGAlignments.R:
     readGAlignments,
@@ -168,7 +169,6 @@ export(
 
     ## encodeOverlaps-methods.R:
     encodeOverlaps,
-    isCompatibleWithSplicing,
     isCompatibleWithSkippedExons,
     extractSteppedExonRanks,
     extractSpannedExonRanks,
@@ -195,6 +195,7 @@ exportMethods(
     qseq,
     Loffset, Roffset, flippedQuery,
     encodingHalves,
+    isCompatibleWithSplicing,
     readGAlignments,
     readGAlignmentPairs,
     readGAlignmentsList,
@@ -202,7 +203,6 @@ exportMethods(
     junctions,
     qnarrow,
     encodeOverlaps,
-    isCompatibleWithSplicing,
     isCompatibleWithSkippedExons,
     extractSteppedExonRanks,
     extractSpannedExonRanks,

@@ -19,8 +19,8 @@ setMethod("junctions", "GAlignments",
             stop("'use.mcols' must be TRUE or FALSE")
         rgl <- cigarRangesAlongReferenceSpace(cigar(x), pos=start(x), ops="N")
         names(rgl) <- names(x)
-        ans <- CompressedIRangesListToGRangesList(rgl, seqnames(x), strand(x),
-                                                       seqinfo(x))
+        ans <- make_GRangesList_from_CompressedIRangesList(rgl,
+                                seqnames(x), strand(x), seqinfo(x))
         if (use.mcols)
             mcols(ans) <- mcols(x)
         ans

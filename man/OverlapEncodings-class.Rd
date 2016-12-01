@@ -31,6 +31,11 @@
 \alias{as.data.frame,OverlapEncodings-method}
 \alias{show,OverlapEncodings-method}
 
+\alias{isCompatibleWithSplicing}
+\alias{isCompatibleWithSplicing,character-method}
+\alias{isCompatibleWithSplicing,factor-method}
+\alias{isCompatibleWithSplicing,OverlapEncodings-method}
+
 
 \title{OverlapEncodings objects}
 
@@ -65,6 +70,8 @@ Rencoding(x, ...)
 
 Lnjunc(x, single.end.on.left=FALSE)
 Rnjunc(x, single.end.on.right=FALSE)
+
+isCompatibleWithSplicing(x)
 }
 
 \arguments{
@@ -236,6 +243,22 @@ Rnjunc(x, single.end.on.right=FALSE)
       return \code{njunc(Lencoding(xi))}, \code{njunc(Rencoding(xi))},
       and \code{Lnjunc(xi) + Rnjunc(xi)}, respectively.
     }
+    \item{}{
+      \code{isCompatibleWithSplicing(x)}:
+      Returns a logical vector \emph{parallel} to \code{x} indicating whether
+      the corresponding encoding describes a \emph{splice compatible} overlap
+      i.e. an overlap that is compatible with the splicing of the transcript.
+
+      WARNING: For paired-end encodings, \code{isCompatibleWithSplicing}
+      considers that the encoding is \emph{splice compatible} if its
+      2 halves are \emph{splice compatible}. This can produce false positives
+      if for example the right end of the alignment is located upstream of the
+      left end in transcript space. The paired-end read could not come from
+      this transcript. To eliminate these false positives, one would need to
+      have access and look at the position of the left and right ends in
+      transcript space. This can be done with
+      \link{\code{extractQueryStartInTranscript}}. 
+    }
   }
 }
 \author{Hervé Pagès}
@@ -298,6 +321,21 @@ Lnjunc(encodings)
 Lnjunc(encodings, single.end.on.left=TRUE)
 Rnjunc(encodings)
 Rnjunc(encodings, single.end.on.right=TRUE)
+
+## ---------------------------------------------------------------------
+## C. DETECTION OF "SPLICE COMPATIBLE" OVERLAPS
+## ---------------------------------------------------------------------
+
+## Reads that are compatible with the splicing of the transcript can
+## be detected with a regular expression (the regular expression below
+## assumes that reads have at most 2 junctions):
+regex0 <- "(:[fgij]:|:[jg].:.[gf]:|:[jg]..:.g.:..[gf]:)"
+grepl(regex0, encoding(ovenc))  # read4 is NOT "compatible"
+
+## This was for illustration purpose only. In practise you don't need
+## (and should not) use this regular expression, but use instead the
+## isCompatibleWithSplicing() utility function:
+isCompatibleWithSplicing(ovenc)
 }
 
 \keyword{methods}

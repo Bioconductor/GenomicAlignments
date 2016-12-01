@@ -352,7 +352,8 @@ setMethod("update", "GAlignments",
 ###
 
 ### Names are propagated via 'x@partitioning' ('x' is a CompressedIRangesList).
-CompressedIRangesListToGRangesList <- function(x, seqnames, strand, seqinfo)
+make_GRangesList_from_CompressedIRangesList <- function(x, seqnames, strand,
+                                                           seqinfo)
 {
     x_eltNROWS <- elementNROWS(x)
     seqnames <- rep.int(seqnames, x_eltNROWS)
@@ -412,8 +413,8 @@ setMethod("grglist", "GAlignments",
                          use.mcols=use.mcols,
                          order.as.in.query=order.as.in.query,
                          drop.D.ranges=drop.D.ranges)
-        CompressedIRangesListToGRangesList(rgl, seqnames(x), strand(x),
-                                                seqinfo(x))
+        make_GRangesList_from_CompressedIRangesList(rgl,
+                         seqnames(x), strand(x), seqinfo(x))
     }
 )
 
