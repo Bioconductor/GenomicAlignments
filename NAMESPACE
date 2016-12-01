@@ -103,6 +103,8 @@ export(
     GAlignmentsList,
     GappedReads,
 
+    Lencoding, Rencoding, Lnjunc, Rnjunc,
+
     findMateAlignment, findMateAlignment2,
     makeGAlignmentPairs,
     getDumpedAlignments, countDumpedAlignments, flushDumpedAlignments,
@@ -150,7 +152,7 @@ export(
 
     ## OverlapEncodings-class.R:
     Loffset, Roffset, flippedQuery,
-    Lencoding, Rencoding, Lnjunc, Rnjunc,
+    encodingHalves,
 
     ## readGAlignments.R:
     readGAlignments,
@@ -192,7 +194,7 @@ exportMethods(
     first, last, strandMode, "strandMode<-", isProperPair,
     qseq,
     Loffset, Roffset, flippedQuery,
-    Lencoding, Rencoding, Lnjunc, Rnjunc,
+    encodingHalves,
     readGAlignments,
     readGAlignmentPairs,
     readGAlignmentsList,

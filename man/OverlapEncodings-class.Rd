@@ -16,26 +16,16 @@
 \alias{flippedQuery}
 \alias{flippedQuery,OverlapEncodings-method}
 
+\alias{encodingHalves}
+\alias{encodingHalves,character-method}
+\alias{encodingHalves,factor-method}
+\alias{encodingHalves,OverlapEncodings-method}
 \alias{Lencoding}
-\alias{Lencoding,character-method}
-\alias{Lencoding,factor-method}
-\alias{Lencoding,OverlapEncodings-method}
 \alias{Rencoding}
-\alias{Rencoding,character-method}
-\alias{Rencoding,factor-method}
-\alias{Rencoding,OverlapEncodings-method}
 
-\alias{njunc,character-method}
-\alias{njunc,factor-method}
-\alias{njunc,OverlapEncodings-method}
 \alias{Lnjunc}
-\alias{Lnjunc,character-method}
-\alias{Lnjunc,factor-method}
-\alias{Lnjunc,OverlapEncodings-method}
 \alias{Rnjunc}
-\alias{Rnjunc,character-method}
-\alias{Rnjunc,factor-method}
-\alias{Rnjunc,OverlapEncodings-method}
+\alias{njunc,ANY-method}
 
 \alias{as.data.frame.OverlapEncodings}
 \alias{as.data.frame,OverlapEncodings-method}
@@ -51,7 +41,7 @@
 }
 
 \usage{
-## OverlapEncodings accessors:
+## -=-= OverlapEncodings getters =-=-
 
 \S4method{length}{OverlapEncodings}(x)
 \S4method{Loffset}{OverlapEncodings}(x)
@@ -60,42 +50,52 @@
 \S4method{levels}{OverlapEncodings}(x)
 \S4method{flippedQuery}{OverlapEncodings}(x)
 
-\S4method{Lencoding}{OverlapEncodings}(x)
-\S4method{Rencoding}{OverlapEncodings}(x)
-
-\S4method{njunc}{OverlapEncodings}(x)
-\S4method{Lnjunc}{OverlapEncodings}(x)
-\S4method{Rnjunc}{OverlapEncodings}(x)
-
-## Coercing an OverlapEncodings object:
+## -=-= Coercing an OverlapEncodings object =-=-
 
 \S4method{as.data.frame}{OverlapEncodings}(x, row.names=NULL, optional=FALSE, ...)
 
-## Low-level related utilities:
+## -=-= Low-level encoding utilities =-=-
 
-\S4method{Lencoding}{character}(x)
-\S4method{Rencoding}{character}(x)
-\S4method{njunc}{character}(x)
-\S4method{Lnjunc}{character}(x)
-\S4method{Rnjunc}{character}(x)
+encodingHalves(x, single.end.on.left=FALSE, single.end.on.right=FALSE,
+                  as.factors=FALSE)
+Lencoding(x, ...)
+Rencoding(x, ...)
 
-\S4method{Lencoding}{factor}(x)
-\S4method{Rencoding}{factor}(x)
-\S4method{njunc}{factor}(x)
-\S4method{Lnjunc}{factor}(x)
-\S4method{Rnjunc}{factor}(x)
+\S4method{njunc}{ANY}(x)
+
+Lnjunc(x, single.end.on.left=FALSE)
+Rnjunc(x, single.end.on.right=FALSE)
 }
 
 \arguments{
   \item{x}{
-    An OverlapEncodings object. For the low-level utilities, \code{x} can also
-    be a character vector or factor containing encodings.
+    An OverlapEncodings object. For the low-level encoding utilities, \code{x}
+    can also be a character vector or factor containing encodings.
   }
   \item{row.names}{
     \code{NULL} or a character vector.
   }
-  \item{optional, ...}{
+  \item{optional}{
     Ignored.
+  }
+  \item{...}{
+    Extra arguments passed to the \code{as.data.frame} method for
+    OverlapEncodings objects are ignored.
+
+    Extra arguments passed to \code{Lencoding} or \code{Rencoding} are
+    passed down to \code{encodingHalves}.
+  }
+  \item{single.end.on.left, single.end.on.right}{
+    By default the 2 halves of a single-end encoding are considered to be NAs.
+    If \code{single.end.on.left} (resp. \code{single.end.on.right}) is
+    \code{TRUE}, then the left (resp. right) half of a single-end encoding
+    is considered to be the unmodified encoding.
+  }
+  \item{as.factors}{
+    By default \code{encodingHalves} returns the 2 encoding halves
+    as a list of 2 character vectors parallel to the input.
+    If \code{as.factors} is \code{TRUE}, then it returns them as a
+    list of 2 factors parallel to the input.
   }
 }
 
@@ -118,7 +118,7 @@
   \code{vignette("OverlapEncodings")}.
 }
 
-\section{OverlapEncodings accessors}{
+\section{OverlapEncodings getters}{
   In the following code snippets, \code{x} is an OverlapEncodings object
   typically obtained by a call to \code{\link{encodeOverlaps}(query, subject)}.
 
@@ -183,31 +183,7 @@
       Note that this flipping generally affects the "left offset",
       "right offset", in addition to the encoding itself.
     }
-    \item{}{
-      \code{Lencoding(x)}, \code{Rencoding(x)}:
-      Extract the "left encodings" and "right encodings" of paired-end
-      encodings.
-
-      Paired-end encodings are obtained by encoding paired-end overlaps
-      i.e. overlaps between paired-end reads and transcripts (typically).
-      The difference between a single-end encoding and a paired-end encoding
-      is that all the blocks in the latter contain a \code{"--"} separator
-      to mark the separation between the "left encoding" and the "right
-      encoding".
-
-      See the "Overlap encodings" vignette located in this package
-      for examples of paired-end encodings.
-    }
-    \item{}{
-      \code{njunc(x)}, \code{Lnjunc(x)}, \code{Rnjunc(x)}:
-      Extract the number of junctions in each encoding by looking at their
-      first block (aka special block).
-      If an element \code{xi} in \code{x} is a paired-end encoding,
-      then \code{Lnjunc(xi)}, \code{Rnjunc(xi)}, and \code{njunc(xi)},
-      return \code{njunc(Lencoding(xi))}, \code{njunc(Rencoding(xi))},
-      and \code{Lnjunc(xi) + Rnjunc(xi)}, respectively.
-    }
-  }
+  }   
 }
 
 \section{Coercing an OverlapEncodings object}{
@@ -222,6 +198,46 @@
   }
 }
 
+\section{Low-level encoding utilities}{
+  In the following code snippets, \code{x} can be an OverlapEncodings object,
+  or a character vector or factor containing encodings.
+
+  \describe{
+    \item{}{
+      \code{encodingHalves(x, single.end.on.left=FALSE, single.end.on.right=FALSE, as.factors=FALSE)}:
+      Extract the 2 halves of paired-end encodings and return them as a list
+      of 2 character vectors (or 2 factors) parallel to the input.
+
+      Paired-end encodings are obtained by encoding paired-end overlaps
+      i.e. overlaps between paired-end reads and transcripts (typically).
+      The difference between a single-end encoding and a paired-end encoding
+      is that all the blocks in the latter contain a \code{"--"} separator
+      to mark the separation between the "left encoding" and the "right
+      encoding".
+
+      See examples below and the "Overlap encodings" vignette located in this
+      package for examples of paired-end encodings.
+    }
+    \item{}{
+      \code{Lencoding(x, ...)}, \code{Rencoding(x, ...)}:
+      Extract the "left encodings" and "right encodings" of paired-end
+      encodings.
+
+      Equivalent to \code{encodingHalves(x, ...)[[1]]} and
+      \code{encodingHalves(x, ...)[[2]]}, respectively.
+    }
+    \item{}{
+      \code{njunc(x)}, \code{Lnjunc(x, single.end.on.left=FALSE)},
+      \code{Rnjunc(x, single.end.on.right=FALSE)}:
+      Extract the number of junctions in each encoding by looking at their
+      first block (aka special block).
+      If an element \code{xi} in \code{x} is a paired-end encoding,
+      then \code{Lnjunc(xi)}, \code{Rnjunc(xi)}, and \code{njunc(xi)},
+      return \code{njunc(Lencoding(xi))}, \code{njunc(Rencoding(xi))},
+      and \code{Lnjunc(xi) + Rnjunc(xi)}, respectively.
+    }
+  }
+}
 \author{Hervé Pagès}
 
 \seealso{
@@ -241,6 +257,10 @@
 }
 
 \examples{
+## ---------------------------------------------------------------------
+## A. BASIC MANIPULATION OF AN OverlapEncodings OBJECT
+## ---------------------------------------------------------------------
+
 example(encodeOverlaps)  # to generate the 'ovenc' object
 
 length(ovenc)
@@ -254,6 +274,30 @@ njunc(ovenc)
 
 as.data.frame(ovenc)
 njunc(levels(ovenc))
+
+## ---------------------------------------------------------------------
+## B. WORKING WITH PAIRED-END ENCODINGS (POSSIBLY MIXED WITH SINGLE-END
+##    ENCODINGS)
+## ---------------------------------------------------------------------
+
+encodings <- c("4:jmmm:agmm:aagm:aaaf:", "3--1:jmm--b:agm--i:")
+
+encodingHalves(encodings)
+encodingHalves(encodings, single.end.on.left=TRUE)
+encodingHalves(encodings, single.end.on.right=TRUE)
+encodingHalves(encodings, single.end.on.left=TRUE,
+                          single.end.on.right=TRUE)
+
+Lencoding(encodings)
+Lencoding(encodings, single.end.on.left=TRUE)
+Rencoding(encodings)
+Rencoding(encodings, single.end.on.right=TRUE)
+
+njunc(encodings)
+Lnjunc(encodings)
+Lnjunc(encodings, single.end.on.left=TRUE)
+Rnjunc(encodings)
+Rnjunc(encodings, single.end.on.right=TRUE)
 }
 
 \keyword{methods}

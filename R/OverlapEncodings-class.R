@@ -16,7 +16,7 @@ setClass("OverlapEncodings",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Slot getters.
+### Getters.
 ###
 
 setGeneric("Loffset", function(x) standardGeneric("Loffset"))
@@ -39,182 +39,147 @@ setMethod("length", "OverlapEncodings", function(x) length(encoding(x)))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The Lencoding() and Rencoding() getters.
+### The encodingHalves(), Lencoding() and Rencoding() low-level utilities.
 ###
 
-.extract_LRencoding_from_encoding_levels <- function(x, L.or.R)
+.split_encoding_halves <- function(x, single.end.on.left=FALSE,
+                                      single.end.on.right=FALSE,
+                                      as.factors=FALSE)
 {
     if (!is.character(x))
         stop("'x' must be a character vector")
-    if (length(x) == 0L)
-        return(character(0))
-    encoding_blocks <- strsplit(x, ":", fixed=TRUE)
-    nblock <- elementNROWS(encoding_blocks)
-    tmp <- strsplit(unlist(encoding_blocks, use.names=FALSE), "--", fixed=TRUE)
-    tmp_eltNROWS <- elementNROWS(tmp)
-    tmp_is_single_end <- tmp_eltNROWS == 1L
-    tmp_is_paired_end <- tmp_eltNROWS == 2L
-    nblock1 <- sum(LogicalList(relist(tmp_is_single_end, encoding_blocks)))
-    nblock2 <- sum(LogicalList(relist(tmp_is_paired_end, encoding_blocks)))
-    is_single_end_encoding <- nblock1 == nblock
-    is_paired_end_encoding <- nblock2 == nblock
-    if (!all(is_single_end_encoding | nblock1 == 0L) ||
-        !all(is_paired_end_encoding | nblock2 == 0L) ||
-        !all(is_single_end_encoding | is_paired_end_encoding))
-        stop("'x' contains ill-formed encodings")
-    any_single_end <- any(is_single_end_encoding)
-    any_paired_end <- any(is_paired_end_encoding)
-    if (any_single_end && any_paired_end)
-        warning("'x' contains a mix of single-end and paired-end encodings")
-    ans <- character(length(x))
-    ans[] <- NA_character_
-    if (any_paired_end) {
-        tmp2 <- unlist(tmp[tmp_is_paired_end], use.names=FALSE)
-        encodings_blocks2 <- encoding_blocks[is_paired_end_encoding]
-        if (identical(L.or.R, "L")) {
-            tmp2 <- tmp2[c(TRUE, FALSE)]
-        } else if (identical(L.or.R, "R")) {
-            tmp2 <- tmp2[c(FALSE, TRUE)]
-        } else {
-            stop("invalid supplied 'L.or.R' argument")
-        }
-        ans2 <- sapply(relist(tmp2, encodings_blocks2),
-                       function(blocks) paste(blocks, collapse=":"))
-        ans[is_paired_end_encoding] <- paste(ans2, ":", sep="")
+    if (!isTRUEorFALSE(single.end.on.left))
+        stop("'single.end.on.left' must be TRUE or FALSE")
+    if (!isTRUEorFALSE(single.end.on.right))
+        stop("'single.end.on.right' must be TRUE or FALSE")
+    if (!isTRUEorFALSE(as.factors))
+        stop("'as.factors' must be TRUE or FALSE")
+
+    encoding_blocks <- CharacterList(strsplit(x, ":", fixed=TRUE))
+    unlisted_blocks <- unlist(encoding_blocks, use.names=FALSE)
+    block_halves <- CharacterList(strsplit(unlisted_blocks, "--", fixed=TRUE))
+
+    ## Check that the blocks in any given encoding are either all single-end
+    ## or all paired-end.
+    nhalves <- unique(relist(elementNROWS(block_halves), encoding_blocks))
+    if (any(elementNROWS(nhalves) != 1L))
+        stop("some encodings are ill-formed")
+    nhalves <- as.integer(nhalves)
+    if (any(nhalves > 2L))
+        stop("some encodings are ill-formed")
+
+    halves2encoding <- function(halves, skeleton) {
+        blocks <- relist(as.character(halves), skeleton)
+        encoding <- unstrsplit(blocks, sep=":")
+        if (length(encoding) != 0L)
+            encoding <- setNames(paste0(encoding, ":"), names(encoding))
+        encoding
     }
-    ans
+
+    Lencoding <- halves2encoding(phead(block_halves, n=1L), encoding_blocks)
+    Rencoding <- halves2encoding(ptail(block_halves, n=1L), encoding_blocks)
+    if (!(single.end.on.left && single.end.on.right)) {
+        idx <- which(nhalves == 1L)
+        if (!single.end.on.left)
+            Lencoding[idx] <- NA_character_
+        if (!single.end.on.right)
+            Rencoding[idx] <- NA_character_
+    }
+    if (as.factors) {
+        Lencoding <- factor(Lencoding, levels=unique(Lencoding))
+        Rencoding <- factor(Rencoding, levels=unique(Rencoding))
+    }
+    list(Lencoding, Rencoding)
 }
 
-setGeneric("Lencoding", function(x) standardGeneric("Lencoding"))
-setGeneric("Rencoding", function(x) standardGeneric("Rencoding"))
-
-setMethod("Lencoding", "character",
-    function(x) .extract_LRencoding_from_encoding_levels(x, L.or.R="L")
-)
-setMethod("Rencoding", "character",
-    function(x) .extract_LRencoding_from_encoding_levels(x, L.or.R="R")
+setGeneric("encodingHalves", signature="x",
+    function(x, single.end.on.left=FALSE, single.end.on.right=FALSE,
+                as.factors=FALSE)
+        standardGeneric("encodingHalves")
 )
 
-setMethod("Lencoding", "factor",
-    function(x)
+setMethod("encodingHalves", "character", .split_encoding_halves)
+
+setMethod("encodingHalves", "factor",
+    function(x, single.end.on.left=FALSE, single.end.on.right=FALSE,
+                as.factors=FALSE)
     {
-        levels_Lencoding <- Lencoding(levels(x))
-        factor(levels_Lencoding)[as.integer(x)]
+        levels_halves <- encodingHalves(levels(x),
+                             single.end.on.left=single.end.on.left,
+                             single.end.on.right=single.end.on.right,
+                             as.factors=as.factors)
+        x <- as.integer(x)
+        list(levels_halves[[1L]][x], levels_halves[[2L]][x])
     }
 )
-setMethod("Rencoding", "factor",
-    function(x)
+setMethod("encodingHalves", "OverlapEncodings",
+    function(x, single.end.on.left=FALSE, single.end.on.right=FALSE,
+                as.factors=FALSE)
     {
-        levels_Rencoding <- Rencoding(levels(x))
-        factor(levels_Rencoding)[as.integer(x)]
+        encodingHalves(encoding(x),
+                       single.end.on.left=single.end.on.left,
+                       single.end.on.right=single.end.on.right,
+                       as.factors=as.factors)
     }
 )
 
-setMethod("Lencoding", "OverlapEncodings", function(x) Lencoding(encoding(x)))
-setMethod("Rencoding", "OverlapEncodings", function(x) Rencoding(encoding(x)))
+Lencoding <- function(x, ...) encodingHalves(x, ...)[[1L]]
+Rencoding <- function(x, ...) encodingHalves(x, ...)[[2L]]
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The njunc(), Lnjunc(), and Rnjunc() getters.
+### The njunc(), Lnjunc(), and Rnjunc() low-level utilities.
 ###
 
-.extract_njunc_from_encoding_levels <- function(x, L.or.R=NA)
+### 'x' must be a character vector of single-end encodings.
+.njunc_single_end_encodings <- function(x)
 {
     if (!is.character(x))
         stop("'x' must be a character vector")
-    if (length(x) == 0L)
-        return(integer(0))
-    tmp <- strsplit(sub(":.*", "", x), "--", fixed=TRUE)
-    tmp_eltNROWS <- elementNROWS(tmp)
-    is_single_end_encoding <- tmp_eltNROWS == 1L
-    is_paired_end_encoding <- tmp_eltNROWS == 2L
-    if (!all(is_single_end_encoding | is_paired_end_encoding))
-        stop("'x' contains ill-formed encodings")
-    any_single_end <- any(is_single_end_encoding)
-    any_paired_end <- any(is_paired_end_encoding)
-    if (any_single_end && any_paired_end)
-        warning("'x' contains a mix of single-end and paired-end encodings")
-    ans <- integer(length(x))
-    if (any_single_end) {
-        if (identical(L.or.R, NA)) {
-            tmp1 <- tmp[is_single_end_encoding]
-            njunc1 <- suppressWarnings(
-                          as.integer(unlist(tmp1, use.names=FALSE))
-                      )
-            if (any(is.na(njunc1)))
-                stop("'x' contains ill-formed encodings")
-            njunc1 <- njunc1 - 1L
-            if (min(njunc1) < 0L)
-                warning("some encodings in 'x' have a negative number ",
-                        "of junctions")
-        } else {
-            njunc1 <- NA_integer_
-        }
-        ans[is_single_end_encoding] <- njunc1
-    }
-    if (any_paired_end) {
-        tmp2 <- tmp[is_paired_end_encoding]
-        njunc2 <- suppressWarnings(as.integer(unlist(tmp2, use.names=FALSE)))
-        if (any(is.na(njunc2)))
-            stop("'x' contains ill-formed encodings")
-        njunc2 <- njunc2 - 1L
-        if (min(njunc2) < 0L)
-            warning("some encodings in 'x' have a negative number ",
-                    "of junctions")
-        Lnjunc2 <- njunc2[c(TRUE, FALSE)]
-        Rnjunc2 <- njunc2[c(FALSE, TRUE)]
-        if (identical(L.or.R, NA)) {
-            njunc2 <- Lnjunc2 + Rnjunc2
-        } else if (identical(L.or.R, "L")) {
-            njunc2 <- Lnjunc2
-        } else if (identical(L.or.R, "R")) {
-            njunc2 <- Rnjunc2
-        } else {
-            stop("invalid supplied 'L.or.R' argument")
-        }
-        ans[is_paired_end_encoding] <- njunc2
-    }
-    ans
+    old_warn <- getOption("warn")
+    options(warn=2L)
+    on.exit(options(warn=old_warn))
+    M <- try(as.integer(sub(":.*", "", x)), silent=TRUE)
+    if (inherits(M, "try-error"))
+        stop("some encodings are ill-formed")
+    options(warn=old_warn)
+    if (any(M < 1L, na.rm=TRUE))
+        warning(wmsg("some encodings start with a value < 1 and that is ",
+                     "interpreted as a negative number of junctions)"))
+    setNames(M - 1L, names(x))
 }
 
-setGeneric("Lnjunc", function(x) standardGeneric("Lnjunc"))
-setGeneric("Rnjunc", function(x) standardGeneric("Rnjunc"))
+Lnjunc <- function(x, single.end.on.left=FALSE)
+{
+    Lencoding <- Lencoding(x, single.end.on.left=single.end.on.left,
+                              as.factors=TRUE)
+    .njunc_single_end_encodings(levels(Lencoding))[as.integer(Lencoding)]
+}
 
-setMethod("njunc", "character",
-    function(x) .extract_njunc_from_encoding_levels(x)
-)
-setMethod("Lnjunc", "character",
-    function(x) .extract_njunc_from_encoding_levels(x, L.or.R="L")
-)
-setMethod("Rnjunc", "character",
-    function(x) .extract_njunc_from_encoding_levels(x, L.or.R="R")
-)
+Rnjunc <- function(x, single.end.on.right=FALSE)
+{
+    Rencoding <- Rencoding(x, single.end.on.right=single.end.on.right,
+                              as.factors=TRUE)
+    .njunc_single_end_encodings(levels(Rencoding))[as.integer(Rencoding)]
+}
 
-setMethod("njunc", "factor",
+### We make this the default "njunc" method although it will only work on
+### objects supported by encodingHalves() (which is called behind the scene),
+### that is, for character, factor, and OverlapEncodings objects. So instead
+### of defining 3 "njunc" methods (one for each type of object supported by
+### encodingHalves()), we define a single one for expediency. Another advantage
+### of this approach is that if, in the future, encodingHalves() is extended to
+### support more types of objects, then njunc() will work out-of-the-box on
+### them i.e. with no need to define additional "njunc" methods.
+setMethod("njunc", "ANY",
     function(x)
     {
-        levels_njunc <- njunc(levels(x))
-        levels_njunc[as.integer(x)]
+        Lnjunc <- Lnjunc(x, single.end.on.left=TRUE)
+        Rnjunc <- Rnjunc(x)
+        Rnjunc[is.na(Rnjunc)] <- 0L
+        Lnjunc + Rnjunc
     }
 )
-setMethod("Lnjunc", "factor",
-    function(x)
-    {
-        levels_Lnjunc <- Lnjunc(levels(x))
-        levels_Lnjunc[as.integer(x)]
-    }
-)
-setMethod("Rnjunc", "factor",
-    function(x)
-    {
-        levels_Rnjunc <- Rnjunc(levels(x))
-        levels_Rnjunc[as.integer(x)]
-    }
-)
-
-setMethod("njunc", "OverlapEncodings", function(x) njunc(encoding(x)))
-setMethod("Lnjunc", "OverlapEncodings", function(x) Lnjunc(encoding(x)))
-setMethod("Rnjunc", "OverlapEncodings", function(x) Rnjunc(encoding(x)))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
