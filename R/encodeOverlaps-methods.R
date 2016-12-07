@@ -482,10 +482,10 @@ setMethod("isCompatibleWithSkippedExons", "OverlapEncodings",
 }
 
 ### 'encoding' must be a single encoding.
-### Returns a sorted integer vector, unnamed and strictly sorted if single-end
-### read, named and not necessarily strictly sorted if paired-end read (last
-### exon stepped by the left end can be the same as first exon stepped by right
-### end).
+### Returns an integer vector. If the encoding is single-end then the vector
+### is unnamed and strictly sorted. If it's paired-end then it's made of the
+### concatenation of the 2 strictly sorted integer vectors that correspond to
+### each end. In that case the vector is named.
 .extractSteppedExonRanks <- function(encoding, for.query.right.end=FALSE)
 {
     if (!isTRUEorFALSE(for.query.right.end))
@@ -515,12 +515,6 @@ setMethod("isCompatibleWithSkippedExons", "OverlapEncodings",
     Rencoding_patterns <- build_compatible_encoding_subpatterns(njunc[2L])
     Rranks <- .extractSteppedExonRanksFromEncodingBlocks(encoding_blocks[2L, ],
                                                          Rencoding_patterns)
-    if (length(Lranks) == 0L || length(Rranks) == 0L ||
-        Lranks[length(Lranks)] > Rranks[1L]) {
-        ranks <- integer(0)
-        names(ranks) <- character(0)
-        return(ranks)
-    }
     if (for.query.right.end)
         return(Rranks)  # unnamed! (like for a single-end read)
     names(Rranks) <- rep.int("R", length(Rranks))
@@ -748,16 +742,14 @@ extractQueryStartInTranscript <- function(query, subject,
             stop("'ovenc' must be an OverlapEncodings object")
         if (length(ovenc) != length(query))
             stop("when not NULL, 'ovenc' must have the same length ",
-                 "as 'hits', if specified, otherwiseaas 'query'")
+                 "as 'hits', if specified, otherwise as 'query'")
     }
     if (!isTRUEorFALSE(for.query.right.end))
         stop("'for.query.right.end' must be TRUE or FALSE")
 
     query <- flipQuery(query, flippedQuery(ovenc))
 
-    ## Extract start/end/strand of the first range
-    ## in each top-level element of 'query'.
-    qii1 <- start(query@partitioning)
+    ## Extract first range from each list element of 'query'.
     if (for.query.right.end) {
         query.break <- mcols(query)$query.break
         if (is.null(query.break))
@@ -766,11 +758,16 @@ extractQueryStartInTranscript <- function(query, subject,
                  "indicating for each paired-end read the position of the ",
                  "break between the ranges coming from one end and those ",
                  "coming from the other end")
-        qii1 <- qii1 + query.break
+        query <- ptail(query, n=-query.break)
     }
-    query_start1 <- start(query@unlistData)[qii1]
-    query_end1 <- end(query@unlistData)[qii1]
-    query_strand1 <- as.factor(strand(query@unlistData))[qii1]
+    query1 <- unlist(phead(query, n=1L), use.names=FALSE)
+    ## A sanity check.
+    if (length(query1) != length(query)) 
+        stop("some list elements in 'query' are empty")
+
+    query_start1 <- start(query1)
+    query_end1 <- end(query1)
+    query_strand1 <- as.factor(strand(query1))
 
     ## Extract start/end/strand of the first spanned exon
     ## in each top-level element of 'subject'.
