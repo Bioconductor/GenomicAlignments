@@ -48,7 +48,6 @@
 \usage{
 ## -=-= OverlapEncodings getters =-=-
 
-\S4method{length}{OverlapEncodings}(x)
 \S4method{Loffset}{OverlapEncodings}(x)
 \S4method{Roffset}{OverlapEncodings}(x)
 \S4method{encoding}{OverlapEncodings}(x)
