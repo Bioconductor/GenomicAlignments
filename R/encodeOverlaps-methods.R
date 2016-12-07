@@ -159,7 +159,7 @@ findRangesOverlaps <- function(query, subject)
                                        subject.spaces,
                                        hits, flip.query)
     }
-    encoding <- factor(C_ans$encoding, levels=unique(C_ans$encoding))
+    encoding <- as.factor(C_ans$encoding)
     new2("OverlapEncodings", Loffset=C_ans$Loffset, Roffset=C_ans$Roffset,
                              encoding=encoding, flippedQuery=flip.query,
                              check=FALSE)
