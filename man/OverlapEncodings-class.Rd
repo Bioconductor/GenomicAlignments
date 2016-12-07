@@ -256,7 +256,7 @@ isCompatibleWithSplicing(x)
       this transcript. To eliminate these false positives, one would need to
       have access and look at the position of the left and right ends in
       transcript space. This can be done with
-      \link{\code{extractQueryStartInTranscript}}. 
+      \code{\link{extractQueryStartInTranscript}}. 
     }
   }
 }
