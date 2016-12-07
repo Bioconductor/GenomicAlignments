@@ -5,7 +5,7 @@
 \alias{OverlapEncodings-class}
 \alias{OverlapEncodings}
 
-\alias{length,OverlapEncodings-method}
+\alias{parallelSlotNames,OverlapEncodings-method}
 \alias{Loffset}
 \alias{Loffset,OverlapEncodings-method}
 \alias{Roffset}

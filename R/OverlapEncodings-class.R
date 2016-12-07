@@ -16,6 +16,18 @@ setClass("OverlapEncodings",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### parallelSlotNames()
+###
+
+### Combine the new parallel slots with those of the parent class. Make sure
+### to put the new parallel slots *first*.
+setMethod("parallelSlotNames", "OverlapEncodings",
+    function(x) c("Loffset", "Roffset", "encoding", "flippedQuery",
+                  callNextMethod())
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Getters.
 ###
 
@@ -34,8 +46,6 @@ setMethod("levels", "OverlapEncodings", levels.OverlapEncodings)
 
 setGeneric("flippedQuery", function(x) standardGeneric("flippedQuery"))
 setMethod("flippedQuery", "OverlapEncodings", function(x) x@flippedQuery)
-
-setMethod("length", "OverlapEncodings", function(x) length(encoding(x)))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -205,38 +215,62 @@ setMethod("as.data.frame", "OverlapEncodings", as.data.frame.OverlapEncodings)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### "show" method.
+### Displaying
 ###
+
+.make_naked_matrix_from_OverlapEncodings <- function(x)
+{
+    x_len <- length(x)
+    x_mcols <- mcols(x)
+    x_nmc <- if (is.null(x_mcols)) 0L else ncol(x_mcols)
+    ans <- cbind(Loffset=as.character(Loffset(x)),
+                 Roffset=as.character(Roffset(x)),
+                 encoding=as.character(encoding(x)),
+                 flippedQuery=as.character(flippedQuery(x)))
+    if (x_nmc > 0L) {
+        tmp <- do.call(data.frame, c(lapply(x_mcols, showAsCell),
+                                     list(check.names=FALSE)))
+        ans <- cbind(ans, `|`=rep.int("|", x_len), as.matrix(tmp))
+    }
+    ans
+}
+
+showOverlapEncodings <- function(x, margin="", print.classinfo=FALSE)
+{
+    x_class <- class(x)
+    x_len <- length(x)
+    x_mcols <- mcols(x)
+    x_nmc <- if (is.null(x_mcols)) 0L else ncol(x_mcols)
+    cat(classNameForDisplay(x), " object of length ", x_len,
+        " with ",
+        x_nmc, " metadata column", ifelse(x_nmc == 1L, "", "s"),
+        ":\n", sep="")
+    out <- S4Vectors:::makePrettyMatrixForCompactPrinting(x,
+                           .make_naked_matrix_from_OverlapEncodings)
+    if (print.classinfo) {
+        .COL2CLASS <- c(
+            Loffset="integer",
+            Roffset="integer",
+            encoding="factor",
+            flippedQuery="logical"
+        )
+        classinfo <- S4Vectors:::makeClassinfoRowForCompactPrinting(x,
+                                     .COL2CLASS)
+        ## A sanity check, but this should never happen!
+        stopifnot(identical(colnames(classinfo), colnames(out)))
+        out <- rbind(classinfo, out)
+    }
+    if (nrow(out) != 0L)
+        rownames(out) <- paste0(margin, rownames(out))
+    ## We set 'max' to 'length(out)' to avoid the getOption("max.print")
+    ## limit that would typically be reached when 'showHeadLines' global
+    ## option is set to Inf.
+    print(out, quote=FALSE, right=TRUE, max=length(out))
+}
 
 setMethod("show", "OverlapEncodings",
     function(object)
-    {
-        lo <- length(object)
-        cat(class(object), " object of length ", lo, "\n", sep="")
-        if (lo == 0L)
-            return(NULL)
-        if (lo < 20L) {
-            showme <-
-              as.data.frame(object,
-                            row.names=paste("[", seq_len(lo), "]", sep=""))
-        } else {
-            sketch <- function(x)
-              c(as.character(head(x, n=9L)),
-                "...",
-                as.character(tail(x, n=9L)))
-            showme <-
-              data.frame(Loffset=sketch(Loffset(object)),
-                         Roffset=sketch(Roffset(object)),
-                         encoding=sketch(encoding(object)),
-                         flippedQuery=sketch(flippedQuery(object)),
-                         row.names=c(paste("[", 1:9, "]", sep=""), "...",
-                                     paste("[", (lo-8L):lo, "]", sep="")),
-                         check.rows=TRUE,
-                         check.names=FALSE,
-                         stringsAsFactors=FALSE)
-        }
-        show(showme)
-    }
+        showOverlapEncodings(object, margin="  ", print.classinfo=TRUE)
 )
 
 

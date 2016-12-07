@@ -54,7 +54,10 @@ exportMethods(
 
     ## Generics defined in BiocGenerics:
     start, end, width, strand, invertStrand,
- 
+
+    ## Generics defined in S4Vectors:
+    parallelSlotNames,
+
     ## Generics defined in IRanges:
     relistToClass,
     narrow,
