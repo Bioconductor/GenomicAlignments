@@ -52,6 +52,13 @@
 % "show" method:
 \alias{show,GAlignments-method}
 
+% Comparison/ordering:
+\alias{pcompare,GAlignments,GAlignments-method}
+\alias{is.unsorted,GAlignments-method}
+\alias{order,GAlignments-method}
+\alias{sort,GAlignments-method}
+\alias{rank,GAlignments-method}
+
 
 \title{GAlignments objects}
 

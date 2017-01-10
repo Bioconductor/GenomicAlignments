@@ -711,3 +711,56 @@ setMethod("c", "GAlignments",
     }
 )
 
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Comparing/ordering.
+###
+
+setMethod("pcompare", c("GAlignments", "GAlignments"),
+    function(x, y)
+    {
+        x <- granges(x, use.names=FALSE)
+        y <- granges(y, use.names=FALSE)
+        callGeneric(x, y)
+    }
+)
+
+setMethod("is.unsorted", "GAlignments",
+    function(x, na.rm=FALSE, strictly=FALSE, ...) 
+    {
+        x <- granges(x, use.names=FALSE)
+        callGeneric()
+    }
+)
+
+setMethod("order", "GAlignments",
+    function(..., na.last=TRUE, decreasing=FALSE,
+                  method=c("auto", "shell", "radix"))
+    {
+        args <- list(...)
+        order_args <- c(lapply(args, granges, use.names=FALSE),
+                        list(na.last=na.last, decreasing=decreasing,
+                             method=method))
+        do.call(order, order_args)
+    }
+)
+
+setMethod("sort", "GAlignments",
+    function(x, decreasing=FALSE, ...)
+    {
+        oo <- GenomicRanges:::order_GenomicRanges(x, decreasing=decreasing,
+                                                      ...)
+        extractROWS(x, oo)
+    }
+)
+
+setMethod("rank", "GAlignments",
+    function(x, na.last=TRUE,
+             ties.method=c("average", "first", "last", "random", "max", "min"),
+             ...)
+    {
+        x <- granges(x, use.names=FALSE)
+        callGeneric()
+    }
+)
+

@@ -53,10 +53,11 @@ exportMethods(
     c,
 
     ## Generics defined in BiocGenerics:
+    is.unsorted, order, sort, rank,
     start, end, width, strand, invertStrand,
 
     ## Generics defined in S4Vectors:
-    parallelSlotNames,
+    parallelSlotNames, pcompare,
 
     ## Generics defined in IRanges:
     relistToClass,
