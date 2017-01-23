@@ -46,7 +46,7 @@ static void CharAE_append_int(CharAE *char_ae, int d)
 		error("GenomicAlignments internal error "
 		      "in CharAE_append_int(): "
 		      "output of snprintf() was truncated");
-	append_string_to_CharAE(char_ae, buf);
+	CharAE_append_string(char_ae, buf);
 	return;
 }
 
