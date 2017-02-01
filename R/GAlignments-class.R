@@ -6,12 +6,13 @@
 setClass("GAlignments",
     contains="Vector",
     representation(
-        NAMES="characterORNULL",      # R doesn't like @names !!
+        NAMES="character_OR_NULL",    # R doesn't like @names !!
         seqnames="Rle",               # 'factor' Rle
         start="integer",              # POS field in SAM
         cigar="character",            # extended CIGAR (see SAM format specs)
         strand="Rle",                 # 'factor' Rle
-        #mismatches="characterORNULL", # see MD optional field in SAM format specs
+        #mismatches="character_OR_NULL", # see MD optional field in SAM format
+                                         #specs
         elementMetadata="DataFrame",
         seqinfo="Seqinfo"
     ),

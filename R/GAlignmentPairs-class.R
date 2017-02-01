@@ -11,7 +11,7 @@ setClass("GAlignmentPairs",
     contains="List",
     representation(
         strandMode="integer",         # single integer (0L, 1L, or 2L)
-        NAMES="characterORNULL",      # R doesn't like @names !!
+        NAMES="character_OR_NULL",    # R doesn't like @names !!
         first="GAlignments",          # of length N, no names, no elt metadata
         last="GAlignments",           # of length N, no names, no elt metadata
         isProperPair="logical",       # of length N
