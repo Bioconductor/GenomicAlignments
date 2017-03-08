@@ -114,7 +114,7 @@ work properly on paired-end reads where the 2 ends overlap!
 }
 
 \author{
-  Michael Lawrence and Valerie Obenchain <vobencha@fredhutch.org> 
+  Michael Lawrence and Valerie Obenchain <Valerie.Obenchain@RoswellPark.org> 
 }
  
 \seealso{

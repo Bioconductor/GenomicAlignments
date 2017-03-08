@@ -306,7 +306,7 @@ IntersectionNotEmpty(features, reads, ignore.strand=FALSE,
   \url{http://www-huber.embl.de/users/anders/HTSeq/doc/count.html}
 }
 
-\author{Valerie Obenchain <vobencha@fredhutch.org>}
+\author{Valerie Obenchain <Valerie.Obenchain@RoswellPark.org>}
 
 \seealso{
   \itemize{
