@@ -105,7 +105,10 @@ setMethod("first", "GAlignmentPairs",
     {
         if (!isTRUEorFALSE(real.strand))
             stop("'real.strand' must be TRUE or FALSE")
-        ans <- setNames(x@first, names(x))
+        ans <- x@first
+        x_names <- names(x)
+        if (!is.null(x_names))
+            ans <- setNames(ans, x_names)
         if (real.strand && strandMode(x) != 1L)
             strand(ans) <- .first_strand(x, real.strand=TRUE)
         ans
@@ -121,7 +124,10 @@ setMethod("second", "GAlignmentPairs",
     {
         if (!isTRUEorFALSE(real.strand))
             stop("'real.strand' must be TRUE or FALSE")
-        ans <- setNames(x@last, names(x))
+        ans <- x@last
+        x_names <- names(x)
+        if (!is.null(x_names))
+            ans <- setNames(ans, x_names)
         if (real.strand && strandMode(x) != 2L)
             strand(ans) <- .last_strand(x, real.strand=TRUE)
         ans
