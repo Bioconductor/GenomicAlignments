@@ -304,13 +304,13 @@
       \code{grglist(first(x, real.strand=TRUE), order.as.in.query=TRUE)} and
       \code{grglist(last(x, real.strand=TRUE), order.as.in.query=TRUE)},
       respectively, then the i-th element in the returned \link{GRangesList}
-      object is \code{c(grl1[[i]], grl2[[i]])}, if \code{strandMode(x)} is 1,
-      or \code{c(grl2[[i]], grl1[[i]])}, if \code{strandMode(x)} is 2.
+      object is \code{c(grl1[[i]], grl2[[i]])} if \code{strandMode(x)} is 0
+      or 1, or \code{c(grl2[[i]], grl1[[i]])} if \code{strandMode(x)} is 2.
 
-      Note that this results in the ranges being \emph{always} ordered
-      consistently with the original "query template", that is, being in the
-      order defined by walking the "query template" from the beginning to
-      the end.
+      Note that, if \code{strandMode(x)} is 1 or 2, this results in the ranges
+      being in consistent order with the original "query template", that is,
+      being in the order defined by walking the "query template" from the
+      beginning to the end.
 
       If \code{use.names} is TRUE, then the names on \code{x} 
       (if any) are propagated to the returned object.

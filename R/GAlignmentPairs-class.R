@@ -594,8 +594,6 @@ shrinkByHalf <- function(x)
     ans
 }
 
-### FIXME: Behavior is currently undefined (and undocumented) when
-### strandMode(x) is 0. Fix this!
 setMethod("grglist", "GAlignmentPairs",
     function(x, use.names=TRUE, use.mcols=FALSE, drop.D.ranges=FALSE)
     {
@@ -608,12 +606,19 @@ setMethod("grglist", "GAlignmentPairs",
             stop("'mcols(x)' cannot have reserved column \"query.break\"")
         x_first <- x@first
         x_last <- x@last
-        if (strandMode(x) == 1L) {
+        if (strandMode(x) == 0L) {
+            x_first <- unstrand(x_first)
+            x_last <- unstrand(x_last)
+            x_unlisted <- c(x_first, x_last)
+        } else if (strandMode(x) == 1L) {
             x_last <- invertStrand(x@last)
             x_unlisted <- c(x_first, x_last)
         } else if (strandMode(x) == 2L) {
             x_first <- invertStrand(x@first)
             x_unlisted <- c(x_last, x_first)
+        } else {
+            ## Should never happen.
+            stop("unsupported strandMode: ", strandMode(x))
         }
         ## Not the same as doing 'unlist(x, use.names=FALSE)'.
         collate_subscript <-
