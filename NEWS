@@ -1,3 +1,47 @@
+CHANGES IN VERSION 1.12.0
+-------------------------
+
+NEW FEATURES
+
+    o seqlevels() setter now supports "fine" and "tidy" pruning modes on
+      GAlignmentsList objects (in addition to "coarse" mode, which is the
+      default).
+
+    o Add "pcompare", "is.unsorted", "order", "sort", and "rank" methods for
+      GAlignments objects.
+
+    o Add encodingHalves(), a low-level overlap encoding utility.
+
+SIGNIFICANT USER-LEVEL CHANGES
+
+    o Tweak behavior of isCompatibleWithSplicing() on paired-end encodings.
+
+    o Minor tweaks to low-level encoding utilities Lencoding(), Rencoding(),
+      Lnjunc(), Rnjunc(), and njunc(). All of them now are based on new
+      encodingHalves() low level utility.
+
+    o Speed up first() and last() on GAlignmentPairs object when the object has
+      no names. Thanks to Pete Hickey for the suggestion.
+
+    o 2x to 3x speedup to "junctions" methods.
+
+DEPRECATED AND DEFUNCT
+
+    o Argument 'force' of seqinfo() and seqlevels() setters is deprecated in
+      favor of new and more flexible 'pruning.mode' argument.
+
+BUG FIXES
+
+    o Make grglist() work on GAlignmentPairs object with strandMode set to 0.
+      Thanks to Dario Strbenac for catching and reporting this.
+
+    o Fix bug affecting extractSteppedExonRanks() on certain paired-end
+      encodings.
+
+    o Fix subsetting of OverlapEncodings objects and modernize their "show"
+      method.
+
+
 CHANGES IN VERSION 1.10.0
 -------------------------
 
