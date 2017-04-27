@@ -222,14 +222,14 @@ setMethod("seqlevelsInUse", "GAlignmentPairs",
 )
 
 setReplaceMethod("seqinfo", "GAlignmentPairs",
-    function(x, new2old=NULL, force=FALSE,
+    function(x, new2old=NULL,
              pruning.mode=c("error", "coarse", "fine", "tidy"),
              value)
     {
         if (!is(value, "Seqinfo"))
             stop("the supplied 'seqinfo' must be a Seqinfo object")
         dangling_seqlevels <- GenomeInfoDb:::getDanglingSeqlevels(x,
-                                  new2old=new2old, force=force,
+                                  new2old=new2old,
                                   pruning.mode=pruning.mode,
                                   seqlevels(value))
         if (length(dangling_seqlevels) != 0L) {
