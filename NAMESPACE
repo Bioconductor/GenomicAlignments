@@ -109,8 +109,7 @@ export(
 
     Lencoding, Rencoding, Lnjunc, Rnjunc,
 
-    findMateAlignment, findMateAlignment2,
-    makeGAlignmentPairs,
+    findMateAlignment, makeGAlignmentPairs,
     getDumpedAlignments, countDumpedAlignments, flushDumpedAlignments,
 
     readGAlignments,

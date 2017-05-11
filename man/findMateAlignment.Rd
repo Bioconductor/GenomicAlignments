@@ -1,7 +1,6 @@
 \name{findMateAlignment}
 
 \alias{findMateAlignment}
-\alias{findMateAlignment2}
 \alias{makeGAlignmentPairs}
 
 \alias{getDumpedAlignments}

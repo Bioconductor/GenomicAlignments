@@ -195,8 +195,6 @@ getDumpedAlignments <- function()
 
 ### Takes about 2.3 s and 170MB of RAM to mate 1 million alignments,
 ### and about 13 s and 909MB of RAM to mate 5 million alignments.
-### So it's a little bit faster and more memory efficient than
-### findMateAlignment2().
 findMateAlignment <- function(x)
 {
     x_names <- names(x)
@@ -234,130 +232,6 @@ findMateAlignment <- function(x)
         warning("  ", dump_count, " alignments with ambiguous pairing ",
                 "were dumped.\n    Use 'getDumpedAlignments()' to retrieve ",
                 "them from the dump environment.")
-    ans
-}
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### findMateAlignment2().
-###
-
-### .findMatches() is the same as match() except that it returns *all*
-### the matches (in a Hits object, ordered by queryHits first, then by
-### subjectHits).
-### TODO: Make findMatches() an S4 generic function with at least a method for
-### vectors. Like findOverlaps(), findMatches() could support the 'select' arg
-### (but with supported values "all", "first" and "last" only, no need for
-### "arbitrary") so that when used with 'select="first"', it would be
-### equivalent to match(). This stuff would go in IRanges.
-.findMatches <- function(query, subject, incomparables=NULL)
-{
-    if (!is.vector(query) || !is.vector(subject))
-        stop("'query' and 'subject' must be vectors")
-    if (class(query) != class(subject))
-        stop("'query' and 'subject' must be vectors of the same class")
-    if (!is.null(incomparables) && !(is.vector(incomparables) &&
-                                     class(incomparables) == class(query)))
-        stop("'incomparables' must be NULL or a vector ",
-             "of the same class as 'query' and 'subject'")
-    m0 <- match(query, subject, incomparables=incomparables)
-    query_hits0 <- which(!is.na(m0))
-    if (length(query_hits0) == 0L) {
-        query_hits <- subject_hits <- integer(0)
-    } else {
-        subject_hits0 <- m0[query_hits0]
-        subject_low2high <- S4Vectors:::reverseSelfmatchMapping(
-                                high2low(subject))
-        extra_hits <- subject_low2high[subject_hits0]
-        query_nhits <- 1L + elementNROWS(extra_hits)
-        query_hits <- rep.int(query_hits0, query_nhits)
-        subject_hits <- integer(length(query_hits))
-        idx0 <- cumsum(c(1L, query_nhits[-length(query_nhits)]))
-        subject_hits[idx0] <- m0[query_hits0]
-        subject_hits[-idx0] <- unlist(extra_hits,
-                                      recursive=FALSE, use.names=FALSE)
-    }
-    Hits(query_hits, subject_hits, length(query), length(subject),
-         sort.by.query=TRUE)
-}
-
-### Use to find self matches in 'x'. Twice faster than
-### 'findMatches(x, x, incomparables=NA_character_)' and uses
-### twice less memory.
-.findSelfMatches.character <- function(x)
-{
-    xo_and_GS <- .getCharacterOrderAndGroupSizes(x)
-    xo <- xo_and_GS$xo
-    GS <- xo_and_GS$group.sizes
-    ans <- S4Vectors:::makeAllGroupInnerHits(GS, hit.type=1L)
-    ans@from <- xo[ans@from]
-    ans@to <- xo[ans@to]
-    ans@nLnode <- ans@nRnode <- length(x)
-    ans
-}
-
-### Takes about 2.8 s and 196MB of RAM to mate 1 million alignments,
-### and about 19 s and 1754MB of RAM to mate 5 million alignments.
-findMateAlignment2 <- function(x, y=NULL)
-{
-    x_names <- names(x)
-    if (is.null(x_names))
-        stop("'x' must have names")
-    x_mcols <- .checkMetadatacols(x, "x")
-    x_seqnames <- as.factor(seqnames(x))
-    x_start <- start(x)
-    x_mrnm <- x_mcols$mrnm
-    x_mpos <- x_mcols$mpos
-    x_flag <- x_mcols$flag
-    bitnames <- c(.MATING_FLAG_BITNAMES, "isMinusStrand", "isMateMinusStrand")
-    x_flagbits <- bamFlagAsBitMatrix(x_flag, bitnames=bitnames)
-    x_gnames <- .makeGAlignmentsGNames(x_names, x_flagbits, x_mrnm, x_mpos)
-
-    if (is.null(y)) {
-        y_seqnames <- x_seqnames
-        y_start <- x_start
-        y_mrnm <- x_mrnm
-        y_mpos <- x_mpos
-        y_flag <- x_flag
-
-        hits <- .findSelfMatches.character(x_gnames)
-    } else {
-        y_names <- names(y)
-        if (is.null(y_names))
-            stop("'y' must have names")
-        y_mcols <- .checkMetadatacols(y, "y")
-        y_seqnames <- as.factor(seqnames(y))
-        y_start <- start(y)
-        y_mrnm <- y_mcols$mrnm
-        y_mpos <- y_mcols$mpos
-        y_flag <- y_mcols$flag
-        y_flagbits <- bamFlagAsBitMatrix(y_flag, bitnames=bitnames)
-        y_gnames <- .makeGAlignmentsGNames(y_names, y_flagbits, y_mrnm, y_mpos)
-
-        hits <- .findMatches(x_gnames, y_gnames, incomparables=NA_character_)
-    }
-
-    x_hits <- queryHits(hits)
-    y_hits <- subjectHits(hits)
-    valid_hits <- Rsamtools:::.isValidHit(
-                              x_flag[x_hits], x_seqnames[x_hits],
-                              x_start[x_hits], x_mrnm[x_hits], x_mpos[x_hits],
-                              y_flag[y_hits], y_seqnames[y_hits],
-                              y_start[y_hits], y_mrnm[y_hits], y_mpos[y_hits])
-    x_hits <- x_hits[valid_hits]
-    y_hits <- y_hits[valid_hits]
-
-    if (is.null(y)) {
-        tmp <- x_hits
-        x_hits <- c(x_hits, y_hits)
-        y_hits <- c(y_hits, tmp)
-    }
-    ans <- .makeMateIdx2(x_hits, y_hits, length(x))
-    if (any(ans <= 0L, na.rm=TRUE)) {
-        more_than_1_mate_idx <- which(ans == 0L)
-        .showGAlignmentsEltsWithMoreThan1Mate(x, more_than_1_mate_idx)
-        ans[ans <= 0L] <- NA_integer_
-    }
     ans
 }
 
@@ -451,23 +325,6 @@ makeGAlignmentPairs <- function(x, use.names=FALSE, use.mcols=FALSE,
     x_is_proper <- as.logical(bamFlagAsBitMatrix(mcols(x)$flag,
                                                  bitnames="isProperPair"))
     ans_is_proper <- x_is_proper[first_idx]
-
-    ## Drop pairs with discordant seqnames.
-    idx_is_discordant <- as.character(seqnames(x)[first_idx]) !=
-                         as.character(seqnames(x)[last_idx])
-    if (any(idx_is_discordant) != 0L) {
-        nb_discordant_proper <- sum(ans_is_proper[idx_is_discordant])
-        if (nb_discordant_proper != 0L) {
-            ratio <- 100.0 * nb_discordant_proper / sum(idx_is_discordant)
-            warning(wmsg(ratio, "% of the pairs with discordant seqnames ",
-                         "were flagged as proper pairs by the aligner. ",
-                         "Dropping them anyway."))
-        }
-        keep <- -which(idx_is_discordant)
-        first_idx <- first_idx[keep]
-        last_idx <- last_idx[keep]
-        ans_is_proper <- ans_is_proper[keep]
-    }
 
     ## The big split!
     ans_first <- x[first_idx]
