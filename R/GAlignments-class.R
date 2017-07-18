@@ -134,8 +134,7 @@ setReplaceMethod("rname", "GAlignments",
 setReplaceMethod("strand", "GAlignments",
     function(x, value) 
     {
-        x@strand <-
-            GenomicRanges:::normargGenomicRangesStrand(value, length(x))
+        x@strand <- GenomicRanges:::normalize_strand_replacement_value(value, x)
         x
     }
 )
