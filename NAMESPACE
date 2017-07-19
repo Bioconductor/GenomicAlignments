@@ -60,6 +60,7 @@ exportMethods(
     parallelSlotNames, pcompare,
 
     ## Generics defined in IRanges:
+    ranges, rglist,
     relistToClass,
     narrow,
     coverage,
@@ -72,7 +73,7 @@ exportMethods(
     seqlevelsInUse,
 
     ## Generics defined in GenomicRanges:
-    granges, grglist, rglist,
+    granges, grglist,
 
     ## Generics defined in Biostrings:
     encoding,
