@@ -111,20 +111,6 @@
     sum(as.integer(2L ^ (bitpos-1L)))
 }
 
-### 3 equivalent implementations for this:
-###   (a) x %in% x[duplicated(x)]
-###   (b) duplicated(x) | duplicated(x, fromLast=TRUE)
-###   (c) xx <- match(x, x); ans <- xx != seq_along(xx); ans[xx] <- ans; ans
-### Comparing the 3 implementations on an integer vector of length 12 millions:
-###   (a) is the most memory efficient;
-###   (b) is a little bit faster than (a) (by only 8%) but uses between 12-14%
-###       more memory;
-###   (c) is as fast as (a) but uses about 30% more memory.
-.hasDuplicates <- function(x)
-{
-    x %in% x[duplicated(x)]
-}
-
 ### 'x_hits' and 'y_hits' must be 2 integer vectors of the same length N
 ### representing the N edges of a bipartite graph between the [1, x_len] and
 ### [1, y_len] intervals (the i-th edge being represented by (x[i], y[i])).
@@ -137,9 +123,9 @@
 ### F[k] is replaced by -F[k].
 .makeMateIdx2 <- function(x_hits, y_hits, x_len)
 {
-    idx1 <- which(.hasDuplicates(y_hits))
+    idx1 <- which(has_duplicates(y_hits))
     y_hits[idx1] <- - y_hits[idx1]
-    idx2 <- which(.hasDuplicates(x_hits))
+    idx2 <- which(has_duplicates(x_hits))
     y_hits[idx2] <- 0L
     ans <- rep.int(NA_integer_, x_len)
     ans[x_hits] <- y_hits
