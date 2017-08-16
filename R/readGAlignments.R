@@ -173,9 +173,11 @@ setGeneric("readGAlignmentPairs", signature="file",
 ### *inner* metadata columns to return, i.e., the metadata columns to set on
 ### the 2 halves of the returned GAlignmentPairs object.
 .make_GAlignmentPairs_from_GAlignments <- function(gal, strandMode=1L,
-                                                   use.mcols=FALSE)
+                                                        use.mcols=FALSE)
 {
-    mate_status <- mcols(gal)[ , "mate_status"]
+    groupid <- Rle(mcols(gal)[ , "groupid"])
+    stopifnot(isStrictlySorted(runValue(groupid)))
+    mate_status <- Rle(mcols(gal)[ , "mate_status"])
 
     ## Dump alignments with "ambiguous" mate status.
     flushDumpedAlignments()
@@ -188,30 +190,28 @@ setGeneric("readGAlignmentPairs", signature="file",
                 "them from the dump environment.")
     }
 
-    ## Keep alignments with "mated" mate status only.
-    is_mated <- mate_status == "mated"
-    if (!all(is_mated)) {
-        keep_idx <- which(is_mated)
-        gal <- gal[keep_idx]
-    }
+    ## Keep alignments that (1) have a mate status set to "mated" and
+    ## (2) belong to a group of size 2.
+    ok <- mate_status == "mated" &
+          Rle(runLength(groupid) == 2L, runLength(groupid))
+    if (!all(ok))
+        gal <- gal[ok]
 
     ## Check flag bits 0x40 and 0x80.
     flag <- mcols(gal)[ , "flag"]
-    is_first_mate <- bamFlagAsBitMatrix(flag, bitnames="isFirstMateRead")
-    is_last_mate <- bamFlagAsBitMatrix(flag, bitnames="isSecondMateRead")
+    is_first_mate <- as.logical(bamFlagAsBitMatrix(flag,
+                                                   bitnames="isFirstMateRead"))
+    is_last_mate <- as.logical(bamFlagAsBitMatrix(flag,
+                                                  bitnames="isSecondMateRead"))
     bits_0x40_0x80_are_ok <- is_first_mate != is_last_mate
-    if (!all(bits_0x40_0x80_are_ok)) {
-        keep_idx <- which(bits_0x40_0x80_are_ok)
-        gal <- gal[keep_idx]
-        is_first_mate <- is_first_mate[keep_idx]
-        is_last_mate <- is_last_mate[keep_idx]
-    }
+    stopifnot(all(bits_0x40_0x80_are_ok))
 
     ## Split and order the pairs by ascending start position of the first mate.
-    idx1 <- which(as.logical(is_first_mate))
+    idx1 <- which(is_first_mate)
+    idx2 <- which(is_last_mate)
     oo1 <- orderIntegerPairs(as.integer(gal@seqnames)[idx1], gal@start[idx1])
     idx1 <- idx1[oo1]
-    idx2 <- which(as.logical(is_last_mate))[oo1]
+    idx2 <- idx2[oo1]
     ans_first <- gal[idx1]
     ans_last <- gal[idx2]
     groupid1 <- mcols(ans_first)[ , "groupid"]
@@ -260,12 +260,12 @@ setGeneric("readGAlignmentPairs", signature="file",
     what0 <- c("flag", "groupid", "mate_status")
     param2 <- .normargParam(param, flag0, what0)
     gal <- readGAlignments(file, use.names=use.names, param=param2,
-                           with.which_label=with.which_label)
+                                 with.which_label=with.which_label)
     use.mcols <- c(bamWhat(param), bamTag(param))
     if (with.which_label)
         use.mcols <- c(use.mcols, "which_label")
     .make_GAlignmentPairs_from_GAlignments(gal, strandMode=strandMode,
-                                           use.mcols=use.mcols)
+                                                use.mcols=use.mcols)
 }
 
 setMethod("readGAlignmentPairs", "BamFile", .readGAlignmentPairs.BamFile)
