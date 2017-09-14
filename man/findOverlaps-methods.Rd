@@ -48,7 +48,7 @@
     A vector-like object containing ranges for the other one.
   }
   \item{maxgap, minoverlap, type, select}{
-    See \code{\link[IRanges]{findOverlaps}} in the \pkg{IRanges} package
+    See \code{?\link[IRanges]{findOverlaps}} in the \pkg{IRanges} package
     for a description of these arguments.
   }
   \item{ignore.strand}{
