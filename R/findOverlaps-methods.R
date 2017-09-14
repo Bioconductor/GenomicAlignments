@@ -4,7 +4,7 @@
 
 
 setMethod("findOverlaps", c("GAlignments", "Vector"),
-    function(query, subject, maxgap = 0L, minoverlap = 1L,
+    function(query, subject, maxgap = -1L, minoverlap = 0L,
              type = c("any", "start", "end", "within"),
              select = c("all", "first", "last", "arbitrary"),
              ignore.strand = FALSE)
@@ -17,7 +17,7 @@ setMethod("findOverlaps", c("GAlignments", "Vector"),
 )
 
 setMethod("findOverlaps", c("Vector", "GAlignments"),
-    function(query, subject, maxgap = 0L, minoverlap = 1L,
+    function(query, subject, maxgap = -1L, minoverlap = 0L,
              type = c("any", "start", "end", "within"),
              select = c("all", "first", "last", "arbitrary"),
              ignore.strand = FALSE)
@@ -37,7 +37,7 @@ setMethod("findOverlaps", c("Vector", "GAlignments"),
 ###    "GAlignments#GAlignments".
 ###    "ANY#GAlignments" would also be valid
 setMethod("findOverlaps", c("GAlignments", "GAlignments"),
-    function(query, subject, maxgap = 0L, minoverlap = 1L,
+    function(query, subject, maxgap = -1L, minoverlap = 0L,
              type = c("any", "start", "end", "within"),
              select = c("all", "first", "last", "arbitrary"),
              ignore.strand = FALSE)
@@ -50,7 +50,7 @@ setMethod("findOverlaps", c("GAlignments", "GAlignments"),
 )
 
 setMethod("findOverlaps", c("GAlignmentPairs", "Vector"),
-    function(query, subject, maxgap = 0L, minoverlap = 1L,
+    function(query, subject, maxgap = -1L, minoverlap = 0L,
              type = c("any", "start", "end", "within"),
              select = c("all", "first", "last", "arbitrary"),
              ignore.strand = FALSE)
@@ -63,7 +63,7 @@ setMethod("findOverlaps", c("GAlignmentPairs", "Vector"),
 )
 
 setMethod("findOverlaps", c("Vector", "GAlignmentPairs"),
-    function(query, subject, maxgap = 0L, minoverlap = 1L,
+    function(query, subject, maxgap = -1L, minoverlap = 0L,
              type = c("any", "start", "end", "within"),
              select = c("all", "first", "last", "arbitrary"),
              ignore.strand = FALSE)
@@ -76,7 +76,7 @@ setMethod("findOverlaps", c("Vector", "GAlignmentPairs"),
 )
 
 setMethod("findOverlaps", c("GAlignmentPairs", "GAlignmentPairs"),
-    function(query, subject, maxgap = 0L, minoverlap = 1L,
+    function(query, subject, maxgap = -1L, minoverlap = 0L,
              type = c("any", "start", "end", "within"),
              select = c("all", "first", "last", "arbitrary"),
              ignore.strand = FALSE)
@@ -89,7 +89,7 @@ setMethod("findOverlaps", c("GAlignmentPairs", "GAlignmentPairs"),
 )
 
 setMethod("findOverlaps", c("GAlignmentsList", "Vector"),
-    function(query, subject, maxgap = 0L, minoverlap = 1L,
+    function(query, subject, maxgap = -1L, minoverlap = 0L,
              type = c("any", "start", "end", "within"),
              select = c("all", "first", "last", "arbitrary"),
              ignore.strand = FALSE)
@@ -107,7 +107,7 @@ setMethod("findOverlaps", c("GAlignmentsList", "Vector"),
 )
 
 setMethod("findOverlaps", c("Vector", "GAlignmentsList"),
-    function(query, subject, maxgap = 0L, minoverlap = 1L,
+    function(query, subject, maxgap = -1L, minoverlap = 0L,
              type = c("any", "start", "end", "within"),
              select = c("all", "first", "last", "arbitrary"),
              ignore.strand = FALSE)
@@ -125,7 +125,7 @@ setMethod("findOverlaps", c("Vector", "GAlignmentsList"),
 )
 
 setMethod("findOverlaps", c("GAlignmentsList", "GAlignmentsList"),
-    function(query, subject, maxgap = 0L, minoverlap = 1L,
+    function(query, subject, maxgap = -1L, minoverlap = 0L,
              type = c("any", "start", "end", "within"),
              select = c("all", "first", "last", "arbitrary"),
              ignore.strand = FALSE)

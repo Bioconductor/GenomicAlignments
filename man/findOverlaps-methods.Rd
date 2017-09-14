@@ -35,7 +35,7 @@
 
 \usage{
 \S4method{findOverlaps}{GAlignments,GAlignments}(query, subject,
-    maxgap=0L, minoverlap=1L,
+    maxgap=-1L, minoverlap=0L,
     type=c("any", "start", "end", "within"),
     select=c("all", "first", "last", "arbitrary"),
     ignore.strand=FALSE)
