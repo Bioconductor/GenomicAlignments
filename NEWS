@@ -1,3 +1,27 @@
+CHANGES IN VERSION 1.14.0
+-------------------------
+
+SIGNIFICANT USER-LEVEL CHANGES
+
+    o makeGAlignmentPairs() no more drops pairs with discordant seqnames.
+
+    o Change 'maxgap' and 'minoverlap' argument defaults in methods of the
+      findOverlaps() so they adhere to the new argument defaults of the generic
+      defined in IRanges 2.12.0. See NEWS file in the IRanges package for more
+      information about this change.
+
+DEPRECATED AND DEFUNCT
+
+    o Remove 'force' argument from seqinfo() and seqlevels() setters (the
+      argument got deprecated in BioC 3.5 in favor of new and more flexible
+      'pruning.mode' argument).
+
+BUG FIXES
+
+    o Fix bug in pairing code of readGAlignmentPairs() when one mate in a pair
+      is lost because of user-supplied filtering (e.g. mapqFilter=10).
+
+
 CHANGES IN VERSION 1.12.0
 -------------------------
 
