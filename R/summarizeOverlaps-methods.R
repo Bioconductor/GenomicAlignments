@@ -186,7 +186,7 @@ IntersectionNotEmpty <-  function(features, reads,
                                 inter.feature, param, preprocess.reads, ...)
 {
     if (is.na(yieldSize(bf))) {
-        x <- FUN(bf, param=param)
+        x <- FUN(bf, param=param, ...)
         .dispatchOverlaps(features, x, mode,
                           ignore.strand,
                           inter.feature, preprocess.reads, ...)
@@ -196,7 +196,7 @@ IntersectionNotEmpty <-  function(features, reads,
             on.exit(close(bf))
         }
         ct <- integer(length(features))
-        while (length(x <- FUN(bf, param=param))) {
+        while (length(x <- FUN(bf, param=param, ...))) {
             ct <- ct + .dispatchOverlaps(features, x, mode,
                                          ignore.strand,
                                          inter.feature, preprocess.reads, ...)
@@ -220,7 +220,7 @@ IntersectionNotEmpty <-  function(features, reads,
     cts <- bplapply(setNames(seq_along(reads), names(reads)),
                function(i, FUN, reads, features, mode,
                         ignore.strand,
-                        inter.feature, param, preprocess.reads) {
+                        inter.feature, param, preprocess.reads, ...) {
                    bf <- reads[[i]]
                    .countWithYieldSize(FUN, features, bf, mode,
                                        ignore.strand,
