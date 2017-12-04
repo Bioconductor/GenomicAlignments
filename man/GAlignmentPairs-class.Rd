@@ -46,6 +46,9 @@
 
 \alias{coerce,GAlignmentPairs,GAlignments-method}
 
+\alias{coerce,GAlignmentPairs,DataFrame-method}
+\alias{as.data.frame,GAlignmentPairs-method}
+
 % "show" method:
 \alias{show,GAlignmentPairs-method}
 

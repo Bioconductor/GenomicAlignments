@@ -50,14 +50,23 @@ export(
 ###
 
 exportMethods(
+    length,
+    names, "names<-",
     c,
+    "[[",
+    show,
+    coerce,
+    unlist,
+    order, sort, rank,
+    levels,
+    update,
 
     ## Generics defined in BiocGenerics:
-    is.unsorted, order, sort, rank,
-    start, end, width, strand, invertStrand,
+    as.data.frame, is.unsorted, order, sort, rank,
+    start, end, width, strand, "strand<-", invertStrand,
 
     ## Generics defined in S4Vectors:
-    parallelSlotNames, pcompare,
+    parallelSlotNames, "elementMetadata<-", pcompare,
 
     ## Generics defined in IRanges:
     ranges, rglist,

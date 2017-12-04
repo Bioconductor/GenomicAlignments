@@ -320,24 +320,6 @@ GAlignments <- function(seqnames=Rle(factor()), pos=integer(0),
                        seqinfo=seqinfo)
 }
 
-setMethod("updateObject", "GAlignments",
-    function(object, ..., verbose=FALSE)
-    {
-        if (verbose)
-            message("updateObject(object = 'GAlignments')")
-        if (is(try(object@NAMES, silent=TRUE), "try-error")) {
-            object@NAMES <- NULL
-            return(object)
-        }
-        if (is(try(validObject(object@seqinfo, complete=TRUE), silent=TRUE),
-               "try-error")) {
-            object@seqinfo <- updateObject(object@seqinfo)
-            return(object)
-        }
-        object
-    }
-)
-
 setMethod("update", "GAlignments",
           function(object, ...)
           {

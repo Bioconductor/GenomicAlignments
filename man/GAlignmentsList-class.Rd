@@ -8,7 +8,6 @@
 
 % Constructors:
 \alias{GAlignmentsList}
-\alias{updateObject,GAlignmentsList-method}
 
 % Accessors:
 \alias{names,GAlignmentsList-method}
@@ -42,6 +41,9 @@
 \alias{coerce,GAlignmentsList,RangesList-method}
 
 \alias{coerce,GAlignmentPairs,GAlignmentsList-method}
+\alias{coerce,GAlignmentsList,GAlignmentPairs-method}
+
+\alias{coerce,list,GAlignmentsList-method}
 
 % Combining:
 \alias{c,GAlignmentsList-method}

@@ -5,10 +5,6 @@
 \alias{class:GAlignments}
 \alias{GAlignments-class}
 
-% Constructor:
-\alias{GAlignments}
-\alias{updateObject,GAlignments-method}
-
 % Accessors:
 \alias{length,GAlignments-method}
 \alias{names,GAlignments-method}
@@ -20,7 +16,7 @@
 \alias{seqnames<-,GAlignments-method}
 \alias{rname<-}
 \alias{rname<-,GAlignments-method}
-\alias{strand<-,GAlignments-method}
+\alias{strand<-,GAlignments,ANY-method}
 \alias{cigar}
 \alias{cigar,GAlignments-method}
 \alias{qwidth}
@@ -33,6 +29,10 @@
 \alias{seqinfo,GAlignments-method}
 \alias{seqinfo<-,GAlignments-method}
 
+% Constructor:
+\alias{GAlignments}
+\alias{update,GAlignments-method}
+
 % Coercion:
 \alias{ranges,GAlignments-method}
 \alias{granges,GAlignments-method}
@@ -43,7 +43,9 @@
 \alias{coerce,GAlignments,GRangesList-method}
 \alias{coerce,GAlignments,RangesList-method}
 
+\alias{coerce,GAlignments,DataFrame-method}
 \alias{as.data.frame,GAlignments-method}
+
 \alias{coerce,GenomicRanges,GAlignments-method}
 
 % Combining:

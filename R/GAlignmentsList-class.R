@@ -104,6 +104,7 @@ setMethod("elementMetadata", "GAlignmentsList",
     GenomicRanges:::get_GRangesList_mcols
 )
 
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Setters.
 ###
@@ -137,6 +138,7 @@ setReplaceMethod("seqnames", "GAlignmentsList",
     GenomicRanges:::set_GRangesList_seqnames
 )
 
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Validity.
 ###
@@ -148,6 +150,7 @@ setReplaceMethod("seqnames", "GAlignmentsList",
 }
 
 setValidity2("GAlignmentsList", .valid.GAlignmentsList)
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Constructors.
@@ -167,20 +170,6 @@ GAlignmentsList <- function(...)
     }
     relist(unlistData, PartitioningByEnd(listData))
 }
-
-setMethod("updateObject", "GAlignmentsList",
-    function(object, ..., verbose=FALSE)
-    {
-        if (verbose)
-            message("updateObject(object = 'GAlignmentsList')")
-        if (is(try(validObject(object@unlistData, complete=TRUE), silent=TRUE),
-               "try-error")) {
-            object@unlistData <- updateObject(object@unlistData)
-            return(object)
-        }
-        object
-    }
-)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -310,6 +299,9 @@ setAs("GAlignmentsList", "GAlignmentPairs", function(from) {
                           isProperPair=isProperPair,
                           names=names(ga)[first])
       })
+
+setAs("list", "GAlignmentsList", function(from) do.call(GAlignmentsList, from))
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Subsetting.
