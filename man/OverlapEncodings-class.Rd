@@ -6,6 +6,7 @@
 \alias{OverlapEncodings}
 
 \alias{parallelSlotNames,OverlapEncodings-method}
+
 \alias{Loffset}
 \alias{Loffset,OverlapEncodings-method}
 \alias{Roffset}

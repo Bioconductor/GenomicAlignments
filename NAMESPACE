@@ -66,6 +66,7 @@ exportMethods(
     start, end, width, strand, "strand<-", invertStrand,
 
     ## Generics defined in S4Vectors:
+    concatenateObjects,
     parallelSlotNames, "elementMetadata<-", pcompare,
 
     ## Generics defined in IRanges:

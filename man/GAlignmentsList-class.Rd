@@ -45,9 +45,6 @@
 
 \alias{coerce,list,GAlignmentsList-method}
 
-% Combining:
-\alias{c,GAlignmentsList-method}
-
 % extractList() and family:
 \alias{relistToClass,GAlignments-method}
 
@@ -257,11 +254,14 @@
   }
 }
 
-\section{Combining}{
+\section{Concatenation}{
   \describe{
     \item{}{
-      \code{c(...)}:
-      Concatenates the GAlignmentsList objects in \code{...}.
+      \code{c(x, ..., ignore.mcols=FALSE)}:
+      Concatenate GAlignmentsList object \code{x} and the GAlignmentsList
+      objects in \code{...} together.
+      See \code{?\link[S4Vectors]{c}} in the \pkg{S4Vectors} package for
+      more information about concatenating Vector derivatives.
     }
   }
 }

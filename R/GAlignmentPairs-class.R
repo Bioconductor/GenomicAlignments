@@ -3,24 +3,27 @@
 ### -------------------------------------------------------------------------
 ###
 
-### TODO: Implement a GAlignmentsList class (CompressedList subclass)
-### and derive GAlignmentPairs from it.
-
 ### "first" and "last" GAlignments must have identical seqinfo.
 setClass("GAlignmentPairs",
     contains="List",
     representation(
         strandMode="integer",         # single integer (0L, 1L, or 2L)
-        NAMES="character_OR_NULL",    # R doesn't like @names !!
         first="GAlignments",          # of length N, no names, no elt metadata
         last="GAlignments",           # of length N, no names, no elt metadata
         isProperPair="logical",       # of length N
+        NAMES="character_OR_NULL",    # R doesn't like @names !!
         elementMetadata="DataFrame"   # N rows
     ),
     prototype(
         strandMode=1L,
         elementType="GAlignments"
     )
+)
+
+### Combine the new parallel slots with those of the parent class. Make sure
+### to put the new parallel slots *first*.
+setMethod("parallelSlotNames", "GAlignmentPairs",
+    function(x) c("first", "last", "isProperPair", "NAMES", callNextMethod())
 )
 
 ### Formal API:
@@ -63,10 +66,6 @@ setGeneric("isProperPair", function(x) standardGeneric("isProperPair"))
 
 setMethod("strandMode", "GAlignmentPairs",
     function(x) x@strandMode
-)
-
-setMethod("length", "GAlignmentPairs",
-    function(x) length(x@first)
 )
 
 setMethod("names", "GAlignmentPairs",
@@ -256,42 +255,6 @@ setReplaceMethod("seqinfo", "GAlignmentPairs",
     NULL
 }
 
-.valid.GAlignmentPairs.names <- function(x)
-{
-    x_names <- names(x)
-    if (is.null(x_names))
-        return(NULL)
-    if (!is.character(x_names) || !is.null(attributes(x_names))) {
-        msg <- c("'names(x)' must be NULL or a character vector ",
-                 "with no attributes")
-        return(paste(msg, collapse=""))
-    }
-    if (length(x_names) != length(x))
-        return("'names(x)' and 'x' must have the same length")
-    NULL
-}
-
-.valid.GAlignmentPairs.first <- function(x)
-{
-    x_first <- x@first
-    if (class(x_first) != "GAlignments")
-        return("'x@first' must be a GAlignments instance")
-    NULL
-}
-
-.valid.GAlignmentPairs.last <- function(x)
-{
-    x_last <- x@last
-    if (class(x_last) != "GAlignments")
-        return("'x@last' must be a GAlignments instance")
-    x_first <- x@first
-    if (length(x_last) != length(x_first))
-        return("'x@last' and 'x@first' must have the same length")
-    if (!identical(seqinfo(x_last), seqinfo(x_first)))
-        return("'seqinfo(x@last)' and 'seqinfo(x@first)' must be identical")
-    NULL
-}
-
 .valid.GAlignmentPairs.isProperPair <- function(x)
 {
     x_isProperPair <- x@isProperPair
@@ -300,20 +263,23 @@ setReplaceMethod("seqinfo", "GAlignmentPairs",
                  "with no attributes")
         return(paste(msg, collapse=""))
     }
-    if (length(x_isProperPair) != length(x))
-        return("'x@isProperPair' and 'x' must have the same length")
     if (S4Vectors:::anyMissing(x_isProperPair))
         return("'x@isProperPair' cannot contain NAs")
+    NULL
+}
+
+.valid.GAlignmentPairs.seqinfo <- function(x)
+{
+    if (!identical(seqinfo(x@first), seqinfo(x@last)))
+        return("'seqinfo(x@first)' and 'seqinfo(x@last)' must be identical")
     NULL
 }
 
 .valid.GAlignmentPairs <- function(x)
 {
     c(.valid.GAlignmentPairs.strandMode(x),
-      .valid.GAlignmentPairs.names(x),
-      .valid.GAlignmentPairs.first(x),
-      .valid.GAlignmentPairs.last(x),
-      .valid.GAlignmentPairs.isProperPair(x))
+      .valid.GAlignmentPairs.isProperPair(x),
+      .valid.GAlignmentPairs.seqinfo(x))
 }
 
 setValidity2("GAlignmentPairs", .valid.GAlignmentPairs,
@@ -342,29 +308,6 @@ GAlignmentPairs <- function(first, last,
          elementMetadata=S4Vectors:::make_zero_col_DataFrame(length(first)),
          check=TRUE)
 }
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Vector methods.
-###
-
-setMethod("extractROWS", "GAlignmentPairs",
-    function(x, i)
-    {
-        i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
-        ans_NAMES <- extractROWS(x@NAMES, i)
-        ans_first <- extractROWS(x@first, i)
-        ans_last <- extractROWS(x@last, i)
-        ans_isProperPair <- extractROWS(x@isProperPair, i)
-        ans_elementMetadata <- extractROWS(x@elementMetadata, i)
-        BiocGenerics:::replaceSlots(x,
-            NAMES=ans_NAMES,
-            first=ans_first,
-            last=ans_last,
-            isProperPair=ans_isProperPair,
-            elementMetadata=ans_elementMetadata)
-    }
-)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -777,116 +720,10 @@ setMethod("show", "GAlignmentPairs",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Combining.
+### Concatenation
 ###
 
-### 'Class' must be "GAlignmentPairs" or the name of a concrete subclass of
-### GAlignmentPairs.
-### 'objects' must be a list of GAlignmentPairs objects.
-### Returns an instance of class 'Class'.
-combine_GAlignmentPairs_objects <- function(Class, objects,
-                                            use.names=TRUE, ignore.mcols=FALSE)
-{
-    if (!isSingleString(Class))
-        stop("'Class' must be a single character string")
-    if (!extends(Class, "GAlignmentPairs"))
-        stop("'Class' must be the name of a class that extends GAlignmentPairs")
-    if (!is.list(objects))
-        stop("'objects' must be a list")
-    if (!isTRUEorFALSE(use.names))
-        stop("'use.names' must be TRUE or FALSE")
-    ### TODO: Support 'use.names=TRUE'.
-    if (use.names)
-        stop("'use.names=TRUE' is not supported yet")
-    if (!isTRUEorFALSE(ignore.mcols))
-        stop("'ignore.mcols' must be TRUE or FALSE")
-
-    if (length(objects) != 0L) {
-        ## TODO: Implement (in C) fast 'elementIsNull(objects)' in IRanges,
-        ## that does 'sapply(objects, is.null, USE.NAMES=FALSE)', and use it
-        ## here.
-        null_idx <- which(sapply(objects, is.null, USE.NAMES=FALSE))
-        if (length(null_idx) != 0L)
-            objects <- objects[-null_idx]
-    }   
-    if (length(objects) == 0L)
-        return(new(Class))
-
-    ## TODO: Implement (in C) fast 'elementIs(objects, class)' in IRanges, that
-    ## does 'sapply(objects, is, class, USE.NAMES=FALSE)', and use it here.
-    ## 'elementIs(objects, "NULL")' should work and be equivalent to
-    ## 'elementIsNull(objects)'.
-    if (!all(sapply(objects, is, Class, USE.NAMES=FALSE)))
-        stop("the objects to combine must be ", Class, " objects (or NULLs)")
-    objects_names <- names(objects)
-    names(objects) <- NULL  # so lapply(objects, ...) below returns an
-                            # unnamed list
-
-    ## Combine "NAMES" slots.
-    NAMES_slots <- lapply(objects, function(x) x@NAMES)
-    ## TODO: Use elementIsNull() here when it becomes available.
-    has_no_names <- sapply(NAMES_slots, is.null, USE.NAMES=FALSE)
-    if (all(has_no_names)) {
-        ans_NAMES <- NULL
-    } else {
-        noname_idx <- which(has_no_names)
-        if (length(noname_idx) != 0L)
-            NAMES_slots[noname_idx] <-
-                lapply(elementNROWS(objects[noname_idx]), character)
-        ans_NAMES <- unlist(NAMES_slots, use.names=FALSE)
-    }
-
-    ## Combine "first" slots.
-    first_slots <- lapply(objects, function(x) x@first)
-    ans_first <- combine_GAlignments_objects("GAlignments", first_slots,
-                                             use.names=FALSE,
-                                             ignore.mcols=ignore.mcols)
-
-    ## Combine "last" slots.
-    last_slots <- lapply(objects, function(x) x@last)
-    ans_last <- combine_GAlignments_objects("GAlignments", last_slots,
-                                            use.names=FALSE,
-                                            ignore.mcols=ignore.mcols)
-
-    ## Combine "isProperPair" slots.
-    isProperPair_slots <- lapply(objects, function(x) x@isProperPair)
-    ans_isProperPair <- unlist(isProperPair_slots, use.names=FALSE)
-
-    ## Combine "mcols" slots. We don't need to use fancy
-    ## IRanges:::rbind.mcols() for this because the "mcols" slot of a
-    ## GAlignmentPairs object is guaranteed to be a DataFrame.
-    if (ignore.mcols) {
-        ans_mcols <- S4Vectors:::make_zero_col_DataFrame(length(ans_first))
-    } else  {
-        mcols_slots <- lapply(objects, function(x) x@elementMetadata)
-        ## Will fail if not all the GAlignmentPairs objects in 'objects' have
-        ## exactly the same metadata cols.
-        ans_mcols <- do.call(rbind, mcols_slots)
-    }
-
-    ## Make 'ans' and return it.
-    new(Class, NAMES=ans_NAMES,
-               first=ans_first,
-               last=ans_last,
-               isProperPair=ans_isProperPair,
-               elementMetadata=ans_mcols)
-}
-
-setMethod("c", "GAlignmentPairs",
-    function(x, ..., ignore.mcols=FALSE, recursive=FALSE)
-    {
-        if (!identical(recursive, FALSE))
-            stop("\"c\" method for GAlignmentPairs objects ",
-                 "does not support the 'recursive' argument")
-        if (missing(x)) {
-            objects <- list(...)
-            x <- objects[[1L]]
-        } else {
-            objects <- list(x, ...)
-        }
-        combine_GAlignmentPairs_objects(class(x), objects,
-                                        use.names=FALSE, 
-                                        ignore.mcols=ignore.mcols)
-    }
+setMethod("concatenateObjects", "GAlignmentPairs",
+    GenomicRanges:::concatenate_GenomicRanges_objects
 )
 

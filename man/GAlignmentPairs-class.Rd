@@ -5,6 +5,8 @@
 \alias{class:GAlignmentPairs}
 \alias{GAlignmentPairs-class}
 
+\alias{parallelSlotNames,GAlignmentPairs-method}
+
 % Constructors:
 \alias{GAlignmentPairs}
 
@@ -14,7 +16,6 @@
 \alias{strandMode<-}
 \alias{strandMode<-,GAlignmentPairs-method}
 \alias{invertStrand,GAlignmentPairs-method}
-\alias{length,GAlignmentPairs-method}
 \alias{names,GAlignmentPairs-method}
 \alias{names<-,GAlignmentPairs-method}
 \alias{first}
@@ -52,8 +53,8 @@
 % "show" method:
 \alias{show,GAlignmentPairs-method}
 
-% Combining:
-\alias{c,GAlignmentPairs-method}
+% Concatenation:
+\alias{concatenateObjects,GAlignmentPairs-method}
 
 \title{GAlignmentPairs objects}
 

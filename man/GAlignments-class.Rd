@@ -5,8 +5,9 @@
 \alias{class:GAlignments}
 \alias{GAlignments-class}
 
+\alias{parallelSlotNames,GAlignments-method}
+
 % Accessors:
-\alias{length,GAlignments-method}
 \alias{names,GAlignments-method}
 \alias{seqnames,GAlignments-method}
 \alias{rname}
@@ -48,11 +49,11 @@
 
 \alias{coerce,GenomicRanges,GAlignments-method}
 
-% Combining:
-\alias{c,GAlignments-method}
-
 % "show" method:
 \alias{show,GAlignments-method}
+
+% Concatenation:
+\alias{concatenateObjects,GAlignments-method}
 
 % Comparison/ordering:
 \alias{pcompare,GAlignments,GAlignments-method}
@@ -366,11 +367,14 @@
   }
 }
 
-\section{Combining}{ 
+\section{Concatenation}{
   \describe{
     \item{}{
-      \code{c(...)}:
-      Concatenates the GAlignments objects in \code{...}.
+      \code{c(x, ..., ignore.mcols=FALSE)}:
+      Concatenate GAlignments object \code{x} and the GAlignments objects in
+      \code{...} together.
+      See \code{?\link[S4Vectors]{c}} in the \pkg{S4Vectors} package for
+      more information about concatenating Vector derivatives.
     }
   }
 }

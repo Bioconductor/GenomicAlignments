@@ -6,13 +6,13 @@
 setClass("GAlignments",
     contains="Vector",
     representation(
-        NAMES="character_OR_NULL",    # R doesn't like @names !!
         seqnames="Rle",               # 'factor' Rle
         start="integer",              # POS field in SAM
         cigar="character",            # extended CIGAR (see SAM format specs)
         strand="Rle",                 # 'factor' Rle
         #mismatches="character_OR_NULL", # see MD optional field in SAM format
                                          #specs
+        NAMES="character_OR_NULL",    # R doesn't like @names !!
         elementMetadata="DataFrame",
         seqinfo="Seqinfo"
     ),
@@ -20,6 +20,13 @@ setClass("GAlignments",
         seqnames=Rle(factor()),
         strand=Rle(strand())
     )
+)
+
+### Combine the new parallel slots with those of the parent class. Make sure
+### to put the new parallel slots *first*.
+setMethod("parallelSlotNames", "GAlignments",
+    function(x) c("seqnames", "start", "cigar", "strand", "NAMES",
+                  callNextMethod())
 )
 
 ### Formal API:
@@ -74,8 +81,6 @@ setGeneric("njunc", function(x) standardGeneric("njunc"))
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Getters.
 ###
-
-setMethod("length", "GAlignments", function(x) length(x@cigar))
 
 setMethod("names", "GAlignments", function(x) x@NAMES)
 
@@ -180,35 +185,11 @@ setReplaceMethod("seqinfo", "GAlignments", set_GAlignments_seqinfo)
 ### Validity.
 ###
 
-.valid.GAlignments.names <- function(x)
-{
-    x_names <- names(x)
-    if (is.null(x_names))
-        return(NULL)
-    if (!is.character(x_names) || !is.null(attributes(x_names))) {
-        msg <- c("'names(x)' must be NULL or a character vector ",
-                 "with no attributes")
-        return(paste(msg, collapse=""))
-    }
-    if (length(x_names) != length(x))
-        return("'names(x)' and 'x' must have the same length")
-    NULL
-}
-
-.valid.GAlignments.seqnames <- function(x)
-{
-    if (length(seqnames(x)) != length(cigar(x)))
-        return("'seqnames(x)' and 'cigar(x)' must have the same length")
-    NULL
-}
-
 .valid.GAlignments.start <- function(x)
 {
     x_start <- start(x)
     if (!is.integer(x_start) || !is.null(names(x_start)) || S4Vectors:::anyMissing(x_start))
         return("'start(x)' must be an unnamed integer vector with no NAs")
-    if (length(x_start) != length(cigar(x)))
-        return("'start(x)' and 'cigar(x)' must have the same length")
     NULL
 }
 
@@ -230,16 +211,12 @@ setReplaceMethod("seqinfo", "GAlignments", set_GAlignments_seqinfo)
      || !identical(levels(runValue(x_strand)), levels(strand()))
      || !is.null(names(x_strand)) || any(is.na(x_strand)))
         return("'strand(x)' must be an unnamed 'factor' Rle with no NAs (and with levels +, - and *)")
-    if (length(x_strand) != length(cigar(x)))
-        return("'strand(x)' and 'cigar(x)' must have the same length")
     NULL
 }
 
 .valid.GAlignments <- function(x)
 {
-    c(.valid.GAlignments.names(x),
-      GenomicRanges:::.valid.GenomicRanges.seqnames(x),
-      .valid.GAlignments.seqnames(x),
+    c(GenomicRanges:::.valid.GenomicRanges.seqnames(x),
       .valid.GAlignments.start(x),
       .valid.GAlignments.cigar(x),
       .valid.GAlignments.strand(x),
@@ -476,31 +453,6 @@ setAs("GenomicRanges", "GAlignments",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Subsetting.
-###
-
-setMethod("extractROWS", "GAlignments",
-    function(x, i)
-    {
-        i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
-        ans_NAMES <- extractROWS(x@NAMES, i)
-        ans_seqnames <- extractROWS(x@seqnames, i)
-        ans_start <- extractROWS(x@start, i)
-        ans_cigar <- extractROWS(x@cigar, i)
-        ans_strand <- extractROWS(x@strand, i)
-        ans_elementMetadata <- extractROWS(x@elementMetadata, i)
-        BiocGenerics:::replaceSlots(x,
-            NAMES=ans_NAMES,
-            seqnames=ans_seqnames,
-            start=ans_start,
-            cigar=ans_cigar,
-            strand=ans_strand,
-            elementMetadata=ans_elementMetadata)
-    }
-)
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### "show" method.
 ###
 
@@ -572,125 +524,11 @@ setMethod("show", "GAlignments",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Combining and splitting.
+### Concatenation
 ###
 
-### 'Class' must be "GAlignments" or the name of a concrete subclass of
-### GAlignments.
-### 'objects' must be a list of GAlignments objects.
-### Returns an instance of class 'Class'.
-combine_GAlignments_objects <- function(Class, objects,
-                                        use.names=TRUE, ignore.mcols=FALSE)
-{
-    if (!isSingleString(Class))
-        stop("'Class' must be a single character string")
-    if (!extends(Class, "GAlignments"))
-        stop("'Class' must be the name of a class that extends GAlignments")
-    if (!is.list(objects))
-        stop("'objects' must be a list")
-    if (!isTRUEorFALSE(use.names))
-        stop("'use.names' must be TRUE or FALSE")
-    ### TODO: Support 'use.names=TRUE'.
-    if (use.names)
-        stop("'use.names=TRUE' is not supported yet")
-    if (!isTRUEorFALSE(ignore.mcols))
-        stop("'ignore.mcols' must be TRUE or FALSE")
-
-    if (length(objects) != 0L) {
-        ## TODO: Implement (in C) fast 'elementIsNull(objects)' in IRanges,
-        ## that does 'sapply(objects, is.null, USE.NAMES=FALSE)', and use it
-        ## here.
-        null_idx <- which(sapply(objects, is.null, USE.NAMES=FALSE))
-        if (length(null_idx) != 0L)
-            objects <- objects[-null_idx]
-    }
-    if (length(objects) == 0L)
-        return(new(Class))
-
-    ## TODO: Implement (in C) fast 'elementIs(objects, class)' in IRanges, that
-    ## does 'sapply(objects, is, class, USE.NAMES=FALSE)', and use it here.
-    ## 'elementIs(objects, "NULL")' should work and be equivalent to
-    ## 'elementIsNull(objects)'.
-    if (!all(sapply(objects, is, Class, USE.NAMES=FALSE)))
-        stop("the objects to combine must be ", Class, " objects (or NULLs)")
-    objects_names <- names(objects)
-    names(objects) <- NULL  # so lapply(objects, ...) below returns an
-                            # unnamed list
-
-    ## Combine "NAMES" slots.
-    NAMES_slots <- lapply(objects, function(x) x@NAMES)
-    ## TODO: Use elementIsNull() here when it becomes available.
-    has_no_names <- sapply(NAMES_slots, is.null, USE.NAMES=FALSE)
-    if (all(has_no_names)) {
-        ans_NAMES <- NULL
-    } else {
-        noname_idx <- which(has_no_names)
-        if (length(noname_idx) != 0L)
-            NAMES_slots[noname_idx] <-
-                lapply(elementNROWS(objects[noname_idx]), character)
-        ans_NAMES <- unlist(NAMES_slots, use.names=FALSE)
-    }
-
-    ## Combine "seqnames" slots.
-    seqnames_slots <- lapply(objects, function(x) x@seqnames)
-    ## TODO: Implement unlist_list_of_Rle() in IRanges and use it here.
-    ans_seqnames <- do.call(c, seqnames_slots)
-
-    ## Combine "start" slots.
-    start_slots <- lapply(objects, function(x) x@start)
-    ans_start <- unlist(start_slots, use.names=FALSE)
-
-    ## Combine "cigar" slots.
-    cigar_slots <- lapply(objects, function(x) x@cigar)
-    ans_cigar <- unlist(cigar_slots, use.names=FALSE)
-
-    ## Combine "strand" slots.
-    strand_slots <- lapply(objects, function(x) x@strand)
-    ## TODO: Implement unlist_list_of_Rle() in IRanges and use it here.
-    ans_strand <- do.call(c, strand_slots)
-
-    ## Combine "mcols" slots. We don't need to use fancy
-    ## IRanges:::rbind.mcols() for this because the "mcols" slot of a
-    ## GAlignments object is guaranteed to be a DataFrame.
-    if (ignore.mcols) {
-        ans_mcols <- S4Vectors:::make_zero_col_DataFrame(length(ans_start))
-    } else  {
-        mcols_slots <- lapply(objects, function(x) x@elementMetadata)
-        ## Will fail if not all the GAlignments objects in 'objects' have
-        ## exactly the same metadata cols.
-        ans_mcols <- do.call(rbind, mcols_slots)
-    }
-
-    ## Combine "seqinfo" slots.
-    seqinfo_slots <- lapply(objects, function(x) x@seqinfo)
-    ans_seqinfo <- do.call(merge, seqinfo_slots)
-
-    ## Make 'ans' and return it.
-    new(Class, NAMES=ans_NAMES,
-               seqnames=ans_seqnames,
-               start=ans_start,
-               cigar=ans_cigar,
-               strand=ans_strand,
-               elementMetadata=ans_mcols,
-               seqinfo=ans_seqinfo)
-}
-
-setMethod("c", "GAlignments",
-    function (x, ..., ignore.mcols=FALSE, recursive=FALSE)
-    {
-        if (!identical(recursive, FALSE))
-            stop("\"c\" method for GAlignments objects ",
-                 "does not support the 'recursive' argument")
-        if (missing(x)) {
-            objects <- list(...)
-            x <- objects[[1L]]
-        } else {
-            objects <- list(x, ...)
-        }
-        combine_GAlignments_objects(class(x), objects,
-                                    use.names=FALSE,
-                                    ignore.mcols=ignore.mcols)
-    }
+setMethod("concatenateObjects", "GAlignments",
+    GenomicRanges:::concatenate_GenomicRanges_objects
 )
 
 
