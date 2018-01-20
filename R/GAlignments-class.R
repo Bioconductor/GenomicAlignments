@@ -399,7 +399,7 @@ setMethod("rglist", "GAlignments",
     }
 )
 
-setAs("GAlignments", "Ranges",
+setAs("GAlignments", "IntegerRanges",
     function(from) ranges(from, use.names=TRUE, use.mcols=TRUE)
 )
 setAs("GAlignments", "GRanges",
@@ -568,8 +568,7 @@ setMethod("order", "GAlignments",
 setMethod("sort", "GAlignments",
     function(x, decreasing=FALSE, ...)
     {
-        oo <- GenomicRanges:::order_GenomicRanges(x, decreasing=decreasing,
-                                                      ...)
+        oo <- GenomicRanges:::order_GenomicRanges(x, decreasing=decreasing, ...)
         extractROWS(x, oo)
     }
 )

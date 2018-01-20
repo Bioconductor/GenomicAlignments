@@ -41,7 +41,7 @@ test_GAlignmentsList_coercion <- function() {
         checkIdentical(target, grl[[i]])
     }
 
-    ## Ranges
+    ## IntegerRanges
     checkIdentical(length(ranges(galist)), 
                    length(ranges(galist[1])) +
                    length(ranges(galist[2])))

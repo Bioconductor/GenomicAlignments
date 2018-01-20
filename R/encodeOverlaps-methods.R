@@ -57,10 +57,10 @@ encodeOverlaps1 <- function(query, subject,
                             query.break=0L, flip.query=FALSE,
                             as.matrix=FALSE, as.raw=FALSE)
 {
-    if (!is(query, "Ranges"))
-        stop("'query' must be a Ranges object")
-    if (!is(subject, "Ranges"))
-        stop("'subject' must be a Ranges object")
+    if (!is(query, "IntegerRanges"))
+        stop("'query' must be an IntegerRanges object")
+    if (!is(subject, "IntegerRanges"))
+        stop("'subject' must be an IntegerRanges object")
     if (is.numeric(query.space) && !is.integer(query.space))
         query.space <- as.integer(query.space)
     if (is.numeric(subject.space) && !is.integer(subject.space))
@@ -85,8 +85,8 @@ encodeOverlaps1 <- function(query, subject,
 
 ### TODO: Put this in the (upcoming) man page for encodeOverlaps().
 ### A simple (but inefficient) implementation of the "findOverlaps" method for
-### Ranges objects. Complexity and memory usage is M x N where M and N are the
-### lengths of 'query' and 'subject', respectively.
+### IntegerRanges objects. Complexity and memory usage is M x N where M and N
+### are the lengths of 'query' and 'subject', respectively.
 findRangesOverlaps <- function(query, subject)
 {
     ovenc <- encodeOverlaps1(query, subject, as.matrix=TRUE, as.raw=TRUE)
@@ -175,8 +175,8 @@ setGeneric("encodeOverlaps", signature=c("query", "subject"),
 )
 
 setMethods("encodeOverlaps", list(c("RangesList", "RangesList"),
-                                  c("RangesList", "Ranges"),
-                                  c("Ranges", "RangesList")),
+                                  c("RangesList", "IntegerRanges"),
+                                  c("IntegerRanges", "RangesList")),
     function(query, subject, hits=NULL, ...)
     {
         .RangesList_encodeOverlaps(as.list(start(query)),

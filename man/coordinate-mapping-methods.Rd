@@ -2,17 +2,17 @@
 \alias{coordinate-mapping-methods}
 
 \alias{mapToAlignments}
-\alias{mapToAlignments,Ranges,GAlignments-method}
+\alias{mapToAlignments,IntegerRanges,GAlignments-method}
 \alias{mapToAlignments,GenomicRanges,GAlignments-method}
 \alias{pmapToAlignments}
-\alias{pmapToAlignments,Ranges,GAlignments-method}
+\alias{pmapToAlignments,IntegerRanges,GAlignments-method}
 \alias{pmapToAlignments,GenomicRanges,GAlignments-method}
 
 \alias{mapFromAlignments}
-\alias{mapFromAlignments,Ranges,GAlignments-method}
+\alias{mapFromAlignments,IntegerRanges,GAlignments-method}
 \alias{mapFromAlignments,GenomicRanges,GAlignments-method}
 \alias{pmapFromAlignments}
-\alias{pmapFromAlignments,Ranges,GAlignments-method}
+\alias{pmapFromAlignments,IntegerRanges,GAlignments-method}
 \alias{pmapFromAlignments,GenomicRanges,GAlignments-method}
 
 \title{Map range coordinates between reads and genome space using

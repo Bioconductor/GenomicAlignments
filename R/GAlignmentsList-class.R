@@ -260,7 +260,7 @@ setMethod("rglist", "GAlignmentsList",
     }
 )
 
-setAs("GAlignmentsList", "Ranges", 
+setAs("GAlignmentsList", "IntegerRanges", 
     function(from) ranges(from, use.names=TRUE, use.mcols=TRUE)
 )
 setAs("GAlignmentsList", "GRanges", 

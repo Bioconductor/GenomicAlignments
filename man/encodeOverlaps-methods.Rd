@@ -3,8 +3,8 @@
 
 \alias{encodeOverlaps}
 \alias{encodeOverlaps,RangesList,RangesList-method}
-\alias{encodeOverlaps,RangesList,Ranges-method}
-\alias{encodeOverlaps,Ranges,RangesList-method}
+\alias{encodeOverlaps,RangesList,IntegerRanges-method}
+\alias{encodeOverlaps,IntegerRanges,RangesList-method}
 
 \alias{encodeOverlaps1}
 

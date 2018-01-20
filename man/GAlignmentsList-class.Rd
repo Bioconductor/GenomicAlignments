@@ -35,7 +35,7 @@
 \alias{granges,GAlignmentsList-method}
 \alias{grglist,GAlignmentsList-method}
 \alias{rglist,GAlignmentsList-method}
-\alias{coerce,GAlignmentsList,Ranges-method}
+\alias{coerce,GAlignmentsList,IntegerRanges-method}
 \alias{coerce,GAlignmentsList,GRanges-method}
 \alias{coerce,GAlignmentsList,GRangesList-method}
 \alias{coerce,GAlignmentsList,RangesList-method}
@@ -208,7 +208,7 @@
       GRangesList have strand \sQuote{*}.
     }
     \item{}{
-      \code{as(x, "GRanges")}, \code{as(x, "Ranges")},
+      \code{as(x, "GRanges")}, \code{as(x, "IntegerRanges")},
       \code{as(x, "GRangesList")}, \code{as(x, "RangesList")}:
       Alternate ways of doing
       \code{granges(x, use.names=TRUE, use.mcols=TRUE)},

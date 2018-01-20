@@ -20,7 +20,7 @@
   or \link{GAlignmentsList} object, and another range-based object.
 
   NOTE: The \code{\link[IRanges]{findOverlaps}} generic function and methods
-  for \link[IRanges]{Ranges} and \link[IRanges]{RangesList} objects
+  for \link[IRanges]{IntegerRanges} and \link[IRanges]{RangesList} objects
   are defined and documented in the \pkg{IRanges} package.
   The methods for \link[GenomicRanges]{GRanges} and
   \link[GenomicRanges]{GRangesList} objects are defined and

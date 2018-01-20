@@ -9,9 +9,9 @@
 
 /*
  * A low-level helper for "superficial" checking of the 'space' vector
- * associated with a Ranges object.
+ * associated with an IntegerRanges object.
  */
-static const int *check_Ranges_space(SEXP space, int len, const char *what)
+static const int *check_ranges_space(SEXP space, int len, const char *what)
 {
 	if (space == R_NilValue)
 		return NULL;
@@ -201,11 +201,11 @@ static void overlap_encoding(
 	if (query_break != 0 && (query_break < 1 || query_break >= q_len))
 		error("the position of the break in the query "
 		      "must be >= 1 and < length(query)");
-	q_space = check_Ranges_space(query_space, q_len, "query");
+	q_space = check_ranges_space(query_space, q_len, "query");
 	s_len = check_integer_pairs(subject_start, subject_width,
 				    &s_start, &s_width,
 				    "start(subject)", "width(subject)");
-	s_space = check_Ranges_space(subject_space, s_len, "subject");
+	s_space = check_ranges_space(subject_space, s_len, "subject");
 	unsafe_overlap_encoding(q_start, q_width, q_space, q_len,
 				query_break, flip_query,
 				s_start, s_width, s_space, s_len,

@@ -59,11 +59,11 @@
   \itemize{
     \item(){
       \code{narrow} on a \link{GAlignments} object behaves
-      like on a \link[IRanges]{Ranges} object. See
+      like on a \link[IRanges]{IntegerRanges} object. See
       \code{?`\link[IRanges]{intra-range-methods}`} for the details.
 
       A major difference though is that it returns a \link{GAlignments}
-      object instead of a \link[IRanges]{Ranges} object.
+      object instead of a \link[IRanges]{IntegerRanges} object.
 
       Unlike with \code{qnarrow} (see below), the
       \code{start}/\code{end}/\code{width} arguments here describe

@@ -39,7 +39,7 @@
 \alias{granges,GAlignments-method}
 \alias{grglist,GAlignments-method}
 \alias{rglist,GAlignments-method}
-\alias{coerce,GAlignments,Ranges-method}
+\alias{coerce,GAlignments,IntegerRanges-method}
 \alias{coerce,GAlignments,GRanges-method}
 \alias{coerce,GAlignments,GRangesList-method}
 \alias{coerce,GAlignments,RangesList-method}
@@ -331,7 +331,7 @@
       See Details section above for more information.
     }
     \item{}{
-      \code{as(x, "GRanges")}, \code{as(x, "Ranges")},
+      \code{as(x, "GRanges")}, \code{as(x, "IntegerRanges")},
       \code{as(x, "GRangesList")}, \code{as(x, "RangesList")}:
       Alternate ways of doing
       \code{granges(x, use.names=TRUE, use.mcols=TRUE)},
@@ -392,7 +392,7 @@
       Note that these options also affect the display of \link{GRanges}
       and \link{GAlignmentPairs} objects, as well as other objects
       defined in the \pkg{IRanges} and \pkg{Biostrings} packages
-      (e.g. \link[IRanges]{Ranges} and \link[Biostrings]{DNAStringSet}
+      (e.g. \link[IRanges]{IntegerRanges} and \link[Biostrings]{DNAStringSet}
       objects).
     }
   }

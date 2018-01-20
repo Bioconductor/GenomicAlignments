@@ -581,7 +581,7 @@ setMethod("grglist", "GAlignmentPairs",
     }
 )
 
-setAs("GAlignmentPairs", "Ranges",
+setAs("GAlignmentPairs", "IntegerRanges",
     function(from) ranges(from, use.names=TRUE, use.mcols=TRUE)
 )
 setAs("GAlignmentPairs", "GRanges",

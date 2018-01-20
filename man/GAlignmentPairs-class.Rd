@@ -41,7 +41,7 @@
 \alias{ranges,GAlignmentPairs-method}
 \alias{granges,GAlignmentPairs-method}
 \alias{grglist,GAlignmentPairs-method}
-\alias{coerce,GAlignmentPairs,Ranges-method}
+\alias{coerce,GAlignmentPairs,IntegerRanges-method}
 \alias{coerce,GAlignmentPairs,GRanges-method}
 \alias{coerce,GAlignmentPairs,GRangesList-method}
 
@@ -326,7 +326,7 @@
       ranges corresponding to deletions are dropped.
     }
     \item{}{
-      \code{as(x, "GRanges")}, \code{as(x, "Ranges")},
+      \code{as(x, "GRanges")}, \code{as(x, "IntegerRanges")},
       \code{as(x, "GRangesList")}:
       Alternate ways of doing
       \code{granges(x, use.names=TRUE, use.mcols=TRUE)},
@@ -352,9 +352,9 @@
       length is less than (or equal to) the sum of these 2 options
       plus 1, then the full object is displayed.
       Note that these options also affect the display of \link{GRanges}
-      and \link{GAlignments} objects, as well as other objects defined
-      in the IRanges and Biostrings packages (e.g. \link[IRanges]{Ranges}
-      and \link[Biostrings]{XStringSet} objects).
+      and \link{GAlignments} objects, as well as other \link[S4Vector]{Vector}
+      derivatives defined in the \pkg{IRanges} and \pkg{Biostrings} packages
+      (e.g. \link[IRanges]{IRanges} and \link[Biostrings]{XStringSet} objects).
     }
   }
 }

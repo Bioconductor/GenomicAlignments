@@ -12,7 +12,7 @@
   Performs set operations on \link{GAlignments} objects.
 
   NOTE: The \code{\link[IRanges]{pintersect}} generic function and method
-  for \link[IRanges]{Ranges} objects is defined and documented in the
+  for \link[IRanges]{IntegerRanges} objects is defined and documented in the
   \pkg{IRanges} package.
   Methods for \link[GenomicRanges]{GRanges} and
   \link[GenomicRanges]{GRangesList} objects are defined and

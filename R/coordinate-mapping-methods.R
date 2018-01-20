@@ -89,7 +89,7 @@ setGeneric("pmapFromAlignments", signature=c("x", "alignments"),
         GRanges(xHits=integer(), transcriptsHits=integer())
 }
 
-setMethod("mapToAlignments", c("Ranges", "GAlignments"),
+setMethod("mapToAlignments", c("IntegerRanges", "GAlignments"),
     function(x, alignments, ...)
         ranges(.mapToAlignments(x, alignments))
 )
@@ -99,7 +99,7 @@ setMethod("mapToAlignments", c("GenomicRanges", "GAlignments"),
         .mapToAlignments(x, alignments)
 )
 
-setMethod("mapFromAlignments", c("Ranges", "GAlignments"),
+setMethod("mapFromAlignments", c("IntegerRanges", "GAlignments"),
     function(x, alignments, ...)
         ranges(.mapFromAlignments(x, alignments))
 )
@@ -144,7 +144,7 @@ setMethod("mapFromAlignments", c("GenomicRanges", "GAlignments"),
     }
 }
 
-setMethod("pmapToAlignments", c("Ranges", "GAlignments"),
+setMethod("pmapToAlignments", c("IntegerRanges", "GAlignments"),
     function(x, alignments, ...)
         ranges(.pmapAlignments(x, alignments, FALSE))
 )
@@ -154,7 +154,7 @@ setMethod("pmapToAlignments", c("GenomicRanges", "GAlignments"),
         .pmapAlignments(ranges(x), alignments, FALSE)
 )
 
-setMethod("pmapFromAlignments", c("Ranges", "GAlignments"),
+setMethod("pmapFromAlignments", c("IntegerRanges", "GAlignments"),
     function(x, alignments, ...)
         ranges(.pmapAlignments(x, alignments, TRUE))
 )
