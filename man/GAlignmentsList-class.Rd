@@ -38,7 +38,7 @@
 \alias{coerce,GAlignmentsList,IntegerRanges-method}
 \alias{coerce,GAlignmentsList,GRanges-method}
 \alias{coerce,GAlignmentsList,GRangesList-method}
-\alias{coerce,GAlignmentsList,RangesList-method}
+\alias{coerce,GAlignmentsList,IntegerRangesList-method}
 
 \alias{coerce,GAlignmentPairs,GAlignmentsList-method}
 \alias{coerce,GAlignmentsList,GAlignmentPairs-method}
@@ -209,7 +209,7 @@
     }
     \item{}{
       \code{as(x, "GRanges")}, \code{as(x, "IntegerRanges")},
-      \code{as(x, "GRangesList")}, \code{as(x, "RangesList")}:
+      \code{as(x, "GRangesList")}, \code{as(x, "IntegerRangesList")}:
       Alternate ways of doing
       \code{granges(x, use.names=TRUE, use.mcols=TRUE)},
       \code{ranges(x, use.names=TRUE, use.mcols=TRUE)},

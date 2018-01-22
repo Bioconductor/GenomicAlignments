@@ -25,7 +25,7 @@ test_GAlignmentsList_construction <- function() {
 test_GAlignmentsList_coercion <- function() {
     galist <- GAlignmentsList(a=.noGaps[seqnames(.noGaps) == "chr3"], 
                               b=.Gaps[seqnames(.Gaps) == "chr4"])
-    ## RangesList
+    ## IRangesList
     rgl <- rglist(galist)
     checkIdentical(length(galist), length(rgl))
     for (i in seq_along(galist)) {

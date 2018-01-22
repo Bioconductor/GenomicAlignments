@@ -109,11 +109,11 @@ isCompatibleWithSplicing(x)
 \details{
   Given a \code{query} and a \code{subject} of the same length, both
   list-like objects with top-level elements typically containing multiple
-  ranges (e.g. \link[IRanges]{RangesList} objects), the "overlap encoding"
-  of the i-th element in \code{query} and i-th element in \code{subject}
-  is a character string describing how the ranges in \code{query[[i]]}
-  are \emph{qualitatively} positioned relatively to the ranges in
-  \code{subject[[i]]}.
+  ranges (e.g. \link[IRanges]{IntegerRangesList} objects), the "overlap
+  encoding" of the i-th element in \code{query} and i-th element in
+  \code{subject} is a character string describing how the ranges in
+  \code{query[[i]]} are \emph{qualitatively} positioned relatively to
+  the ranges in \code{subject[[i]]}.
 
   The \code{\link{encodeOverlaps}} function computes those overlap
   encodings and returns them in an OverlapEncodings object of the same

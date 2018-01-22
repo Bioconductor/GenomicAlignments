@@ -38,10 +38,10 @@ alphabetFrequencyFromBam(file, index=file, param, what="seq", ...)
     A \link{ScanBamParam} object containing exactly 1 genomic region
     (i.e. \code{unlist(bamWhich(param))} must have length 1).
     Alternatively, \code{param} can be a \link[GenomicRanges]{GRanges} or
-    \link[IRanges]{RangesList} object containing exactly 1 genomic region
-    (the strand will be ignored in case of a \link[GenomicRanges]{GRanges}
-    object), or a character string specifying a single genomic region (in
-    the \code{"chr14:5201-5300"} format).
+    \link[IRanges]{IntegerRangesList} object containing exactly 1 genomic
+    region (the strand will be ignored in case of a
+    \link[GenomicRanges]{GRanges} object), or a character string specifying
+    a single genomic region (in the \code{"chr14:5201-5300"} format).
   }
   \item{what}{
     A single string. Either \code{"seq"} or \code{"qual"}. If \code{"seq"}

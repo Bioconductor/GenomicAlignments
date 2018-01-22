@@ -42,7 +42,7 @@
 \alias{coerce,GAlignments,IntegerRanges-method}
 \alias{coerce,GAlignments,GRanges-method}
 \alias{coerce,GAlignments,GRangesList-method}
-\alias{coerce,GAlignments,RangesList-method}
+\alias{coerce,GAlignments,IntegerRangesList-method}
 
 \alias{coerce,GAlignments,DataFrame-method}
 \alias{as.data.frame,GAlignments-method}
@@ -293,13 +293,13 @@
       \code{rglist(x, use.names=TRUE, use.mcols=FALSE,
                       order.as.in.query=FALSE, drop.D.ranges=FALSE)}:
 
-      Return either a \link{GRangesList} or a \link[IRanges]{RangesList}
+      Return either a \link{GRangesList} or a \link[IRanges]{IntegerRangesList}
       object of length \code{length(x)} where the i-th element represents
       the ranges (with respect to the reference) of the i-th alignment in
       \code{x}.
 
-      More precisely, the \link[IRanges]{RangesList} object returned by
-      \code{rglist(x)} is a \link[IRanges]{CompressedIRangesList} object.
+      More precisely, the \link[IRanges]{IntegerRangesList} object returned
+      by \code{rglist(x)} is a \link[IRanges]{CompressedIRangesList} object.
 
       If \code{use.names} is TRUE, then the names on \code{x} 
       (if any) are propagated to the returned object.
@@ -332,7 +332,7 @@
     }
     \item{}{
       \code{as(x, "GRanges")}, \code{as(x, "IntegerRanges")},
-      \code{as(x, "GRangesList")}, \code{as(x, "RangesList")}:
+      \code{as(x, "GRangesList")}, \code{as(x, "IntegerRangesList")}:
       Alternate ways of doing
       \code{granges(x, use.names=TRUE, use.mcols=TRUE)},
       \code{ranges(x, use.names=TRUE, use.mcols=TRUE)},

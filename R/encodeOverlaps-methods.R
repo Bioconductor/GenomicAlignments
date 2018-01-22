@@ -167,16 +167,16 @@ findRangesOverlaps <- function(query, subject)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### encodeOverlaps() generic and methods for RangesList objects.
+### encodeOverlaps() generic and methods for IntegerRangesList objects.
 ###
 
 setGeneric("encodeOverlaps", signature=c("query", "subject"),
     function(query, subject, hits=NULL, ...) standardGeneric("encodeOverlaps")
 )
 
-setMethods("encodeOverlaps", list(c("RangesList", "RangesList"),
-                                  c("RangesList", "IntegerRanges"),
-                                  c("IntegerRanges", "RangesList")),
+setMethods("encodeOverlaps", list(c("IntegerRangesList", "IntegerRangesList"),
+                                  c("IntegerRangesList", "IntegerRanges"),
+                                  c("IntegerRanges", "IntegerRangesList")),
     function(query, subject, hits=NULL, ...)
     {
         .RangesList_encodeOverlaps(as.list(start(query)),

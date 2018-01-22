@@ -408,7 +408,7 @@ setAs("GAlignments", "GRanges",
 setAs("GAlignments", "GRangesList",
     function(from) grglist(from, use.names=TRUE, use.mcols=TRUE)
 )
-setAs("GAlignments", "RangesList",
+setAs("GAlignments", "IntegerRangesList",
     function(from) rglist(from, use.names=TRUE, use.mcols=TRUE)
 )
 

@@ -255,8 +255,9 @@ readGappedReads(file, index=file, use.names=FALSE, param=NULL,
     \item \link{GAlignments}, \link{GAlignmentPairs}, \link{GAlignmentsList},
           and \link{GappedReads} objects.
 
-    \item \link[IRanges]{RangesList} objects (used in the examples below
-          to specify the \code{which} regions) in the \pkg{IRanges} package.
+    \item \link[IRanges]{IRangesList} objects (used in the examples
+          below to specify the \code{which} regions) in the \pkg{IRanges}
+          package.
   }
 }
 
@@ -287,8 +288,8 @@ gal3
 mcols(gal3)
 
 ## Using the 'param' arg to load alignments from particular regions.
-which <- RangesList(seq1=IRanges(1000, 1100),
-                    seq2=IRanges(c(1546, 1555, 1567), width=10))
+which <- IRangesList(seq1=IRanges(1000, 1100),
+                     seq2=IRanges(c(1546, 1555, 1567), width=10))
 param <- ScanBamParam(which=which)
 gal4 <- readGAlignments(bamfile, use.names=TRUE, param=param)
 gal4
@@ -311,8 +312,8 @@ gal5
 ## 'which' contains repeated or overlapping regions. Using the same
 ## regions as we did for 'gal4' above, except that now we're
 ## repeating the region on seq1:
-which <- RangesList(seq1=rep(IRanges(1000, 1100), 2),
-                    seq2=IRanges(c(1546, 1555, 1567), width=10))
+which <- IRangesList(seq1=rep(IRanges(1000, 1100), 2),
+                     seq2=IRanges(c(1546, 1555, 1567), width=10))
 param <- ScanBamParam(which=which)
 gal4b <- readGAlignments(bamfile, use.names=TRUE, param=param)
 length(gal4b)  # > length(gal4), because all the records overlapping

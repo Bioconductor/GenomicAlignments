@@ -17,8 +17,8 @@
   \link[Rsamtools]{BamFile} objects.
 
   NOTE: The \code{\link[IRanges]{coverage}} generic function and methods
-  for \link[IRanges]{IntegerRanges} and \link[IRanges]{RangesList} objects
-  are defined and documented in the \pkg{IRanges} package.
+  for \link[IRanges]{IntegerRanges} and \link[IRanges]{IntegerRangesList}
+  objects are defined and documented in the \pkg{IRanges} package.
   Methods for \link[GenomicRanges]{GRanges} and
   \link[GenomicRanges]{GRangesList} objects are defined and
   documented in the \pkg{GenomicRanges} package.

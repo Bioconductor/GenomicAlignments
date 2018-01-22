@@ -2,9 +2,9 @@
 \alias{encodeOverlaps-methods}
 
 \alias{encodeOverlaps}
-\alias{encodeOverlaps,RangesList,RangesList-method}
-\alias{encodeOverlaps,RangesList,IntegerRanges-method}
-\alias{encodeOverlaps,IntegerRanges,RangesList-method}
+\alias{encodeOverlaps,IntegerRangesList,IntegerRangesList-method}
+\alias{encodeOverlaps,IntegerRangesList,IntegerRanges-method}
+\alias{encodeOverlaps,IntegerRanges,IntegerRangesList-method}
 
 \alias{encodeOverlaps1}
 
@@ -88,7 +88,8 @@ extractQueryStartInTranscript(query, subject, hits=NULL, ovenc=NULL,
 
     More generally speaking, \code{query} and \code{subject} must be
     list-like objects with list elements containing multiple ranges e.g.
-    \link[IRanges]{RangesList} or \link[GenomicRanges]{GRangesList} objects.
+    \link[IRanges]{IntegerRangesList} or \link[GenomicRanges]{GRangesList}
+    objects.
   }
   \item{hits}{
     An optional \link[S4Vectors]{Hits} object typically obtained from a
@@ -203,14 +204,14 @@ extractQueryStartInTranscript(query, subject, hits=NULL, ovenc=NULL,
 
 \examples{
 ## ---------------------------------------------------------------------
-## A. BETWEEN 2 RangesList OBJECTS
+## A. BETWEEN 2 IntegerRangesList OBJECTS
 ## ---------------------------------------------------------------------
 ## In the context of an RNA-seq experiment, encoding the overlaps
 ## between 2 GRangesList objects, one containing the reads (the query),
 ## and one containing the transcripts (the subject), can be used for
 ## detecting hits between reads and transcripts that are "compatible"
 ## with the splicing of the transcript. Here we illustrate this with 2
-## RangesList objects, in order to keep things simple:
+## IntegerRangesList objects, in order to keep things simple:
 
 ## 4 aligned reads in the query:
 read1 <- IRanges(c(7, 15, 22), c(9, 19, 23))  # 2 junctions

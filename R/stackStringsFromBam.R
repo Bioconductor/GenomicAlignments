@@ -25,27 +25,28 @@
         param <- ScanBamParam(which=param)
         return(param)
     }
-    if (is(param, "RangesList")) {
-        ## We support RangesList just because ScanBamParam() supports it too
-        ## and also because that's what's returned by bamWhich().
+    if (is(param, "IntegerRangesList")) {
+        ## We support IntegerRangesList just because ScanBamParam() supports
+        ## it too and also because that's what's returned by bamWhich().
         param <- param[elementNROWS(param) != 0L]
         if (length(unlist(param, use.names=FALSE)) != 1L)
-            stop("when a RangesList object, 'param' must contain exactly 1 ",
-                 "genomic region\n  (i.e. 'unlist(param)' must have length 1)")
+            stop(wmsg("when a IntegerRangesList object, 'param' must contain ",
+                      "exactly 1 genomic region (i.e. 'unlist(param)' must ",
+                      "have length 1)"))
         param <- ScanBamParam(which=param)
         return(param)
     }
     if (!is(param, "ScanBamParam"))
-        stop("'param' must be either a ScanBamParam or RangesList object ",
-             "containing\n  exactly 1 genomic region, or a GRanges object ",
-             "of length 1, or a character\n  string specifying a single ",
-             "genomic region (in the \"chr14:5201-5300\" format)")
+        stop(wmsg("'param' must be either a ScanBamParam or IntegerRangesList ",
+                  "object containing exactly 1 genomic region, or a GRanges ",
+                  "object of length 1, or a character string specifying a ",
+                  "singe genomic region (in the \"chr14:5201-5300\" format)"))
     param_which <- bamWhich(param)
     param_which <- param_which[elementNROWS(param_which) != 0L]
     if (length(unlist(param_which, use.names=FALSE)) != 1L)
-        stop("when a ScanBamParam object, 'param' must contain exactly 1 ",
-             "genomic region\n  (i.e. 'unlist(bamWhich(param))' must have ",
-             "length 1)")
+        stop(wmsg("when a ScanBamParam object, 'param' must contain exactly ",
+                  "1 genomic region (i.e. 'unlist(bamWhich(param))' must ",
+                  "have length 1)"))
     bamWhich(param) <- param_which
     param
 }
