@@ -86,8 +86,8 @@ setMethod("flippedQuery", "OverlapEncodings", function(x) x@flippedQuery)
         encoding
     }
 
-    Lencoding <- halves2encoding(phead(block_halves, n=1L), encoding_blocks)
-    Rencoding <- halves2encoding(ptail(block_halves, n=1L), encoding_blocks)
+    Lencoding <- halves2encoding(heads(block_halves, n=1L), encoding_blocks)
+    Rencoding <- halves2encoding(tails(block_halves, n=1L), encoding_blocks)
     if (!(single.end.on.left && single.end.on.right)) {
         idx <- which(nhalves == 1L)
         if (!single.end.on.left)

@@ -758,9 +758,9 @@ extractQueryStartInTranscript <- function(query, subject,
                  "indicating for each paired-end read the position of the ",
                  "break between the ranges coming from one end and those ",
                  "coming from the other end")
-        query <- ptail(query, n=-query.break)
+        query <- tails(query, n=-query.break)
     }
-    query1 <- unlist(phead(query, n=1L), use.names=FALSE)
+    query1 <- unlist(heads(query, n=1L), use.names=FALSE)
     ## A sanity check.
     if (length(query1) != length(query)) 
         stop("some list elements in 'query' are empty")
