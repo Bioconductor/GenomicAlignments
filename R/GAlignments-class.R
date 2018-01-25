@@ -4,7 +4,7 @@
 ###
 
 setClass("GAlignments",
-    contains="Vector",
+    contains="Ranges",
     representation(
         seqnames="Rle",               # 'factor' Rle
         start="integer",              # POS field in SAM
@@ -94,7 +94,6 @@ setMethod("width", "GAlignments",
 )
 
 setMethod("start", "GAlignments", function(x, ...) x@start)
-setMethod("end", "GAlignments", function(x, ...) {x@start + width(x) - 1L})
 
 setMethod("strand", "GAlignments", function(x) x@strand)
 

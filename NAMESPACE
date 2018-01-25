@@ -72,10 +72,11 @@ exportMethods(
     ## Generics defined in IRanges:
     ranges, rglist,
     relistToClass,
+    findOverlaps,
+    windows,
     narrow,
     coverage,
     pintersect,
-    findOverlaps,
 
     ## Generics defined in GenomeInfoDb:
     seqinfo, "seqinfo<-",

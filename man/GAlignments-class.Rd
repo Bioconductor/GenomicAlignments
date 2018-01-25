@@ -23,7 +23,6 @@
 \alias{qwidth}
 \alias{qwidth,GAlignments-method}
 \alias{start,GAlignments-method}
-\alias{end,GAlignments-method}
 \alias{width,GAlignments-method}
 \alias{njunc}
 \alias{njunc,GAlignments-method}

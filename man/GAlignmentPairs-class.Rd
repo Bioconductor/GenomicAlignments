@@ -352,7 +352,7 @@
       length is less than (or equal to) the sum of these 2 options
       plus 1, then the full object is displayed.
       Note that these options also affect the display of \link{GRanges}
-      and \link{GAlignments} objects, as well as other \link[S4Vector]{Vector}
+      and \link{GAlignments} objects, as well as other \link[S4Vectors]{Vector}
       derivatives defined in the \pkg{IRanges} and \pkg{Biostrings} packages
       (e.g. \link[IRanges]{IRanges} and \link[Biostrings]{XStringSet} objects).
     }
