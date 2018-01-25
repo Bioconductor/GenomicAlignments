@@ -42,9 +42,9 @@ setMethod("updateCigarAndStart", "GAlignments",
 ### narrow()
 ###
 
-### narrow() is equivalent to windows() on a Ranges derivative (the "narrow"
-### method for Ranges objects just calls windows()) so we only need to make
-### windows() work on GAlignments objects.
+### The "narrow" method for Vector objects calls windows() so we only need to
+### implement a "windows" method for GAlignments objects to make narrow()
+### work on these objects.
 setMethod("windows", "GAlignments",
     function(x, start=NA, end=NA, width=NA)
         .narrowGAlignments(x, cigarNarrow, start, end, width)
