@@ -18,7 +18,7 @@ setGeneric("summarizeOverlaps", signature=c("features", "reads"),
                               inter.feature, preprocess.reads, ...)
 {
     if (ignore.strand) {
-        if (class(features) == "GRangesList") {
+        if (is(features, "GRangesList")) {
             r <- unlist(features)
             strand(r) <- "*"
             features@unlistData <- r
@@ -36,7 +36,7 @@ setGeneric("summarizeOverlaps", signature=c("features", "reads"),
                                ignore.strand=FALSE,
                                inter.feature=TRUE, preprocess.reads=NULL, ...)
 {
-    if (class(reads) == "GRangesList") {
+    if (is(reads, "GRangesList")) {
         if (all(unlist(strand(reads), use.names=FALSE) == "*"))
             ignore.strand <- TRUE
     } else {
