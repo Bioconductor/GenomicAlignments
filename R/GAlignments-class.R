@@ -79,6 +79,41 @@ setGeneric("njunc", function(x) standardGeneric("njunc"))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### updateObject()
+###
+### Internal representation of GAlignments objects has changed in
+### GenomicAlignments 1.15.11 (Bioc 3.7).
+###
+
+.get_GAlignments_version <- function(object)
+{
+    if (.hasSlot(object, "elementType")) "current" else "< 1.15.11"
+}
+
+setMethod("updateObject", "GAlignments",
+    function(object, ..., verbose=FALSE)
+    {
+        ## elementType slot.
+        version <- .get_GAlignments_version(object)
+        if (version == "current") {
+            if (verbose)
+                message("[updateObject] Internal representation of ",
+                        class(object), " object is current.\n",
+                        "[updateObject] Nothing to update.")
+        } else {
+            if (verbose)
+                message("[updateObject] ", class(object), " object uses ",
+                        "internal representation from\n",
+                        "[updateObject] GenomicAlignments ", version, ". ",
+                        "Updating it ...")
+            object@elementType <- new(class(object))@elementType
+        }
+        object
+    }
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Getters.
 ###
 

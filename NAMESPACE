@@ -64,6 +64,7 @@ exportMethods(
     ## Generics defined in BiocGenerics:
     as.data.frame, is.unsorted, order, sort, rank,
     start, end, width, strand, "strand<-", invertStrand,
+    updateObject,
 
     ## Generics defined in S4Vectors:
     concatenateObjects,
