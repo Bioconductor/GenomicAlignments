@@ -26,7 +26,7 @@ options(width=100)
     path <- file.path(.precomputed_results_dir, filename)
     tempenv <- new.env(parent=emptyenv())
     load(path, envir=tempenv)
-    get(objname, envir=tempenv)
+    updateObject(get(objname, envir=tempenv))
 }
 .checkIdenticalToPrecomputed <- function(obj, objname, ignore.metadata=FALSE)
 {
