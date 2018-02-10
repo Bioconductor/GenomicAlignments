@@ -12,8 +12,8 @@ Maintainer: Bioconductor Package Maintainer <maintainer@bioconductor.org>
 biocViews: Genetics, Infrastructure, DataImport, Sequencing, RNASeq, SNP,
            Coverage, Alignment
 Depends: R (>= 2.10), methods, BiocGenerics (>= 0.15.3),
-	S4Vectors (>= 0.17.28), IRanges (>= 2.13.16), GenomeInfoDb (>= 1.13.1),
-	GenomicRanges (>= 1.31.13), SummarizedExperiment (>= 1.9.13),
+	S4Vectors (>= 0.17.28), IRanges (>= 2.13.25), GenomeInfoDb (>= 1.13.1),
+	GenomicRanges (>= 1.31.19), SummarizedExperiment (>= 1.9.13),
 	Biostrings (>= 2.47.6), Rsamtools (>= 1.31.2)
 Imports: methods, utils, stats, BiocGenerics, S4Vectors,
 	IRanges, GenomicRanges, Biostrings, Rsamtools, BiocParallel
