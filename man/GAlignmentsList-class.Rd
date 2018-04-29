@@ -26,9 +26,6 @@
 \alias{elementMetadata<-,GAlignmentsList-method}
 \alias{seqinfo,GAlignmentsList-method}
 \alias{seqinfo<-,GAlignmentsList-method}
-\alias{start,GAlignmentsList-method}
-\alias{end,GAlignmentsList-method}
-\alias{width,GAlignmentsList-method}
 
 % Coercion:
 \alias{ranges,GAlignmentsList-method}

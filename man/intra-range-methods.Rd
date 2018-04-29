@@ -5,7 +5,6 @@
 \alias{narrow}
 \alias{windows,GAlignments-method}
 \alias{narrow,GAlignments-method}
-\alias{narrow,GAlignmentsList-method}
 \alias{narrow,GappedReads-method}
 
 \alias{qnarrow}

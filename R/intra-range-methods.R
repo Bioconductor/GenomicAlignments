@@ -50,15 +50,6 @@ setMethod("windows", "GAlignments",
         .narrowGAlignments(x, cigarNarrow, start, end, width)
 )
 
-setMethod("narrow", "GAlignmentsList",
-    function(x, start=NA, end=NA, width=NA, use.names=TRUE)
-    {
-        gal <- narrow(x@unlistData, start=start, end=end, width=width,
-                      use.names=use.names)
-        relist(gal, x@partitioning)
-    }
-)
-
 setMethod("narrow", "GappedReads",
     function(x, start=NA, end=NA, width=NA, use.names=TRUE)
     {

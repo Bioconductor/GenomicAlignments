@@ -4,7 +4,7 @@
 ###
 
 setClass("GAlignmentsList",
-    contains="CompressedList",
+    contains="CompressedRangesList",
     representation(
         unlistData="GAlignments",
         elementMetadata="DataFrame"
@@ -82,18 +82,6 @@ setMethod("qwidth", "GAlignmentsList",
 
 setMethod("njunc", "GAlignmentsList",
     function(x) relist(njunc(unlist(x, use.names=FALSE)), x)
-)
-
-setMethod("start", "GAlignmentsList",
-    function(x, ...) relist(start(unlist(x, use.names=FALSE), ...), x)
-)
-
-setMethod("end", "GAlignmentsList",
-    function(x, ...) relist(end(unlist(x, use.names=FALSE), ...), x)
-)
-
-setMethod("width", "GAlignmentsList",
-    function(x) relist(width(unlist(x, use.names=FALSE)), x)
 )
 
 setMethod("seqinfo", "GAlignmentsList",
