@@ -5,7 +5,7 @@ NEW FEATURES
 
     o Add coercion from list to GAlignmentsList. 
 
-SIGNIFICANT USER-LEVEL CHANGES
+SIGNIFICANT USER-VISIBLE CHANGES
 
     o Improve performance of [[<- on GAlignmentsList objects. This is a 100x
       speedup or more on a big GAlignmentsList object.
@@ -18,7 +18,7 @@ BUG FIXES
 CHANGES IN VERSION 1.14.0
 -------------------------
 
-SIGNIFICANT USER-LEVEL CHANGES
+SIGNIFICANT USER-VISIBLE CHANGES
 
     o makeGAlignmentPairs() no more drops pairs with discordant seqnames.
 
@@ -53,7 +53,7 @@ NEW FEATURES
 
     o Add encodingHalves(), a low-level overlap encoding utility.
 
-SIGNIFICANT USER-LEVEL CHANGES
+SIGNIFICANT USER-VISIBLE CHANGES
 
     o Tweak behavior of isCompatibleWithSplicing() on paired-end encodings.
 
@@ -104,7 +104,7 @@ NEW FEATURES
 
     o Add "ranges" method for GAlignmentPairs objects.
 
-SIGNIFICANT USER-LEVEL CHANGES
+SIGNIFICANT USER-VISIBLE CHANGES
 
     o The 'at' argument of pileLettersAt() is now expected to be a GPos object
       (GRanges still accepted).
@@ -140,7 +140,7 @@ NEW FEATURES
     o Add coercion from GAlignments or GAlignmentPairs to DataFrame, and from
       GAlignmentsList to GAlignmentPairs.
 
-SIGNIFICANT USER-LEVEL CHANGES
+SIGNIFICANT USER-VISIBLE CHANGES
 
     o Use DESeq2 instead of DESeq in summarizeOverlaps examples (better late
       than never).
@@ -191,7 +191,7 @@ NEW FEATURES
     o The strand setter now works on a GAlignmentsList object in a restricted
       way (only strand(x) <- "+" or "-" or "*" is supported).
 
-SIGNIFICANT USER-LEVEL CHANGES
+SIGNIFICANT USER-VISIBLE CHANGES
 
     o summarizeOverlaps() now returns a RangedSummarizedExperiment object
       (defined in the new SummarizedExperiment package) instead of an "old"
@@ -247,7 +247,7 @@ NEW FEATURES
     o All "findOverlaps" methods now support 'select' equal "last" or
       "arbitrary" (in addition to "all" and "first").
 
-SIGNIFICANT USER-LEVEL CHANGES
+SIGNIFICANT USER-VISIBLE CHANGES
 
     o Add mapToAlignments(), pmapToAlignments(), mapFromAlignments(), and
       pmapFromAlignments() as replacements for the "mapCoords" and "pmapCoords"
@@ -288,7 +288,7 @@ NEW FEATURES
 
     o Add alphabetFrequencyFromBam().
 
-SIGNIFICANT USER-LEVEL CHANGES
+SIGNIFICANT USER-VISIBLE CHANGES
 
     o Export GappedReads() constructor.
 
