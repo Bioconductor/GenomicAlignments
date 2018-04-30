@@ -1,3 +1,20 @@
+CHANGES IN VERSION 1.16.0
+-------------------------
+
+NEW FEATURES
+
+    o Add coercion from list to GAlignmentsList. 
+
+SIGNIFICANT USER-LEVEL CHANGES
+
+    o Improve performance of [[<- on GAlignmentsList objects. This is a 100x
+      speedup or more on a big GAlignmentsList object.
+
+BUG FIXES
+
+    o Remove spurious warning in summarizeOverlaps().
+
+
 CHANGES IN VERSION 1.14.0
 -------------------------
 
