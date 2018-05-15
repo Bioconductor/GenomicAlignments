@@ -52,7 +52,7 @@
 \alias{show,GAlignments-method}
 
 % Concatenation:
-\alias{concatenateObjects,GAlignments-method}
+\alias{bindROWS,GAlignments-method}
 
 % Comparison/ordering:
 \alias{pcompare,GAlignments,GAlignments-method}

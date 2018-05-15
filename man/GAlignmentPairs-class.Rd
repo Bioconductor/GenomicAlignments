@@ -54,7 +54,7 @@
 \alias{show,GAlignmentPairs-method}
 
 % Concatenation:
-\alias{concatenateObjects,GAlignmentPairs-method}
+\alias{bindROWS,GAlignmentPairs-method}
 
 \title{GAlignmentPairs objects}
 

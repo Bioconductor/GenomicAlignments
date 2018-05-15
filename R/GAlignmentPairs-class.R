@@ -723,7 +723,7 @@ setMethod("show", "GAlignmentPairs",
 ### Concatenation
 ###
 
-setMethod("concatenateObjects", "GAlignmentPairs",
+setMethod("bindROWS", "GAlignmentPairs",
     GenomicRanges:::concatenate_GenomicRanges_objects
 )
 

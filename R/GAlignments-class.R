@@ -561,7 +561,7 @@ setMethod("show", "GAlignments",
 ### Concatenation
 ###
 
-setMethod("concatenateObjects", "GAlignments",
+setMethod("bindROWS", "GAlignments",
     GenomicRanges:::concatenate_GenomicRanges_objects
 )
 
