@@ -413,7 +413,7 @@ setMethod("unlist", "GAlignmentPairs",
     ans <- unlist(range_pairs, use.names=use.names)
     if (use.mcols) {
         i <- rep.int(seq_len(x_len), elementNROWS(range_pairs))
-        mcols(ans) <- extractROWS(mcols(x), i)
+        mcols(ans) <- extractROWS(mcols(x, use.names=FALSE), i)
     }
     ans
 }
@@ -446,7 +446,7 @@ setMethod("ranges", "GAlignmentPairs",
         if (use.names)
             names(ans) <- names(x)
         if (use.mcols)
-            mcols(ans) <- mcols(x)
+            mcols(ans) <- mcols(x, use.names=FALSE)
         ans
     }
 )
@@ -512,7 +512,7 @@ setMethod("granges", "GAlignmentPairs",
                        strand(x),
                        seqinfo=seqinfo(x))
         if (use.mcols)
-            mcols(ans) <- mcols(x)
+            mcols(ans) <- mcols(x, use.names=FALSE)
         ans
     }
 )
@@ -544,7 +544,7 @@ setMethod("grglist", "GAlignmentPairs",
             stop("'use.names' must be TRUE or FALSE")
         if (!isTRUEorFALSE(use.mcols))
             stop("'use.mcols' must be TRUE or FALSE")
-        x_mcols <- mcols(x)
+        x_mcols <- mcols(x, use.names=FALSE)
         if (use.mcols && "query.break" %in% colnames(x_mcols))
             stop("'mcols(x)' cannot have reserved column \"query.break\"")
         x_first <- x@first
@@ -573,7 +573,7 @@ setMethod("grglist", "GAlignmentPairs",
         ans <- shrinkByHalf(grl)
         if (use.names)
             names(ans) <- names(x)
-        ans_mcols <- DataFrame(query.break=mcols(ans)$nelt1)
+        ans_mcols <- DataFrame(query.break=mcols(ans, use.names=FALSE)$nelt1)
         if (use.mcols)
             ans_mcols <- cbind(ans_mcols, x_mcols)
         mcols(ans) <- ans_mcols
@@ -599,7 +599,7 @@ setAs("GAlignmentPairs", "DataFrame", function(from) {
           colnames(firstDF) <- paste0(colnames(firstDF), ".first")
           lastDF <- as(last(from), "DataFrame")
           colnames(lastDF) <- paste0(colnames(lastDF), ".last")
-          DataFrame(firstDF, lastDF, mcols(from))
+          DataFrame(firstDF, lastDF, mcols(from, use.names=FALSE))
       })
 
 setMethod("as.data.frame", "GAlignmentPairs",
@@ -618,7 +618,7 @@ fillJunctionGaps <- function(x)
 {
     if (!is(x, "GRangesList"))
         stop("'x' must be a GRangesList object")
-    query.breaks <- mcols(x)$query.break
+    query.breaks <- mcols(x, use.names=FALSE)$query.break
     if (is.null(query.breaks))
         stop("'x' must be a GRangesList object with a \"query.breaks\" ",
              "metadata column")
@@ -648,7 +648,7 @@ fillJunctionGaps <- function(x)
 .makeNakedMatFromGAlignmentPairs <- function(x)
 {
     lx <- length(x)
-    nc <- ncol(mcols(x))
+    nc <- ncol(mcols(x, use.names=FALSE))
     pair_cols <- cbind(seqnames=as.character(seqnames(x)),
                        strand=as.character(strand(x)))
     x_first <- x@first
@@ -661,7 +661,8 @@ fillJunctionGaps <- function(x)
                  `--`=rep.int("--", lx),
                  last_cols)
     if (nc > 0L) {
-        tmp <- do.call(data.frame, lapply(mcols(x), showAsCell))
+        tmp <- do.call(data.frame,
+                       lapply(mcols(x, use.names=FALSE), showAsCell))
         ans <- cbind(ans, `|`=rep.int("|", lx), as.matrix(tmp))
     }
     ans
@@ -672,7 +673,7 @@ showGAlignmentPairs <- function(x, margin="",
                                    print.seqinfo=FALSE)
 {
     lx <- length(x)
-    nc <- ncol(mcols(x))
+    nc <- ncol(mcols(x, use.names=FALSE))
     cat(class(x), " object with ",
         lx, " ", ifelse(lx == 1L, "pair", "pairs"),
         ", strandMode=", strandMode(x),

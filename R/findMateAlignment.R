@@ -248,7 +248,7 @@ findMateAlignment <- function(x)
 }
 
 .isFirstSegment.GAlignments <- function(x)
-    .isFirstSegment.integer(mcols(x)$flag)
+    .isFirstSegment.integer(mcols(x, use.names=FALSE)$flag)
 
 ### TODO: Make isLastSegment() an S4 generic function with methods for
 ### matrices, integer vectors, and GAlignments objects. Put this with the
@@ -272,7 +272,7 @@ findMateAlignment <- function(x)
 }
 
 .isLastSegment.GAlignments <- function(x)
-    .isLastSegment.integer(mcols(x)$flag)
+    .isLastSegment.integer(mcols(x, use.names=FALSE)$flag)
 
 ### 'x' must be a GAlignments objects.
 makeGAlignmentPairs <- function(x, use.names=FALSE, use.mcols=FALSE,
@@ -284,7 +284,7 @@ makeGAlignmentPairs <- function(x, use.names=FALSE, use.mcols=FALSE,
         if (!is.character(use.mcols))
             stop("'use.mcols' must be TRUE or FALSE or a character vector ",
                  "specifying the metadata columns to propagate")
-        if (!all(use.mcols %in% colnames(mcols(x))))
+        if (!all(use.mcols %in% colnames(mcols(x, use.names=FALSE))))
             stop("'use.mcols' must be a subset of 'colnames(mcols(x))'")
     }
     mate <- findMateAlignment(x)
@@ -308,7 +308,7 @@ makeGAlignmentPairs <- function(x, use.names=FALSE, use.mcols=FALSE,
         stop("findMateAlignment() returned an invalid 'mate' vector")
 
     ## Check the 0x2 bit (isProperPair).
-    x_is_proper <- as.logical(bamFlagAsBitMatrix(mcols(x)$flag,
+    x_is_proper <- as.logical(bamFlagAsBitMatrix(mcols(x, use.names=FALSE)$flag,
                                                  bitnames="isProperPair"))
     ans_is_proper <- x_is_proper[first_idx]
 
@@ -320,8 +320,8 @@ makeGAlignmentPairs <- function(x, use.names=FALSE, use.mcols=FALSE,
         ans_names <- names(ans_first)
     names(ans_first) <- names(ans_last) <- NULL
     if (is.character(use.mcols)) {
-        mcols(ans_first) <- mcols(ans_first)[use.mcols]
-        mcols(ans_last) <- mcols(ans_last)[use.mcols]
+        mcols(ans_first) <- mcols(ans_first, use.names=FALSE)[use.mcols]
+        mcols(ans_last) <- mcols(ans_last, use.names=FALSE)[use.mcols]
     } else if (!use.mcols) {
         mcols(ans_first) <- mcols(ans_last) <- NULL
     }

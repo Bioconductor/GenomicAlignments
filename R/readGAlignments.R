@@ -175,9 +175,9 @@ setGeneric("readGAlignmentPairs", signature="file",
 .make_GAlignmentPairs_from_GAlignments <- function(gal, strandMode=1L,
                                                         use.mcols=FALSE)
 {
-    groupid <- Rle(mcols(gal)[ , "groupid"])
+    groupid <- Rle(mcols(gal, use.names=FALSE)[ , "groupid"])
     stopifnot(isStrictlySorted(runValue(groupid)))
-    mate_status <- Rle(mcols(gal)[ , "mate_status"])
+    mate_status <- Rle(mcols(gal, use.names=FALSE)[ , "mate_status"])
 
     ## Dump alignments with "ambiguous" mate status.
     flushDumpedAlignments()
@@ -198,7 +198,7 @@ setGeneric("readGAlignmentPairs", signature="file",
         gal <- gal[ok]
 
     ## Check flag bits 0x40 and 0x80.
-    flag <- mcols(gal)[ , "flag"]
+    flag <- mcols(gal, use.names=FALSE)[ , "flag"]
     is_first_mate <- as.logical(bamFlagAsBitMatrix(flag,
                                                    bitnames="isFirstMateRead"))
     is_last_mate <- as.logical(bamFlagAsBitMatrix(flag,
@@ -214,8 +214,8 @@ setGeneric("readGAlignmentPairs", signature="file",
     idx2 <- idx2[oo1]
     ans_first <- gal[idx1]
     ans_last <- gal[idx2]
-    groupid1 <- mcols(ans_first)[ , "groupid"]
-    groupid2 <- mcols(ans_last)[ , "groupid"]
+    groupid1 <- mcols(ans_first, use.names=FALSE)[ , "groupid"]
+    groupid2 <- mcols(ans_last, use.names=FALSE)[ , "groupid"]
     stopifnot(identical(groupid1, groupid2))
 
     ## Drop the names.
@@ -223,8 +223,8 @@ setGeneric("readGAlignmentPairs", signature="file",
     names(ans_first) <- names(ans_last) <- NULL
 
     ## Check isProperPair (0x2) and isSecondaryAlignment (0x100) flag bits.
-    flag1 <- mcols(ans_first)[ , "flag"]
-    flag2 <- mcols(ans_last)[ , "flag"]
+    flag1 <- mcols(ans_first, use.names=FALSE)[ , "flag"]
+    flag2 <- mcols(ans_last, use.names=FALSE)[ , "flag"]
     is_proper1 <- bamFlagAsBitMatrix(flag1, bitnames="isProperPair")
     is_proper2 <- bamFlagAsBitMatrix(flag2, bitnames="isProperPair")
     stopifnot(identical(is_proper1, is_proper2))
@@ -234,8 +234,8 @@ setGeneric("readGAlignmentPairs", signature="file",
 
     ## Make the GAlignmentPairs object and return it.
     if (is.character(use.mcols)) {
-        mcols(ans_first) <- mcols(ans_first)[use.mcols]
-        mcols(ans_last) <- mcols(ans_last)[use.mcols]
+        mcols(ans_first) <- mcols(ans_first, use.names=FALSE)[use.mcols]
+        mcols(ans_last) <- mcols(ans_last, use.names=FALSE)[use.mcols]
     } else if (!use.mcols) {
         mcols(ans_first) <- mcols(ans_last) <- NULL
     }

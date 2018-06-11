@@ -175,7 +175,7 @@ setMethod("ranges", "GAlignmentsList",
         if (use.names)
             names(ans) <- names(x)
         if (use.mcols)
-            mcols(ans) <- mcols(x)
+            mcols(ans) <- mcols(x, use.names=FALSE)
         ans
     }
 )
@@ -202,7 +202,7 @@ setMethod("granges", "GAlignmentsList",
         }
         ans <- unlist(rg, use.names=use.names)
         if (is_one_to_one && use.mcols)
-            mcols(ans) <- mcols(x)
+            mcols(ans) <- mcols(x, use.names=FALSE)
         ans
     }
 )
@@ -225,7 +225,7 @@ setMethod("grglist", "GAlignmentsList",
         if (!use.names)
             names(ans) <- NULL
         if (use.mcols)
-            mcols(ans) <- mcols(x)
+            mcols(ans) <- mcols(x, use.names=FALSE)
         ans
     }
 )
@@ -243,7 +243,7 @@ setMethod("rglist", "GAlignmentsList",
         if (!use.names)
             names(ans) <- NULL
         if (use.mcols)
-            mcols(ans) <- mcols(x)
+            mcols(ans) <- mcols(x, use.names=FALSE)
         ans
     }
 )
@@ -274,19 +274,24 @@ setAs("GAlignmentPairs", "GAlignmentsList",
         }
 )
 
-setAs("GAlignmentsList", "GAlignmentPairs", function(from) {
-          ga <- unlist(from[mcols(from)$mate_status != "unmated"])
-          first <- c(TRUE, FALSE)
-          last <- c(FALSE, TRUE)
-          isProperPair <- if (!is.null(mcols(ga)$flag)) {
-              bamFlagTest(mcols(ga)$flag[first], "isProperPair")
-          } else {
-              TRUE
-          }
-          GAlignmentPairs(ga[first], ga[last],
-                          isProperPair=isProperPair,
-                          names=names(ga)[first])
-      })
+setAs("GAlignmentsList", "GAlignmentPairs",
+    function(from)
+    {
+        from_mcols <- mcols(from, use.names=FALSE)
+        ga <- unlist(from[from_mcols$mate_status != "unmated"])
+        first <- c(TRUE, FALSE)
+        last <- c(FALSE, TRUE)
+        ga_mcols <- mcols(ga, use.names=FALSE)
+        isProperPair <- if (!is.null(ga_mcols$flag)) {
+            bamFlagTest(ga_mcols$flag[first], "isProperPair")
+        } else {
+            TRUE
+        }
+        GAlignmentPairs(ga[first], ga[last],
+                        isProperPair=isProperPair,
+                        names=names(ga)[first])
+    }
+)
 
 setAs("list", "GAlignmentsList", function(from) do.call(GAlignmentsList, from))
 

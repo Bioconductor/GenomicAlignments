@@ -221,7 +221,7 @@ setMethod("as.data.frame", "OverlapEncodings", as.data.frame.OverlapEncodings)
 .make_naked_matrix_from_OverlapEncodings <- function(x)
 {
     x_len <- length(x)
-    x_mcols <- mcols(x)
+    x_mcols <- mcols(x, use.names=FALSE)
     x_nmc <- if (is.null(x_mcols)) 0L else ncol(x_mcols)
     ans <- cbind(Loffset=as.character(Loffset(x)),
                  Roffset=as.character(Roffset(x)),
@@ -239,7 +239,7 @@ showOverlapEncodings <- function(x, margin="", print.classinfo=FALSE)
 {
     x_class <- class(x)
     x_len <- length(x)
-    x_mcols <- mcols(x)
+    x_mcols <- mcols(x, use.names=FALSE)
     x_nmc <- if (is.null(x_mcols)) 0L else ncol(x_mcols)
     cat(classNameForDisplay(x), " object of length ", x_len,
         " with ",

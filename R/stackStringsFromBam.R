@@ -64,7 +64,7 @@ stackStringsFromBam <- function(file, index=file, param,
         bamWhat(param) <- c(param_what, what)
     gal <- readGAlignments(file, index=index,
                            use.names=use.names, param=param)
-    gal_mcols <- mcols(gal)
+    gal_mcols <- mcols(gal, use.names=FALSE)
     what_col_idx <- match(what, colnames(gal_mcols))
     what_col <- gal_mcols[[what_col_idx]]
     if (what == "qual")
@@ -98,7 +98,7 @@ alphabetFrequencyFromBam <- function(file, index=file, param,
     bamWhat(param) <- what
     gal <- readGAlignments(file, index=index, param=param)
     seqlevels(gal) <- region_seqname
-    what_col <- mcols(gal)[ , what]
+    what_col <- mcols(gal, use.names=FALSE)[ , what]
     if (what == "qual")
         what_col <- BStringSet(what_col)
     at <- start(region_range) - 1L + seq_len(width(region_range))

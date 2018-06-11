@@ -261,11 +261,12 @@ flipQuery <- function(x, i)
     i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
     xi <- extractROWS(x, i)
     x <- replaceROWS(x, i, invertStrand(revElements(xi)))
-    xi_query.break <- mcols(xi)$query.break
+    xi_query.break <- mcols(xi, use.names=FALSE)$query.break
     if (!is.null(xi_query.break)) {
         revxi_query.break <- elementNROWS(xi) - xi_query.break
-        mcols(x)$query.break <- replaceROWS(mcols(x)$query.break, i,
-                                            revxi_query.break)
+        mcols(x)$query.break <-
+            replaceROWS(mcols(x, use.names=FALSE)$query.break, i,
+                        revxi_query.break)
     }
     x
 }
@@ -307,7 +308,7 @@ flipQuery <- function(x, i)
     } else {
         flip.query <- NULL
     }
-    query.breaks <- mcols(query)$query.break
+    query.breaks <- mcols(query, use.names=FALSE)$query.break
     .RangesList_encodeOverlaps(as.list(start(query)),
                                as.list(width(query)),
                                as.list(start(subject)),
@@ -751,7 +752,7 @@ extractQueryStartInTranscript <- function(query, subject,
 
     ## Extract first range from each list element of 'query'.
     if (for.query.right.end) {
-        query.break <- mcols(query)$query.break
+        query.break <- mcols(query, use.names=FALSE)$query.break
         if (is.null(query.break))
             stop("using 'for.query.right.end=TRUE' requires that ",
                  "'mcols(query)' has a \"query.break\" column ",

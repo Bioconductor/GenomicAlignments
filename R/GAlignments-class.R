@@ -355,7 +355,7 @@ make_GRangesList_from_CompressedIRangesList <- function(x, seqnames, strand,
                             strand=strand)
     seqinfo(unlisted_ans) <- seqinfo
     ans <- relist(unlisted_ans, x)
-    mcols(ans) <- mcols(x)
+    mcols(ans) <- mcols(x, use.names=FALSE)
     ans
 }
 
@@ -378,7 +378,7 @@ setMethod("ranges", "GAlignments",
         }
         ans <- IRanges(start=start(x), width=width(x), names=ans_names)
         if (use.mcols)
-            mcols(ans) <- mcols(x)
+            mcols(ans) <- mcols(x, use.names=FALSE)
         ans
     }
 )
@@ -393,7 +393,7 @@ setMethod("granges", "GAlignments",
                        strand(x),
                        seqinfo=seqinfo(x))
         if (use.mcols)
-            mcols(ans) <- mcols(x)
+            mcols(ans) <- mcols(x, use.names=FALSE)
         ans
     }
 )
@@ -428,7 +428,7 @@ setMethod("rglist", "GAlignments",
         if (use.names)
             names(ans) <- names(x)
         if (use.mcols)
-            mcols(ans) <- mcols(x)
+            mcols(ans) <- mcols(x, use.names=FALSE)
         ans
     }
 )
@@ -455,7 +455,7 @@ setAs("GAlignments", "DataFrame", function(from) {
                     end=end(from),
                     width=width(from),
                     njunc=njunc(from),
-                    mcols(from),
+                    mcols(from, use.names=FALSE),
                     row.names=names(from),
                     check.names=FALSE)
       })
@@ -469,21 +469,22 @@ setMethod("as.data.frame", "GAlignments",
 )
 
 setAs("GenomicRanges", "GAlignments",
-      function(from) {
-        ga <- GAlignments(seqnames(from), start(from),
-                          if (!is.null(mcols(from)[["cigar"]]))
-                            mcols(from)[["cigar"]]
-                          else paste0(width(from), "M"),
-                          strand(from),
-                          if (!is.null(names(from))) names(from)
-                          else mcols(from)$name,
-                          seqlengths(from),
-                          mcols(from)[setdiff(colnames(mcols(from)),
-                                              c("cigar", "name"))])
-        metadata(ga) <- metadata(from)
-        seqinfo(ga) <- seqinfo(from)
-        ga
-      })
+    function(from)
+    {
+        from_mcols <- mcols(from, use.names=FALSE)
+        ans_cigar <- from_mcols[["cigar"]]
+        if (is.null(ans_cigar))
+            ans_cigar <- paste0(width(from), "M")
+        ans <- GAlignments(seqnames(from), start(from), ans_cigar, strand(from),
+                  if (!is.null(names(from))) names(from) else from_mcols$name,
+                  seqlengths(from),
+                  from_mcols[setdiff(colnames(from_mcols), c("cigar", "name"))]
+               )
+        metadata(ans) <- metadata(from)
+        seqinfo(ans) <- seqinfo(from)
+        ans
+    }
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -493,7 +494,7 @@ setAs("GenomicRanges", "GAlignments",
 .makeNakedMatFromGAlignments <- function(x)
 {
     lx <- length(x)
-    nc <- ncol(mcols(x))
+    nc <- ncol(mcols(x, use.names=FALSE))
     ans <- cbind(seqnames=as.character(seqnames(x)),
                  strand=as.character(strand(x)),
                  cigar=S4Vectors:::sketchStr(cigar(x), 23L),
@@ -503,7 +504,8 @@ setAs("GenomicRanges", "GAlignments",
                  width=width(x),
                  njunc=njunc(x))
     if (nc > 0L) {
-        tmp <- do.call(data.frame, lapply(mcols(x), showAsCell))
+        tmp <- do.call(data.frame,
+                       lapply(mcols(x, use.names=FALSE), showAsCell))
         ans <- cbind(ans, `|`=rep.int("|", lx), as.matrix(tmp))
     }
     ans
@@ -513,7 +515,7 @@ showGAlignments <- function(x, margin="",
                             print.classinfo=FALSE, print.seqinfo=FALSE)
 {
     lx <- length(x)
-    nc <- ncol(mcols(x))
+    nc <- ncol(mcols(x, use.names=FALSE))
     cat(class(x), " object with ",
         lx, " ", ifelse(lx == 1L, "alignment", "alignments"),
         " and ",

@@ -192,7 +192,7 @@
 
 .insertGaps <- function(reads)
 {
-    query.break <- mcols(reads)$query.break
+    query.break <- mcols(reads, use.names=FALSE)$query.break
     if (is.null(query.break))
       stop("missing 'query.break' metadata variable: reads not paired?")
     reads_flat <- unlist(reads, use.names = FALSE)
@@ -228,7 +228,7 @@
         gaps <- gaps(ranges(x), start, end)
 ### FIXME: this makes this function more of an 'introns' than a .gaps.
 ### FIXME: this breaks when the GRangesList is not ordered by position
-        if (!is.null(mcols(x)$query.break)) {
+        if (!is.null(mcols(x, use.names=FALSE)$query.break)) {
           insert_gaps <- as(ranges(.insertGaps(x)), "CompressedIRangesList")
           gaps <- setdiff(gaps, insert_gaps)
         }
@@ -251,7 +251,7 @@
 .findSpliceOverlaps <- function(query, subject, ignore.strand=FALSE, cds=NULL)
 {
     ## adjust strand based on 'XS'
-    if (!is.null(xs <- mcols(query)$XS)) {
+    if (!is.null(xs <- mcols(query, use.names=FALSE)$XS)) {
         strand <- ifelse(!is.na(xs), xs, "*")
         strand(query) <- relist(Rle(strand, elementNROWS(query)),
                                 query)
@@ -340,8 +340,8 @@ setMethod("findSpliceOverlaps", c("BamFile", "ANY"),
         reads <- readGAlignments(bam, param=param)
     else {
         reads <- readGAlignmentPairs(path(bam), param=param)
-        first_xs <- mcols(first(reads))$XS
-        last_xs <- mcols(last(reads))$XS
+        first_xs <- mcols(first(reads), use.names=FALSE)$XS
+        last_xs <- mcols(last(reads), use.names=FALSE)$XS
         if (!is.null(first_xs) && !is.null(last_xs)) {
             xs <- first_xs
             xs[is.na(xs)] <- last_xs[is.na(xs)]
