@@ -55,11 +55,12 @@ to represent genomic alignments, pairs of genomic alignments, and groups
 of genomic alignments.
 
 The \Rpackage{GenomicAlignments} package is available at bioconductor.org
-and can be downloaded via \Rfunction{biocLite}:
+and can be downloaded via \Rfunction{BiocManager::install}:
 
-<<biocLite, eval=FALSE>>=
-source("https://bioconductor.org/biocLite.R")
-biocLite("GenomicAlignments")
+<<install, eval=FALSE>>=
+if (!require("BiocManager"))
+    install.packages("BiocManager")
+BiocManager::install("GenomicAlignments")
 @
 <<initialize, results=hide>>=
 library(GenomicAlignments)
