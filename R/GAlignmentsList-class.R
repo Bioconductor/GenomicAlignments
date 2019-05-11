@@ -89,7 +89,7 @@ setMethod("seqinfo", "GAlignmentsList",
 )
 
 setMethod("elementMetadata", "GAlignmentsList",
-    GenomicRanges:::get_GRangesList_mcols
+    GenomicRanges:::get_GenomicRangesList_mcols
 )
 
 
@@ -102,11 +102,11 @@ setReplaceMethod("rname", "GAlignmentsList",
 )
 
 setReplaceMethod("elementMetadata", "GAlignmentsList", 
-    GenomicRanges:::set_GRangesList_mcols
+    GenomicRanges:::set_CompressedGenomicRangesList_mcols
 )
 
 setReplaceMethod("strand", "GAlignmentsList",
-    GenomicRanges:::set_GRangesList_strand
+    GenomicRanges:::set_CompressedGenomicRangesList_strand
 )
 setReplaceMethod("strand", c("GAlignmentsList", "character"), 
     function(x, ..., value)
@@ -119,11 +119,11 @@ setReplaceMethod("strand", c("GAlignmentsList", "character"),
 )
 
 setReplaceMethod("seqinfo", "GAlignmentsList",
-    GenomicRanges:::set_GRangesList_seqinfo
+    GenomicRanges:::set_CompressedGenomicRangesList_seqinfo
 )
 
 setReplaceMethod("seqnames", "GAlignmentsList",
-    GenomicRanges:::set_GRangesList_seqnames
+    GenomicRanges:::set_CompressedGenomicRangesList_seqnames
 )
 
 
@@ -318,6 +318,6 @@ setMethod("relistToClass", "GAlignments",
 
 setMethod("show", "GAlignmentsList",
     function(object)
-        GenomicRanges:::showList(object, showGAlignments, FALSE)
+        GenomicRanges:::show_GenomicRangesList(object)
 )
 
