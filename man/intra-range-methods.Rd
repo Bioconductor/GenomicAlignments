@@ -2,9 +2,7 @@
 
 \alias{intra-range-methods}
 
-\alias{narrow}
 \alias{windows,GAlignments-method}
-\alias{narrow,GAlignments-method}
 \alias{narrow,GappedReads-method}
 
 \alias{qnarrow}
@@ -29,9 +27,6 @@
 }
 
 \usage{
-\S4method{narrow}{GAlignments}(x, start=NA, end=NA, width=NA, use.names=TRUE)
-\S4method{narrow}{GAlignmentsList}(x, start=NA, end=NA, width=NA, use.names=TRUE)
-
 \S4method{qnarrow}{GAlignments}(x, start=NA, end=NA, width=NA)
 \S4method{qnarrow}{GAlignmentsList}(x, start=NA, end=NA, width=NA)
 }
@@ -50,29 +45,15 @@
     See \code{?`\link[IRanges]{intra-range-methods}`} for more information
     about the \code{start}, \code{end}, and \code{width} arguments.
   }
-  \item{use.names}{
-    See \code{?`\link[IRanges]{intra-range-methods}`}.
-  }
 }
 
 \details{
   \itemize{
     \item(){
-      \code{narrow} on a \link{GAlignments} object behaves
-      like on a \link[IRanges]{IntegerRanges} object. See
-      \code{?`\link[IRanges]{intra-range-methods}`} for the details.
-
-      A major difference though is that it returns a \link{GAlignments}
-      object instead of a \link[IRanges]{IntegerRanges} object.
-
-      Unlike with \code{qnarrow} (see below), the
-      \code{start}/\code{end}/\code{width} arguments here describe
-      the narrowing on the reference side, not the query side.
-    }
-    \item(){
       \code{qnarrow} on a \link{GAlignments} object behaves like \code{narrow}
       except that the \code{start}/\code{end}/\code{width} arguments here
-      specify the narrowing with respect to the query sequences.
+      specify the narrowing with respect to the query sequences instead of
+      the reference sequences.
 
       \code{qnarrow} on a \link{GAlignmentsList} object
       returns a \link{GAlignmentsList} object.
@@ -81,8 +62,8 @@
 }
 
 \value{
-  An object of the same class as, and \emph{parallel} to (i.e. same length
-  and names as), the original object \code{x}.
+  An object of the same class as -- and \emph{parallel} to (i.e. same length
+  and names as) -- the original object \code{x}.
 }
 
 \note{
