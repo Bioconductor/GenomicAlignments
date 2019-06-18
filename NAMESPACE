@@ -68,6 +68,7 @@ exportMethods(
 
     ## Generics defined in S4Vectors:
     bindROWS,
+    getListElement,
     parallelSlotNames, "elementMetadata<-", pcompare,
 
     ## Generics defined in IRanges:

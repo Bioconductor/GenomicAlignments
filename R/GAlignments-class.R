@@ -488,13 +488,28 @@ setAs("GenomicRanges", "GAlignments",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Subsetting
+###
+
+### Avoid infinite recursion that we would otherwise get:
+###   GAlignments(Rle(factor("chr1")), 11L, "20M", strand("+"))[[1]]
+###   # Error: C stack usage  7969700 is too close to the limit
+setMethod("getListElement", "GAlignments",
+    function(x, i, exact=TRUE)
+        stop(wmsg(class(x), " objects don't support [[, $, as.list(), ",
+                  "lapply(), or unlist()"))
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### "show" method.
 ###
 
-.makeNakedMatFromGAlignments <- function(x)
+.from_GAlignments_to_naked_character_matrix_for_display <- function(x)
 {
-    lx <- length(x)
-    nc <- ncol(mcols(x, use.names=FALSE))
+    x_len <- length(x)
+    x_mcols <- mcols(x, use.names=FALSE)
+    x_nmc <- ncol(x_mcols)
     ans <- cbind(seqnames=as.character(seqnames(x)),
                  strand=as.character(strand(x)),
                  cigar=S4Vectors:::sketchStr(cigar(x), 23L),
@@ -503,10 +518,9 @@ setAs("GenomicRanges", "GAlignments",
                  end=end(x),
                  width=width(x),
                  njunc=njunc(x))
-    if (nc > 0L) {
-        tmp <- do.call(data.frame,
-                       lapply(mcols(x, use.names=FALSE), showAsCell))
-        ans <- cbind(ans, `|`=rep.int("|", lx), as.matrix(tmp))
+    if (x_nmc > 0L) {
+        tmp <- as.data.frame(lapply(x_mcols, showAsCell), optional=TRUE)
+        ans <- cbind(ans, `|`=rep.int("|", x_len), as.matrix(tmp))
     }
     ans
 }
@@ -522,7 +536,7 @@ showGAlignments <- function(x, margin="",
         nc, " metadata ", ifelse(nc == 1L, "column", "columns"),
         ":\n", sep="")
     out <- S4Vectors:::makePrettyMatrixForCompactPrinting(x,
-               .makeNakedMatFromGAlignments)
+               .from_GAlignments_to_naked_character_matrix_for_display)
     if (print.classinfo) {
         .COL2CLASS <- c(
             seqnames="Rle",
