@@ -138,8 +138,7 @@ export(
 
     sequenceLayer,
     pileLettersAt,
-    stackStringsFromBam,
-    alphabetFrequencyFromBam,
+    stackStringsFromGAlignments, stackStringsFromBam, alphabetFrequencyFromBam,
 
     encodeOverlaps1,
     flipQuery,

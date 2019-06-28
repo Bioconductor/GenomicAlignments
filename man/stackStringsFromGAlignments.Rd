@@ -1,25 +1,35 @@
 \name{stackStringsFromBam}
 
+\alias{stackStringsFromGAlignments}
 \alias{stackStringsFromBam}
 \alias{alphabetFrequencyFromBam}
 
 
-\title{Stack the read sequences stored in a BAM file on a region of interest}
+\title{Stack the read sequences stored in a GAlignments object or a BAM file}
 
 \description{
+  \code{stackStringsFromGAlignments} stacks the read sequences (or
+  their quality strings) stored in a \link{GAlignments} object over
+  a user-specified region.
+
   \code{stackStringsFromBam} stacks the read sequences (or their quality
   strings) stored in a BAM file over a user-specified region.
 
   \code{alphabetFrequencyFromBam} computes the alphabet frequency of the
   reads over a user-specified region.
 
-  Both functions take into account the CIGAR of each read to "lay" the read
-  sequence (or its quality string) alongside the reference space.
+  All these functions take into account the CIGAR of each read to \emph{lay}
+  the read sequence (or its quality string) alongside the reference space.
   This step ensures that each nucleotide in a read is associated with the
   correct position on the reference sequence.
 }
 
 \usage{
+stackStringsFromGAlignments(x, region, what="seq",
+                    D.letter="-", N.letter=".",
+                    Lpadding.letter="+",
+                    Rpadding.letter="+")
+
 stackStringsFromBam(file, index=file, param,
                     what="seq", use.names=FALSE,
                     D.letter="-", N.letter=".",
@@ -29,28 +39,24 @@ alphabetFrequencyFromBam(file, index=file, param, what="seq", ...)
 }
 
 \arguments{
-  \item{file, index}{
-    The path to the BAM file to read, and to the index file of the BAM file
-    to read, respectively. The latter is given \emph{without} the '.bai'
-    extension. See \code{\link{scanBam}} for more information.
+  \item{x}{
+    A \link{GAlignments} object with the read sequences in the \code{"seq"}
+    metadata column (if \code{what} is set to \code{"seq"}), or with the
+    the read quality strings in the \code{"qual"} metadata column (if
+    \code{what} is set to \code{"qual"}).
+    Such an object is typically obtained by specifying
+    \code{param=\link[Rsamtools]{ScanBamParam}(what=c("seq", "qual"))}
+    when reading a BAM file with calling \code{\link{readGAlignments}()}.
   }
-  \item{param}{
-    A \link{ScanBamParam} object containing exactly 1 genomic region
-    (i.e. \code{unlist(bamWhich(param))} must have length 1).
-    Alternatively, \code{param} can be a \link[GenomicRanges]{GRanges} or
-    \link[IRanges]{IntegerRangesList} object containing exactly 1 genomic
-    region (the strand will be ignored in case of a
-    \link[GenomicRanges]{GRanges} object), or a character string specifying
-    a single genomic region (in the \code{"chr14:5201-5300"} format).
+  \item{region}{
+    A \link[GenomicRanges]{GRanges} object with exactly 1 genomic range.
+    The read sequences (or read quality strings) will be stacked over
+    that region.
   }
   \item{what}{
     A single string. Either \code{"seq"} or \code{"qual"}. If \code{"seq"}
     (the default), the read sequences will be stacked. If \code{"qual"},
     the read quality strings will be stacked.
-  }
-  \item{use.names}{
-    Use the query template names (QNAME field) as the names of the returned
-    object? If not (the default), then the returned object has no names.
   }
   \item{D.letter, N.letter}{
     A single letter used as a filler for injections. The 2 arguments are
@@ -65,12 +71,44 @@ alphabetFrequencyFromBam(file, index=file, param, what="seq", ...)
     See \code{?\link[Biostrings]{stackStrings}} in the \pkg{Biostrings}
     package for more details.
   }
+  \item{file, index}{
+    The path to the BAM file containing the reads, and to its index file,
+    respectively. The latter is given \emph{without} the '.bai'
+    extension. See \code{\link{scanBam}} for more information.
+  }
+  \item{param}{
+    A \link{ScanBamParam} object containing exactly 1 genomic region
+    (i.e. \code{unlist(bamWhich(param))} must have length 1).
+    Alternatively, \code{param} can be a \link[GenomicRanges]{GRanges} or
+    \link[IRanges]{IntegerRangesList} object containing exactly 1 genomic
+    region (the strand will be ignored in case of a
+    \link[GenomicRanges]{GRanges} object), or a character string specifying
+    a single genomic region (in the \code{"chr14:5201-5300"} format).
+  }
+  \item{use.names}{
+    Use the query template names (QNAME field) as the names of the returned
+    object? If not (the default), then the returned object has no names.
+  }
   \item{...}{
     Further arguments to be passed to \link[Biostrings]{alphabetFrequency}.
   }
 }
 
 \details{
+  \code{stackStringsFromGAlignments} performs the 3 following steps:
+  \enumerate{
+    \item Subset \link{GAlignments} object \code{x} to keep only the
+          alignments that overlap with the specified region.
+
+    \item Lay the sequences in \code{x} alongside the reference space,
+          using their CIGARs. This is done with the
+          \code{\link{sequenceLayer}} function.
+
+    \item Stack them on the specified region. This is done with the
+          \code{\link[Biostrings]{stackStrings}} function defined in the
+          \pkg{Biostrings} package.
+  }
+
   \code{stackStringsFromBam} performs the 3 following steps:
   \enumerate{
     \item Load the read sequences (or their quality strings) from the BAM
@@ -79,12 +117,9 @@ alphabetFrequencyFromBam(file, index=file, param, what="seq", ...)
           function. Note that if the file contains paired-end reads, the
           pairing is ignored.
 
-    \item Lay the sequences alongside the reference space, using their CIGARs.
-          This is done with the \code{\link{sequenceLayer}} function.
+    \item Same as \code{stackStringsFromGAlignments}.
 
-    \item Stack them on the specified region. This is done with the
-          \code{\link[Biostrings]{stackStrings}} function defined in the
-          \pkg{Biostrings} package.
+    \item Same as \code{stackStringsFromGAlignments}.
   }
 
   \code{alphabetFrequencyFromBam} also performs steps 1. and 2. but,
@@ -103,10 +138,11 @@ alphabetFrequencyFromBam(file, index=file, param, what="seq", ...)
 }
 
 \note{
-  TWO IMPORTANT CAVEATS ABOUT \code{stackStringsFromBam}:
+  TWO IMPORTANT CAVEATS ABOUT \code{stackStringsFromGAlignments} AND
+  \code{stackStringsFromBam}:
 
   Specifying a big genomic region, say >= 100000 bp, can require a lot of
-  memory (especially with high coverage reads) and is not recommended.
+  memory (especially with high coverage reads) so is not recommended.
   See the \code{\link{pileLettersAt}} function for piling the read letters
   on top of a set of genomic positions, which is more flexible and more
   memory efficient.
@@ -150,8 +186,13 @@ bamfile1 <- BamFile(system.file("extdata", "ex1.bam", package="Rsamtools"))
 
 region1 <- GRanges("seq1", IRanges(1, 60))  # region of interest
 
-## Stack the read sequences:
-stackStringsFromBam(bamfile1, param=region1)
+## Stack the read sequences directly from the BAM file:
+stackStringsFromBam(bamfile1, param=region1, use.names=TRUE)
+
+## or, alternatively, from a GAlignments object:
+gal1 <- readGAlignments(bamfile1, param=ScanBamParam(what="seq"),
+                        use.names=TRUE)
+stackStringsFromGAlignments(gal1, region1)
 
 ## Compute the "consensus matrix" (1 column per nucleotide position
 ## in the region of interest):
@@ -189,9 +230,12 @@ bamfile2 <- BamFile(RNAseqData.HNRNPC.bam.chr14_BAMFILES[1])
 ## Region of interest:
 region2 <- GRanges("chr14", IRanges(19650095, 19650159))
 
-readGAlignments(bamfile2, param=ScanBamParam(which=region2))
-
+## Stack the read sequences directly from the BAM file:
 stackStringsFromBam(bamfile2, param=region2)
+
+## or, alternatively, from a GAlignments object:
+gal2 <- readGAlignments(bamfile2, param=ScanBamParam(what="seq"))
+stackStringsFromGAlignments(gal2, region2)
 
 af <- alphabetFrequencyFromBam(bamfile2, param=region2, baseOnly=TRUE)
 cm2 <- t(af[ , DNA_BASES])  # consensus matrix

@@ -75,9 +75,9 @@ pileLettersAt(x, seqnames, pos, cigar, at)
           (available at \url{http://samtools.sourceforge.net/} as part of the
           SAMtools project), for more powerful flexible alternatives.
 
-    \item The \code{\link{stackStringsFromBam}} function
+    \item The \code{\link{stackStringsFromGAlignments}} function
           for stacking the read sequences (or their quality strings)
-          stored in a BAM file on a region of interest.
+          stored in a \link{GAlignments} object or a BAM file.
 
     \item \link[Biostrings]{DNAStringSet} objects in the \pkg{Biostrings}
           package.
