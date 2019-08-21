@@ -17,6 +17,9 @@ setMethod("coverage", "GAlignmentPairs",
                 method=c("auto", "sort", "hash"), drop.D.ranges=FALSE)
     {
         x <- grglist(x, drop.D.ranges=drop.D.ranges)
+        ## Should we do this instead?
+        ## See https://support.bioconductor.org/p/123463/#123552
+        #x <- reduce(grglist(x, drop.D.ranges=drop.D.ranges))
         coverage(x, shift=shift, width=width, weight=weight, method=method)
     }
 )
