@@ -156,7 +156,7 @@ summarizeJunctions <- function(x, with.revmap=FALSE, genome=NULL)
             ans_revmap <- unique(ans_revmap)
         ans_mcols$revmap <- ans_revmap
     }
-    if (!is.null(genome)) {
+    if (!is.null(genome) & length(ans) > 0) {
         unoriented_intron_motif <- .extract_unoriented_intron_motif(genome,
                                                                     ans)
         ans_intron_strand <- .infer_intron_strand(unoriented_intron_motif)
