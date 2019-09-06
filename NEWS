@@ -1,3 +1,11 @@
+CHANGES IN VERSION 1.21.6
+-------------------------
+
+BUG FIXES
+
+    o Add length test to summarizeJunctions().
+
+
 CHANGES IN VERSION 1.20.0
 -------------------------
 
