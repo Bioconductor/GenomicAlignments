@@ -88,7 +88,7 @@ NATURAL_INTRON_MOTIFS <- c("GT-AG", "GC-AG", "AT-AC", "AT-AA", "AT-AG")
     all_dinucl <- getSeq(genome, c(Ldinucl_gr, Rdinucl_gr))
     Ldinucl <- head(all_dinucl, n=junctions_len)
     Rdinucl <- tail(all_dinucl, n=junctions_len)
-    xscat(Ldinucl, "-", Rdinucl)
+    xscat(Ldinucl, rep.int("-", junctions_len), Rdinucl)
 }
 
 .infer_intron_strand <- function(unoriented_intron_motif)
@@ -124,13 +124,23 @@ summarizeJunctions <- function(x, with.revmap=FALSE, genome=NULL)
     if (!isTRUEorFALSE(with.revmap))
         stop("'with.revmap' must be TRUE or FALSE")
     if (!is.null(genome)) {
-        if (!suppressWarnings(require(BSgenome, quietly=TRUE)))
-            stop("you need to install the BSgenome package in order ",
-                 "to use the 'genome' argument")
+        if (!requireNamespace("BSgenome", quietly=TRUE))
+            stop(wmsg("Couldn't load the BSgenome package. Please install ",
+                      "the BSgenome package in order to use the 'genome' ",
+                      "argument."))
         genome <- BSgenome::getBSgenome(genome)
     }
 
     x_junctions <- junctions(x)
+    if (!is.null(genome)) {
+        si1 <- seqinfo(x_junctions)
+        si2 <- seqinfo(genome)
+        seqinfo(x_junctions) <- suppressWarnings(merge(si1, si2))
+        if (length(intersect(seqlevels(si1), seqlevels(si2))) == 0L)
+            warning(wmsg("the genome specified via the 'genome' argument ",
+                         "doesn't seem to be the same as the reference ",
+                         "genome used for the alignments in 'x'"))
+    }
     unlisted_junctions <- unlist(x_junctions, use.names=FALSE)
     unstranded_unlisted_junctions <- unstrand(unlisted_junctions)
     ans <- sort(unique(unstranded_unlisted_junctions))
@@ -156,7 +166,7 @@ summarizeJunctions <- function(x, with.revmap=FALSE, genome=NULL)
             ans_revmap <- unique(ans_revmap)
         ans_mcols$revmap <- ans_revmap
     }
-    if (!is.null(genome) && (length(ans) > 0)) {
+    if (!is.null(genome)) {
         unoriented_intron_motif <- .extract_unoriented_intron_motif(genome,
                                                                     ans)
         ans_intron_strand <- .infer_intron_strand(unoriented_intron_motif)

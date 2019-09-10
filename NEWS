@@ -1,9 +1,10 @@
-CHANGES IN VERSION 1.21.6
+CHANGES IN VERSION 1.22.0
 -------------------------
 
 BUG FIXES
 
-    o Add length test to summarizeJunctions().
+    o Fix summarizeJunctions() error when no junctions are found and 'genome'
+      is specified.
 
 
 CHANGES IN VERSION 1.20.0
