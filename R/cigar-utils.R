@@ -345,11 +345,17 @@ cigarQNarrow <- function(cigar, start=NA, end=NA, width=NA)
 
 queryLoc2refLoc <- function(qloc, cigar, pos=1L)
 {
-    stop("NOT IMPLEMENTED YET, SORRY!")
+    stop(wmsg("Not implemented yet, sorry! Please use mapToAlignments() ",
+              "and family if you need to map coordinates between query reads ",
+              "and reference genome on the basis of the reported CIGAR",
+              "See '?mapToAlignments'"))
 }
 
 queryLocs2refLocs <- function(qlocs, cigar, pos=1L, flag=NULL)
 {
-    stop("NOT IMPLEMENTED YET, SORRY!")
+    stop(wmsg("Not implemented yet, sorry! Please use mapToAlignments() ",
+              "and family if you need to map coordinates between query reads ",
+              "and reference genome on the basis of the reported CIGAR",
+              "See '?mapToAlignments'"))
 }
 
