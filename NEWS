@@ -1,6 +1,12 @@
 CHANGES IN VERSION 1.22.0
 -------------------------
 
+NEW FEATURES
+
+    o Add stackStringsFromGAlignments(). Analog to stackStringsFromBam()
+      except that it stacks the read sequences stored in a GAlignments
+      object instead of a BAM file.
+
 BUG FIXES
 
     o Fix summarizeJunctions() error when no junctions are found and 'genome'
