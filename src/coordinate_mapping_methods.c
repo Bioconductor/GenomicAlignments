@@ -135,10 +135,10 @@ SEXP map_ref_locs_to_query_locs(SEXP start, SEXP end, SEXP cigar, SEXP pos)
                         int pos_j = INTEGER(pos)[j];
                         s = to_query(INTEGER(start)[i], cig_j, pos_j, FALSE);
                         if (s == NA_INTEGER)
-                                break;
+                                continue;
                         e = to_query(INTEGER(end)[i], cig_j, pos_j, TRUE); 
                         if (e == NA_INTEGER)
-                                break;
+                                continue;
                         IntAE_insert_at(sbuf, IntAE_get_nelt(sbuf), s);
                         IntAE_insert_at(ebuf, IntAE_get_nelt(ebuf), e);
                         IntAE_insert_at(qhbuf, IntAE_get_nelt(qhbuf), i + 1);
