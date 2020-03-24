@@ -5,7 +5,7 @@
 \alias{class:GAlignments}
 \alias{GAlignments-class}
 
-\alias{parallelSlotNames,GAlignments-method}
+\alias{vertical_slot_names,GAlignments-method}
 \alias{updateObject,GAlignments-method}
 
 % Accessors:

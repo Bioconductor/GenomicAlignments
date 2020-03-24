@@ -22,9 +22,11 @@ setClass("GAlignments",
     )
 )
 
-### Combine the new parallel slots with those of the parent class. Make sure
-### to put the new parallel slots *first*.
-setMethod("parallelSlotNames", "GAlignments",
+### Combine the new "vertical slots" with those of the parent class. Make
+### sure to put the new vertical slots **first**. See R/bindROWS.R file in
+### the S4Vectors package for what slots should or should not be considered
+### "vertical".
+setMethod("vertical_slot_names", "GAlignments",
     function(x) c("seqnames", "start", "cigar", "strand", "NAMES",
                   callNextMethod())
 )
