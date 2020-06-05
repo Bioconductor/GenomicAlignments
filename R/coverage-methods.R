@@ -5,7 +5,7 @@
 
 setMethod("coverage", "GAlignments",
     function(x, shift=0L, width=NULL, weight=1L,
-                method=c("auto", "sort", "hash"), drop.D.ranges=FALSE)
+                method=c("auto", "sort", "hash", "naive"), drop.D.ranges=FALSE)
     {
         x <- grglist(x, drop.D.ranges=drop.D.ranges)
         coverage(x, shift=shift, width=width, weight=weight, method=method)
@@ -14,7 +14,7 @@ setMethod("coverage", "GAlignments",
 
 setMethod("coverage", "GAlignmentPairs",
     function(x, shift=0L, width=NULL, weight=1L,
-                method=c("auto", "sort", "hash"), drop.D.ranges=FALSE)
+                method=c("auto", "sort", "hash", "naive"), drop.D.ranges=FALSE)
     {
         x <- grglist(x, drop.D.ranges=drop.D.ranges)
         ## Should we do this instead?

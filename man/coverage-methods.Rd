@@ -26,10 +26,10 @@
 
 \usage{
 \S4method{coverage}{GAlignments}(x, shift=0L, width=NULL, weight=1L,
-         method=c("auto", "sort", "hash"), drop.D.ranges=FALSE)
+         method=c("auto", "sort", "hash", "naive"), drop.D.ranges=FALSE)
 
 \S4method{coverage}{GAlignmentPairs}(x, shift=0L, width=NULL, weight=1L,
-         method=c("auto", "sort", "hash"), drop.D.ranges=FALSE)
+         method=c("auto", "sort", "hash", "naive"), drop.D.ranges=FALSE)
 
 \S4method{coverage}{GAlignmentsList}(x, shift=0L, width=NULL, weight=1L, ...)
 
