@@ -5,7 +5,7 @@
 \alias{class:GAlignmentPairs}
 \alias{GAlignmentPairs-class}
 
-\alias{vertical_slot_names,GAlignmentPairs-method}
+\alias{parallel_slot_names,GAlignmentPairs-method}
 
 % Constructors:
 \alias{GAlignmentPairs}
