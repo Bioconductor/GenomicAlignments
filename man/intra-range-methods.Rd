@@ -71,7 +71,7 @@
   all the alignments have a simple CIGAR (i.e. no indels or junctions).
 }
 
-\author{Hervé Pagès and V. Obenchain <Valerie.Obenchain@RoswellPark.org>}
+\author{Hervé Pagès and Valerie Obenchain}
 
 \seealso{
   \itemize{

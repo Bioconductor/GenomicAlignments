@@ -243,8 +243,7 @@ readGappedReads(file, index=file, use.names=FALSE, param=NULL,
   drop them).
 }
 
-\author{Hervé Pagès <hpages@fredhutch.org> and
-        Valerie Obenchain <Valerie.Obenchain@RoswellPark.org>}
+\author{Hervé Pagès and Valerie Obenchain}
 
 \seealso{
   \itemize{

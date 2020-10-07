@@ -109,13 +109,11 @@ findSpliceOverlaps(query, subject, ignore.strand=FALSE, ...)
 }
 
 \note{
-WARNING: The current implementation of \code{findSpliceOverlaps} doesn't
-work properly on paired-end reads where the 2 ends overlap!
+  WARNING: The current implementation of \code{findSpliceOverlaps}
+  doesn't work properly on paired-end reads where the 2 ends overlap!
 }
 
-\author{
-  Michael Lawrence and Valerie Obenchain <Valerie.Obenchain@RoswellPark.org> 
-}
+\author{Michael Lawrence and Valerie Obenchain}
  
 \seealso{
   \itemize{

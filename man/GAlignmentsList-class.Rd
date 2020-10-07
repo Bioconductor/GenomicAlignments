@@ -267,7 +267,7 @@
   \url{http://samtools.sourceforge.net/}
 }
 
-\author{Valerie Obenchain <Valerie.Obenchain@RoswellPark.org>}
+\author{Valerie Obenchain}
 
 \seealso{
   \itemize{
