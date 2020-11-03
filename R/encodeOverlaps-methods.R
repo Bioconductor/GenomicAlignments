@@ -699,8 +699,8 @@ setMethod("extractSkippedExonRanks", "OverlapEncodings",
     x_eltNROWS <- elementNROWS(x)
     if (!all(eltNROWS <= x_eltNROWS))
         stop("'all(eltNROWS <= elementNROWS(x))' must be TRUE")
-    offset <- cumsum(c(0L, x_eltNROWS[-length(x_eltNROWS)]))
-    ii <- S4Vectors:::fancy_mseq(eltNROWS, offset=offset)
+    from <- cumsum(c(1L, x_eltNROWS[-length(x_eltNROWS)]))
+    ii <- sequence(eltNROWS, from=from)
     x@unlistData <- x@unlistData[ii]
     x@partitioning@end <- unname(cumsum(eltNROWS))
     x

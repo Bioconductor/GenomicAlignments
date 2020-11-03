@@ -624,10 +624,7 @@ fillJunctionGaps <- function(x)
     if (is.null(query.breaks))
         stop("'x' must be a GRangesList object with a \"query.breaks\" ",
              "metadata column")
-    offsets <- end(x@partitioning)
-    if (length(x) != 0L) 
-        offsets <- c(0L, offsets[-length(offsets)])
-    idx <- S4Vectors:::fancy_mseq(query.breaks, offsets)
+    idx <- sequence(query.breaks, from=start(x@partitioning))
     half1_partitioning <- PartitioningByEnd(cumsum(query.breaks))
     half1 <- relist(x@unlistData[idx], half1_partitioning)
     half1 <- range(half1)@unlistData
