@@ -10,12 +10,12 @@ biocViews: Infrastructure, DataImport, Genetics, Sequencing, RNASeq, SNP,
 URL: https://bioconductor.org/packages/GenomicAlignments
 Video: https://www.youtube.com/watch?v=2KqBSbkfhRo , https://www.youtube.com/watch?v=3PK_jx44QTs
 BugReports: https://github.com/Bioconductor/GenomicAlignments/issues
-Version: 1.27.1
+Version: 1.27.2
 License: Artistic-2.0
 Encoding: UTF-8
 Author: Hervé Pagès, Valerie Obenchain, Martin Morgan
 Maintainer: Bioconductor Package Maintainer <maintainer@bioconductor.org>
-Depends: R (>= 2.10), methods, BiocGenerics (>= 0.15.3),
+Depends: R (>= 4.0.0), methods, BiocGenerics (>= 0.37.0),
 	S4Vectors (>= 0.27.12), IRanges (>= 2.23.9), GenomeInfoDb (>= 1.13.1),
 	GenomicRanges (>= 1.41.5), SummarizedExperiment (>= 1.9.13),
 	Biostrings (>= 2.55.7), Rsamtools (>= 1.31.2)
