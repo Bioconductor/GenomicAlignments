@@ -10,7 +10,8 @@ setClass("GAlignmentsList",
         elementMetadata="DataFrame"
     ),
     prototype(
-        elementType="GAlignments"
+        elementType="GAlignments",
+        elementMetadata=new("DFrame")
     )
 )
 

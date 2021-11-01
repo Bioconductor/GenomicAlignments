@@ -18,7 +18,8 @@ setClass("GAlignments",
     ),
     prototype(
         seqnames=Rle(factor()),
-        strand=Rle(strand())
+        strand=Rle(strand()),
+        elementMetadata=new("DFrame")
     )
 )
 
