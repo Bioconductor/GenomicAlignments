@@ -6,6 +6,7 @@
 \alias{GAlignmentPairs-class}
 
 \alias{parallel_slot_names,GAlignmentPairs-method}
+\alias{updateObject,GAlignmentPairs-method}
 
 % Constructors:
 \alias{GAlignmentPairs}

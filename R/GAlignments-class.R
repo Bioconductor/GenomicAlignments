@@ -111,7 +111,8 @@ setMethod("updateObject", "GAlignments",
                         "Updating it ...")
             object@elementType <- new(class(object))@elementType
         }
-        object
+
+        callNextMethod()
     }
 )
 

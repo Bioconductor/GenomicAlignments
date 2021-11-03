@@ -63,6 +63,21 @@ setGeneric("isProperPair", function(x) standardGeneric("isProperPair"))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### updateObject()
+###
+
+setMethod("updateObject", "GAlignmentPairs",
+    function(object, ..., verbose=FALSE)
+    {
+        object@first <- updateObject(object@first, ..., verbose=verbose)
+        object@last  <- updateObject(object@last,  ..., verbose=verbose)
+
+        callNextMethod()
+    }
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Getters.
 ###
 
