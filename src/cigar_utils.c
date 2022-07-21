@@ -283,7 +283,7 @@ SEXP valid_cigar(SEXP cigar, SEXP ans_type)
 			continue;
 		}
 		/* We use parse_cigar_width() here just for its ability
-                   to parse and detect ill-formed CIGAR strings */
+		   to parse and detect ill-formed CIGAR strings */
 		errmsg = parse_cigar_width(cigar_string, 0L, &width);
 		if (ans_type0 == 1) {
 			LOGICAL(ans)[i] = errmsg == NULL;
@@ -845,15 +845,18 @@ static const char *Rnarrow_cigar_string(SEXP cigar_string,
 	return errmsg_buf;
 }
 
+#define	CIGAR_BUF_LENGTH 50000
+
 /* FIXME: 'cigar_buf' is under the risk of a buffer overflow! */
 static const char *narrow_cigar_string(SEXP cigar_string,
 		int Lwidth, int Rwidth, char *cigar_buf, int *rshift)
 {
 	int Loffset, Roffset, buf_offset;
 	const char *cig0;
-	int offset, n, OPL /* Operation Length */;
+	int offset, n, OPL /* Operation Length */, ret;
 	char OP /* Operation */;
 	const char *errmsg;
+	size_t size;
 
 	//Rprintf("narrow_cigar_string():\n");
 	errmsg = Lnarrow_cigar_string(cigar_string, &Lwidth, &Loffset,
@@ -884,8 +887,14 @@ static const char *narrow_cigar_string(SEXP cigar_string,
 				 "CIGAR is empty after narrowing");
 			return errmsg_buf;
 		}
-		buf_offset += sprintf(cigar_buf + buf_offset,
-				      "%d%c", OPL, OP);
+		size = CIGAR_BUF_LENGTH - buf_offset;
+		ret = snprintf(cigar_buf + buf_offset, size, "%d%c", OPL, OP);
+		if (ret >= size) {
+			snprintf(errmsg_buf, sizeof(errmsg_buf),
+				 "'cigar_buf' overflow");
+			return errmsg_buf;
+		}
+		buf_offset += ret;
 	}
 	return NULL;
 }
@@ -895,7 +904,7 @@ SEXP cigar_narrow(SEXP cigar, SEXP left_width, SEXP right_width)
 {
 	SEXP ans, ans_cigar, ans_cigar_string, ans_rshift, cigar_string;
 	int cigar_len, i;
-	static char cigar_buf[1024];
+	static char cigar_buf[CIGAR_BUF_LENGTH];
 	const char *errmsg;
 
 	cigar_len = LENGTH(cigar);
@@ -1035,9 +1044,10 @@ static const char *qnarrow_cigar_string(SEXP cigar_string,
 {
 	int Loffset, Roffset, buf_offset;
 	const char *cig0;
-	int offset, n, OPL /* Operation Length */;
+	int offset, n, OPL /* Operation Length */, ret;
 	char OP /* Operation */;
 	const char *errmsg;
+	size_t size;
 
 	//Rprintf("qnarrow_cigar_string():\n");
 	errmsg = Lqnarrow_cigar_string(cigar_string, &Lqwidth, &Loffset,
@@ -1068,8 +1078,14 @@ static const char *qnarrow_cigar_string(SEXP cigar_string,
 				 "CIGAR is empty after qnarrowing");
 			return errmsg_buf;
 		}
-		buf_offset += sprintf(cigar_buf + buf_offset,
-				      "%d%c", OPL, OP);
+		size = CIGAR_BUF_LENGTH - buf_offset;
+		ret = snprintf(cigar_buf + buf_offset, size, "%d%c", OPL, OP);
+		if (ret >= size) {
+			snprintf(errmsg_buf, sizeof(errmsg_buf),
+				 "'cigar_buf' overflow");
+			return errmsg_buf;
+		}
+		buf_offset += ret;
 	}
 	return NULL;
 }
@@ -1084,7 +1100,7 @@ SEXP cigar_qnarrow(SEXP cigar, SEXP left_qwidth, SEXP right_qwidth)
 {
 	SEXP ans, ans_cigar, ans_cigar_string, ans_rshift, cigar_string;
 	int cigar_len, i;
-	static char cigar_buf[1024];
+	static char cigar_buf[CIGAR_BUF_LENGTH];
 	const char *errmsg;
 
 	cigar_len = LENGTH(cigar);
