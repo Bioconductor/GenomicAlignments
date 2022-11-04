@@ -14,10 +14,12 @@ Version: 1.35.0
 License: Artistic-2.0
 Encoding: UTF-8
 Authors@R: c(
-	person("Hervé", "Pagès", role=c("aut", "cre"),
-		email="hpages.on.github@gmail.com"),
-	person("Valerie", "Obenchain", role="aut"),
-	person("Martin", "Morgan", role="aut"))
+    person("Hervé", "Pages", role=("aut", "cre")),
+    person("Valerie", "Obenchain", role="aut"),
+    person("Martin", "Morgan", role="aut"),
+    person("Halimat C.", "Atanda", role="ctb",
+        comment = "Translated 'WorkingWithAlignedNucleotides' vignette from Sweave to RMarkdown / HTML."
+    ))
 Depends: R (>= 4.0.0), methods, BiocGenerics (>= 0.37.0),
 	S4Vectors (>= 0.27.12), IRanges (>= 2.23.9), GenomeInfoDb (>= 1.13.1),
 	GenomicRanges (>= 1.41.5), SummarizedExperiment (>= 1.9.13),
@@ -29,7 +31,7 @@ Suggests: ShortRead, rtracklayer, BSgenome, GenomicFeatures,
 	RNAseqData.HNRNPC.bam.chr14, pasillaBamSubset,
 	TxDb.Hsapiens.UCSC.hg19.knownGene, TxDb.Dmelanogaster.UCSC.dm3.ensGene,
 	BSgenome.Dmelanogaster.UCSC.dm3, BSgenome.Hsapiens.UCSC.hg19,
-	DESeq2, edgeR,
+	DESeq2, edgeR, knitr,
 	RUnit, BiocStyle
 Collate: utils.R
 	cigar-utils.R
@@ -54,3 +56,4 @@ Collate: utils.R
 	summarizeOverlaps-methods.R
 	findSpliceOverlaps-methods.R
 	zzz.R
+VignetteBuilder: knitr
