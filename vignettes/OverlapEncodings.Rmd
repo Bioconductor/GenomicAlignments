@@ -74,7 +74,7 @@ untreated1_chr4()
 ```
 
 We use the `readGAlignments` function defined in the `{r
-Rpackage("GenomicAlignments")}` package to load the reads into a *GAlignments*
+Rpackage("GenomicAlignments")}` package to load the reads into a `GAlignments`
 object. It's probably a good idea to get rid of the PCR or optical duplicates
 (flag bit 0x400 in the SAM format, see the SAM Spec
 ^[http://samtools.sourceforge.net/] for the details), as well as reads not
@@ -86,7 +86,7 @@ Note that we also use `use.names=TRUE` in order to load the *query names* (aka
 (`readGAlignments` will use them to set the names of the returned object):
 
 ```{r readGAlignments}
-library(GenomicAlignments)
+library(GenomicAlignments, message=FALSE)
 flag0 <- scanBamFlag(isDuplicate=FALSE, isNotPassingQualityControls=FALSE)
 param0 <- ScanBamParam(flag=flag0)
 U1.GAL <- readGAlignments(untreated1_chr4(), use.names=TRUE, param=param0)
@@ -164,7 +164,7 @@ head(last(U3.galp))
 According to the SAM format specifications, the aligner is expected to mark each
 alignment pair as *proper* or not (flag bit 0x2 in the SAM format). The SAM Spec
 only says that a pair is *proper* if the *first* and *last* alignments in the
-pair are ``properly aligned according to the aligner''. So the exact criteria
+pair are "properly aligned according to the aligner". So the exact criteria
 used for setting this flag is left to the aligner.
 
 We use `isProperPair` to extract this flag from the
@@ -224,7 +224,7 @@ colSums(cigarOpTable(cigar(last(U3.GALP))))
 
 
 
-# Find all the overlaps between the reads and transcripts}
+# Find all the overlaps between the reads and transcripts
 
 ## Load the transcripts from a `TxDb` object
 
@@ -233,7 +233,7 @@ the genomic positions of a set of known transcripts and their exons. It is
 essential that the reference genome of this set of transcripts and exons be
 **exactly** the same as the reference genome used to align the reads.
 
-We could use the `makeTxDbFromUCSC` function defined in the `{r
+We could use the`makeTxDbFromUCSC` function defined in the `{r
 Rpackage("GenomicFeatures")}` package to make a `TxDb` object containing the dm3
 transcripts and their exons retrieved from the UCSC Genome
 Browser^[http://genome.ucsc.edu/cgi-bin/hgGateway]. The Bioconductor project
@@ -321,7 +321,7 @@ length(U1.OV00)
 
 ### Tabulate the single-end overlaps
 
-We will repeatedly use the 2 following little helper functions to ``tabulate''
+We will repeatedly use the 2 following little helper functions to "tabulate"
 the overlaps in a given `Hits` object (e.g. `U1.OV00`), i.e. to count the number
 of overlaps for each element in the query or for each element in the subject:
 
@@ -461,7 +461,7 @@ The `overlap encodings` are strand sensitive so we will compute them twice, once
 for the "original alignments" (i.e. the alignments of the *original queries*),
 and once again for the "flipped alignments" (i.e. the alignments of the
 "flipped *original queries*"). We extract the ranges of the original'' and
-``flipped'' alignments in 2 *GRangesList8 objects with:
+"flipped" alignments in 2 `GRangesList` objects with:
 
 ```{r U1.grl_and_U1.grlf}
 U1.grl <- grglist(U1.GAL, order.as.in.query=TRUE)
@@ -537,19 +537,19 @@ tail(sort(U3.ovenc_table))
 ```
 
 
-# Detect ``splice compatible'' overlaps
+# Detect "splice compatible" overlaps
 
 We are interested in a particular type of overlap where the read overlaps the
-transcript in a ``splice compatible'' way, that is, in a way that is compatible
+transcript in a "splice compatible" way, that is, in a way that is compatible
 with the splicing of the transcript. The `isCompatibleWithSplicing` function can
 be used on an `OverlapEncodings` object to detect this type of overlap. Note
 that `isCompatibleWithSplicing` can also be used on a character vector or
 factor.
 
 
-## Detect ``splice compatible'' single-end overlaps
+## Detect "splice compatible" single-end overlaps
 
-### ``Splice compatible'' single-end encodings
+### "Splice compatible" single-end encodings
 
 `U1.ovenc` contains 7 unique encodings compatible with the splicing
 of the transcript:
@@ -617,7 +617,7 @@ U1.compOV00 <- U1.OV00[U1.OV00_is_comp]
 ```
 
 Note that high-level convenience wrapper `findCompatibleOverlaps` can be used
-for computing the ``splice compatible'' overlaps directly between a
+for computing the "splice compatible" overlaps directly between a
 `GAlignments` object (containing reads) and a `GRangesList` object (containing
 transcripts):
 
@@ -626,7 +626,7 @@ U1.compOV00_again <- findCompatibleOverlaps(U1.GAL, exbytx)
 stopifnot(identical(U1.compOV00_again, U1.compOV00))
 ```
 
-### Tabulate the ``splice compatible'' single-end overlaps}
+### Tabulate the "splice compatible" single-end overlaps
 
 Number of "splice compatible" transcripts for each alignment in
 `U1.GAL`:
@@ -639,7 +639,7 @@ table(U1.GAL_ncomptx)
 mean(U1.GAL_ncomptx >= 1)
 ```
 
-75% of the alignments in `U1.GAL` are ``splice compatible''
+75% of the alignments in `U1.GAL` are "splice compatible"
 with at least 1 transcript in `exbytx`.
 
 Note that high-level convenience wrapper `countCompatibleOverlaps`
@@ -686,10 +686,10 @@ obtained earlier when we counted **all** the overlaps.
 
 ## Detect "splice compatible" paired-end overlaps}
 
-###"Splice compatible" paired-end encodings
+### "Splice compatible" paired-end encodings
 
 WARNING: For paired-end encodings, `isCompatibleWithSplicing` considers that the
-encoding is ``splice compatible'' if its 2 halves are ``splice compatible''.
+encoding is "splice compatible" if its 2 halves are ``splice compatible''.
 This can produce false positives if for example the right end of the alignment
 is located upstream of the left end in transcript space. The paired-end read
 could not come from this transcript. To eliminate these false positives, one
@@ -805,7 +805,7 @@ mean(U3.uqnames_ncomptx >= 1)
 
 70.7% of the templates are "splice compatible" with at least 1 transcript in `exbytx`.
 
-Number of ``splice compatible'' templates for each transcript:
+Number of "splice compatible" templates for each transcript:
 
 ```{r U3.exbytx_ncompOV10}
 U3.exbytx_ncompOV10 <- countSubjectHits(U3.compOV10)
@@ -832,7 +832,7 @@ obtained earlier when we counted **all** the paired-end overlaps.
 ## Compute the *reference query sequences*
 
 The *reference query sequences* are the query sequences **after** alignment, by
-opposition to the *original query sequences* (aka ``true'' or ``real'' query
+opposition to the *original query sequences* (aka "true" or "real" query
 sequences) which are the query sequences **before** alignment.
 
 The *reference query sequences* can easily be computed by extracting the
@@ -843,7 +843,7 @@ Bioconductor, the full genome sequence for the dm3 assembly is stored in the
 http://bioconductor.org/packages/release/data/annotation/ for the full list of
 annotation packages available in the current release of Bioconductor.]:
 
-```{r message=TRUE}
+```{r message=FALSE}
 BiocManager::install("BSgenome.Dmelanogaster.UCSC.dm3")
 ```
 ```{r Dmelanogaster}
@@ -892,6 +892,7 @@ head(subset(U1.OV00_qstart, U1.OV00_is_comp))
 ```
 
 `U1.OV00_qstart` is a data frame with 1 row per overlap and 3 columns:
+
 * `startInTranscript`: the 1-based start position of the
     read with respect to the transcript. Position 1 always corresponds to
     the first base on the 5' end of the transcript sequence.
@@ -936,8 +937,8 @@ Because of this relationship between the *reference query sequence* and the
 transcript sequence of a "splice compatible" overlap, and because of the
 relationship between the *original query sequences* and the *reference query
 sequences*, then the edit distance reported in the NM tag is actually the edit
-distance between the *original query* and the transcript of a ``splice
-compatible'' overlap.
+distance between the *original query* and the transcript of a "splice
+compatible" overlap.
 
 
 ## Project the paired-end alignments on the transcriptome
@@ -962,8 +963,8 @@ head(subset(U3.OV00_Rqstart, U3.OV00_is_comp))
 ```
 
 Like with single-end reads, having this information allows us for example to
-compare the read and transcript nucleotide sequences for each ``splice
-compatible'' overlap. If we use the *reference query sequence* instead of the
+compare the read and transcript nucleotide sequences for each "splice
+compatible" overlap. If we use the *reference query sequence* instead of the
 *original query sequence* for this comparison, then it should match **exactly**
 the sequences of the "left" and "right" ends of the read in the transcript.
 
@@ -1249,7 +1250,7 @@ object to detect this type of overlap. Note that `isCompatibleWithSkippedExons`
 can also be used on a character vector of factor.
 
 
-## Detect "almost splice compatible" single-end overlaps}
+## Detect "almost splice compatible" single-end overlaps
 
 ### "Almost splice compatible" single-end encodings
 
