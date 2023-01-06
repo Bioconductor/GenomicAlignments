@@ -1,4 +1,3 @@
-
 ---
 title: "Overlap Encodings"
 author: 
@@ -14,10 +13,13 @@ vignette: >
   %\VignetteKeywords{sequence, sequencing, alignments}
   %\VignettePackage{GenomicAlignments}
 output:
-  BiocStyle::html_document
+  BiocStyle::html_document:
+        number_sections: true
+        toc: true
+        toc_depth: 4
 editor_options: 
   markdown: 
-  wrap: 72
+    wrap: 72
 ---
 
 ```{r options,echo=FALSE}
@@ -50,10 +52,10 @@ options(width=100)
 
 In the context of an RNA-seq experiment, encoding the overlaps between the
 aligned reads and the transcripts can be used for detecting those overlaps that
-are ``splice compatible'', that is, compatible with the splicing of the
+are "splice compatible", that is, compatible with the splicing of the
 transcript.
 
-Various tools are provided in the `{r Rpackage ("GenomicAlignments")}` package
+Various tools are provided in the `r Biocpkg("GenomicAlignments")` package
 for working with `overlap encodings`. In this vignette, we illustrate the use of
 these tools on the single-end and paired-end reads of an RNA-seq experiment.
 
@@ -62,31 +64,29 @@ these tools on the single-end and paired-end reads of an RNA-seq experiment.
 
 ## Load single-end reads from a BAM file
 
-BAM file {\tt untreated1\_chr4.bam} (located in the `{r
-Rpackage("pasillaBamSubset"}` data package) contains single-end reads from the
-``Pasilla'' experiment and aligned against the dm3 genome (see
-`?untreated1_chr4` in the `{r Rpackage("pasillaBamSubset")}` package for more
-information about those reads):
+BAM file {\tt untreated1\_chr4.bam} (located in the `r Biocpkg("pasillaBamSubset")` data package) contains single-end reads from the
+"Pasilla" experiment and aligned against the dm3 genome (see `?untreated1_chr4`
+in the `r Biocpkg("pasillaBamSubset")` package for more information about those
+reads):
 
 ```{r untreated1_chr4}
 library(pasillaBamSubset)
 untreated1_chr4()
 ```
 
-We use the `readGAlignments` function defined in the `{r
-Rpackage("GenomicAlignments")}` package to load the reads into a `GAlignments`
+We use the `readGAlignments` function defined in the `r Biocpkg("GenomicAlignments")` package to load the reads into a `GAlignments`
 object. It's probably a good idea to get rid of the PCR or optical duplicates
 (flag bit 0x400 in the SAM format, see the SAM Spec
 ^[http://samtools.sourceforge.net/] for the details), as well as reads not
 passing quality controls (flag bit 0x200 in the SAM format). We do this by
 creating a \Rclass{ScanBamParam} object that we pass to `readGAlignments` (see
-`?ScanBamParam` in the `{r Rpackage("Rsamtools")}` package for the details).
+`?ScanBamParam` in the `r Biocpkg("Rsamtools")` package for the details).
 Note that we also use `use.names=TRUE` in order to load the *query names* (aka
 *query* template names}, see QNAME field in the SAM Spec) from the BAM file
 (`readGAlignments` will use them to set the names of the returned object):
 
-```{r readGAlignments}
-library(GenomicAlignments, message=FALSE)
+```{r readGAlignments, message=FALSE}
+library(GenomicAlignments)
 flag0 <- scanBamFlag(isDuplicate=FALSE, isNotPassingQualityControls=FALSE)
 param0 <- ScanBamParam(flag=flag0)
 U1.GAL <- readGAlignments(untreated1_chr4(), use.names=TRUE, param=param0)
@@ -139,10 +139,9 @@ colSums(cigarOpTable(cigar(U1.GAL)))
 
 ## Load paired-end reads from a BAM file
 
-BAM file {\tt untreated3\_chr4.bam} (located in the `{r
-Rpackage("pasillaBamSubset")}` data package) contains paired-end reads from the
-``Pasilla'' experiment and aligned against the dm3 genome (see
-`?untreated3_chr4` in the `{r Rpackage("pasillaBamSubset")} package for more
+BAM file {\tt untreated3_chr4.bam} (located in the `r Biocpkg("pasillaBamSubset")` data package) contains paired-end reads from the
+"Pasilla" experiment and aligned against the dm3 genome (see
+`?untreated3_chr4` in the `r Biocpkg("pasillaBamSubset")` package for more
 information about those reads). We use the `readGAlignmentPairs` function to
 load them into a `GAlignmentPairs` object:
 
@@ -233,8 +232,8 @@ the genomic positions of a set of known transcripts and their exons. It is
 essential that the reference genome of this set of transcripts and exons be
 **exactly** the same as the reference genome used to align the reads.
 
-We could use the`makeTxDbFromUCSC` function defined in the `{r
-Rpackage("GenomicFeatures")}` package to make a `TxDb` object containing the dm3
+We could use the`makeTxDbFromUCSC` function defined in the `r
+Biocpkg("GenomicFeatures")` package to make a `TxDb` object containing the dm3
 transcripts and their exons retrieved from the UCSC Genome
 Browser^[http://genome.ucsc.edu/cgi-bin/hgGateway]. The Bioconductor project
 however provides a few annotation packages containing `TxDb` objects for the
@@ -245,7 +244,7 @@ package. It contains a `TxDb` object that was made by pointing the
 ^[http://genome.ucsc.edu/cgi-bin/hgTrackUi?hgsid=276880911&g=ensGene for a
 description of this track.]. We can use it here:
 
-```{r txdb}
+```{r txdb, message=FALSE}
 library(TxDb.Dmelanogaster.UCSC.dm3.ensGene)
 TxDb.Dmelanogaster.UCSC.dm3.ensGene
 txdb <- TxDb.Dmelanogaster.UCSC.dm3.ensGene
@@ -893,16 +892,16 @@ head(subset(U1.OV00_qstart, U1.OV00_is_comp))
 
 `U1.OV00_qstart` is a data frame with 1 row per overlap and 3 columns:
 
-* `startInTranscript`: the 1-based start position of the
-    read with respect to the transcript. Position 1 always corresponds to
-    the first base on the 5' end of the transcript sequence.
+  1. `startInTranscript`: the 1-based start position of the
+      read with respect to the transcript. Position 1 always corresponds to
+      the first base on the 5' end of the transcript sequence.
     
-* `firstSpannedExonRank`: the rank of the first exon spanned
-    by the read, that is, the rank of the exon found at position
-    `startInTranscript` in the transcript.
+  2. `firstSpannedExonRank`: the rank of the first exon spanned
+      by the read, that is, the rank of the exon found at position
+      `startInTranscript` in the transcript.
   
-* `startInFirstSpannedExon`: the 1-based start position of the
-    read with respect to the first exon spanned by the read.
+  3. `startInFirstSpannedExon`: the 1-based start position of the read with respect
+      to the first exon spanned by the read.
 
 
 Having this information allows us for example to compare the read and transcript
