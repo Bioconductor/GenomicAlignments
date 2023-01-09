@@ -1215,7 +1215,7 @@ but the reverse is not true:
 length(setdiff(U1.sbcompHITS, U1.compOV10))
 ```
 
-```{r}
+```{r, echo=FALSE}
 
 ## To understand why the `overlap encodings` approach doesn't find all the % "string-based compatible" hits, let's look at the second hit in
 ## Rcode{setdiff(U1.sbcompHITS, U1.compOV10)}. This is a perfect hit between
