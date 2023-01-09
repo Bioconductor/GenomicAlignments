@@ -64,7 +64,7 @@ these tools on the single-end and paired-end reads of an RNA-seq experiment.
 
 ## Load single-end reads from a BAM file
 
-BAM file {\tt untreated1\_chr4.bam} (located in the `r Biocpkg("pasillaBamSubset")` data package) contains single-end reads from the
+BAM file *untreated1chr4.bam* (located in the `r Biocpkg("pasillaBamSubset")` data package) contains single-end reads from the
 "Pasilla" experiment and aligned against the dm3 genome (see `?untreated1_chr4`
 in the `r Biocpkg("pasillaBamSubset")` package for more information about those
 reads):
@@ -139,7 +139,7 @@ colSums(cigarOpTable(cigar(U1.GAL)))
 
 ## Load paired-end reads from a BAM file
 
-BAM file {\tt untreated3_chr4.bam} (located in the `r Biocpkg("pasillaBamSubset")` data package) contains paired-end reads from the
+BAM file *untreated3_chr4.bam* (located in the `r Biocpkg("pasillaBamSubset")` data package) contains paired-end reads from the
 "Pasilla" experiment and aligned against the dm3 genome (see
 `?untreated3_chr4` in the `r Biocpkg("pasillaBamSubset")` package for more
 information about those reads). We use the `readGAlignmentPairs` function to
@@ -150,9 +150,9 @@ U3.galp <- readGAlignmentPairs(untreated3_chr4(), use.names=TRUE, param=param0)
 head(U3.galp)
 ```
 
-The `show` method for `GAlignmentPairs` objects displays two {\tt ranges}
+The `show` method for `GAlignmentPairs` objects displays two *ranges*
 columns, one for the *first* alignment in the pair (the left column), and one
-for the *last* alignment in the pair (the right column). The {\tt strand} column
+for the *last* alignment in the pair (the right column). The *strand* column
 corresponds to the strand of the  *first* alignment.
 
 ```{r first-and-last-U3.galp}
