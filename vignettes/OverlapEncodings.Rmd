@@ -79,7 +79,7 @@ object. It's probably a good idea to get rid of the PCR or optical duplicates
 (flag bit 0x400 in the SAM format, see the SAM Spec
 ^[http://samtools.sourceforge.net/] for the details), as well as reads not
 passing quality controls (flag bit 0x200 in the SAM format). We do this by
-creating a \Rclass{ScanBamParam} object that we pass to `readGAlignments` (see
+creating a `ScanBamParam` object that we pass to `readGAlignments` (see
 `?ScanBamParam` in the `r Biocpkg("Rsamtools")` package for the details).
 Note that we also use `use.names=TRUE` in order to load the *query names* (aka
 *query* template names}, see QNAME field in the SAM Spec) from the BAM file
