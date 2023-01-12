@@ -71,8 +71,6 @@ files, 1 per sequencing run:
 ```{r message=FALSE} 
 library(RNAseqData.HNRNPC.bam.chr14) 
 bamfiles <- RNAseqData.HNRNPC.bam.chr14_BAMFILES
-```
-``` {r}
 names(bamfiles) # the names of the runs
 ```
 
@@ -87,8 +85,6 @@ from the `r Biocpkg("Rsamtools")` package:
 
 ```{r message=FALSE}
 library(Rsamtools)
-```
-```{r}
 quickBamFlagSummary(bamfiles[1], main.groups.only=TRUE) 
 ```
 
@@ -214,8 +210,6 @@ We use the `readGAlignmentPairs` function to load them into a *GAlignmentPairs* 
 
 ```{r message=FALSE}
 library(pasillaBamSubset) 
-```
-```{r}
 flag0 <- scanBamFlag(isDuplicate=FALSE, isNotPassingQualityControls=FALSE) 
 param0 <- ScanBamParam(flag=flag0) 
 U3.galp <- readGAlignmentPairs(untreated3_chr4(), use.names=TRUE, param=param0)
@@ -229,8 +223,6 @@ strand of the *first* alignment.
 
 ```{r}
 head(first(U3.galp)) 
-```
-```{r}
 head(last(U3.galp))
 ```
 
@@ -279,11 +271,7 @@ Our reads can have up to 1 gap per end:
 
 ```{r}
 head(unique(cigar(first(U3.GALP))))
-```
-```{r}
 head(unique(cigar(last(U3.GALP))))
-```
-```{r}
 table(njunc(first(U3.GALP)), njunc(last(U3.GALP)))
 ```
 
