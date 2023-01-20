@@ -4,7 +4,7 @@ author:
 - name: "Hervé Pagès"
 - name: "Beryl Kanali"
   affiliation: "Converted vignette from Sweave to Rmarkdown"
-date: "Edited: December 2016; Compiled: `r format(Sys.time(), '%B %d , %Y')`"
+date: "Last modified: December 2016; Compiled: `r format(Sys.time(), '%B %d , %Y')`"
 vignette: >
   %\VignetteIndexEntry{Overlap encodings}
   %\VignetteEncoding{UTF-8}
@@ -59,29 +59,29 @@ Various tools are provided in the `r Biocpkg("GenomicAlignments")` package
 for working with `overlap encodings`. In this vignette, we illustrate the use of
 these tools on the single-end and paired-end reads of an RNA-seq experiment.
 
-
 # Load reads from a BAM file
 
 ## Load single-end reads from a BAM file
 
-BAM file *untreated1chr4.bam* (located in the `r Biocpkg("pasillaBamSubset")` data package) contains single-end reads from the
-"Pasilla" experiment and aligned against the dm3 genome (see `?untreated1_chr4`
-in the `r Biocpkg("pasillaBamSubset")` package for more information about those
-reads):
+BAM file *untreated1chr4.bam* (located in the `r Biocpkg("pasillaBamSubset")`
+data package) contains single-end reads from the "Pasilla" experiment and
+aligned against the dm3 genome (see `?untreated1_chr4` in the
+`r Biocpkg("pasillaBamSubset")` package for more information about those reads):
 
 ```{r untreated1_chr4}
 library(pasillaBamSubset)
 untreated1_chr4()
 ```
 
-We use the `readGAlignments` function defined in the `r Biocpkg("GenomicAlignments")` package to load the reads into a `GAlignments`
+We use the `readGAlignments` function defined in the `r
+Biocpkg("GenomicAlignments")` package to load the reads into a `GAlignments`
 object. It's probably a good idea to get rid of the PCR or optical duplicates
-(flag bit 0x400 in the SAM format, see the SAM Spec
-^[http://samtools.sourceforge.net/] for the details), as well as reads not
-passing quality controls (flag bit 0x200 in the SAM format). We do this by
+(flag bit 0x400 in the SAM format, see the 
+[SAM Spec](http://samtools.sourceforge.net/) for the details), as well as reads
+not passing quality controls (flag bit 0x200 in the SAM format). We do this by
 creating a `ScanBamParam` object that we pass to `readGAlignments` (see
-`?ScanBamParam` in the `r Biocpkg("Rsamtools")` package for the details).
-Note that we also use `use.names=TRUE` in order to load the *query names* (aka
+`?ScanBamParam` in the `r Biocpkg("Rsamtools")` package for the details). Note
+that we also use `use.names=TRUE` in order to load the *query names* (aka
 *query* template names}, see QNAME field in the SAM Spec) from the BAM file
 (`readGAlignments` will use them to set the names of the returned object):
 
@@ -135,15 +135,14 @@ during the alignment process (no I or D CIGAR operations):
 ```{r no-indels-in-U1.GAL}
 colSums(cigarOpTable(cigar(U1.GAL)))
 ```
-
-
 ## Load paired-end reads from a BAM file
 
-BAM file *untreated3_chr4.bam* (located in the `r Biocpkg("pasillaBamSubset")` data package) contains paired-end reads from the
-"Pasilla" experiment and aligned against the dm3 genome (see
-`?untreated3_chr4` in the `r Biocpkg("pasillaBamSubset")` package for more
-information about those reads). We use the `readGAlignmentPairs` function to
-load them into a `GAlignmentPairs` object:
+BAM file *untreated3_chr4.bam* (located in the `r Biocpkg("pasillaBamSubset")`
+data package) contains paired-end reads from the "Pasilla" experiment and
+aligned against the dm3 genome (see `?untreated3_chr4` in the 
+`r Biocpkg("pasillaBamSubset")` package for more information about those reads). 
+We use the `readGAlignmentPairs` function to load them into a `GAlignmentPairs`
+object:
 
 ```{r readGAlignmentPairs}
 U3.galp <- readGAlignmentPairs(untreated3_chr4(), use.names=TRUE, param=param0)
@@ -220,9 +219,6 @@ colSums(cigarOpTable(cigar(first(U3.GALP))))
 colSums(cigarOpTable(cigar(last(U3.GALP))))
 ```
 
-
-
-
 # Find all the overlaps between the reads and transcripts
 
 ## Load the transcripts from a `TxDb` object
@@ -232,14 +228,14 @@ the genomic positions of a set of known transcripts and their exons. It is
 essential that the reference genome of this set of transcripts and exons be
 **exactly** the same as the reference genome used to align the reads.
 
-We could use the`makeTxDbFromUCSC` function defined in the `r
-Biocpkg("GenomicFeatures")` package to make a `TxDb` object containing the dm3
-transcripts and their exons retrieved from the UCSC Genome
-Browser^[http://genome.ucsc.edu/cgi-bin/hgGateway]. The Bioconductor project
-however provides a few annotation packages containing `TxDb` objects for the
-most commonly studied organisms (those data packages are sometimes called the
-`TxDb` packages). One of them is the `TxDb.Dmelanogaster.-UCSC.-dm3.ensGene`
-package. It contains a `TxDb` object that was made by pointing the
+We could use the`makeTxDbFromUCSC` function defined in the 
+`r Biocpkg("GenomicFeatures")` package to make a `TxDb` object containing the 
+dm3 transcripts and their exons retrieved from the [UCSC Genome
+Browser](http://genome.ucsc.edu/cgi-bin/hgGateway). The Bioconductor project
+however provides a few annotation packages containing `TxDb` objects for themost
+commonly studied organisms (those data packages are sometimes called the `TxDb`
+packages). One of them is the `r Biocpkg("TxDb.Dmelanogaster.UCSC.dm3.ensGene")` 
+package. It contains a `TxDb` object that was made by pointing the 
 `makeTxDbFromUCSC` function to the dm3 genome and `Ensembl Genes` track
 ^[http://genome.ucsc.edu/cgi-bin/hgTrackUi?hgsid=276880911&g=ensGene for a
 description of this track.]. We can use it here:
@@ -296,8 +292,6 @@ exbytx2gene <- exbytx2gene[names(exbytx)]
 head(exbytx2gene)
 nlevels(exbytx2gene)  # nb of genes
 ```
-
-
 
 ## Single-end overlaps
 
@@ -377,7 +371,6 @@ Top 10 transcripts:
 head(sort(U1.exbytx_nOV10, decreasing=TRUE), n=10) 
 ```
 
-
 ## Paired-end overlaps
 
 ### Find the paired-end overlaps
@@ -450,7 +443,6 @@ Top 10 transcripts:
 ```{r top-10-transcripts-based-on-U3.exbytx_nOV10}
 head(sort(U3.exbytx_nOV10, decreasing=TRUE), n=10)
 ```
-
 
 # Encode the overlaps between the reads and transcripts
 
@@ -545,7 +537,6 @@ be used on an `OverlapEncodings` object to detect this type of overlap. Note
 that `isCompatibleWithSplicing` can also be used on a character vector or
 factor.
 
-
 ## Detect "splice compatible" single-end overlaps
 
 ### "Splice compatible" single-end encodings
@@ -587,8 +578,8 @@ consecutive and adjacent in the processed transcript.
 
 Encodings `"1:f:"` and `"1:j:"` are variations of the situation described by
 encoding `"1:i:"`. For `"1:f:"`, the first aligned base of the read (or
-``flipped'' read) is aligned with the first base of the exon. For `"1:j:"`, the
-last aligned base of the read (or ``flipped'' read) is aligned with the last
+"flipped" read) is aligned with the first base of the exon. For `"1:j:"`, the
+last aligned base of the read (or "flipped" read) is aligned with the last
 base of the exon:
 
 
@@ -609,7 +600,7 @@ U1.OV00_is_comp <- isCompatibleWithSplicing(U1.ovenc)
 table(U1.OV00_is_comp)  # 531797 "splice compatible" overlaps
 ```
 
-Finally, let's extract the ``splice compatible'' overlaps from `U1.OV00`:
+Finally, let's extract the "splice compatible" overlaps from `U1.OV00`:
 
 ```{r U1.compOV00}
 U1.compOV00 <- U1.OV00[U1.OV00_is_comp]
@@ -682,13 +673,12 @@ head(sort(U1.exbytx_ncompOV10, decreasing=TRUE), n=10)
 Note that this "top 10" is slightly different from the "top 10" we
 obtained earlier when we counted **all** the overlaps.
 
-
 ## Detect "splice compatible" paired-end overlaps}
 
 ### "Splice compatible" paired-end encodings
 
 WARNING: For paired-end encodings, `isCompatibleWithSplicing` considers that the
-encoding is "splice compatible" if its 2 halves are ``splice compatible''.
+encoding is "splice compatible" if its 2 halves are "splice compatible".
 This can produce false positives if for example the right end of the alignment
 is located upstream of the left end in transcript space. The paired-end read
 could not come from this transcript. To eliminate these false positives, one
@@ -702,42 +692,42 @@ the splicing of the transcript:
 sort(U3.ovenc_table[isCompatibleWithSplicing(U3.unique_encodings)])
 ```
 
-Paired-end encodings `"1{-}{-}1:i{-}{-}i:"` (100084 occurences in `U3.ovenc`),
-`"2{-}{-}1:jm{-}{-}m:af{-}{-}i:"` (2700 occurences in `U3.ovenc`),
-`"1{-}{-}2:i{-}{-}jm:a{-}{-}af:"` (2480 occurences in `U3.ovenc`),
-`"1{-}{-}1:i{-}{-}m:a{-}{-}i:"` (287 occurences in `U3.ovenc`), and
-`"2{-}{-}2:jm{-}{-}mm:af{-}{-}jm:aa{-}{-}af:"` (153 occurences in `U3.ovenc`),
+Paired-end encodings `"1--1:i--i:"` (100084 occurences in `U3.ovenc`),
+`"2--1:jm--m:af--i:"` (2700 occurences in `U3.ovenc`),
+`"1--2:i--jm:a--af:"` (2480 occurences in `U3.ovenc`),
+`"1--1:i--m:a--i:"` (287 occurences in `U3.ovenc`), and
+`"2--2:jm--mm:af--jm:aa--af:"` (153 occurences in `U3.ovenc`),
 correspond to the following paired-end overlaps:
 
-- `"1{-}{-}1:i{-}{-}i:"`
+- `"1--1:i--i:"`
 
   - paired-end read (no skipped region on the first end, no skipped region
     on the last end):          oooo   oooo
   - transcript:       ...   >>>>>>>>>>>>>>>>   ...
   
 
-- `"2{-}{-}1:jm{-}{-}m:af{-}{-}i:"`
+- `"2--1:jm--m:af--i:"`
 
   - paired-end read (1 skipped region on the first end, no skipped region
     on the last end):            ooo---o    oooo
   - transcript:       ...   >>>>>>>>   >>>>>>>>>>>   ...
   
 
-- `"1{-}{-}2:i{-}{-}jm:a{-}{-}af:"`
+- `"1--2:i--jm:a--af:"`
 
   - paired-end read (no skipped region on the first end, 1 skipped region
     on the last end):         oooo      oo---oo
   - transcript:       ...   >>>>>>>>>>>>>>   >>>>>>>>>  ...
 
 
-- `"1{-}{-}1:i{-}{-}m:a{-}{-}i:"`
+- `"1--1:i--m:a--i:"`
 
   - paired-end read (no skipped region on the first end, no skipped region
     on the last end):          oooo      oooo
   - transcript:       ...   >>>>>>>>>   >>>>>>>   ...
 
 
-- `"2{-}{-}2:jm{-}{-}mm:af{-}{-}jm:aa{-}{-}af:"`
+- `"2--2:jm--mm:af--jm:aa--af:"`
 
   - paired-end read (1 skipped region on the first end, 1 skipped region
     on the last end):          ooo---o    oo---oo
@@ -824,9 +814,7 @@ head(sort(U3.exbytx_ncompOV10, decreasing=TRUE), n=10)
 Note that this "top 10" is slightly different from the "top 10" we
 obtained earlier when we counted **all** the paired-end overlaps.
 
-
 # Compute the *reference query sequences* and project them on the transcriptome
-
 
 ## Compute the *reference query sequences*
 
@@ -838,21 +826,18 @@ The *reference query sequences* can easily be computed by extracting the
 nucleotides mapped to each read from the reference genome. This of course
 requires that we have access to the reference genome used by the aligner. In
 Bioconductor, the full genome sequence for the dm3 assembly is stored in the
-`BSgenome.Dmelanogaster.UCSC.dm3` data package ^[See
+`r Biocpkg("BSgenome.Dmelanogaster.UCSC.dm3")` data package ^[See
 http://bioconductor.org/packages/release/data/annotation/ for the full list of
 annotation packages available in the current release of Bioconductor.]:
 
-```{r message=FALSE}
-BiocManager::install("BSgenome.Dmelanogaster.UCSC.dm3")
-```
 ```{r Dmelanogaster}
 library(BSgenome.Dmelanogaster.UCSC.dm3)
 Dmelanogaster
 ```
 
-To extract the portions of the reference genome corresponding to the ranges
-in `U1.grl`, we can use the `extractTranscriptSeqs`
-function defined in the `GenomicFeatures` package:
+To extract the portions of the reference genome corresponding to the ranges in
+`U1.grl`, we can use the `extractTranscriptSeqs` function defined in the
+`GenomicFeatures` package:
 
 ```{r U1-reference-query-sequences}
 library(GenomicFeatures)
@@ -900,12 +885,12 @@ head(subset(U1.OV00_qstart, U1.OV00_is_comp))
       by the read, that is, the rank of the exon found at position
       `startInTranscript` in the transcript.
   
-  3. `startInFirstSpannedExon`: the 1-based start position of the read with respect
-      to the first exon spanned by the read.
+  3. `startInFirstSpannedExon`: the 1-based start position of the read with
+      respect to the first exon spanned by the read.
 
 
 Having this information allows us for example to compare the read and transcript
-nucleotide sequences for each ``splice compatible'' overlap. If we use the
+nucleotide sequences for each "splice compatible" overlap. If we use the
 *reference query sequence* instead of the *original query sequence* for this
 comparison, then it should match **exactly** the sequence found at the *query
 start* in the transcript.
@@ -1016,10 +1001,7 @@ stopifnot(all(
 ))
 ```
 
-
-
 # Align the reads to the transcriptome
-
 
 Aligning the reads to the reference genome is not the most efficient nor
 accurate way to count the number of "splice compatible" overlaps per *original
@@ -1052,7 +1034,7 @@ reference genome, we don't need to allow/support them either for aligning the
 reads to the transcriptome. Also since our goal is to find (and count) "splice
 compatible" overlaps between reads and transcripts, we don't need to keep track
 of the details of the alignments between the reads and the transcripts.
-Finally, since BAM file {\tt untreated1\_chr4.bam} is not the full output of the
+Finally, since BAM file {*untreated1_chr4.bam*} is not the full output of the
 aligner but the subset obtained by keeping only the alignments located on chr4,
 we don't need to align `U1.oqseq` to the full transcriptome, but only to the
 subset of `exbytx_seq` made of the transcripts located on chr4.
@@ -1236,8 +1218,7 @@ length(setdiff(U1.sbcompHITS, U1.compOV10))
 ## Align the paired-end reads to the transcriptome
 [COMING SOON...]
 
-# Detect ``almost splice compatible'' overlaps
-
+# Detect "almost splice compatible" overlaps
 
 In many aspects, "splice compatible" overlaps can be seen as perfect. We are
 now insterested in a less perfect type of overlap where the read overlaps the
@@ -1344,29 +1325,26 @@ compatible" with the splicing of the transcript:
 sort(U3.ovenc_table[isCompatibleWithSkippedExons(U3.unique_encodings)])
 ```
 
-Paired-end encodings `"2{-}{-}1:jm{-}{-}m:am{-}{-}m:af{-}{-}i:"`
-(73 occurences in `U3.ovenc`),
-`"1{-}{-}2:i{-}{-}jm:a{-}{-}am:a{-}{-}af:"` (53 occurences in
-`U3.ovenc`), and
-`"2{-}{-}2:jm{-}{-}mm:am{-}{-}mm:af{-}{-}jm:aa{-}{-}af:"`
-(9 occurences in `U3.ovenc`), correspond to the following paired-end
-overlaps:
+Paired-end encodings `"2--1:jm--m:am--m:af--i:"` (73 occurences in `U3.ovenc`),
+`"1--2:i--jm:a--am:a--af:"` (53 occurences in `U3.ovenc`), and
+`"2--2:jm--mm:am--mm:af--jm:aa--af:"` (9 occurences in `U3.ovenc`), correspond
+to the following paired-end overlaps:
 
-- `"2{-}{-}1:jm{-}{-}m:am{-}{-}m:af{-}{-}i:"`
+- `"2--1:jm--m:am--m:af--i:"`
 
   - paired-end read (1 skipped region on the first end, no skipped region
     on the last end):         ooo----------o  oooo
   - transcript:       ...   >>>>>   >>>>   >>>>>>>>>   ...
 
 
-- `"1{-}{-}2:i{-}{-}jm:a{-}{-}am:a{-}{-}af:"`
+- `"1--2:i--jm:a--am:a--af:"`
 
   - paired-end read (no skipped region on the first end, 1 skipped region
     on the last end):         oooo   oo---------oo
   - transcript:       ...   >>>>>>>>>>>   >>>   >>>>>>   ...
 
 
-- `"2{-}{-}2:jm{-}{-}mm:am{-}{-}mm:af{-}{-}jm:aa{-}{-}af:"`
+- `"2--2:jm--mm:am--mm:af--jm:aa--af:"`
 
   - paired-end read (1 skipped region on the first end, 1 skipped region
     on the last end):           o----------ooo   oo---oo
