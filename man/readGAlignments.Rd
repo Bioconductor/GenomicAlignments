@@ -34,7 +34,8 @@ readGAlignmentPairs(file, index=file, use.names=FALSE, param=NULL,
                           with.which_label=FALSE, strandMode=1)
 
 readGAlignmentsList(file, index=file, use.names=FALSE,
-                          param=ScanBamParam(), with.which_label=FALSE)
+                          param=ScanBamParam(), with.which_label=FALSE,
+                          strandMode=1)
 
 readGappedReads(file, index=file, use.names=FALSE, param=NULL,
                       with.which_label=FALSE)
@@ -103,7 +104,8 @@ readGappedReads(file, index=file, use.names=FALSE, param=NULL,
     represented as a factor-\link[S4Vectors]{Rle}.
   }
   \item{strandMode}{
-    Strand mode to set on the returned \link{GAlignmentPairs} object.
+    Strand mode to set on the returned \link{GAlignmentPairs} or
+    \link{GAlignmentsList} object.
     See \code{?\link{strandMode}} for more information.
   }
 }
