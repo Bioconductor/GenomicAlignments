@@ -34,7 +34,8 @@ readGAlignmentPairs(file, index=file, use.names=FALSE, param=NULL,
                           with.which_label=FALSE, strandMode=1)
 
 readGAlignmentsList(file, index=file, use.names=FALSE,
-                          param=ScanBamParam(), with.which_label=FALSE)
+                          param=ScanBamParam(), with.which_label=FALSE,
+                          strandMode=1)
 
 readGappedReads(file, index=file, use.names=FALSE, param=NULL,
                       with.which_label=FALSE)
