@@ -69,6 +69,42 @@ setClass("GAlignmentsList",
 ###
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### updateObject()
+###
+### Internal representation of GAlignmentsList objects has changed in
+### GenomicAlignments 1.35.1 (Bioc 3.17).
+###
+
+.get_GAlignmentsList_version <- function(object)
+{
+    if (.hasSlot(object, "strandMode")) "current" else "< 1.35.1"
+}
+
+setMethod("updateObject", "GAlignmentsList",
+    function(object, ..., verbose=FALSE)
+    {
+        ## elementType slot.
+        version <- .get_GAlignmentsList_version(object)
+        if (version == "current") {
+            if (verbose)
+                message("[updateObject] Internal representation of ",
+                        class(object), " object is current.\n",
+                        "[updateObject] Nothing to update.")
+        } else {
+            if (verbose)
+                message("[updateObject] ", class(object), " object uses ",
+                        "internal representation from\n",
+                        "[updateObject] GenomicAlignments ", version, ". ",
+                        "Updating it ...")
+            object@strandMode <- new(class(object))@elementType
+        }
+
+        callNextMethod()
+    }
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Getters.
 ###
 
@@ -187,6 +223,7 @@ setMethod("invertStrand", "GAlignmentsList",
 {
    ## TDB: Currently known pitfalls are caught by
    ## GAlignments validity. 
+  .valid.GAlignmentPairs.strandMode(x)
 }
 
 setValidity2("GAlignmentsList", .valid.GAlignmentsList)
@@ -320,8 +357,13 @@ setAs("GAlignmentPairs", "GAlignmentsList",
             pbe <- PartitioningByEnd()
         else
             pbe <- PartitioningByEnd(seq(2, 2*length(from), 2), names=names(from)) 
+        mcols_gal <- cbind(mate_status=factor(rep("mated", length(from)),
+                                              levels=c("mated", "ambiguous", "unmated")),
+                           mcols(from))
         new("GAlignmentsList",
+            strandMode=strandMode(from),
             unlistData=unlist(from, use.names=FALSE),
+            elementMetadata=mcols_gal,
             partitioning=pbe)
         }
 )
@@ -334,12 +376,17 @@ setAs("GAlignmentsList", "GAlignmentPairs",
         first <- c(TRUE, FALSE)
         last <- c(FALSE, TRUE)
         ga_mcols <- mcols(ga, use.names=FALSE)
+        if (!is.null(ga_mcols$flag)) {
+          first <- bamFlagTest(ga_mcols$flag, "isFirstMateRead")
+          last <- !first
+        }
         isProperPair <- if (!is.null(ga_mcols$flag)) {
             bamFlagTest(ga_mcols$flag[first], "isProperPair")
         } else {
             TRUE
         }
         GAlignmentPairs(ga[first], ga[last],
+                        strandMode=strandMode(from),
                         isProperPair=isProperPair,
                         names=names(ga)[first])
     }

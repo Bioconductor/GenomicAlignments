@@ -5,6 +5,7 @@
 \alias{class:GAlignmentsList}
 \alias{GAlignmentsList-class}
 \alias{GAlignmentsList}
+\alias{updateObject,GAlignmentsList-method}
 
 % Constructors:
 \alias{GAlignmentsList}
