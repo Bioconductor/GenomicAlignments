@@ -51,7 +51,7 @@ test_readGAlignmentsList_mcols <- function()
     bf <- BamFile(chr4, asMates=TRUE, yieldSize=100)
     param <- ScanBamParam(tag=("NM"))
     galist <- readGAlignmentsList(bf, param=param)
-    checkIdentical(colnames(mcols(unlist(galist))), "NM")
+    checkIdentical(colnames(mcols(unlist(galist))), c("flag", "NM"))
     checkTrue(names(mcols(galist)) == "mate_status")
 
     param <- ScanBamParam(tag=("FO"))
@@ -181,4 +181,19 @@ test_readGAlignmentsList_which <- function()
     checkTrue(all(rng1 %in% my_ROI_labels[1]))
     rng2 <- as.vector(mcols(unlist(target1[2]))$which_label)
     checkTrue(all(rng2 %in% my_ROI_labels[4]))
+}
+
+text_readGAlignmentsList_findOverlaps <- function()
+{
+    fl <- system.file("extdata", "ex1.bam", package="Rsamtools")
+    bf <- BamFile(fl, asMates=TRUE)
+    galist <- readGAlignmentsList(bf, strandMode=1L)
+    f <- GRanges(seqnames="seq1", IRanges(30, 250), strand="-")
+    ov <- findOverlaps(galist[1], f, ignore.strand=FALSE)
+    checkIdentical(0L, length(ov))
+
+    galist <- readGAlignmentsList(bf, strandMode=2L)
+    f <- GRanges(seqnames="seq1", IRanges(30, 250), strand="-")
+    ov <- findOverlaps(galist[1], f, ignore.strand=FALSE)
+    checkIdentical(1L, length(ov))
 }

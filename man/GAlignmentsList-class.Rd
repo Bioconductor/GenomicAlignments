@@ -5,6 +5,7 @@
 \alias{class:GAlignmentsList}
 \alias{GAlignmentsList-class}
 \alias{GAlignmentsList}
+\alias{updateObject,GAlignmentsList-method}
 
 % Constructors:
 \alias{GAlignmentsList}
@@ -26,6 +27,9 @@
 \alias{elementMetadata<-,GAlignmentsList-method}
 \alias{seqinfo,GAlignmentsList-method}
 \alias{seqinfo<-,GAlignmentsList-method}
+\alias{strandMode,GAlignmentsList-method}
+\alias{strandMode<-,GAlignmentsList-method}
+\alias{invertStrand,GAlignmentsList-method}
 
 % Coercion:
 \alias{ranges,GAlignmentsList-method}

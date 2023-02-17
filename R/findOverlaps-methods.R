@@ -94,7 +94,15 @@ setMethod("findOverlaps", c("GAlignmentsList", "Vector"),
              select = c("all", "first", "last", "arbitrary"),
              ignore.strand = FALSE)
     {
-        hits <- findOverlaps(grglist(unlist(query, use.names = FALSE)),
+        ## to take into account the right (real) strand, when ignore.strand=FALSE,
+        ## we duplicate GAligbnmentsList object in memory and update the original
+        ## strand with the real one, according to the strandMode parameter
+        ## TODO: it may be worth investigating alternative ways to avoid duplicating
+        ## a presumably large GAlignmentsList object
+        query2 <- query
+        if (!ignore.strand)
+          strand(query2) <- strand(query2) ## overwrite original strand w/ real one
+        hits <- findOverlaps(grglist(unlist(query2, use.names=FALSE)),
                              subject, maxgap = maxgap, minoverlap = minoverlap,
                              type = match.arg(type), select = match.arg(select),
                              ignore.strand = ignore.strand)
@@ -112,7 +120,15 @@ setMethod("findOverlaps", c("Vector", "GAlignmentsList"),
              select = c("all", "first", "last", "arbitrary"),
              ignore.strand = FALSE)
     {
-        hits <- findOverlaps(query, grglist(unlist(subject, use.names = FALSE)),
+        ## to take into account the right (real) strand, when ignore.strand=FALSE,
+        ## we duplicate GAligbnmentsList object in memory and update the original
+        ## strand with the real one, according to the strandMode parameter
+        ## TODO: it may be worth investigating alternative ways to avoid duplicating
+        ## a presumably large GAlignmentsList object
+        subject2 <- subject
+        if (!ignore.strand)
+          strand(subject2) <- strand(subject2) ## overwrite original strand w/ real one
+        hits <- findOverlaps(query, grglist(unlist(subject2, use.names = FALSE)),
                              maxgap = maxgap, minoverlap = minoverlap,
                              type = match.arg(type), select = match.arg(select),
                              ignore.strand = ignore.strand)
@@ -130,8 +146,19 @@ setMethod("findOverlaps", c("GAlignmentsList", "GAlignmentsList"),
              select = c("all", "first", "last", "arbitrary"),
              ignore.strand = FALSE)
     {
-        hits <- findOverlaps(grglist(unlist(query, use.names = FALSE)), 
-                             grglist(unlist(subject, use.names = FALSE)),
+        ## to take into account the right (real) strand, when ignore.strand=FALSE,
+        ## we duplicate GAligbnmentsList object in memory and update the original
+        ## strand with the real one, according to the strandMode parameter
+        ## TODO: it may be worth investigating alternative ways to avoid duplicating
+        ## a presumably large GAlignmentsList object
+        query2 <- query
+        subject2 <- subject
+        if (!ignore.strand) {
+          strand(query2) <- strand(query2) ## overwrite original strand w/ real one
+          strand(subject2) <- strand(subject2) ## overwrite original strand w/ real one
+        }
+        hits <- findOverlaps(grglist(unlist(query2, use.names = FALSE)), 
+                             grglist(unlist(subject2, use.names = FALSE)),
                              maxgap = maxgap, minoverlap = minoverlap,
                              type = match.arg(type), 
                              select = match.arg(select),
