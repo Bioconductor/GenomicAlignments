@@ -845,7 +845,7 @@ static const char *Rnarrow_cigar_string(SEXP cigar_string,
 	return errmsg_buf;
 }
 
-#define	CIGAR_BUF_LENGTH 50000
+#define	CIGAR_BUF_LENGTH 250000
 
 /* FIXME: 'cigar_buf' is under the risk of a buffer overflow! */
 static const char *narrow_cigar_string(SEXP cigar_string,
