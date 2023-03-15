@@ -1,0 +1,1493 @@
+---
+title: "Overlap Encodings"
+author: 
+- name: "Hervé Pagès"
+- name: "Beryl Kanali"
+  affiliation: "Converted vignette from Sweave to Rmarkdown"
+date: "Last modified: December 2016; Compiled: `r format(Sys.time(), '%B %d , %Y')`"
+vignette: >
+  %\VignetteIndexEntry{Overlap encodings}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteDepends{pasillaBamSubset, GenomicAlignments, GenomicFeatures, BSgenome.Dmelanogaster.UCSC.dm3, TxDb.Dmelanogaster.UCSC.dm3.ensGene}
+  %\VignetteKeywords{sequence, sequencing, alignments}
+  %\VignettePackage{GenomicAlignments}
+output:
+  BiocStyle::html_document:
+        number_sections: true
+        toc: true
+        toc_depth: 4
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r options,echo=FALSE}
+options(width=100)
+.precomputed_results_dir <- "precomputed_results"
+.loadPrecomputed <- function(objname)
+{
+    filename <- paste0(objname, ".rda")
+    path <- file.path(.precomputed_results_dir, filename)
+    tempenv <- new.env(parent=emptyenv())
+    load(path, envir=tempenv)
+    updateObject(get(objname, envir=tempenv))
+}
+.checkIdenticalToPrecomputed <- function(obj, objname, ignore.metadata=FALSE)
+{
+    precomputed_obj <- .loadPrecomputed(objname)
+    if (ignore.metadata)
+        metadata(obj) <- metadata(precomputed_obj) <- list()
+    ## Replace NAs with FALSE in circularity flag (because having the flag set
+    ## to NA instead of FALSE (or vice-versa) is not considered a significant
+    ## difference between the 2 objects).
+    isCircular(obj) <- isCircular(obj) %in% TRUE
+    isCircular(precomputed_obj) <- isCircular(precomputed_obj) %in% TRUE
+    if (!identical(obj, precomputed_obj))
+        stop("'", objname, "' is not identical to precomputed version")
+}
+```
+
+# Introduction
+
+In the context of an RNA-seq experiment, encoding the overlaps between the
+aligned reads and the transcripts can be used for detecting those overlaps that
+are "splice compatible", that is, compatible with the splicing of the
+transcript.
+
+Various tools are provided in the `r Biocpkg("GenomicAlignments")` package
+for working with `overlap encodings`. In this vignette, we illustrate the use of
+these tools on the single-end and paired-end reads of an RNA-seq experiment.
+
+# Load reads from a BAM file
+
+## Load single-end reads from a BAM file
+
+BAM file *untreated1chr4.bam* (located in the `r Biocpkg("pasillaBamSubset")`
+data package) contains single-end reads from the "Pasilla" experiment and
+aligned against the dm3 genome (see `?untreated1_chr4` in the
+`r Biocpkg("pasillaBamSubset")` package for more information about those reads):
+
+```{r untreated1_chr4}
+library(pasillaBamSubset)
+untreated1_chr4()
+```
+
+We use the `readGAlignments` function defined in the `r
+Biocpkg("GenomicAlignments")` package to load the reads into a `GAlignments`
+object. It's probably a good idea to get rid of the PCR or optical duplicates
+(flag bit 0x400 in the SAM format, see the 
+[SAM Spec](http://samtools.sourceforge.net/) for the details), as well as reads
+not passing quality controls (flag bit 0x200 in the SAM format). We do this by
+creating a `ScanBamParam` object that we pass to `readGAlignments` (see
+`?ScanBamParam` in the `r Biocpkg("Rsamtools")` package for the details). Note
+that we also use `use.names=TRUE` in order to load the *query names* (aka
+*query* template names}, see QNAME field in the SAM Spec) from the BAM file
+(`readGAlignments` will use them to set the names of the returned object):
+
+```{r readGAlignments, message=FALSE}
+library(GenomicAlignments)
+flag0 <- scanBamFlag(isDuplicate=FALSE, isNotPassingQualityControls=FALSE)
+param0 <- ScanBamParam(flag=flag0)
+U1.GAL <- readGAlignments(untreated1_chr4(), use.names=TRUE, param=param0)
+head(U1.GAL)
+```
+
+Because the aligner used to align those reads can report more than 1 alignment
+per "original query" (i.e. per read stored in the input file, typically a FASTQ
+file), we shouldn't expect the names of `U1.GAL` to be unique:
+
+```{r U1.GAL_names_is_dup}
+U1.GAL_names_is_dup <- duplicated(names(U1.GAL))
+table(U1.GAL_names_is_dup)
+```
+
+Storing the *query names* in a factor will be useful as we will see later
+in this document:
+
+```{r U1.GAL_qnames}
+U1.uqnames <- unique(names(U1.GAL))
+U1.GAL_qnames <- factor(names(U1.GAL), levels=U1.uqnames)
+```
+
+Note that we explicitely provide the levels of the factor to enforce their
+order. Otherwise `factor()` would put them in lexicographic order which is not
+advisable because it depends on the locale in use.
+
+Another object that will be useful to keep near at hand is the mapping between
+each *query name* and its first occurence in `U1.GAL_qnames`:
+
+```{r U1.GAL_dup2unq}
+U1.GAL_dup2unq <- match(U1.GAL_qnames, U1.GAL_qnames)
+```
+
+Our reads can have up to 2 *skipped regions* (a *skipped region*
+corresponds to an N operation in the CIGAR):
+
+```{r skipped-regions-in-U1.GAL}
+head(unique(cigar(U1.GAL)))
+table(njunc(U1.GAL))
+```
+
+Also, the following table indicates that indels were not allowed/supported 
+during the alignment process (no I or D CIGAR operations):
+
+```{r no-indels-in-U1.GAL}
+colSums(cigarOpTable(cigar(U1.GAL)))
+```
+## Load paired-end reads from a BAM file
+
+BAM file *untreated3_chr4.bam* (located in the `r Biocpkg("pasillaBamSubset")`
+data package) contains paired-end reads from the "Pasilla" experiment and
+aligned against the dm3 genome (see `?untreated3_chr4` in the 
+`r Biocpkg("pasillaBamSubset")` package for more information about those reads). 
+We use the `readGAlignmentPairs` function to load them into a `GAlignmentPairs`
+object:
+
+```{r readGAlignmentPairs}
+U3.galp <- readGAlignmentPairs(untreated3_chr4(), use.names=TRUE, param=param0)
+head(U3.galp)
+```
+
+The `show` method for `GAlignmentPairs` objects displays two *ranges*
+columns, one for the *first* alignment in the pair (the left column), and one
+for the *last* alignment in the pair (the right column). The *strand* column
+corresponds to the strand of the  *first* alignment.
+
+```{r first-and-last-U3.galp}
+head(first(U3.galp))
+head(last(U3.galp))
+```
+
+According to the SAM format specifications, the aligner is expected to mark each
+alignment pair as *proper* or not (flag bit 0x2 in the SAM format). The SAM Spec
+only says that a pair is *proper* if the *first* and *last* alignments in the
+pair are "properly aligned according to the aligner". So the exact criteria
+used for setting this flag is left to the aligner.
+
+We use `isProperPair` to extract this flag from the
+`GAlignmentPairs` object:
+
+```{r isProperPair}
+table(isProperPair(U3.galp))
+```
+
+Even though we could do `overlap encodings` with the full object,
+we keep only the *proper* pairs for our downstream analysis:
+
+```{r keep-only-proper-pairs}
+U3.GALP <- U3.galp[isProperPair(U3.galp)]
+```
+
+Because the aligner used to align those reads can report more than 1 alignment
+per *original query template* (i.e. per pair of sequences stored in the input
+files, typically 1 FASTQ file for the *first* ends and 1 FASTQ file for the
+*last* ends), we shouldn't expect the names of `U3.GALP` to be unique:
+
+```{r U3.GALP_names_is_dup}
+U3.GALP_names_is_dup <- duplicated(names(U3.GALP))
+table(U3.GALP_names_is_dup)
+```
+
+Storing the *query template names* in a factor will be useful:
+
+```{r U3.GALP_qnames}
+U3.uqnames <- unique(names(U3.GALP))
+U3.GALP_qnames <- factor(names(U3.GALP), levels=U3.uqnames)
+```
+
+as well as having the mapping between each *query template name* and its
+first occurence in `U3.GALP_qnames`:
+
+```{r U3.GALP_dup2unq}
+U3.GALP_dup2unq <- match(U3.GALP_qnames, U3.GALP_qnames)
+```
+
+Our reads can have up to 1 *skipped region* per end:
+
+```{r skipped-region-in-U3.GALP}
+head(unique(cigar(first(U3.GALP))))
+head(unique(cigar(last(U3.GALP))))
+table(njunc(first(U3.GALP)), njunc(last(U3.GALP)))
+```
+
+Like for our single-end reads, the following tables indicate that indels were
+not allowed/supported during the alignment process:
+
+```{r no-indels-in-U3.GALP}
+colSums(cigarOpTable(cigar(first(U3.GALP))))
+colSums(cigarOpTable(cigar(last(U3.GALP))))
+```
+
+# Find all the overlaps between the reads and transcripts
+
+## Load the transcripts from a `TxDb` object
+
+In order to compute overlaps between reads and transcripts, we need access to
+the genomic positions of a set of known transcripts and their exons. It is
+essential that the reference genome of this set of transcripts and exons be
+**exactly** the same as the reference genome used to align the reads.
+
+We could use the`makeTxDbFromUCSC` function defined in the 
+`r Biocpkg("GenomicFeatures")` package to make a `TxDb` object containing the 
+dm3 transcripts and their exons retrieved from the [UCSC Genome
+Browser](http://genome.ucsc.edu/cgi-bin/hgGateway). The Bioconductor project
+however provides a few annotation packages containing `TxDb` objects for themost
+commonly studied organisms (those data packages are sometimes called the `TxDb`
+packages). One of them is the `r Biocpkg("TxDb.Dmelanogaster.UCSC.dm3.ensGene")` 
+package. It contains a `TxDb` object that was made by pointing the 
+`makeTxDbFromUCSC` function to the dm3 genome and `Ensembl Genes` track
+^[http://genome.ucsc.edu/cgi-bin/hgTrackUi?hgsid=276880911&g=ensGene for a
+description of this track.]. We can use it here:
+
+```{r txdb, message=FALSE}
+library(TxDb.Dmelanogaster.UCSC.dm3.ensGene)
+TxDb.Dmelanogaster.UCSC.dm3.ensGene
+txdb <- TxDb.Dmelanogaster.UCSC.dm3.ensGene
+```
+
+We extract the exons grouped by transcript in a `GRangesList` object:
+
+```{r exbytx}
+exbytx <- exonsBy(txdb, by="tx", use.names=TRUE)
+length(exbytx)  # nb of transcripts
+```
+```{r CHECK_exbytx, echo=FALSE, results='hide'}
+.checkIdenticalToPrecomputed(exbytx, "exbytx", ignore.metadata=TRUE)
+```
+
+We check that all the exons in any given transcript belong to the same
+chromosome and strand. Knowing that our set of transcripts is free of this sort
+of trans-splicing events typically allows some significant simplifications
+during the downstream analysis ^[Dealing with trans-splicing events is not
+covered in this document.]. A quick and easy way to check this is to take
+advantage of the fact that `seqnames` and `strand` return `RleList` objects. So
+we can extract the number of Rle runs for each transcript and make sure it's
+always 1:
+
+```{r check-for-trans-splicing-in-exbytx}
+table(elementNROWS(runLength(seqnames(exbytx))))
+table(elementNROWS(runLength(strand(exbytx))))
+```
+
+Therefore the strand of any given transcript is unambiguously defined
+and can be extracted with:
+
+```{r exbytx_strand}
+exbytx_strand <- unlist(runValue(strand(exbytx)), use.names=FALSE)
+```
+
+We will also need the mapping between the transcripts and their gene. We start
+by using `transcripts` to extract this information from our `TxDb` object
+`txdb`, and then we construct a named factor that represents the mapping:
+
+```{r exbytx2gene}
+tx <- transcripts(txdb, columns=c("tx_name", "gene_id"))
+head(tx)
+df <- mcols(tx)
+exbytx2gene <- as.character(df$gene_id)
+exbytx2gene <- factor(exbytx2gene, levels=unique(exbytx2gene))
+names(exbytx2gene) <- df$tx_name
+exbytx2gene <- exbytx2gene[names(exbytx)]
+head(exbytx2gene)
+nlevels(exbytx2gene)  # nb of genes
+```
+
+## Single-end overlaps
+
+### Find the single-end overlaps
+
+We are ready to compute the overlaps with the `findOverlaps`
+function. Note that the strand of the queries produced by the RNA-seq
+experiment is typically unknown so we use `ignore.strand=TRUE`:
+
+```{r U1.OV00}
+U1.OV00 <- findOverlaps(U1.GAL, exbytx, ignore.strand=TRUE)
+```
+
+`U1.OV00` is a `Hits` object that contains 1 element per
+overlap. Its length gives the number of overlaps:
+
+```{r length-of-U1.OV00}
+length(U1.OV00)
+```
+
+### Tabulate the single-end overlaps
+
+We will repeatedly use the 2 following little helper functions to "tabulate"
+the overlaps in a given `Hits` object (e.g. `U1.OV00`), i.e. to count the number
+of overlaps for each element in the query or for each element in the subject:
+
+Number of transcripts for each alignment in `U1.GAL`:
+
+```{r U1.GAL_ntx}
+U1.GAL_ntx <- countQueryHits(U1.OV00)
+mcols(U1.GAL)$ntx <- U1.GAL_ntx
+head(U1.GAL)
+table(U1.GAL_ntx)
+mean(U1.GAL_ntx >= 1)
+```
+
+76% of the alignments in `U1.GAL` have an overlap with
+at least 1 transcript in `exbytx`.
+
+Note that `countOverlaps` can be used directly on `U1.GAL`
+and `exbytx` for computing `U1.GAL_ntx`:
+
+```{r U1.GAL_ntx_again, eval=FALSE}
+U1.GAL_ntx_again <- countOverlaps(U1.GAL, exbytx, ignore.strand=TRUE)
+stopifnot(identical(unname(U1.GAL_ntx_again), U1.GAL_ntx))
+```
+
+Because `U1.GAL` can (and actually does) contain more than 1 alignment
+per *original query* (aka read), we also count the number of transcripts
+for each read:
+
+```{r U1.uqnames_ntx}
+U1.OV10 <- remapHits(U1.OV00, Lnodes.remapping=U1.GAL_qnames)
+U1.uqnames_ntx <- countQueryHits(U1.OV10)
+names(U1.uqnames_ntx) <- U1.uqnames
+table(U1.uqnames_ntx)
+mean(U1.uqnames_ntx >= 1)
+```
+
+78.4% of the reads have an overlap with
+at least 1 transcript in `exbytx`.
+
+Number of reads for each transcript:
+
+```{r U1.exbytx_nOV10}
+U1.exbytx_nOV10 <- countSubjectHits(U1.OV10)
+names(U1.exbytx_nOV10) <- names(exbytx)
+mean(U1.exbytx_nOV10 >= 50)
+```
+
+Only 0.869% of the transcripts in `exbytx` have an overlap with
+at least 50 reads.
+
+Top 10 transcripts:
+
+```{r top-10-transcripts-based-on-U1.exbytx_nOV10}
+head(sort(U1.exbytx_nOV10, decreasing=TRUE), n=10) 
+```
+
+## Paired-end overlaps
+
+### Find the paired-end overlaps
+
+Like with our single-end overlaps, we call `findOverlaps` with
+`ignore.strand=TRUE`:
+
+```{r U3.OV00}
+U3.OV00 <- findOverlaps(U3.GALP, exbytx, ignore.strand=TRUE)
+```
+
+Like `U1.OV00`, `U3.OV00` is a `Hits` object. Its length gives
+the number of paired-end overlaps:
+
+```{r length-of-U3.OV00}
+length(U3.OV00)
+```
+
+### Tabulate the paired-end overlaps
+
+Number of transcripts for each alignment pair in `U3.GALP`:
+
+```{r U3.GALP_ntx}
+U3.GALP_ntx <- countQueryHits(U3.OV00)
+mcols(U3.GALP)$ntx <- U3.GALP_ntx
+head(U3.GALP)
+table(U3.GALP_ntx)
+mean(U3.GALP_ntx >= 1)
+```
+
+71% of the alignment pairs in `U3.GALP` have an overlap
+with at least 1 transcript in `exbytx`.
+
+Note that `countOverlaps` can be used directly on `U3.GALP`
+and `exbytx` for computing `U3.GALP_ntx`:
+
+```{r U3.GALP_ntx_again, eval=FALSE}
+U3.GALP_ntx_again <- countOverlaps(U3.GALP, exbytx, ignore.strand=TRUE)
+stopifnot(identical(unname(U3.GALP_ntx_again), U3.GALP_ntx))
+```
+
+Because `U3.GALP` can (and actually does) contain more than 1 alignment
+pair per *original query template*, we also count the number of
+transcripts for each template:
+
+```{r U3.uqnames_ntx}
+U3.OV10 <- remapHits(U3.OV00, Lnodes.remapping=U3.GALP_qnames)
+U3.uqnames_ntx <- countQueryHits(U3.OV10)
+names(U3.uqnames_ntx) <- U3.uqnames
+table(U3.uqnames_ntx)
+mean(U3.uqnames_ntx >= 1)
+```
+
+72.3% of the templates have an overlap with at least 1 transcript in
+`exbytx`.
+
+Number of templates for each transcript:
+
+```{r U3.exbytx_nOV10}
+U3.exbytx_nOV10 <- countSubjectHits(U3.OV10)
+names(U3.exbytx_nOV10) <- names(exbytx)
+mean(U3.exbytx_nOV10 >= 50)
+```
+
+Only 0.756% of the transcripts in `exbytx` have an overlap with
+at least 50 templates.
+
+Top 10 transcripts:
+
+```{r top-10-transcripts-based-on-U3.exbytx_nOV10}
+head(sort(U3.exbytx_nOV10, decreasing=TRUE), n=10)
+```
+
+# Encode the overlaps between the reads and transcripts
+
+## Single-end encodings
+
+The `overlap encodings` are strand sensitive so we will compute them twice, once
+for the "original alignments" (i.e. the alignments of the *original queries*),
+and once again for the "flipped alignments" (i.e. the alignments of the
+"flipped *original queries*"). We extract the ranges of the original'' and
+"flipped" alignments in 2 `GRangesList` objects with:
+
+```{r U1.grl_and_U1.grlf}
+U1.grl <- grglist(U1.GAL, order.as.in.query=TRUE)
+U1.grlf <- flipQuery(U1.grl)  # flipped
+```
+
+and encode their overlaps with the transcripts:
+
+```{r U1.ovencAB}
+U1.ovencA <- encodeOverlaps(U1.grl, exbytx, hits=U1.OV00)
+U1.ovencB <- encodeOverlaps(U1.grlf, exbytx, hits=U1.OV00)
+```
+
+`U1.ovencA` and `U1.ovencB` are 2 `OverlapsEncodings` objects of the same length
+as `Hits` object `U1.OV00`. For each hit in `U1.OV00`, we have 2 corresponding
+encodings, one in `U1.ovencA` and one in `U1.ovencB`, but only one of them
+encodes a hit between alignment ranges and exon ranges that are on the same
+strand.
+We use the `selectEncodingWithCompatibleStrand` function to merge them into a
+single `OverlapsEncodings` of the same length. For each hit in `U1.OV00`, this
+selects the encoding corresponding to alignment ranges and exon ranges with
+compatible strand:
+
+```{r U1.ovenc}
+U1.grl_strand <- unlist(runValue(strand(U1.grl)), use.names=FALSE)
+U1.ovenc <- selectEncodingWithCompatibleStrand(U1.ovencA, U1.ovencB,
+                                               U1.grl_strand, exbytx_strand,
+                                               hits=U1.OV00)
+U1.ovenc
+```
+
+As a convenience, the 2 above calls to `encodeOverlaps` + merging step can be
+replaced by a single call to `encodeOverlaps` on `U1.grl` (or `U1.grlf`) with
+`flip.query.if.wrong.strand=TRUE`:
+
+```{r U1.ovenc_again}
+U1.ovenc_again <- encodeOverlaps(U1.grl, exbytx, hits=U1.OV00, flip.query.if.wrong.strand=TRUE)
+stopifnot(identical(U1.ovenc_again, U1.ovenc))
+```
+
+Unique encodings in `U1.ovenc`:
+
+```{r U1.ovenc_table}
+U1.unique_encodings <- levels(U1.ovenc)
+length(U1.unique_encodings)
+head(U1.unique_encodings)
+U1.ovenc_table <- table(encoding(U1.ovenc))
+tail(sort(U1.ovenc_table))
+```
+
+Encodings are sort of cryptic but utilities are provided to extract
+specific meaning from them. Use of these utilities is covered later in this
+document.
+
+## Paired-end encodings
+
+Let's encode the overlaps in `U3.OV00`:
+
+```{r U3.ovenc}
+U3.grl <- grglist(U3.GALP)
+U3.ovenc <- encodeOverlaps(U3.grl, exbytx, hits=U3.OV00, flip.query.if.wrong.strand=TRUE)
+U3.ovenc
+```
+
+Unique encodings in `U3.ovenc`:
+
+```{r U3.ovenc_table}
+U3.unique_encodings <- levels(U3.ovenc)
+length(U3.unique_encodings)
+head(U3.unique_encodings)
+U3.ovenc_table <- table(encoding(U3.ovenc))
+tail(sort(U3.ovenc_table))
+```
+
+
+# Detect "splice compatible" overlaps
+
+We are interested in a particular type of overlap where the read overlaps the
+transcript in a "splice compatible" way, that is, in a way that is compatible
+with the splicing of the transcript. The `isCompatibleWithSplicing` function can
+be used on an `OverlapEncodings` object to detect this type of overlap. Note
+that `isCompatibleWithSplicing` can also be used on a character vector or
+factor.
+
+## Detect "splice compatible" single-end overlaps
+
+### "Splice compatible" single-end encodings
+
+`U1.ovenc` contains 7 unique encodings compatible with the splicing
+of the transcript:
+
+```{r U1-unique-compatible-encodings}
+sort(U1.ovenc_table[isCompatibleWithSplicing(U1.unique_encodings)])
+```
+
+Encodings `"1:i:"` (455176 occurences in `U1.ovenc`), `"2:jm:af:"` (72929
+occurences in `U1.ovenc`), and `"3:jmm:agm:aaf:"` (488 occurences in
+`U1.ovenc`), correspond to the following overlaps:
+
+- `"1:i:"`
+
+  - read (no skipped region):           oooooooo
+  - transcript:               ...   >>>>>>>>>>>>>>   ...
+
+
+- `"2:jm:af:"`
+
+  - read (1 skipped region):            ooooo---ooo
+  - transcript:               ...   >>>>>>>>>   >>>>>>>>>   ...
+
+
+- `"3:jmm:agm:aaf:"`
+
+  - read (2 skipped regions):             oo---ooooo---o
+  - transcript:               ...   >>>>>>>>   >>>>>   >>>>>>>   ...
+
+
+For clarity, only the exons involved in the overlap are represented. The
+transcript can of course have more upstream and downstream exons, which is
+denoted by the ... on the left side (5' end) and right side (3' end) of each
+drawing. Note that the exons represented in the 2nd and 3rd drawings are
+consecutive and adjacent in the processed transcript.
+
+Encodings `"1:f:"` and `"1:j:"` are variations of the situation described by
+encoding `"1:i:"`. For `"1:f:"`, the first aligned base of the read (or
+"flipped" read) is aligned with the first base of the exon. For `"1:j:"`, the
+last aligned base of the read (or "flipped" read) is aligned with the last
+base of the exon:
+
+
+- `"1:f:"`
+
+  - read (no skipped region):       oooooooo
+  - transcript:               ...   >>>>>>>>>>>>>>   ...
+
+
+- `"1:j:"`
+
+  - read (no skipped region):             oooooooo
+  - transcript:               ...   >>>>>>>>>>>>>>   ...
+
+
+```{r U1.OV00_is_comp}
+U1.OV00_is_comp <- isCompatibleWithSplicing(U1.ovenc)
+table(U1.OV00_is_comp)  # 531797 "splice compatible" overlaps
+```
+
+Finally, let's extract the "splice compatible" overlaps from `U1.OV00`:
+
+```{r U1.compOV00}
+U1.compOV00 <- U1.OV00[U1.OV00_is_comp]
+```
+
+Note that high-level convenience wrapper `findCompatibleOverlaps` can be used
+for computing the "splice compatible" overlaps directly between a
+`GAlignments` object (containing reads) and a `GRangesList` object (containing
+transcripts):
+
+```{r U1.compOV00_again, eval=FALSE}
+U1.compOV00_again <- findCompatibleOverlaps(U1.GAL, exbytx)
+stopifnot(identical(U1.compOV00_again, U1.compOV00))
+```
+
+### Tabulate the "splice compatible" single-end overlaps
+
+Number of "splice compatible" transcripts for each alignment in
+`U1.GAL`:
+
+```{r U1.GAL_ncomptx}
+U1.GAL_ncomptx <- countQueryHits(U1.compOV00)
+mcols(U1.GAL)$ncomptx <- U1.GAL_ncomptx
+head(U1.GAL)
+table(U1.GAL_ncomptx)
+mean(U1.GAL_ncomptx >= 1)
+```
+
+75% of the alignments in `U1.GAL` are "splice compatible"
+with at least 1 transcript in `exbytx`.
+
+Note that high-level convenience wrapper `countCompatibleOverlaps`
+can be used directly on `U1.GAL` and `exbytx` for computing `U1.GAL_ncomptx`:
+
+```{r U1.GAL_ncomptx_again, eval=FALSE}
+U1.GAL_ncomptx_again <- countCompatibleOverlaps(U1.GAL, exbytx)
+stopifnot(identical(U1.GAL_ncomptx_again, U1.GAL_ncomptx))
+```
+
+Number of "splice compatible" transcripts for each read:
+
+```{r U1.uqnames_ncomptx}
+U1.compOV10 <- remapHits(U1.compOV00, Lnodes.remapping=U1.GAL_qnames)
+U1.uqnames_ncomptx <- countQueryHits(U1.compOV10)
+names(U1.uqnames_ncomptx) <- U1.uqnames
+table(U1.uqnames_ncomptx)
+mean(U1.uqnames_ncomptx >= 1)
+```
+
+77.5% of the reads are "splice compatible" with at least 1 transcript in
+`exbytx`.
+
+Number of "splice compatible" reads for each transcript:
+
+```{r U1.exbytx_ncompOV10}
+U1.exbytx_ncompOV10 <- countSubjectHits(U1.compOV10)
+names(U1.exbytx_ncompOV10) <- names(exbytx)
+mean(U1.exbytx_ncompOV10 >= 50)
+```
+
+Only 0.87% of the transcripts in `exbytx` are "splice compatible"
+with at least 50 reads.
+
+Top 10 transcripts:
+
+```{r top-10-transcripts-based-on-U1.exbytx_ncompOV10}
+head(sort(U1.exbytx_ncompOV10, decreasing=TRUE), n=10)
+```
+
+Note that this "top 10" is slightly different from the "top 10" we
+obtained earlier when we counted **all** the overlaps.
+
+## Detect "splice compatible" paired-end overlaps}
+
+### "Splice compatible" paired-end encodings
+
+WARNING: For paired-end encodings, `isCompatibleWithSplicing` considers that the
+encoding is "splice compatible" if its 2 halves are "splice compatible".
+This can produce false positives if for example the right end of the alignment
+is located upstream of the left end in transcript space. The paired-end read
+could not come from this transcript. To eliminate these false positives, one
+would need to look at the position of the left and right ends in transcript
+space. This can be done with `extractQueryStartInTranscript`.
+
+`U3.ovenc` contains 13 unique paired-end encodings compatible with
+the splicing of the transcript:
+
+```{r U3-unique-compatible-encodings}
+sort(U3.ovenc_table[isCompatibleWithSplicing(U3.unique_encodings)])
+```
+
+Paired-end encodings `"1--1:i--i:"` (100084 occurences in `U3.ovenc`),
+`"2--1:jm--m:af--i:"` (2700 occurences in `U3.ovenc`),
+`"1--2:i--jm:a--af:"` (2480 occurences in `U3.ovenc`),
+`"1--1:i--m:a--i:"` (287 occurences in `U3.ovenc`), and
+`"2--2:jm--mm:af--jm:aa--af:"` (153 occurences in `U3.ovenc`),
+correspond to the following paired-end overlaps:
+
+- `"1--1:i--i:"`
+
+  - paired-end read (no skipped region on the first end, no skipped region
+    on the last end):          oooo   oooo
+  - transcript:       ...   >>>>>>>>>>>>>>>>   ...
+  
+
+- `"2--1:jm--m:af--i:"`
+
+  - paired-end read (1 skipped region on the first end, no skipped region
+    on the last end):            ooo---o    oooo
+  - transcript:       ...   >>>>>>>>   >>>>>>>>>>>   ...
+  
+
+- `"1--2:i--jm:a--af:"`
+
+  - paired-end read (no skipped region on the first end, 1 skipped region
+    on the last end):         oooo      oo---oo
+  - transcript:       ...   >>>>>>>>>>>>>>   >>>>>>>>>  ...
+
+
+- `"1--1:i--m:a--i:"`
+
+  - paired-end read (no skipped region on the first end, no skipped region
+    on the last end):          oooo      oooo
+  - transcript:       ...   >>>>>>>>>   >>>>>>>   ...
+
+
+- `"2--2:jm--mm:af--jm:aa--af:"`
+
+  - paired-end read (1 skipped region on the first end, 1 skipped region
+    on the last end):          ooo---o    oo---oo
+  - transcript:       ...   >>>>>>   >>>>>>>   >>>>>   ...
+
+
+Note: switch use of "first" and "last" above if the read was "flipped".
+
+```{r U3.OV00_is_comp}
+U3.OV00_is_comp <- isCompatibleWithSplicing(U3.ovenc)
+table(U3.OV00_is_comp)  # 106835 "splice compatible" paired-end overlaps
+```
+
+Finally, let's extract the "splice compatible" paired-end overlaps from
+`U3.OV00`:
+
+```{r U3.compOV00}
+U3.compOV00 <- U3.OV00[U3.OV00_is_comp]
+```
+
+Note that, like with our single-end reads, high-level convenience wrapper
+`findCompatibleOverlaps` can be used for computing the "splice compatible"
+paired-end overlaps directly between a `GAlignmentPairs` object (containing
+paired-end reads) and a `GRangesList` object (containing transcripts):
+
+```{r U3.compOV00_again, eval=FALSE}
+U3.compOV00_again <- findCompatibleOverlaps(U3.GALP, exbytx)
+stopifnot(identical(U3.compOV00_again, U3.compOV00))
+```
+
+### Tabulate the "splice compatible" paired-end overlaps
+
+Number of "splice compatible" transcripts for each alignment pair in
+`U3.GALP`:
+
+```{r U3.GALP_ncomptx}
+U3.GALP_ncomptx <- countQueryHits(U3.compOV00)
+mcols(U3.GALP)$ncomptx <- U3.GALP_ncomptx
+head(U3.GALP)
+table(U3.GALP_ncomptx)
+mean(U3.GALP_ncomptx >= 1)
+```
+
+69.7% of the alignment pairs in `U3.GALP` are "splice compatible"
+with at least 1 transcript in `exbytx`.
+
+Note that high-level convenience wrapper `countCompatibleOverlaps`
+can be used directly on `U3.GALP` and `exbytx` for computing `U3.GALP_ncomptx`:
+
+```{r U3.GALP_ncomptx_again, eval=FALSE}
+U3.GALP_ncomptx_again <- countCompatibleOverlaps(U3.GALP, exbytx)
+stopifnot(identical(U3.GALP_ncomptx_again, U3.GALP_ncomptx))
+```
+
+Number of "splice compatible" transcripts for each template:
+
+```{r U3.uqnames_ncomptx}
+U3.compOV10 <- remapHits(U3.compOV00, Lnodes.remapping=U3.GALP_qnames)
+U3.uqnames_ncomptx <- countQueryHits(U3.compOV10)
+names(U3.uqnames_ncomptx) <- U3.uqnames
+table(U3.uqnames_ncomptx)
+mean(U3.uqnames_ncomptx >= 1)
+```
+
+70.7% of the templates are "splice compatible" with at least 1 transcript in `exbytx`.
+
+Number of "splice compatible" templates for each transcript:
+
+```{r U3.exbytx_ncompOV10}
+U3.exbytx_ncompOV10 <- countSubjectHits(U3.compOV10)
+names(U3.exbytx_ncompOV10) <- names(exbytx)
+mean(U3.exbytx_ncompOV10 >= 50)
+```
+
+Only 0.7% of the transcripts in `exbytx` are "splice compatible"
+with at least 50 templates.
+
+Top 10 transcripts:
+
+```{r top-10-transcripts-based-on-U3.exbytx_ncompOV10}
+head(sort(U3.exbytx_ncompOV10, decreasing=TRUE), n=10)
+```
+
+Note that this "top 10" is slightly different from the "top 10" we
+obtained earlier when we counted **all** the paired-end overlaps.
+
+# Compute the *reference query sequences* and project them on the transcriptome
+
+## Compute the *reference query sequences*
+
+The *reference query sequences* are the query sequences **after** alignment, by
+opposition to the *original query sequences* (aka "true" or "real" query
+sequences) which are the query sequences **before** alignment.
+
+The *reference query sequences* can easily be computed by extracting the
+nucleotides mapped to each read from the reference genome. This of course
+requires that we have access to the reference genome used by the aligner. In
+Bioconductor, the full genome sequence for the dm3 assembly is stored in the
+`r Biocpkg("BSgenome.Dmelanogaster.UCSC.dm3")` data package ^[See
+http://bioconductor.org/packages/release/data/annotation/ for the full list of
+annotation packages available in the current release of Bioconductor.]:
+
+```{r Dmelanogaster}
+library(BSgenome.Dmelanogaster.UCSC.dm3)
+Dmelanogaster
+```
+
+To extract the portions of the reference genome corresponding to the ranges in
+`U1.grl`, we can use the `extractTranscriptSeqs` function defined in the
+`GenomicFeatures` package:
+
+```{r U1-reference-query-sequences}
+library(GenomicFeatures)
+U1.GAL_rqseq <- extractTranscriptSeqs(Dmelanogaster, U1.grl)
+head(U1.GAL_rqseq)
+```
+
+When reads are paired-end, we need to extract separately the ranges
+corresponding to their *first* ends (aka *first* segments in BAM
+jargon) and those corresponding to their *last* ends (aka *last*
+segments in BAM jargon):
+
+```{r U3.grl_first-and-U3.grl_last}
+U3.grl_first <- grglist(first(U3.GALP, real.strand=TRUE), order.as.in.query=TRUE)
+U3.grl_last <- grglist(last(U3.GALP, real.strand=TRUE), order.as.in.query=TRUE)
+```
+
+Then we extract the portions of the reference genome corresponding to the
+ranges in `GRangesList` objects `U3.grl_first` and `U3.grl_last`:
+
+```{r U3-reference-query-sequences}
+U3.GALP_rqseq1 <- extractTranscriptSeqs(Dmelanogaster, U3.grl_first)
+U3.GALP_rqseq2 <- extractTranscriptSeqs(Dmelanogaster, U3.grl_last)
+```
+
+
+## Project the single-end alignments on the transcriptome
+
+The `extractQueryStartInTranscript` function computes for each
+overlap the position of the *query start* in the transcript:
+
+```{r U1.OV00_qstart}
+U1.OV00_qstart <- extractQueryStartInTranscript(U1.grl, exbytx,
+                                                hits=U1.OV00, ovenc=U1.ovenc)
+head(subset(U1.OV00_qstart, U1.OV00_is_comp))
+```
+
+`U1.OV00_qstart` is a data frame with 1 row per overlap and 3 columns:
+
+  1. `startInTranscript`: the 1-based start position of the
+      read with respect to the transcript. Position 1 always corresponds to
+      the first base on the 5' end of the transcript sequence.
+    
+  2. `firstSpannedExonRank`: the rank of the first exon spanned
+      by the read, that is, the rank of the exon found at position
+      `startInTranscript` in the transcript.
+  
+  3. `startInFirstSpannedExon`: the 1-based start position of the read with
+      respect to the first exon spanned by the read.
+
+
+Having this information allows us for example to compare the read and transcript
+nucleotide sequences for each "splice compatible" overlap. If we use the
+*reference query sequence* instead of the *original query sequence* for this
+comparison, then it should match **exactly** the sequence found at the *query
+start* in the transcript.
+
+Let's start by using `extractTranscriptSeqs` again to extract the transcript
+sequences (aka transcriptome) from the dm3 reference genome:
+
+```{r txseq}
+txseq <- extractTranscriptSeqs(Dmelanogaster, exbytx)
+```
+
+For each "splice compatible" overlap, the read sequence in `U1.GAL_rqseq` must
+be an *exact* substring of the transcript sequence in `exbytx_seq`:
+
+```{r U1.OV00_rqseq-vs-U1.OV00_txseq}
+U1.OV00_rqseq <- U1.GAL_rqseq[queryHits(U1.OV00)]
+U1.OV00_rqseq[flippedQuery(U1.ovenc)] <- reverseComplement(U1.OV00_rqseq[flippedQuery(U1.ovenc)])
+U1.OV00_txseq <- txseq[subjectHits(U1.OV00)]
+stopifnot(all(
+    U1.OV00_rqseq[U1.OV00_is_comp] ==
+        narrow(U1.OV00_txseq[U1.OV00_is_comp],
+               start=U1.OV00_qstart$startInTranscript[U1.OV00_is_comp],
+               width=width(U1.OV00_rqseq)[U1.OV00_is_comp])
+))
+```
+
+Because of this relationship between the *reference query sequence* and the
+transcript sequence of a "splice compatible" overlap, and because of the
+relationship between the *original query sequences* and the *reference query
+sequences*, then the edit distance reported in the NM tag is actually the edit
+distance between the *original query* and the transcript of a "splice
+compatible" overlap.
+
+
+## Project the paired-end alignments on the transcriptome
+
+For a paired-end read, the *query start* is the start of its "left end".
+
+```{r U3.OV00_Lqstart}
+U3.OV00_Lqstart <- extractQueryStartInTranscript(U3.grl, exbytx,
+                                                 hits=U3.OV00, ovenc=U3.ovenc)
+head(subset(U3.OV00_Lqstart, U3.OV00_is_comp))
+```
+
+Note that `extractQueryStartInTranscript` can be called with
+`for.query.right.end=TRUE` if we want this information for the "right ends" of
+the reads:
+
+```{r U3.OV00_Rqstart}
+U3.OV00_Rqstart <- extractQueryStartInTranscript(U3.grl, exbytx,
+                                                 hits=U3.OV00, ovenc=U3.ovenc,
+                                                 for.query.right.end=TRUE)
+head(subset(U3.OV00_Rqstart, U3.OV00_is_comp))
+```
+
+Like with single-end reads, having this information allows us for example to
+compare the read and transcript nucleotide sequences for each "splice
+compatible" overlap. If we use the *reference query sequence* instead of the
+*original query sequence* for this comparison, then it should match **exactly**
+the sequences of the "left" and "right" ends of the read in the transcript.
+
+Let's assign the "left and right reference query sequences" to each
+overlap:
+
+```{r U3.OV00_Lrqseq_and_Rrqseq}
+U3.OV00_Lrqseq <- U3.GALP_rqseq1[queryHits(U3.OV00)]
+U3.OV00_Rrqseq <- U3.GALP_rqseq2[queryHits(U3.OV00)]
+```
+
+For the single-end reads, the sequence associated with a "flipped query"
+just needed to be "reverse complemented". For paired-end reads, we also
+need to swap the 2 sequences in the pair:
+
+```{r U3.OV00_Lrqseq_and_Rrqseq1}
+flip_idx <- which(flippedQuery(U3.ovenc))
+tmp <- U3.OV00_Lrqseq[flip_idx]
+U3.OV00_Lrqseq[flip_idx] <- reverseComplement(U3.OV00_Rrqseq[flip_idx])
+U3.OV00_Rrqseq[flip_idx] <- reverseComplement(tmp)
+```
+
+Let's assign the transcript sequence to each overlap:
+
+```{r U3.OV00_txseq}
+U3.OV00_txseq <- txseq[subjectHits(U3.OV00)]
+```
+
+For each "splice compatible" overlap, we expect the "left and right reference
+query sequences" of the read to be *exact* substrings of the transcript
+sequence. Let's check the "left reference query sequences":
+
+```{r U3.OV00_Lrqseq-vs-U3.OV00_txseq}
+stopifnot(all(
+    U3.OV00_Lrqseq[U3.OV00_is_comp] ==
+        narrow(U3.OV00_txseq[U3.OV00_is_comp],
+               start=U3.OV00_Lqstart$startInTranscript[U3.OV00_is_comp],
+               width=width(U3.OV00_Lrqseq)[U3.OV00_is_comp])
+))
+```
+
+and the "right reference query sequences":
+
+```{r U3.OV00_Rrqseq-vs-U3.OV00_txseq}
+stopifnot(all(
+    U3.OV00_Rrqseq[U3.OV00_is_comp] ==
+        narrow(U3.OV00_txseq[U3.OV00_is_comp],
+               start=U3.OV00_Rqstart$startInTranscript[U3.OV00_is_comp],
+               width=width(U3.OV00_Rrqseq)[U3.OV00_is_comp])
+))
+```
+
+# Align the reads to the transcriptome
+
+Aligning the reads to the reference genome is not the most efficient nor
+accurate way to count the number of "splice compatible" overlaps per *original
+query*. Supporting junction reads (i.e. reads that align with at least 1 skipped
+region in their CIGAR) introduces a significant computational cost during the
+alignment process.
+Then, as we've seen in the previous sections, each alignment produced by the
+aligner needs to be broken into a set of ranges (based on its CIGAR) and those
+ranges compared to the ranges of the exons grouped by transcript.
+
+A more straightforward and accurate approach is to align the reads directly to
+the transcriptome, and without allowing the typical skipped region that the
+aligner needs to introduce when aligning a junction read to the reference
+genome.
+With this approach, a "hit" between a read and a transcript is necessarily
+compatible with the splicing of the transcript. In case of a "hit", we'll say
+that the read and the transcript are "string-based compatible" (to
+differentiate from our previous notion of "splice compatible" overlaps that we
+will call "encoding-based compatible" in this section).
+
+
+## Align the single-end reads to the transcriptome
+
+### Find the "hits"
+
+The single-end reads are in `U1.oqseq`, the transcriptome is in `exbytx_seq`.
+
+Since indels were not allowed/supported during the alignment of the reads to the
+reference genome, we don't need to allow/support them either for aligning the
+reads to the transcriptome. Also since our goal is to find (and count) "splice
+compatible" overlaps between reads and transcripts, we don't need to keep track
+of the details of the alignments between the reads and the transcripts.
+Finally, since BAM file {*untreated1_chr4.bam*} is not the full output of the
+aligner but the subset obtained by keeping only the alignments located on chr4,
+we don't need to align `U1.oqseq` to the full transcriptome, but only to the
+subset of `exbytx_seq` made of the transcripts located on chr4.
+
+With those simplifications in mind, we write the following function that we
+will use to find the "hits" between the reads and the transcriptome:
+
+```{r findSequenceHits}
+### A wrapper to vwhichPDict() that supports IUPAC ambiguity codes in 'qseq'
+### and 'txseq', and treats them as such.
+findSequenceHits <- function(qseq, txseq, which.txseq=NULL, max.mismatch=0)
+{
+    .asHits <- function(x, pattern_length)
+    {
+        query_hits <- unlist(x)
+        if (is.null(query_hits))
+            query_hits <- integer(0)
+        subject_hits <- rep.int(seq_len(length(x)), elementNROWS(x))
+        Hits(query_hits, subject_hits, pattern_length, length(x),
+             sort.by.query=TRUE)
+    }
+
+    .isHitInTranscriptBounds <- function(hits, qseq, txseq)
+    {
+        sapply(seq_len(length(hits)),
+            function(i) {
+                pattern <- qseq[[queryHits(hits)[i]]]
+                subject <- txseq[[subjectHits(hits)[i]]]
+                v <- matchPattern(pattern, subject,
+                                  max.mismatch=max.mismatch, fixed=FALSE)
+                any(1L <= start(v) & end(v) <= length(subject))
+            })
+    }
+
+    if (!is.null(which.txseq)) {
+        txseq0 <- txseq
+        txseq <- txseq[which.txseq]
+    }
+
+    names(qseq) <- NULL
+    other <- alphabetFrequency(qseq, baseOnly=TRUE)[ , "other"]
+    is_clean <- other == 0L  # "clean" means "no IUPAC ambiguity code"
+
+    ## Find hits for "clean" original queries.
+    qseq0 <- qseq[is_clean]
+    pdict0 <- PDict(qseq0, max.mismatch=max.mismatch)
+    m0 <- vwhichPDict(pdict0, txseq,
+                      max.mismatch=max.mismatch, fixed="pattern")
+    hits0 <- .asHits(m0, length(qseq0))
+    hits0@nLnode <- length(qseq)
+    hits0@from <- which(is_clean)[hits0@from]
+
+    ## Find hits for non "clean" original queries.
+    qseq1 <- qseq[!is_clean]
+    m1 <- vwhichPDict(qseq1, txseq,
+                      max.mismatch=max.mismatch, fixed=FALSE)
+    hits1 <- .asHits(m1, length(qseq1))
+    hits1@nLnode <- length(qseq)
+    hits1@from <- which(!is_clean)[hits1@from]
+
+    ## Combine the hits.
+    query_hits <- c(queryHits(hits0), queryHits(hits1))
+    subject_hits <- c(subjectHits(hits0), subjectHits(hits1))
+
+    if (!is.null(which.txseq)) {
+        ## Remap the hits.
+        txseq <- txseq0
+        subject_hits <- which.txseq[subject_hits]
+        hits0@nRnode <- length(txseq)
+    }
+
+    ## Order the hits.
+    oo <- orderIntegerPairs(query_hits, subject_hits)
+    hits0@from <- query_hits[oo]
+    hits0@to <- subject_hits[oo]
+
+    if (max.mismatch != 0L) {
+        ## Keep only "in bounds" hits.
+        is_in_bounds <- .isHitInTranscriptBounds(hits0, qseq, txseq)
+        hits0 <- hits0[is_in_bounds]
+    }
+    hits0
+}
+```
+
+Let's compute the index of the transcripts in `exbytx_seq` located on chr4
+(`findSequenceHits` will restrict the search to those transcripts):
+
+```{r which.txseq, eval=FALSE}
+chr4tx <- transcripts(txdb, vals=list(tx_chrom="chr4"))
+chr4txnames <- mcols(chr4tx)$tx_name
+which.txseq <- match(chr4txnames, names(txseq))
+```
+
+We know that the aligner tolerated up to 6 mismatches per read.
+The 3 following commands find the "hits" for each *original query*, then find
+the "hits" for each "*flipped original query*", and finally merge all the
+"hits" (note that the 3 commands take about 1 hour to complete on a modern
+laptop):
+
+```{r U1.sbcompHITS, eval=FALSE}
+U1.sbcompHITSa <- findSequenceHits(U1.oqseq, txseq,
+                                   which.txseq=which.txseq, max.mismatch=6)
+U1.sbcompHITSb <- findSequenceHits(reverseComplement(U1.oqseq), txseq,
+                                   which.txseq=which.txseq, max.mismatch=6)
+U1.sbcompHITS <- union(U1.sbcompHITSa, U1.sbcompHITSb)
+```
+
+```{r LOAD_U1.sbcompHITS, echo=FALSE, results='hide'}
+U1.sbcompHITSa <- .loadPrecomputed("U1.sbcompHITSa")
+U1.sbcompHITSb <- .loadPrecomputed("U1.sbcompHITSb")
+U1.sbcompHITS <- union(U1.sbcompHITSa, U1.sbcompHITSb)
+```
+
+### Tabulate the "hits"
+
+Number of "string-based compatible" transcripts for each read:
+
+```{r U1.uqnames_nsbcomptx}
+U1.uqnames_nsbcomptx <- countQueryHits(U1.sbcompHITS)
+names(U1.uqnames_nsbcomptx) <- U1.uqnames
+table(U1.uqnames_nsbcomptx)
+mean(U1.uqnames_nsbcomptx >= 1)
+```
+
+77.7% of the reads are "string-based compatible" with at least 1
+transcript in `exbytx`.
+
+Number of "string-based compatible" reads for each transcript:
+
+```{r U1.exbytx_nsbcompHITS}
+U1.exbytx_nsbcompHITS <- countSubjectHits(U1.sbcompHITS)
+names(U1.exbytx_nsbcompHITS) <- names(exbytx)
+mean(U1.exbytx_nsbcompHITS >= 50)
+```
+
+Only 0.865% of the transcripts in `exbytx` are "string-based
+compatible" with at least 50 reads.
+
+Top 10 transcripts:
+
+```{r top-10-transcripts-based-on-U1.exbytx_nsbcompHITS}
+head(sort(U1.exbytx_nsbcompHITS, decreasing=TRUE), n=10)
+```
+
+### A closer look at the "hits"
+
+[WORK IN PROGRESS, might be removed or replaced soon...]
+
+Any "encoding-based compatible" overlap is of course "string-based
+compatible":
+
+```{r encoding-based-compatible-implies-string-based-compatible}
+stopifnot(length(setdiff(U1.compOV10, U1.sbcompHITS)) == 0)
+```
+
+but the reverse is not true:
+
+```{r string-based-compatible-does-NOT-imply-encoding-based-compatible}
+length(setdiff(U1.sbcompHITS, U1.compOV10))
+```
+
+```{r, echo=FALSE}
+
+## To understand why the `overlap encodings` approach doesn't find all the % "string-based compatible" hits, let's look at the second hit in
+## Rcode{setdiff(U1.sbcompHITS, U1.compOV10)}. This is a perfect hit between
+## read SRR031728.4692406 and transcript 18924:
+##
+##<<>>=
+##matchPattern(U1.oqseq[[6306]], txseq[[18924]])
+##U1.GAL_idx <- which(U1.GAL_qnames == "SRR031728.4692406")
+##U1.GAL[U1.GAL_idx]
+##U1.GAL_idx %in% queryHits(U1.OV00)
+##U1.GAL[12636]
+##which(queryHits(U1.OV00) == 12636)
+##U1.OV00[305]
+##as.character(encoding(U1.ovenc)[305])
+##
+```
+
+## Align the paired-end reads to the transcriptome
+[COMING SOON...]
+
+# Detect "almost splice compatible" overlaps
+
+In many aspects, "splice compatible" overlaps can be seen as perfect. We are
+now insterested in a less perfect type of overlap where the read overlaps the
+transcript in a way that *would* be "splice compatible" if 1 or more exons
+were removed from the transcript. In that case we say that the overlap is
+"almost splice compatible" with the transcript. The
+`isCompatibleWithSkippedExons` function can be used on an `OverlapEncodings`
+object to detect this type of overlap. Note that `isCompatibleWithSkippedExons`
+can also be used on a character vector of factor.
+
+
+## Detect "almost splice compatible" single-end overlaps
+
+### "Almost splice compatible" single-end encodings
+
+`U1.ovenc` contains 7 unique encodings ``almost splice compatible''
+with the splicing of the transcript:
+
+```{r U1-unique-almost-compatible-encodings}
+sort(U1.ovenc_table[isCompatibleWithSkippedExons(U1.unique_encodings)])
+```
+
+Encodings `"2:jm:am:af:"` (1015 occurences in `U1.ovenc`),
+`"2:jm:am:am:af:"` (144 occurences in `U1.ovenc`),
+and `"3:jmm:agm:aam:aaf:"` (21 occurences in `U1.ovenc`),
+correspond to the following overlaps:
+
+
+- `"2:jm:am:af:"`
+
+  - read (1 skipped region):        ooooo----------ooo
+  - transcript:             ...   >>>>>>>   >>>>   >>>>>>>>   ...
+
+
+- `"2:jm:am:am:af:"`
+  
+  - read (1 skipped region):        ooooo------------------ooo
+  - transcript:             ...   >>>>>>>   >>>>   >>>>>   >>>>>>>>   ...
+  
+
+- `"3:jmm:agm:aam:aaf:"`
+
+  - read (2 skipped regions):          oo---oooo-----------oo
+  - transcript:             ...   >>>>>>>   >>>>   >>>>>   >>>>>>>>   ...
+
+
+```{r U1.OV00_is_acomp}
+U1.OV00_is_acomp <- isCompatibleWithSkippedExons(U1.ovenc)
+table(U1.OV00_is_acomp)  # 1202 "almost splice compatible" overlaps
+```
+
+Finally, let's extract the "almost splice compatible" overlaps from
+`U1.OV00`:
+
+```{r U1.acompOV00}
+U1.acompOV00 <- U1.OV00[U1.OV00_is_acomp]
+```
+
+### Tabulate the "almost splice compatible" single-end overlaps
+
+Number of "almost splice compatible" transcripts for each alignment in
+`U1.GAL`:
+
+```{r U1.GAL_nacomptx}
+U1.GAL_nacomptx <- countQueryHits(U1.acompOV00)
+mcols(U1.GAL)$nacomptx <- U1.GAL_nacomptx
+head(U1.GAL)
+table(U1.GAL_nacomptx)
+mean(U1.GAL_nacomptx >= 1)
+```
+
+Only 0.27% of the alignments in `U1.GAL` are "almost splice compatible"
+with at least 1 transcript in `exbytx`.
+
+Number of "almost splice compatible" alignments for each transcript:
+
+```{r U1.exbytx_nacompOV00}
+U1.exbytx_nacompOV00 <- countSubjectHits(U1.acompOV00)
+names(U1.exbytx_nacompOV00) <- names(exbytx)
+table(U1.exbytx_nacompOV00)
+mean(U1.exbytx_nacompOV00 >= 50)
+```
+
+Only 0.017% of the transcripts in `exbytx` are "almost splice
+compatible" with at least 50 alignments in `U1.GAL`.
+
+Finally note that the "query start in transcript" values returned by
+`extractQueryStartInTranscript` are also defined for "almost
+splice compatible" overlaps:
+
+```{r U1.OV00_qstart1}
+head(subset(U1.OV00_qstart, U1.OV00_is_acomp))# changed U1.OV00_qstart1 to U1.OV00_qstart1
+```
+
+
+## Detect "almost splice compatible" paired-end overlaps
+
+### "Almost splice compatible" paired-end encodings
+
+`U3.ovenc` contains 5 unique paired-end encodings "almost splice
+compatible" with the splicing of the transcript:
+
+```{r U3-unique-almost-compatible-encodings}
+sort(U3.ovenc_table[isCompatibleWithSkippedExons(U3.unique_encodings)])
+```
+
+Paired-end encodings `"2--1:jm--m:am--m:af--i:"` (73 occurences in `U3.ovenc`),
+`"1--2:i--jm:a--am:a--af:"` (53 occurences in `U3.ovenc`), and
+`"2--2:jm--mm:am--mm:af--jm:aa--af:"` (9 occurences in `U3.ovenc`), correspond
+to the following paired-end overlaps:
+
+- `"2--1:jm--m:am--m:af--i:"`
+
+  - paired-end read (1 skipped region on the first end, no skipped region
+    on the last end):         ooo----------o  oooo
+  - transcript:       ...   >>>>>   >>>>   >>>>>>>>>   ...
+
+
+- `"1--2:i--jm:a--am:a--af:"`
+
+  - paired-end read (no skipped region on the first end, 1 skipped region
+    on the last end):         oooo   oo---------oo
+  - transcript:       ...   >>>>>>>>>>>   >>>   >>>>>>   ...
+
+
+- `"2--2:jm--mm:am--mm:af--jm:aa--af:"`
+
+  - paired-end read (1 skipped region on the first end, 1 skipped region
+    on the last end):           o----------ooo   oo---oo
+  - transcript:       ...   >>>>>   >>>>   >>>>>>>>   >>>>>>   ...
+
+
+Note: switch use of "first" and "last'' above if the read was "flipped".
+
+```{r U3.OV00_is_acomp}
+U3.OV00_is_acomp <- isCompatibleWithSkippedExons(U3.ovenc)
+table(U3.OV00_is_acomp)  # 141 "almost splice compatible" paired-end overlaps
+```
+
+Finally, let's extract the "almost splice compatible" paired-end overlaps
+from `U3.OV00`:
+
+```{r U3.acompOV00}
+U3.acompOV00 <- U3.OV00[U3.OV00_is_acomp]
+```
+
+### Tabulate the "almost splice compatible" paired-end overlaps
+
+Number of "almost splice compatible" transcripts for each alignment pair in `U3.GALP`:
+
+```{r U3.GALP_nacomptx}
+U3.GALP_nacomptx <- countQueryHits(U3.acompOV00)
+mcols(U3.GALP)$nacomptx <- U3.GALP_nacomptx
+head(U3.GALP)
+table(U3.GALP_nacomptx)
+mean(U3.GALP_nacomptx >= 1)
+```
+
+Only 0.2% of the alignment pairs in `U3.GALP` are "almost splice compatible" with at least 1 transcript in `exbytx`.
+
+Number of "almost splice compatible" alignment pairs for each transcript:
+
+```{r U3.exbytx_nacompOV00}
+U3.exbytx_nacompOV00 <- countSubjectHits(U3.acompOV00)
+names(U3.exbytx_nacompOV00) <- names(exbytx)
+table(U3.exbytx_nacompOV00)
+mean(U3.exbytx_nacompOV00 >= 50)
+```
+
+Only 0.0034% of the transcripts in `exbytx` are "almost splice compatible"
+with at least 50 alignment pairs in `U3.GALP`.
+
+Finally note that the ``query start in transcript'' values returned by
+`extractQueryStartInTranscript` are also defined for "almost splice compatible" paired-end overlaps:
+
+```{r U3.OV00_Lqstart-and-U3.OV00_Rqstart}
+head(subset(U3.OV00_Lqstart, U3.OV00_is_acomp))
+head(subset(U3.OV00_Rqstart, U3.OV00_is_acomp))
+```
+
+# Detect novel splice junctions
+
+## By looking at single-end overlaps
+
+An alignment in U1.GAL with "almost splice compatible" overlaps but no
+"splice compatible" overlaps suggests the presence of one or more transcripts
+that are not in our annotations.
+
+First we extract the index of those alignments (*nsj* here stands for
+``**n**ovel **s**plice **j**unction''):
+
+```{r U1.GAL_is_nsj}
+U1.GAL_is_nsj <- U1.GAL_nacomptx != 0L & U1.GAL_ncomptx == 0L
+head(which(U1.GAL_is_nsj))
+```
+
+We make this an index into `U1.OV00`:
+
+```{r U1.OV00_is_nsj}
+U1.OV00_is_nsj <- queryHits(U1.OV00) %in% which(U1.GAL_is_nsj)
+```
+
+We intersect with `U1.OV00_is_acomp` and then subset `U1.OV00`
+to keep only the overlaps that suggest novel splicing:
+
+```{r <narrow-U1.OV00_is_nsj}
+U1.OV00_is_nsj <- U1.OV00_is_nsj & U1.OV00_is_acomp
+U1.nsjOV00 <- U1.OV00[U1.OV00_is_nsj]
+```
+
+For each overlap in `U1.nsjOV00`, we extract the ranks of the skipped exons (we
+use a list for this as there might be more than 1 skipped exon per overlap):
+
+```{r U1.nsjOV00_skippedex}
+U1.nsjOV00_skippedex <- extractSkippedExonRanks(U1.ovenc)[U1.OV00_is_nsj]
+names(U1.nsjOV00_skippedex) <- queryHits(U1.nsjOV00)
+table(elementNROWS(U1.nsjOV00_skippedex))
+```
+
+Finally, we split `U1.nsjOV00_skippedex` by transcript names:
+
+```{r U1.exbytx_skippedex}
+f <- factor(names(exbytx)[subjectHits(U1.nsjOV00)], levels=names(exbytx))
+U1.exbytx_skippedex <- split(U1.nsjOV00_skippedex, f)
+```
+
+`U1.exbytx_skippedex` is a named list of named lists of integer
+vectors. The first level of names (outer names) are transcript names and
+the second level of names (inner names) are alignment indices into
+`U1.GAL`:
+
+```{r names-of-U1.exbytx_skippedex}
+head(names(U1.exbytx_skippedex))  # transcript names
+```
+
+Transcript FBtr0089124 receives 7 hits. All of them skip exons 9 and 10:
+
+```{r FBtr0089124-skipped-exons}
+U1.exbytx_skippedex$FBtr0089124
+```
+
+Transcript FBtr0089147 receives 4 hits. Two of them skip exon 2, one of them
+skips exons 2 to 6, and one of them skips exon 10:
+
+```{r FBtr0089147-skipped-exons}
+U1.exbytx_skippedex$FBtr0089147
+```
+
+A few words about the interpretation of `U1.exbytx_skippedex`: Because of how
+we've conducted this analysis, the aligments reported in `U1.exbytx_skippedex`
+are guaranteed to not have any "splice compatible" overlaps with other known
+transcripts. All we can say, for example in the case of transcript FBtr0089124,
+is that the 7 reported hits that skip exons 9 and 10 show evidence of one or
+more unknown transcripts with a splice junction that corresponds to the gap
+between exons 8 and 11. But without further analysis, we can't make any
+assumption about the exons structure of those unknown transcripts. In
+particular, we cannot assume the existence of an unknown transcript made of the
+same exons as transcript FBtr0089124 minus exons 9 and 10!
+
+
+## By looking at paired-end overlaps
+
+[COMING SOON...]
+
+
+
+# `sessionInfo()`
+
+
+```{r sessionInfo}
+sessionInfo()
+```
