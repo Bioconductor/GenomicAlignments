@@ -34,7 +34,8 @@ readGAlignmentPairs(file, index=file, use.names=FALSE, param=NULL,
                           with.which_label=FALSE, strandMode=1)
 
 readGAlignmentsList(file, index=file, use.names=FALSE,
-                          param=ScanBamParam(), with.which_label=FALSE)
+                          param=ScanBamParam(), with.which_label=FALSE,
+                          strandMode=NA)
 
 readGappedReads(file, index=file, use.names=FALSE, param=NULL,
                       with.which_label=FALSE)
@@ -103,8 +104,12 @@ readGappedReads(file, index=file, use.names=FALSE, param=NULL,
     represented as a factor-\link[S4Vectors]{Rle}.
   }
   \item{strandMode}{
-    Strand mode to set on the returned \link{GAlignmentPairs} object.
-    See \code{?\link{strandMode}} for more information.
+    Strand mode to set on the returned \link{GAlignmentPairs} or
+    \link{GAlignmentsList} object. Note that the default value for
+    this parameter is different for \code{readGAlignmentPairs()} and
+    \code{readGAlignmentsList()}.
+    See details below on \code{readGAlignmentsList()} and
+    \code{?\link{strandMode}} for more information.
   }
 }
 
@@ -154,6 +159,12 @@ readGappedReads(file, index=file, use.names=FALSE, param=NULL,
           must be set, otherwise the data are treated as single-end reads. 
           See the \sQuote{asMates} section of \code{?\link[Rsamtools]{BamFile}}
           in the \pkg{Rsamtools} package for details. 
+
+          Note that, by default, \code{strandMode=NA}, which is different to
+          the default value in \code{readGAlignmentPairs()} and which implies
+          that, by default, the strand values in the returned
+          \code{GAlignmentsList} object correspond to the original strand of
+          the reads.
 
     \item \code{readGappedReads} reads a file containing aligned reads as a
           \link{GappedReads} object. See \code{?\link{GappedReads}} for a
@@ -398,7 +409,19 @@ readGAlignmentsList(bamfile)
 ## Use a 'param' to fine tune the results.
 param <- ScanBamParam(flag=scanBamFlag(isProperPair=TRUE))
 galist2 <- readGAlignmentsList(bam, param=param)
+galist2[1:3]
 length(galist2)
+table(elementNROWS(galist2))
+
+## For paired-end data, we can set the 'strandMode' parameter to
+## infer the strand of a pair from the strand of the first and
+## last alignments in the pair
+galist3 <- readGAlignmentsList(bam, param=param, strandMode=0)
+galist3[1:3]
+galist4 <- readGAlignmentsList(bam, param=param, strandMode=1)
+galist4[1:3]
+galist5 <- readGAlignmentsList(bam, param=param, strandMode=2)
+galist5[1:3]
 
 ## ---------------------------------------------------------------------
 ## D. COMPARING 4 STRATEGIES FOR LOADING THE ALIGNMENTS THAT OVERLAP
