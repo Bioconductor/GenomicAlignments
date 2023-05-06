@@ -5,16 +5,16 @@ author:
 - name: Rohit Satyam
   affiliation: "Vignette translation from Sweave to Rmarkdown / HTML"
 clean: false
-date: "`r Sys.Date()`"
+date: "`r format(Sys.Date(), '%d %B, %Y')`"
 package: GenomicAlignments
 vignette: >
- %VignetteIndexEntry{Counting reads with summarizeOverlaps}
- %VignetteEncoding{UTF-8}  
- %VignetteDepends{GenomicAlignments, DESeq2, edgeR, rtracklayer}
- %VignetteKeywords{sequence, sequencing, alignments}
- %VignettePackage{GenomicAlignments}
- %VignetteAuthor{Valerie Obenchain}
- %VignetteEngine{knitr::rmarkdown}
+  %VignetteIndexEntry{Counting reads with summarizeOverlaps}
+  %VignetteEncoding{UTF-8}  
+  %VignetteDepends{GenomicAlignments, DESeq2, edgeR, rtracklayer}
+  %VignetteKeywords{sequence, sequencing, alignments}
+  %VignettePackage{GenomicAlignments}
+  %VignetteAuthor{Valerie Obenchain}
+  %VignetteEngine{knitr::rmarkdown}
 bibliography:
 - references.bib
 link-citations: TRUE
@@ -24,7 +24,6 @@ output:
     BiocStyle::html_document:
       toc_float: true
       fig_caption: yes
-    BiocStyle::pdf_document: default
 editor_options: 
   markdown: 
     wrap: 72
@@ -91,7 +90,6 @@ detail on the counting modes see the `summarizeOverlaps` man page.
 ```{r, fig.width=7,fig.height=6, fig.cap="\\label{fig:figs}Counting Modes", fig.show = "hold", echo=FALSE, summarizeOverlaps-mode}
 knitr::include_graphics("summarizeOverlaps-modes.svg")
 ```
-
 
 # Counting Features
 
