@@ -290,11 +290,37 @@ setMethod("readGAlignmentPairs", "character",
 
 setGeneric("readGAlignmentsList", signature="file",
     function(file, index=file, use.names=FALSE, param=ScanBamParam(),
-                   with.which_label=FALSE)
+                   with.which_label=FALSE, strandMode=NA)
         standardGeneric("readGAlignmentsList")
 )
 
-.matesFromBam <- function(file, use.names, param, what0, with.which_label)
+.setRealStrand <- function(gal, param, strandMode) {
+    if (strandMode == 0L)
+        strand(gal) <- Rle(strand("*"), length(gal))
+    else {
+        gal_mcols <- mcols(gal, use.names=FALSE)
+        if (is.null(gal_mcols$flag))
+            warning("Flag information missing in GAlignmentsList object. Strand information might not be accurate.")
+        else {
+            mask_first_mate <- bamFlagTest(gal_mcols$flag, "isFirstMateRead")
+            if (strandMode == 1L)
+                strand(gal[!mask_first_mate]) <-
+                    invertStrand(strand(gal[!mask_first_mate]))
+            else if (strandMode == 2L)
+                strand(gal[mask_first_mate]) <-
+                    invertStrand(strand(gal[mask_first_mate]))
+            else
+                stop("strandMode should be either 0, 1 or 2.")
+        }
+    }
+    ## if the user didn't request the 'flag' info
+    ## then remove it to reduce memory footprint
+    if (!"flag" %in% bamWhat(param))
+        mcols(gal)$flag <- NULL
+    gal
+}
+.matesFromBam <- function(file, use.names, param, what0, with.which_label,
+                          strandMode)
 {
     bamcols <- .load_bamcols_from_BamFile(file, param, what0,
                                           with.which_label=with.which_label)
@@ -302,8 +328,16 @@ setGeneric("readGAlignmentsList", signature="file",
     gal <- GAlignments(seqnames=bamcols$rname, pos=bamcols$pos,
                        cigar=bamcols$cigar, strand=bamcols$strand,
                        seqlengths=seqlengths)
-    gal <- .bindExtraData(gal, use.names=FALSE, param, bamcols,
-                          with.which_label=with.which_label)
+    if (!is.na(strandMode)) {
+        flag0 <- scanBamFlag()
+        what0 <- "flag"
+        param2 <- .normargParam(param, flag0, what0)
+        gal <- .bindExtraData(gal, use.names=FALSE, param2, bamcols,
+                              with.which_label=with.which_label)
+        gal <- .setRealStrand(gal, param, strandMode)
+    } else
+        gal <- .bindExtraData(gal, use.names=FALSE, param, bamcols,
+                              with.which_label=with.which_label)
     if (asMates(file)) {
         f <- factor(bamcols$groupid)
         gal <- unname(split(gal, f))
@@ -320,7 +354,8 @@ setGeneric("readGAlignmentsList", signature="file",
 
 .readGAlignmentsList.BamFile <- function(file, index=file,
                                          use.names=FALSE, param=ScanBamParam(),
-                                         with.which_label=FALSE)
+                                         with.which_label=FALSE,
+                                         strandMode=NA)
 {
     if (!isTRUEorFALSE(use.names))
         stop("'use.names' must be TRUE or FALSE")
@@ -328,22 +363,25 @@ setGeneric("readGAlignmentsList", signature="file",
         bamWhat(param) <- setdiff(bamWhat(param), 
                                   c("groupid", "mate_status"))
     what0 <- c("rname", "strand", "pos", "cigar", "groupid", "mate_status")
+    if (!is.na(strandMode))
+        what0 <- c(what0, "flag")
     if (use.names)
         what0 <- c(what0, "qname")
-    .matesFromBam(file, use.names, param, what0, with.which_label)
+    .matesFromBam(file, use.names, param, what0, with.which_label, strandMode)
 }
 
 setMethod("readGAlignmentsList", "BamFile", .readGAlignmentsList.BamFile)
 
 setMethod("readGAlignmentsList", "character",
     function(file, index=file, use.names=FALSE, param=ScanBamParam(),
-                   with.which_label=FALSE)
+                   with.which_label=FALSE, strandMode=NA)
     {
         bam <- .open_BamFile(file, index=index, asMates=TRUE, param=param)
         on.exit(close(bam))
         readGAlignmentsList(bam, character(0),
                             use.names=use.names, param=param,
-                            with.which_label=with.which_label)
+                            with.which_label=with.which_label,
+                            strandMode=strandMode)
     }
 )
 
