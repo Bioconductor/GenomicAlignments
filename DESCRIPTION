@@ -18,7 +18,7 @@ Authors@R: c(
 		email="hpages.on.github@gmail.com"),
 	person("Valerie", "Obenchain", role="aut"),
 	person("Martin", "Morgan", role="aut"),
-	person("Robert", "Castelo", role="ctb"
+	person("Robert", "Castelo", role="ctb"),
 	person("Halimat C.", "Atanda", role="ctb",
 		comment="Translated 'WorkingWithAlignedNucleotides' vignette from Sweave to RMarkdown / HTML."
 	))
