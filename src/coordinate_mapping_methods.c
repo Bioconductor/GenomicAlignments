@@ -197,7 +197,6 @@ int to_ref(int query_loc, const char *cig0, int pos, Rboolean narrow_left)
       }
       /* Soft clip on the read */
       case 'S':
-        query_consumed += OPL;
         break;
       /* Deletion from the reference */
       case 'D':
