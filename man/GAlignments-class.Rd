@@ -259,24 +259,22 @@
 
   \describe{
     \item{\code{granges(x, use.names=TRUE, use.mcols=FALSE)},
-      \code{ranges(x, use.names=TRUE, use.mcols=FALSE)}:}{
-
+          \code{ranges(x, use.names=TRUE, use.mcols=FALSE)}:}{
       Return a \link{GRanges} object (for \code{granges()}) or
       \link[IRanges]{IRanges}) object (for \code{ranges()}) \emph{parallel}
       to \code{x} where the i-th element is the range of the genomic region
       spanned by the i-th alignment in \code{x}. All gaps in the region are
       ignored.
 
-      If \code{use.names} is TRUE, then the names on \code{x} 
+      If \code{use.names} is TRUE, then the names on \code{x}
       (if any) are propagated to the returned object.
       If \code{use.mcols} is TRUE, then the metadata columns on \code{x}
       (if any) are propagated to the returned object.
     }
     \item{\code{grglist(x, use.names=TRUE, use.mcols=FALSE,
-                       order.as.in.query=FALSE, drop.D.ranges=FALSE)},
-      \code{rglist(x, use.names=TRUE, use.mcols=FALSE,
-                      order.as.in.query=FALSE, drop.D.ranges=FALSE)}:}{
-
+                        order.as.in.query=FALSE, drop.D.ranges=FALSE)},
+          \code{rglist(x, use.names=TRUE, use.mcols=FALSE,
+                       order.as.in.query=FALSE, drop.D.ranges=FALSE)}:}{
       Return either a \link{GRangesList} or a \link[IRanges]{IntegerRangesList}
       object of length \code{length(x)} where the i-th element represents
       the ranges (with respect to the reference) of the i-th alignment in
@@ -285,7 +283,7 @@
       More precisely, the \link[IRanges]{IntegerRangesList} object returned
       by \code{rglist(x)} is a \link[IRanges]{CompressedIRangesList} object.
 
-      If \code{use.names} is TRUE, then the names on \code{x} 
+      If \code{use.names} is TRUE, then the names on \code{x}
       (if any) are propagated to the returned object.
       If \code{use.mcols} is TRUE, then the metadata columns on \code{x}
       (if any) are propagated to the returned object.
@@ -307,7 +305,7 @@
       \emph{always} ordered consistently with the original "query template",
       that is, in the order defined by walking the "query template" from the
       beginning to the end.
- 
+
       If \code{drop.D.ranges} is TRUE, then deletions (D operations
       in the CIGAR) are treated like junctions (N operations in the CIGAR),
       that is, the ranges corresponding to deletions are dropped.
