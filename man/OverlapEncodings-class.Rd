@@ -130,13 +130,11 @@ isCompatibleWithSplicing(x)
   typically obtained by a call to \code{\link{encodeOverlaps}(query, subject)}.
 
   \describe{
-    \item{}{
-      \code{length(x)}:
+    \item{\code{length(x)}:}{
       Get the number of elements (i.e. encodings) in \code{x}.
       This is equal to \code{length(query)} and \code{length(subject)}.
     }
-    \item{}{
-      \code{Loffset(x)}, \code{Roffset(x)}:
+    \item{\code{Loffset(x)}, \code{Roffset(x)}:}{
       Get the "left offsets" and "right offsets" of the encodings,
       respectively. Both are integer vectors of the same length as \code{x}.
 
@@ -153,8 +151,7 @@ isCompatibleWithSplicing(x)
       \code{start(Si)[length(Si) + 1 - k] > q2 + 1} for all \code{k}
       in \code{seq_len(L)}.
     }
-    \item{}{
-      \code{encoding(x)}:
+    \item{\code{encoding(x)}:}{
       Factor of the same length as \code{x} where the i-th element is
       the encoding obtained by comparing each range in \code{Qi} with
       all the ranges in \code{tSi = Si[(1+L):(length(Si)-R)]} (\code{tSi}
@@ -180,11 +177,9 @@ isCompatibleWithSplicing(x)
               prepended to the long string. The final string is the encoding.
       }
     }
-    \item{}{
-      \code{levels(x)}: Equivalent to \code{levels(encoding(x))}.
+    \item{\code{levels(x)}:}{ Equivalent to \code{levels(encoding(x))}.
     }
-    \item{}{
-      \code{flippedQuery(x)}:
+    \item{\code{flippedQuery(x)}:}{
       Whether or not the top-level element in query used for computing the
       encoding was "flipped" before the encoding was computed.
       Note that this flipping generally affects the "left offset",
@@ -197,8 +192,7 @@ isCompatibleWithSplicing(x)
   In the following code snippets, \code{x} is an OverlapEncodings object.
 
   \describe{
-    \item{}{
-      \code{as.data.frame(x)}:
+    \item{\code{as.data.frame(x)}:}{
       Return \code{x} as a data frame with columns \code{"Loffset"},
       \code{"Roffset"} and \code{"encoding"}.
     }
@@ -210,8 +204,7 @@ isCompatibleWithSplicing(x)
   or a character vector or factor containing encodings.
 
   \describe{
-    \item{}{
-      \code{encodingHalves(x, single.end.on.left=FALSE, single.end.on.right=FALSE, as.factors=FALSE)}:
+    \item{\code{encodingHalves(x, single.end.on.left=FALSE, single.end.on.right=FALSE, as.factors=FALSE)}:}{
       Extract the 2 halves of paired-end encodings and return them as a list
       of 2 character vectors (or 2 factors) parallel to the input.
 
@@ -225,17 +218,15 @@ isCompatibleWithSplicing(x)
       See examples below and the "Overlap encodings" vignette located in this
       package for examples of paired-end encodings.
     }
-    \item{}{
-      \code{Lencoding(x, ...)}, \code{Rencoding(x, ...)}:
+    \item{\code{Lencoding(x, ...)}, \code{Rencoding(x, ...)}:}{
       Extract the "left encodings" and "right encodings" of paired-end
       encodings.
 
       Equivalent to \code{encodingHalves(x, ...)[[1]]} and
       \code{encodingHalves(x, ...)[[2]]}, respectively.
     }
-    \item{}{
-      \code{njunc(x)}, \code{Lnjunc(x, single.end.on.left=FALSE)},
-      \code{Rnjunc(x, single.end.on.right=FALSE)}:
+    \item{\code{njunc(x)}, \code{Lnjunc(x, single.end.on.left=FALSE)},
+      \code{Rnjunc(x, single.end.on.right=FALSE)}:}{
       Extract the number of junctions in each encoding by looking at their
       first block (aka special block).
       If an element \code{xi} in \code{x} is a paired-end encoding,
@@ -243,8 +234,7 @@ isCompatibleWithSplicing(x)
       return \code{njunc(Lencoding(xi))}, \code{njunc(Rencoding(xi))},
       and \code{Lnjunc(xi) + Rnjunc(xi)}, respectively.
     }
-    \item{}{
-      \code{isCompatibleWithSplicing(x)}:
+    \item{\code{isCompatibleWithSplicing(x)}:}{
       Returns a logical vector \emph{parallel} to \code{x} indicating whether
       the corresponding encoding describes a \emph{splice compatible} overlap
       i.e. an overlap that is compatible with the splicing of the transcript.

@@ -37,8 +37,7 @@
   In the code snippets below, \code{x} is a GappedReads object.
 
   \describe{
-    \item{}{
-      \code{qseq(x)}:
+    \item{\code{qseq(x)}:}{
       Extracts the sequences of the queries as a
       \code{\link[Biostrings]{DNAStringSet}} object.
     }

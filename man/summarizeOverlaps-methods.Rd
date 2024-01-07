@@ -223,7 +223,7 @@ IntersectionNotEmpty(features, reads, ignore.strand=FALSE,
 
 \details{
   \describe{
-    \item{}{\code{summarizeOverlaps} offers counting modes to resolve reads that
+    \item{\code{summarizeOverlaps}:}{ offers counting modes to resolve reads that
       overlap multiple features. The \code{mode} argument defines a set of rules
       to resolve the read to a single feature such that each read is counted a
       maximum of once. New to GenomicRanges >= 1.13.9 is the
