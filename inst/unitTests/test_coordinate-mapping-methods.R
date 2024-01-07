@@ -10,6 +10,10 @@ align2 <- GAlignments(rep("chr1", 6), rep(10L, 6), cigar, strand(rep("+", 6)))
 align3 <- GAlignments(rep("chr1", 6), rep(20L, 6), cigar, strand(rep("+", 6)))
 names(align2) <- names(align3) <- letters[1:6]
 
+x2bis <- GRanges("chr1", IRanges(1:6, width=1, names=LETTERS[1:6]))
+align2bis <- GAlignments("chr1", 2L,  cigar = "1S2M1S", strand("+"))
+names(align2bis) = letters[1]
+
 test_mapToAlignments <- function() {
     ans <- mapToAlignments(x1, align1)
     checkIdentical(start(ans), rep(1L, 3))
@@ -22,6 +26,11 @@ test_mapToAlignments <- function() {
     ans <- mapToAlignments(x2, align3)
     checkIdentical(end(ans), c(7L, 4L, 4L, 8L, 6L, 6L)) 
     checkIdentical(mcols(ans)$alignmentsHits, as.integer(1:6))
+
+    ans <- mapToAlignments(x2bis, align2bis)
+    checkIdentical(start(ans), c(2L, 3L))
+    checkIdentical(end(ans), c(2L, 3L))
+    checkIdentical(mcols(ans)$xHits, c(2L, 3L))
 }
 
 test_mapFromAlignments <- function() {
