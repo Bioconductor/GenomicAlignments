@@ -127,8 +127,7 @@ queryLocs2refLocs(qlocs, cigar, pos=1L, flag=NULL)
     sequence. Must have length 1 (in which case it's recycled to the
     length of \code{cigar}), or the same length as \code{cigar}.
   }
-  \item{f}{
-    \code{NULL} or a factor of length \code{cigar}.
+  \item{\code{NULL}:}{ or a factor of length \code{cigar}.
     If \code{NULL}, then the ranges are grouped by alignment i.e. the
     returned \link[IRanges]{IRangesList} object has 1 list element per
     element in \code{cigar}. Otherwise they are grouped by factor level

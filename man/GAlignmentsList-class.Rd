@@ -64,8 +64,7 @@
 
 \section{Constructor}{
   \describe{
-    \item{}{
-      \code{GAlignmentsList(...)}:
+    \item{\code{GAlignmentsList(...)}:}{
       Creates a GAlignmentsList from a list of \link{GAlignments} objects.
     }
   }
@@ -75,89 +74,73 @@
   In the code snippets below, \code{x} is a GAlignmentsList object.
 
   \describe{
-    \item{}{
-      \code{length(x)}:
+    \item{\code{length(x)}:}{
       Return the number of elements in \code{x}.
     }
-    \item{}{
-      \code{names(x)}, \code{names(x) <- value}:
+    \item{\code{names(x)}, \code{names(x) <- value}:}{
       Get or set the names of the elements of \code{x}.
     }
-    \item{}{
-      \code{seqnames(x)}, \code{seqnames(x) <- value}:
+    \item{\code{seqnames(x)}, \code{seqnames(x) <- value}:}{
       Get or set the name of the reference sequences of the
       alignments in each element of \code{x}.
     }
-    \item{}{
-      \code{rname(x)}, \code{rname(x) <- value}:
+    \item{\code{rname(x)}, \code{rname(x) <- value}:}{
       Same as \code{seqnames(x)} and \code{seqnames(x) <- value}.
     }
-    \item{}{
-      \code{strand(x)}, \code{strand(x) <- value}:
+    \item{\code{strand(x)}, \code{strand(x) <- value}:}{
       Get or set the strand of the alignments in each element 
       of \code{x}.
     }
-    \item{}{
-      \code{cigar(x)}:
+    \item{\code{cigar(x)}:}{
       Returns a character list of length \code{length(x)}
       containing the CIGAR string for the alignments in
       each element of \code{x}.
     }
-    \item{}{
-      \code{qwidth(x)}:
+    \item{\code{qwidth(x)}:}{
       Returns an integer list of length \code{length(x)}
       containing the length of the alignments in each element of
       \code{x} *after* hard clipping (i.e. the length of the 
       query sequence that is stored in the corresponding SAM/BAM record).
     }
-    \item{}{
-      \code{start(x)}, \code{end(x)}:
+    \item{\code{start(x)}, \code{end(x)}:}{
       Returns an integer list of length \code{length(x)}
       containing the "start" and "end" (respectively) of the 
       alignments in each element of \code{x}. 
     }
-    \item{}{
-      \code{width(x)}:
+    \item{\code{width(x)}:}{
       Returns an integer list of length \code{length(x)} containing
       the "width" of the alignments in each element of \code{x}.
     }
-    \item{}{
-      \code{njunc(x)}:
+    \item{\code{njunc(x)}:}{
       Returns an integer list of length \code{x} containing the number
       of junctions (i.e. N operations in the CIGAR) for the alignments
       in each element of \code{x}.
     }
-    \item{}{
-      \code{seqinfo(x)}, \code{seqinfo(x) <- value}:
+    \item{\code{seqinfo(x)}, \code{seqinfo(x) <- value}:}{
       Get or set the information about the underlying sequences.
       \code{value} must be a \link[GenomeInfoDb]{Seqinfo} object.
     }
-    \item{}{
-      \code{seqlevels(x)}, \code{seqlevels(x) <- value}:
+    \item{\code{seqlevels(x)}, \code{seqlevels(x) <- value}:}{
       Get or set the sequence levels of the alignments in each element
       of \code{x}.
     }
-    \item{}{
-      \code{seqlengths(x)}, \code{seqlengths(x) <- value}:
+    \item{\code{seqlengths(x)}, \code{seqlengths(x) <- value}:}{
       Get or set the sequence lengths for each element of \code{x}.
       \code{seqlengths(x)} is equivalent to \code{seqlengths(seqinfo(x))}.
       \code{value} can be a named non-negative integer or numeric vector
       eventually with NAs.
     }
-    \item{}{
-      \code{isCircular(x)}, \code{isCircular(x) <- value}:
+    \item{\code{isCircular(x)}, \code{isCircular(x) <- value}:}{
       Get or set the circularity flags for the alignments in each
       element in \code{x}. \code{value} must be a named logical list 
       eventually with NAs.
     }
-    \item{}{
-      \code{genome(x)}, \code{genome(x) <- value}:
+    \item{\code{genome(x)}, \code{genome(x) <- value}:}{
       Get or set the genome identifier or assembly name for the alignments 
       in each element of \code{x}. \code{value} must be a named character 
       list eventually with NAs.
     }
-    \item{}{
-      \code{seqnameStyle(x)}:
+    \item{\code{seqnameStyle(x)}:}{
       Get or set the seqname style for alignments in each element of \code{x}.
     }
   }
@@ -167,9 +150,8 @@
   In the code snippets below, \code{x} is a GAlignmentsList object.
 
   \describe{
-    \item{}{
-      \code{granges(x, use.names=TRUE, use.mcols=FALSE, ignore.strand=FALSE)}, 
-      \code{ranges(x, use.names=TRUE, use.mcols=FALSE)}:
+    \item{\code{granges(x, use.names=TRUE, use.mcols=FALSE, ignore.strand=FALSE)}, 
+      \code{ranges(x, use.names=TRUE, use.mcols=FALSE)}:}{
 
       Return either a \link{GRanges} or a \link[IRanges]{IRanges}
       object of length \code{length(x)}. Note this coercion IGNORES 
@@ -185,9 +167,8 @@
       ranges of opposite strand to be combined (see examples). All
       ranges in the resulting GRanges will have strand \sQuote{*}.
     }
-    \item{}{
-      \code{grglist(x, use.names=TRUE, use.mcols=FALSE, ignore.strand=FALSE)}, 
-      \code{rglist(x, use.names=TRUE, use.mcols=FALSE)}:
+    \item{\code{grglist(x, use.names=TRUE, use.mcols=FALSE, ignore.strand=FALSE)}, 
+      \code{rglist(x, use.names=TRUE, use.mcols=FALSE)}:}{
 
       Return either a \link{GRangesList} or an \link[IRanges]{IRangesList}
       object of length \code{length(x)}. This coercion RESPECTS the cigar 
@@ -204,24 +185,21 @@
       \code{ignore.strand} is TRUE all ranges in the resulting 
       GRangesList have strand \sQuote{*}.
     }
-    \item{}{
-      \code{as(x, "GRanges")}, \code{as(x, "IntegerRanges")},
-      \code{as(x, "GRangesList")}, \code{as(x, "IntegerRangesList")}:
+    \item{\code{as(x, "GRanges")}, \code{as(x, "IntegerRanges")},
+      \code{as(x, "GRangesList")}, \code{as(x, "IntegerRangesList")}:}{
       Alternate ways of doing
       \code{granges(x, use.names=TRUE, use.mcols=TRUE)},
       \code{ranges(x, use.names=TRUE, use.mcols=TRUE)},
       \code{grglist(x, use.names=TRUE, use.mcols=TRUE)}, and
       \code{rglist(x, use.names=TRUE, use.mcols=TRUE)}, respectively.
     }
-    \item{}{
-      \code{as.data.frame(x, row.names = NULL, optional = FALSE,
+    \item{\code{as.data.frame(x, row.names = NULL, optional = FALSE,
          ..., value.name = "value", use.outer.mcols = FALSE, 
-         group_name.as.factor = FALSE)}: 
+         group_name.as.factor = FALSE)}:}{ 
       Coerces \code{x} to a \code{data.frame}. See as.data.frame on the 
       \code{List} man page for details (?\code{List}). 
     }
-    \item{}{
-      \code{as(x, "GALignmentsList")}: Here \code{x} is a
+    \item{\code{as(x, "GALignmentsList")}:}{ Here \code{x} is a
       \link{GAlignmentPairs} object. Return a GAlignmentsList object of length
       \code{length(x)} where the i-th list element represents the ranges of
       the i-th alignment pair in \code{x}.
@@ -233,17 +211,14 @@
   In the code snippets below, \code{x} is a GAlignmentsList object.
 
   \describe{
-    \item{}{
-      \code{x[i]}, \code{x[i] <- value}:
+    \item{\code{x[i]}, \code{x[i] <- value}:}{
       Get or set list elements \code{i}. \code{i} can be a numeric 
       or logical vector. \code{value} must be a GAlignments.
     }
-    \item{}{
-      \code{x[[i]]}, \code{x[[i]] <- value}:
+    \item{\code{x[[i]]}, \code{x[[i]] <- value}:}{
       Same as \code{x[i]}, \code{x[i] <- value}. 
     }
-    \item{}{
-      \code{x[i, j]}, \code{x[i, j] <- value}:
+    \item{\code{x[i, j]}, \code{x[i, j] <- value}:}{
       Get or set list elements \code{i} with optional metadata columns
       \code{j}. \code{i} can be a numeric, logical or missing. 
       \code{value} must be a GAlignments.
@@ -253,8 +228,7 @@
 
 \section{Concatenation}{
   \describe{
-    \item{}{
-      \code{c(x, ..., ignore.mcols=FALSE)}:
+    \item{\code{c(x, ..., ignore.mcols=FALSE)}:}{
       Concatenate GAlignmentsList object \code{x} and the GAlignmentsList
       objects in \code{...} together.
       See \code{?\link[S4Vectors]{c}} in the \pkg{S4Vectors} package for
@@ -410,4 +384,3 @@ grglist(galist, ignore.strand=TRUE)
 
 \keyword{methods}
 \keyword{classes}
-
