@@ -61,7 +61,7 @@ int to_query(int ref_loc, const char *cig0, int pos, Rboolean narrow_left)
     offset += n;
   }
 
-  if (query_loc < 0 || n == 0)
+  if (query_loc <= 0 || n == 0)
     query_loc = NA_INTEGER;
 
   return query_loc;
