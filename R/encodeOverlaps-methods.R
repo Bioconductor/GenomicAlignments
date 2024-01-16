@@ -381,12 +381,12 @@ setGeneric("isCompatibleWithSkippedExons", signature="x",
         stop("only 'max.skipped.exons=NA' is supported for now, sorry")
 
     ## Subpattern for single-end reads.
-    skipped_exons_subpatterns <- c(":(.:)*", ":(..:)*",
-                                   ":(...:)*", ":(....:)*")
+    skipped_exons_subpatterns <- function(n)
+                                   paste0(":(", strrep(".", n + 1L), ":)*")
     subpattern1 <- sapply(0:max.njunc1,
                      function(njunc)
                        paste0(build_compatible_encoding_subpatterns(njunc),
-                              collapse=skipped_exons_subpatterns[njunc+1L]))
+                              collapse=skipped_exons_subpatterns(njunc)))
     subpattern1 <- paste0(":(", paste0(subpattern1, collapse="|"), "):")
 
     ## Subpattern for paired-end reads.
