@@ -10,7 +10,7 @@ biocViews: Infrastructure, DataImport, Genetics, Sequencing, RNASeq, SNP,
 URL: https://bioconductor.org/packages/GenomicAlignments
 Video: https://www.youtube.com/watch?v=2KqBSbkfhRo , https://www.youtube.com/watch?v=3PK_jx44QTs
 BugReports: https://github.com/Bioconductor/GenomicAlignments/issues
-Version: 1.39.3
+Version: 1.39.4
 License: Artistic-2.0
 Encoding: UTF-8
 Authors@R: c(
