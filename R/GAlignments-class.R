@@ -269,70 +269,50 @@ setValidity2("GAlignments", .valid.GAlignments,
 ### Constructor.
 ###
 
-.asFactorRle <- function(x)
+### At the very least, 'seqnames', 'pos', and 'cigar' must be specified to
+### construct a non-zero length GAlignments object.
+GAlignments <-
+    function(seqnames=Rle(factor()), pos=integer(0), cigar=character(0),
+             strand=NULL, names=NULL,
+             ..., seqinfo=NULL, seqlengths=NULL)
 {
-    if (is.character(x)) {
-        x <- Rle(as.factor(x))
-    } else if (is.factor(x)) {
-        x <- Rle(x)
-    } else if (is(x, "Rle") && is.character(runValue(x))) {
-        runValue(x) <- as.factor(runValue(x))
-    } else if (!is(x, "Rle") || !is.factor(runValue(x))) {
-        stop("'x' must be a character vector, a factor, ",
-             "a 'character' Rle, or a 'factor' Rle")
+    ## Prepare the 'seqnames' and 'seqinfo' slots.
+    seqnames <- GenomicRanges:::normarg_seqnames1(seqnames)
+    seqinfo <- GenomicRanges:::normarg_seqinfo2(seqinfo, seqlengths)
+    if (is.null(seqinfo)) {
+        seqinfo <- Seqinfo(levels(seqnames))
+    } else {
+        seqnames <- GenomicRanges:::normarg_seqnames2(seqnames, seqinfo)
     }
-    x
-}
 
-GAlignments <- function(seqnames=Rle(factor()), pos=integer(0),
-                        cigar=character(0), strand=NULL,
-                        names=NULL, seqlengths=NULL, ...)
-{
-    ## Prepare the 'seqnames' slot.
-    seqnames <- .asFactorRle(seqnames)
-    if (any(is.na(seqnames)))
-        stop("'seqnames' cannot have NAs")
     ## Prepare the 'pos' slot.
-    if (!is.integer(pos) || any(is.na(pos)))
-        stop("'pos' must be an integer vector with no NAs")
+    if (!is.integer(pos)) {
+        if (!is.numeric(pos))
+            stop(wmsg("'pos' must be an integer vector"))
+        pos <- as.integer(pos)
+    }
+    if (any(is.na(pos)))
+        stop(wmsg("'pos' cannot contain NAs"))
+
     ## Prepare the 'cigar' slot.
     if (!is.character(cigar) || any(is.na(cigar)))
-        stop("'cigar' must be a character vector with no NAs")
+        stop(wmsg("'cigar' must be a character vector with no NAs"))
+
     ## Prepare the 'strand' slot.
-    if (is.null(strand)) {
-        if (length(seqnames) != 0L)
-            stop("'strand' must be specified when 'seqnames' is not empty")
-        strand <- Rle(strand())
-    } else if (is.factor(strand)) {
-        strand <- Rle(strand)
-    }
+    strand <- GenomicRanges:::normarg_strand(strand, length(seqnames))
+
     ## Prepare the 'elementMetadata' slot.
-    varlist <- list(...)
-    elementMetadata <- 
-        if (0L == length(varlist))
-            S4Vectors:::make_zero_col_DataFrame(length(seqnames))
-        else
-            do.call(DataFrame, varlist)
-    ## Prepare the 'seqinfo' slot.
-    if (is.null(seqlengths)) {
-        seqlengths <- rep(NA_integer_, length(levels(seqnames)))
-        names(seqlengths) <- levels(seqnames)
-    } else if (!is.numeric(seqlengths)
-            || is.null(names(seqlengths))
-            || any(duplicated(names(seqlengths)))) {
-        stop("'seqlengths' must be an integer vector with unique names")
-    } else if (!setequal(names(seqlengths), levels(seqnames))) {
-        stop("'names(seqlengths)' incompatible with 'levels(seqnames)'")
-    } else if (!is.integer(seqlengths)) { 
-        storage.mode(seqlengths) <- "integer"
+    if (length(list(...)) == 0L) {
+        mcols <- NULL
+    } else {
+        mcols <- DataFrame(..., check.names=FALSE)
     }
-    seqinfo <- Seqinfo(seqnames=names(seqlengths), seqlengths=seqlengths)
+    mcols <- S4Vectors:::normarg_mcols(mcols, "GAlignments", length(seqnames))
+
     ## Create and return the GAlignments instance.
-    new("GAlignments", NAMES=names,
-                       seqnames=seqnames, start=pos, cigar=cigar,
-                       strand=strand,
-                       elementMetadata=elementMetadata,
-                       seqinfo=seqinfo)
+    new2("GAlignments", seqnames=seqnames, strand=strand,
+                        cigar=cigar, start=pos, NAMES=names,
+                        elementMetadata=mcols, seqinfo=seqinfo, check=TRUE)
 }
 
 setMethod("update", "GAlignments",
@@ -475,17 +455,32 @@ setMethod("as.data.frame", "GAlignments",
 setAs("GenomicRanges", "GAlignments",
     function(from)
     {
-        from_mcols <- mcols(from, use.names=FALSE)
-        ans_cigar <- from_mcols[["cigar"]]
-        if (is.null(ans_cigar))
+        ans_mcols <- mcols(from, use.names=FALSE)
+
+        ## Prepare 'ans_cigar'.
+        colidx <- match("cigar", colnames(ans_mcols))
+        if (!is.na(colidx)) {
+            ans_cigar <- ans_mcols[[colidx]]
+            ans_mcols <- ans_mcols[-colidx]
+        } else {
             ans_cigar <- paste0(width(from), "M")
-        ans <- GAlignments(seqnames(from), start(from), ans_cigar, strand(from),
-                  if (!is.null(names(from))) names(from) else from_mcols$name,
-                  seqlengths(from),
-                  from_mcols[setdiff(colnames(from_mcols), c("cigar", "name"))]
-               )
+        }
+
+        ## Prepare 'ans_names'.
+        ans_names <- names(from)
+        if (is.null(ans_names)) {
+            colidx <- match("name", colnames(ans_mcols))
+            if (!is.na(colidx)) {
+                ans_names <- ans_mcols[[colidx]]
+                ans_mcols <- ans_mcols[-colidx]
+            }
+        }
+
+        ## Construct 'ans'.
+        ans <- GAlignments(seqnames(from), start(from), ans_cigar,
+                           strand=strand(from), names=ans_names,
+                           ans_mcols, seqinfo=seqinfo(from))
         metadata(ans) <- metadata(from)
-        seqinfo(ans) <- seqinfo(from)
         ans
     }
 )
@@ -495,8 +490,8 @@ setAs("GenomicRanges", "GAlignments",
 ### Subsetting
 ###
 
-### Avoid infinite recursion that we would otherwise get:
-###   GAlignments(Rle(factor("chr1")), 11L, "20M", strand("+"))[[1]]
+### Avoid infinite recursion that we would otherwise get when doing:
+###   GAlignments("chr1", 11, "20M")[[1]]
 ###   # Error: C stack usage  7969700 is too close to the limit
 setMethod("getListElement", "GAlignments",
     function(x, i, exact=TRUE)
@@ -539,8 +534,8 @@ showGAlignments <- function(x, margin="",
         " and ",
         nc, " metadata ", ifelse(nc == 1L, "column", "columns"),
         ":\n", sep="")
-    out <- S4Vectors:::makePrettyMatrixForCompactPrinting(x,
-               .from_GAlignments_to_naked_character_matrix_for_display)
+    out <- makePrettyMatrixForCompactPrinting(x,
+                     .from_GAlignments_to_naked_character_matrix_for_display)
     if (print.classinfo) {
         .COL2CLASS <- c(
             seqnames="Rle",
@@ -552,8 +547,7 @@ showGAlignments <- function(x, margin="",
             width="integer",
             njunc="integer"
         )
-        classinfo <-
-            S4Vectors:::makeClassinfoRowForCompactPrinting(x, .COL2CLASS)
+        classinfo <- makeClassinfoRowForCompactPrinting(x, .COL2CLASS)
         ## A sanity check, but this should never happen!
         stopifnot(identical(colnames(classinfo), colnames(out)))
         out <- rbind(classinfo, out)

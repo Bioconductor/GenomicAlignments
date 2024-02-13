@@ -247,7 +247,7 @@ showOverlapEncodings <- function(x, margin="", print.classinfo=FALSE)
         " with ",
         x_nmc, " metadata column", ifelse(x_nmc == 1L, "", "s"),
         ":\n", sep="")
-    out <- S4Vectors:::makePrettyMatrixForCompactPrinting(x,
+    out <- makePrettyMatrixForCompactPrinting(x,
                            .make_naked_matrix_from_OverlapEncodings)
     if (print.classinfo) {
         .COL2CLASS <- c(
@@ -256,8 +256,7 @@ showOverlapEncodings <- function(x, margin="", print.classinfo=FALSE)
             encoding="factor",
             flippedQuery="logical"
         )
-        classinfo <- S4Vectors:::makeClassinfoRowForCompactPrinting(x,
-                                     .COL2CLASS)
+        classinfo <- makeClassinfoRowForCompactPrinting(x, .COL2CLASS)
         ## A sanity check, but this should never happen!
         stopifnot(identical(colnames(classinfo), colnames(out)))
         out <- rbind(classinfo, out)

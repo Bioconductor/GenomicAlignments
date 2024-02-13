@@ -1,17 +1,17 @@
 ## CIGAR ops M, =, X
 x1 <- GRanges("chr1", IRanges(c(5, 10, 20, 25), width=2, names=LETTERS[1:4]))
-align1 <- GAlignments(rep("chr1", 3), rep(10L, 3), c("11M", "11=", "11X"), 
-                      strand(rep("+", 3)), names=letters[1:3])
+align1 <- GAlignments(rep("chr1", 3), rep(10, 3), c("11M", "11=", "11X"), 
+                      Rle(strand("+"), 3), names=letters[1:3])
 
 ## CIGAR ops S, N, D, I, H, P
 x2 <- GRanges("chr1", IRanges(c(1, 20), width=6, names=LETTERS[1:2]))
 cigar <- c("1S6M1S", "3M2N3M", "3M2D3M", "3M2I3M", "1H6M1H", "1P6M1P")
-align2 <- GAlignments(rep("chr1", 6), rep(10L, 6), cigar, strand(rep("+", 6)))
-align3 <- GAlignments(rep("chr1", 6), rep(20L, 6), cigar, strand(rep("+", 6)))
+align2 <- GAlignments(rep("chr1", 6), rep(10, 6), cigar, Rle(strand("+"), 6))
+align3 <- GAlignments(rep("chr1", 6), rep(20, 6), cigar, Rle(strand("+"), 6))
 names(align2) <- names(align3) <- letters[1:6]
 
 x2bis <- GRanges("chr1", IRanges(1:6, width=1, names=LETTERS[1:6]))
-align2bis <- GAlignments("chr1", 2L,  cigar = "1S2M1S", strand("+"))
+align2bis <- GAlignments("chr1", 2, "1S2M1S", "+")
 names(align2bis) = letters[1]
 
 test_mapToAlignments <- function() {

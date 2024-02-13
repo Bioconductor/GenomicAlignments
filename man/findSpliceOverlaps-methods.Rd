@@ -175,8 +175,8 @@ genes <- GRangesList(
     GRanges("chr1", IRanges(c(5, 20), c(10, 25)), "+"),
     GRanges("chr1", IRanges(c(5, 22), c(15, 25)), "+"))
 galp <- GAlignmentPairs(
-    GAlignments("chr1", 5L, "11M4N6M", strand("+")),
-    GAlignments("chr1", 50L, "6M", strand("-")))
+    GAlignments("chr1", 5, "11M4N6M", strand("+")),
+    GAlignments("chr1", 50, "6M", strand("-")))
 findSpliceOverlaps(galp, genes)
 }
 

@@ -146,8 +146,9 @@
 \section{Constructor}{
   \describe{
     \item{\code{GAlignments(seqnames=Rle(factor()), pos=integer(0),
-                        cigar=character(0),
-                        strand=NULL, names=NULL, seqlengths=NULL, ...)}:}{
+                            cigar=character(0),
+                            strand=NULL, names=NULL,
+                            ..., seqinfo=NULL, seqlengths=NULL)}:}{
       Low-level GAlignments constructor. Generally not used directly.
       Named arguments in \code{...} are used as metadata columns.
     }

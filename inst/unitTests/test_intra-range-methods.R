@@ -17,7 +17,7 @@ test_GAlignments_qnarrow <- function()
                        pos=10:17,
                        cigar=c("5M", "5X", "3M2I3M", "3M2D3M",
                                "3M2N3M", "3M2S3M", "3M2H3M", "3M2P3M"),
-                       strand=Rle(strand(rep("+", 8))))
+                       strand=Rle(strand("+"), 8))
     n1 <- narrow(gal, start=3)
     q1 <- qnarrow(gal, start=3)
     checkIdentical(qwidth(n1), qwidth(q1))

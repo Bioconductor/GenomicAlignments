@@ -84,7 +84,7 @@ test_GAlignmentsList_coercion <- function() {
 
     ## empty ranges
     galist <- GAlignmentsList(
-        GAlignments("chr1", 20L, "10M", strand("+")), GAlignments())
+        GAlignments("chr1", 20, "10M", "+"), GAlignments())
     checkTrue(length(ranges(galist)) == 1L)
     checkTrue(length(rglist(galist)) == 2L)
     checkTrue(length(granges(galist)) == 1L)
