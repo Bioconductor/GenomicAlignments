@@ -68,8 +68,8 @@ reads from a published study by Zarnack et al., 2012. A subset of these reads
 are stored in the BAM files located in the data `r Biocpkg("RNAseqData.HNRNPC.bam.chr14")` data package. The package contains 8 BAM
 files, 1 per sequencing run:
 
-```{r message=FALSE} 
-library(RNAseqData.HNRNPC.bam.chr14) 
+```{r message=FALSE}
+library(RNAseqData.HNRNPC.bam.chr14)
 bamfiles <- RNAseqData.HNRNPC.bam.chr14_BAMFILES
 names(bamfiles) # the names of the runs
 ```
@@ -85,7 +85,7 @@ from the `r Biocpkg("Rsamtools")` package:
 
 ```{r message=FALSE}
 library(Rsamtools)
-quickBamFlagSummary(bamfiles[1], main.groups.only=TRUE) 
+quickBamFlagSummary(bamfiles[1], main.groups.only=TRUE)
 ```
 
 This confirms that all the alignments in the 1st BAM file (run ERR127306) are
@@ -105,8 +105,8 @@ quality controls (flag bit 0x200 in the SAM format).
 Finally we also request the read sequences (a.k.a. the *segment sequences* in the SAM Spec, stored in the SEQ field) via the *ScanBamParam* object:
 
 ```{r}
-flag1 <- scanBamFlag(isFirstMateRead=TRUE, isSecondMateRead=FALSE, isDuplicate=FALSE, isNotPassingQualityControls=FALSE) 
-param1 <- ScanBamParam(flag=flag1, what="seq") 
+flag1 <- scanBamFlag(isFirstMateRead=TRUE, isSecondMateRead=FALSE, isDuplicate=FALSE, isNotPassingQualityControls=FALSE)
+param1 <- ScanBamParam(flag=flag1, what="seq")
 ```
 
 We're now ready to load the alignments and their sequences. Note that we use
@@ -115,8 +115,8 @@ template names* in the SAM Spec, stored in the QNAME field) from the BAM file.
 `readGAlignments` will use them to set the names of the returned object:
 
 ```{r message=FALSE}
-library(GenomicAlignments) 
-gal1 <- readGAlignments(bamfiles[1], use.names=TRUE, param=param1) 
+library(GenomicAlignments)
+gal1 <- readGAlignments(bamfiles[1], use.names=TRUE, param=param1)
 ```
 
 This returns a *GAlignments* object. The read sequences are stored in the `seq` metadata column of the object:
@@ -134,8 +134,8 @@ that is, as they can be seen in the FASTQ file assuming that the aligner didn't
 perform any hard-clipping on them):
 
 ```{r}
-oqseq1 <- mcols(gal1)$seq 
-is_on_minus <- as.logical(strand(gal1) == "-") 
+oqseq1 <- mcols(gal1)$seq
+is_on_minus <- as.logical(strand(gal1) == "-")
 oqseq1[is_on_minus] <- reverseComplement(oqseq1[is_on_minus])
 ```
 
@@ -144,7 +144,7 @@ read (i.e. per sequence stored in the FASTQ file), we shouldn't expect the names
 of `gal1` to be unique:
 
 ```{r}
-is_dup <- duplicated(names(gal1)) 
+is_dup <- duplicated(names(gal1))
 table(is_dup)
 ```
 
@@ -153,7 +153,7 @@ However, sequences with the same *query name* should correspond to the same
 check:
 
 ```{r}
-dup2unq <- match(names(gal1), names(gal1)) 
+dup2unq <- match(names(gal1), names(gal1))
 stopifnot(all(oqseq1 == oqseq1[dup2unq]))
 ```
 
@@ -209,11 +209,11 @@ aligned against the dm3 genome (see `?untreated3_chr4` in the `r Biocpkg("pasill
 We use the `readGAlignmentPairs` function to load them into a *GAlignmentPairs* object:
 
 ```{r message=FALSE}
-library(pasillaBamSubset) 
-flag0 <- scanBamFlag(isDuplicate=FALSE, isNotPassingQualityControls=FALSE) 
-param0 <- ScanBamParam(flag=flag0) 
+library(pasillaBamSubset)
+flag0 <- scanBamFlag(isDuplicate=FALSE, isNotPassingQualityControls=FALSE)
+param0 <- ScanBamParam(flag=flag0)
 U3.galp <- readGAlignmentPairs(untreated3_chr4(), use.names=TRUE, param=param0)
-head(U3.galp) 
+head(U3.galp)
 ```
 
 The `show` method for *GAlignmentPairs* objects displays two ranges columns, one
@@ -222,7 +222,7 @@ alignment in the pair (the right column). The strand column corresponds to the
 strand of the *first* alignment.
 
 ```{r}
-head(first(U3.galp)) 
+head(first(U3.galp))
 head(last(U3.galp))
 ```
 
@@ -250,7 +250,7 @@ files, typically 1 FASTQ file for the *first* ends and 1 FASTQ file for the
 *last* ends), we shouldn't expect the names of `U3.GALP` to be unique:
 
 ```{r}
-U3.GALP_names_is_dup <- duplicated(names(U3.GALP)) 
+U3.GALP_names_is_dup <- duplicated(names(U3.GALP))
 table(U3.GALP_names_is_dup)
 ```
 
