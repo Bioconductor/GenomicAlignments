@@ -87,9 +87,8 @@
 
 \section{Constructor}{
   \describe{
-    \item{}{
-      \code{GAlignmentPairs(first, last, strandMode=1,
-                            isProperPair=TRUE, names=NULL)}:
+    \item{\code{GAlignmentPairs(first, last, strandMode=1,
+                            isProperPair=TRUE, names=NULL)}:}{
       Low-level GAlignmentPairs constructor. Generally not used directly.
     }
   }
@@ -99,8 +98,7 @@
   In the code snippets below, \code{x} is a GAlignmentPairs object.
 
   \describe{
-    \item{}{
-      \code{strandMode(x)}, \code{strandMode(x) <- value}:
+    \item{\code{strandMode(x)}, \code{strandMode(x) <- value}:}{
       The \emph{strand mode} is a per-object switch on GAlignmentPairs objects
       that controls the behavior of the \code{strand} getter.
       More precisely, it indicates how the strand of a pair should be
@@ -131,20 +129,17 @@
       was used. Please refer to the documentation of these programs for more
       information.
     }
-    \item{}{
-      \code{length(x)}:
+    \item{\code{length(x)}:}{
       Return the number of alignment pairs in \code{x}.
     }
-    \item{}{
-      \code{names(x)}, \code{names(x) <- value}:
+    \item{\code{names(x)}, \code{names(x) <- value}:}{
       Get or set the names on \code{x}.
       See \code{\link{readGAlignmentPairs}} for how to automatically extract
       and set the names when reading the alignments from a file.
     }
-    \item{}{
-      \code{first(x, real.strand=FALSE)},
+    \item{\code{first(x, real.strand=FALSE)},
       \code{last(x, real.strand=FALSE)},
-      \code{second(x, real.strand=FALSE)}:
+      \code{second(x, real.strand=FALSE)}:}{
       Get the "first" or "last"/"second" alignment for each alignment pair in
       \code{x}. The result is a \link{GAlignments} object of the same length
       as \code{x}.
@@ -158,8 +153,7 @@
       by \code{last()} is inverted. If \code{strandMode(x)} is 2, then the
       strand of the object returned by \code{first()} is inverted.
     }
-    \item{}{
-      \code{seqnames(x)}:
+    \item{\code{seqnames(x)}:}{
       Get the sequence names of the pairs in \code{x} i.e. the name of the
       reference sequence for each alignment pair in \code{x}. The sequence
       name of a pair is the sequence name of the 2 alignments in the pair
@@ -170,29 +164,24 @@
       object that is \emph{parallel} to \code{x}, i.e. the i-th element in
       the returned object is the sequence name of the i-th pair in \code{x}.
     }
-    \item{}{
-      \code{strand(x)}:
+    \item{\code{strand(x)}:}{
       Get the strand for each alignment pair in \code{x}.
       Obey \code{strandMode(x)} above to infer the strand of a pair.
       Return \code{*} for pairs with \emph{discordant strand}, or for
       all pairs if \code{strandMode(x)} is 0.
     }
-    \item{}{
-      \code{njunc(x)}:
+    \item{\code{njunc(x)}:}{
       Equivalent to \code{njunc(first(x)) + njunc(last(x))}.
     }
-    \item{}{
-      \code{isProperPair(x)}:
+    \item{\code{isProperPair(x)}:}{
       Get the "isProperPair" flag bit (bit 0x2 in SAM Spec) set by
       the aligner for each alignment pair in \code{x}.
     }
-    \item{}{
-      \code{seqinfo(x)}, \code{seqinfo(x) <- value}:
+    \item{\code{seqinfo(x)}, \code{seqinfo(x) <- value}:}{
       Get or set the information about the underlying sequences.
       \code{value} must be a \link[GenomeInfoDb]{Seqinfo} object.
     }
-    \item{}{
-      \code{seqlevels(x)}, \code{seqlevels(x) <- value}:
+    \item{\code{seqlevels(x)}, \code{seqlevels(x) <- value}:}{
       Get or set the sequence levels.
       \code{seqlevels(x)} is equivalent to \code{seqlevels(seqinfo(x))}
       or to \code{levels(seqnames(x))}, those 2 expressions being
@@ -201,27 +190,23 @@
       with no NAs.
       See \code{?\link{seqlevels}} for more information.
     }
-    \item{}{
-      \code{seqlengths(x)}, \code{seqlengths(x) <- value}:
+    \item{\code{seqlengths(x)}, \code{seqlengths(x) <- value}:}{
       Get or set the sequence lengths.
       \code{seqlengths(x)} is equivalent to \code{seqlengths(seqinfo(x))}.
       \code{value} can be a named non-negative integer or numeric vector
       eventually with NAs.
     }
-    \item{}{
-      \code{isCircular(x)}, \code{isCircular(x) <- value}:
+    \item{\code{isCircular(x)}, \code{isCircular(x) <- value}:}{
       Get or set the circularity flags.
       \code{isCircular(x)} is equivalent to \code{isCircular(seqinfo(x))}.
       \code{value} must be a named logical vector eventually with NAs.
     }
-    \item{}{
-      \code{genome(x)}, \code{genome(x) <- value}:
+    \item{\code{genome(x)}, \code{genome(x) <- value}:}{
       Get or set the genome identifier or assembly name for each sequence.
       \code{genome(x)} is equivalent to \code{genome(seqinfo(x))}.
       \code{value} must be a named character vector eventually with NAs.
     }
-    \item{}{
-      \code{seqnameStyle(x)}:
+    \item{\code{seqnameStyle(x)}:}{
       Get or set the seqname style for \code{x}.
       Note that this information is not stored in \code{x} but inferred
       by looking up \code{seqnames(x)} against a seqname style database
@@ -237,8 +222,7 @@
   In the code snippets below, \code{x} is a GAlignmentPairs object.
 
   \describe{
-    \item{}{
-      \code{x[i]}:
+    \item{\code{x[i]}:}{
       Return a new GAlignmentPairs object made of the selected
       alignment pairs. 
     }
@@ -249,14 +233,12 @@
   In the code snippets below, \code{x} is a GAlignmentPairs object.
 
   \describe{
-    \item{}{
-      \code{x[[i]]}:
+    \item{\code{x[[i]]}:}{
       Extract the i-th alignment pair as a \link{GAlignments} object
       of length 2. As expected \code{x[[i]][1]} and \code{x[[i]][2]} are
       respectively the "first" and "last" alignments in the pair.
     }
-    \item{}{
-      \code{unlist(x, use.names=TRUE)}:
+    \item{\code{unlist(x, use.names=TRUE)}:}{
       Return the \link{GAlignments} object conceptually defined
       by \code{c(x[[1]], x[[2]], ..., x[[length(x)]])}.
       \code{use.names} determines whether \code{x} names should be
@@ -269,11 +251,10 @@
   In the code snippets below, \code{x} is a GAlignmentPairs object.
 
   \describe{
-    \item{}{
-      \code{granges(x, use.names=TRUE, use.mcols=FALSE,
+    \item{\code{granges(x, use.names=TRUE, use.mcols=FALSE,
                        on.discordant.seqnames=c("error", "drop", "split"))},
       \code{ranges(x, use.names=TRUE, use.mcols=FALSE,
-                      on.discordant.seqnames=c("error", "drop", "split"))}:
+                      on.discordant.seqnames=c("error", "drop", "split"))}:}{
 
       Return a \link{GRanges} object (for \code{granges()}) or
       \link[IRanges]{IRanges}) object (for \code{ranges()}).
@@ -296,8 +277,7 @@
       If \code{use.mcols} is TRUE, then the metadata columns on \code{x}
       (if any) are propagated to the returned object.
     }
-    \item{}{
-      \code{grglist(x, use.mcols=FALSE, drop.D.ranges=FALSE)}:
+    \item{\code{grglist(x, use.mcols=FALSE, drop.D.ranges=FALSE)}:}{
 
       Return a \link{GRangesList} object of length \code{length(x)}
       where the i-th element represents the ranges (with respect to the
@@ -326,16 +306,14 @@
       CIGAR) are treated like junctions (Ns in the CIGAR), that is, the
       ranges corresponding to deletions are dropped.
     }
-    \item{}{
-      \code{as(x, "GRanges")}, \code{as(x, "IntegerRanges")},
-      \code{as(x, "GRangesList")}:
+    \item{\code{as(x, "GRanges")}, \code{as(x, "IntegerRanges")},
+      \code{as(x, "GRangesList")}:}{
       Alternate ways of doing
       \code{granges(x, use.names=TRUE, use.mcols=TRUE)},
       \code{ranges(x, use.names=TRUE, use.mcols=TRUE)}, and
       \code{grglist(x, use.names=TRUE, use.mcols=TRUE)}, respectively.
     }
-    \item{}{
-      \code{as(x, "GAlignments")}:
+    \item{\code{as(x, "GAlignments")}:}{
       Equivalent of \code{unlist(x, use.names=TRUE)}.
     }
   }
@@ -345,8 +323,7 @@
   In the code snippets below, \code{x} is a GAlignmentPairs object.
 
   \describe{
-    \item{}{
-      \code{show(x)}:
+    \item{\code{show(x)}:}{
       By default the \code{show} method displays 5 head and 5 tail
       elements. This can be changed by setting the global options
       \code{showHeadLines} and \code{showTailLines}. If the object

@@ -223,7 +223,7 @@ IntersectionNotEmpty(features, reads, ignore.strand=FALSE,
 
 \details{
   \describe{
-    \item{}{\code{summarizeOverlaps} offers counting modes to resolve reads that
+    \item{\code{summarizeOverlaps}:}{ offers counting modes to resolve reads that
       overlap multiple features. The \code{mode} argument defines a set of rules
       to resolve the read to a single feature such that each read is counted a
       maximum of once. New to GenomicRanges >= 1.13.9 is the
@@ -328,7 +328,7 @@ IntersectionNotEmpty(features, reads, ignore.strand=FALSE,
 reads <- GAlignments(
     names = c("a","b","c","d","e","f","g"),
     seqnames = Rle(c(rep(c("chr1", "chr2"), 3), "chr1")),
-    pos = as.integer(c(1400, 2700, 3400, 7100, 4000, 3100, 5200)),
+    pos = c(1400, 2700, 3400, 7100, 4000, 3100, 5200),
     cigar = c("500M", "100M", "300M", "500M", "300M", 
               "50M200N50M", "50M150N50M"),
     strand = strand(rep("+", 7)))

@@ -223,14 +223,14 @@ test_findSpliceOverlaps_compatible <- function()
 #    checkIdentical(c(FALSE, FALSE), .extract(GRres, "novelSite"))
 #
 #    ## query = GAlignments
-#    gal <- GAlignments("chr1", 5L, "11M4N6M", strand("+"))
+#    gal <- GAlignments("chr1", 5, "11M4N6M", "+")
 #    GALres <- findSpliceOverlaps(gal, genes)
 #    checkIdentical(c(TRUE, TRUE), .extract(GALres, "novelJunction"))
 #    checkIdentical(c(FALSE, FALSE), .extract(GALres, "novelSite"))
 #
 #    ## query = GAlignmentPairs
-#    gal1 <- GAlignments("chr1", 5L, "11M4N6M", strand("+"))
-#    gal2 <- GAlignments("chr1", 50L, "6M", strand("-"))
+#    gal1 <- GAlignments("chr1", 5, "11M4N6M", "+")
+#    gal2 <- GAlignments("chr1", 50, "6M", "-")
 #    galp <- GAlignmentPairs(gal1, gal2)
 #    GALPres <- findSpliceOverlaps(galp, genes)
 #    checkIdentical(c(TRUE, TRUE), .extract(GALPres, "novelJunction"))

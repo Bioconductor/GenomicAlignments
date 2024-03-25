@@ -162,7 +162,7 @@
 
 ## Mapping to local coordinates requires 'x' to be within 'alignments'.
 ## In this 'x', the second range is too long and can't be mapped.
-alignments <- GAlignments("chr1", 10L, "11M", strand("*"), names="read_A")
+alignments <- GAlignments("chr1", pos=10, cigar="11M", names="read_A")
 x <- GRanges("chr1", IRanges(c(12, 12), width=c(6, 20)))
 mapToAlignments(x, alignments)
 
@@ -174,10 +174,9 @@ pmapToAlignments(x, c(alignments, alignments))
 ## how the CIGAR operations affect the outcome.
 ops <- c("no-op", "junction", "insertion", "deletion")
 x <- GRanges(rep("chr1", 4), IRanges(rep(12, 4), width=rep(6, 4), names=ops)) 
-alignments <- GAlignments(rep("chr1", 4), rep(10L, 4), 
-                          cigar = c("11M", "5M2N4M", "5M2I4M", "5M2D4M"),
-                          strand = strand(rep("*", 4)),
-                          names = paste0("region_", 1:4))
+alignments <- GAlignments(rep("chr1", 4), pos=rep(10, 4), 
+                          cigar=c("11M", "5M2N4M", "5M2I4M", "5M2D4M"),
+                          names=paste0("region_", 1:4))
 pmapToAlignments(x, alignments)
 
 ## 2. Map to genome space with mapFromAlignments()
@@ -189,7 +188,7 @@ pmapToAlignments(x, alignments)
 ## 2 and so is successfully mapped. The second has a shifted start of 29
 ## (20 + 10 - 1 = 29) which is outside the range of 'alignments'.
 x <- GRanges("chr1", IRanges(c(5, 20), width=2, names=rep("region_A", 2)))
-alignments <- GAlignments("chr1", 10L, "11M", strand("*"), names="region_A")
+alignments <- GAlignments("chr1", pos=10, cigar="11M", names="region_A")
 mapFromAlignments(x, alignments)
 
 ## Another characteristic of mapping this direction is the name matching
@@ -204,9 +203,8 @@ mapFromAlignments(x, alignments)
 ## junctions and deletions increase it.
 ops <- c("no-op", "junction", "insertion", "deletion")
 x <- GRanges(rep("chr1", 4), IRanges(rep(3, 4), width=rep(5, 4), names=ops)) 
-alignments <- GAlignments(rep("chr1", 4), rep(10L, 4), 
-                         cigar = c("11M", "5M2N4M", "5M2I4M", "5M2D4M"),
-                         strand = strand(rep("*", 4)))
+alignments <- GAlignments(rep("chr1", 4), pos=rep(10, 4), 
+                          cigar=c("11M", "5M2N4M", "5M2I4M", "5M2D4M"))
 pmapFromAlignments(x, alignments)
 
 ## ---------------------------------------------------------------------

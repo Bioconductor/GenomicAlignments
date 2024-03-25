@@ -62,19 +62,20 @@
                     with.which_label=with.which_label)
 }
 
-.load_seqlengths_from_BamFile <- function(file, seqlevels)
+.adjusted_seqinfo <- function(file, rnames)
 {
-    seqlengths <- seqlengths(file)
-    if (is.null(seqlengths))
-        return(NULL)
-    bad <- setdiff(seqlevels, names(seqlengths))
-    if (length(bad) == 0L)
-        return(seqlengths)
-    bad <- paste(bad, collapse="' '")
-    msg <- sprintf("'rname' lengths not in BamFile header; seqlengths not used\n  file: %s\n  missing rname(s): '%s'",
-                   path(file), bad)
-    warning(msg)
-    NULL
+    si1 <- seqinfo(file)
+    unknown_rnames <- setdiff(rnames, seqlevels(si1))
+    if (length(unknown_rnames) == 0L)
+        return(si1)
+    warning(wmsg("file ", path(file), " contains one or more RNAMEs ",
+                 "(e.g. \"", unknown_rnames[[1L]], "\") ",
+                 "not found in its seqinfo()"))
+    si2 <- Seqinfo(unknown_rnames)
+    genome2 <- unique(genome(si1))
+    if (length(genome2) == 1L)
+        genome(si2) <- genome2
+    suppressWarnings(merge(si1, si2))
 }
 
 .open_BamFile <- function(file, index=file, asMates=FALSE, param=NULL)
@@ -112,11 +113,9 @@ setGeneric("readGAlignments", signature="file",
         what0 <- c(what0, "qname")
     bamcols <- .load_bamcols_from_BamFile(file, param, what0,
                                           with.which_label=with.which_label)
-    seqlengths <- .load_seqlengths_from_BamFile(file,
-                                                levels(bamcols[["rname"]]))
     ans <- GAlignments(seqnames=bamcols$rname, pos=bamcols$pos,
                        cigar=bamcols$cigar, strand=bamcols$strand,
-                       seqlengths=seqlengths)
+                       seqinfo=.adjusted_seqinfo(file, levels(bamcols$rname)))
     .bindExtraData(ans, use.names, param, bamcols,
                         with.which_label=with.which_label)
 }
@@ -324,10 +323,9 @@ setGeneric("readGAlignmentsList", signature="file",
 {
     bamcols <- .load_bamcols_from_BamFile(file, param, what0,
                                           with.which_label=with.which_label)
-    seqlengths <- .load_seqlengths_from_BamFile(file, levels(bamcols$rname))
     gal <- GAlignments(seqnames=bamcols$rname, pos=bamcols$pos,
                        cigar=bamcols$cigar, strand=bamcols$strand,
-                       seqlengths=seqlengths)
+                       seqinfo=.adjusted_seqinfo(file, levels(bamcols$rname)))
     if (!is.na(strandMode)) {
         flag0 <- scanBamFlag()
         what0 <- "flag"
@@ -412,8 +410,7 @@ setGeneric("readGappedReads", signature="file",
         what0 <- c(what0, "qname")
     bamcols <- .load_bamcols_from_BamFile(file, param, what0,
                                           with.which_label=with.which_label)
-    seqlengths <- .load_seqlengths_from_BamFile(file,
-                                                levels(bamcols[["rname"]]))
+    seqlengths <- seqlengths(.adjusted_seqinfo(file, levels(bamcols$rname)))
     ans <- GappedReads(seqnames=bamcols$rname, pos=bamcols$pos,
                        cigar=bamcols$cigar, strand=bamcols$strand,
                        qseq=bamcols$seq, seqlengths=seqlengths)

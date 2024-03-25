@@ -694,8 +694,8 @@ showGAlignmentPairs <- function(x, margin="",
         ", and ",
         nc, " metadata ", ifelse(nc == 1L, "column", "columns"),
         ":\n", sep="")
-    out <- S4Vectors:::makePrettyMatrixForCompactPrinting(x,
-               .makeNakedMatFromGAlignmentPairs)
+    out <- makePrettyMatrixForCompactPrinting(x,
+                           .makeNakedMatFromGAlignmentPairs)
     if (print.classinfo) {
         .PAIR_COL2CLASS <- c(
             seqnames="Rle",
@@ -709,8 +709,7 @@ showGAlignmentPairs <- function(x, margin="",
                         .HALVES_COL2CLASS,
                         "--",
                         .HALVES_COL2CLASS)
-        classinfo <-
-            S4Vectors:::makeClassinfoRowForCompactPrinting(x, .COL2CLASS)
+        classinfo <- makeClassinfoRowForCompactPrinting(x, .COL2CLASS)
         ## A sanity check, but this should never happen!
         stopifnot(identical(colnames(classinfo), colnames(out)))
         out <- rbind(classinfo, out)

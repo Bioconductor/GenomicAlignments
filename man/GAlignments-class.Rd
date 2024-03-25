@@ -145,10 +145,10 @@
 
 \section{Constructor}{
   \describe{
-    \item{}{
-      \code{GAlignments(seqnames=Rle(factor()), pos=integer(0),
-                        cigar=character(0),
-                        strand=NULL, names=NULL, seqlengths=NULL, ...)}:
+    \item{\code{GAlignments(seqnames=Rle(factor()), pos=integer(0),
+                            cigar=character(0),
+                            strand=NULL, names=NULL,
+                            ..., seqinfo=NULL, seqlengths=NULL)}:}{
       Low-level GAlignments constructor. Generally not used directly.
       Named arguments in \code{...} are used as metadata columns.
     }
@@ -159,49 +159,41 @@
   In the code snippets below, \code{x} is a GAlignments object.
 
   \describe{
-    \item{}{
-      \code{length(x)}:
+    \item{\code{length(x)}:}{
       Return the number of alignments in \code{x}.
     }
-    \item{}{
-      \code{names(x)}, \code{names(x) <- value}:
+    \item{\code{names(x)}, \code{names(x) <- value}:}{
       Get or set the names on \code{x}.
       See \code{\link{readGAlignments}} for how to automatically extract
       and set the names when reading the alignments from a file.
     }
-    \item{}{
-      \code{seqnames(x)}, \code{seqnames(x) <- value}:
+    \item{\code{seqnames(x)}, \code{seqnames(x) <- value}:}{
       Get or set the name of the reference sequence for each alignment
       in \code{x} (see Details section above for more information about
       the RNAME field of a SAM/BAM file).
       \code{value} can be a factor, or a 'factor' \link[S4Vectors]{Rle},
       or a character vector.
     }
-    \item{}{
-      \code{rname(x)}, \code{rname(x) <- value}:
+    \item{\code{rname(x)}, \code{rname(x) <- value}:}{
       Same as \code{seqnames(x)} and \code{seqnames(x) <- value}.
     }
-    \item{}{
-      \code{strand(x)}, \code{strand(x) <- value}:
+    \item{\code{strand(x)}, \code{strand(x) <- value}:}{
       Get or set the strand for each alignment in \code{x} (see Details
       section above for more information about the strand of an alignment).
       \code{value} can be a factor (with levels +, - and *), or a 'factor'
       \link[S4Vectors]{Rle}, or a character vector.
     }
-    \item{}{
-      \code{cigar(x)}:
+    \item{\code{cigar(x)}:}{
       Returns a character vector of length \code{length(x)}
       containing the CIGAR string for each alignment.
     }
-    \item{}{
-      \code{qwidth(x)}:
+    \item{\code{qwidth(x)}:}{
       Returns an integer vector of length \code{length(x)}
       containing the length of the query *after* hard clipping
       (i.e. the length of the query sequence that is stored in
       the corresponding SAM/BAM record).
     }
-    \item{}{
-      \code{start(x)}, \code{end(x)}:
+    \item{\code{start(x)}, \code{end(x)}:}{
       Returns an integer vector of length \code{length(x)}
       containing the "start" and "end" (respectively) of the query
       for each alignment. See Details section above for the exact
@@ -211,27 +203,23 @@
       respectively (or, alternatively, to \code{min(rglist(x))} and
       \code{max(rglist(x))}, respectively).
     }
-    \item{}{
-      \code{width(x)}:
+    \item{\code{width(x)}:}{
       Equivalent to \code{width(granges(x))} (or, alternatively, to
       \code{end(x) - start(x) + 1L}).
       Note that this is generally different from \code{qwidth(x)}
       except for alignments with a trivial CIGAR string (i.e. a
       string of the form \code{"<n>M"} where <n> is a number).
     }
-    \item{}{
-      \code{njunc(x)}:
+    \item{\code{njunc(x)}:}{
       Returns an integer vector of the same length as \code{x} containing
       the number of junctions (i.e. N operations in the CIGAR) in each
       alignment. Equivalent to \code{unname(elementNROWS(rglist(x))) - 1L}.
     }
-    \item{}{
-      \code{seqinfo(x)}, \code{seqinfo(x) <- value}:
+    \item{\code{seqinfo(x)}, \code{seqinfo(x) <- value}:}{
       Get or set the information about the underlying sequences.
       \code{value} must be a \link[GenomeInfoDb]{Seqinfo} object.
     }
-    \item{}{
-      \code{seqlevels(x)}, \code{seqlevels(x) <- value}:
+    \item{\code{seqlevels(x)}, \code{seqlevels(x) <- value}:}{
       Get or set the sequence levels.
       \code{seqlevels(x)} is equivalent to \code{seqlevels(seqinfo(x))}
       or to \code{levels(seqnames(x))}, those 2 expressions being
@@ -239,27 +227,23 @@
       object. \code{value} must be a character vector with no NAs.
       See \code{?\link{seqlevels}} for more information.
     }
-    \item{}{
-      \code{seqlengths(x)}, \code{seqlengths(x) <- value}:
+    \item{\code{seqlengths(x)}, \code{seqlengths(x) <- value}:}{
       Get or set the sequence lengths.
       \code{seqlengths(x)} is equivalent to \code{seqlengths(seqinfo(x))}.
       \code{value} can be a named non-negative integer or numeric vector
       eventually with NAs.
     }
-    \item{}{
-      \code{isCircular(x)}, \code{isCircular(x) <- value}:
+    \item{\code{isCircular(x)}, \code{isCircular(x) <- value}:}{
       Get or set the circularity flags.
       \code{isCircular(x)} is equivalent to \code{isCircular(seqinfo(x))}.
       \code{value} must be a named logical vector eventually with NAs.
     }
-    \item{}{
-      \code{genome(x)}, \code{genome(x) <- value}:
+    \item{\code{genome(x)}, \code{genome(x) <- value}:}{
       Get or set the genome identifier or assembly name for each sequence.
       \code{genome(x)} is equivalent to \code{genome(seqinfo(x))}.
       \code{value} must be a named character vector eventually with NAs.
     }
-    \item{}{
-      \code{seqnameStyle(x)}:
+    \item{\code{seqnameStyle(x)}:}{
       Get or set the seqname style for \code{x}.
       Note that this information is not stored in \code{x} but inferred
       by looking up \code{seqnames(x)} against a seqname style database
@@ -275,27 +259,23 @@
   In the code snippets below, \code{x} is a GAlignments object.
 
   \describe{
-    \item{}{
-      \code{granges(x, use.names=TRUE, use.mcols=FALSE)},
-      \code{ranges(x, use.names=TRUE, use.mcols=FALSE)}:
-
+    \item{\code{granges(x, use.names=TRUE, use.mcols=FALSE)},
+          \code{ranges(x, use.names=TRUE, use.mcols=FALSE)}:}{
       Return a \link{GRanges} object (for \code{granges()}) or
       \link[IRanges]{IRanges}) object (for \code{ranges()}) \emph{parallel}
       to \code{x} where the i-th element is the range of the genomic region
       spanned by the i-th alignment in \code{x}. All gaps in the region are
       ignored.
 
-      If \code{use.names} is TRUE, then the names on \code{x} 
+      If \code{use.names} is TRUE, then the names on \code{x}
       (if any) are propagated to the returned object.
       If \code{use.mcols} is TRUE, then the metadata columns on \code{x}
       (if any) are propagated to the returned object.
     }
-    \item{}{
-      \code{grglist(x, use.names=TRUE, use.mcols=FALSE,
-                       order.as.in.query=FALSE, drop.D.ranges=FALSE)},
-      \code{rglist(x, use.names=TRUE, use.mcols=FALSE,
-                      order.as.in.query=FALSE, drop.D.ranges=FALSE)}:
-
+    \item{\code{grglist(x, use.names=TRUE, use.mcols=FALSE,
+                        order.as.in.query=FALSE, drop.D.ranges=FALSE)},
+          \code{rglist(x, use.names=TRUE, use.mcols=FALSE,
+                       order.as.in.query=FALSE, drop.D.ranges=FALSE)}:}{
       Return either a \link{GRangesList} or a \link[IRanges]{IntegerRangesList}
       object of length \code{length(x)} where the i-th element represents
       the ranges (with respect to the reference) of the i-th alignment in
@@ -304,7 +284,7 @@
       More precisely, the \link[IRanges]{IntegerRangesList} object returned
       by \code{rglist(x)} is a \link[IRanges]{CompressedIRangesList} object.
 
-      If \code{use.names} is TRUE, then the names on \code{x} 
+      If \code{use.names} is TRUE, then the names on \code{x}
       (if any) are propagated to the returned object.
       If \code{use.mcols} is TRUE, then the metadata columns on \code{x}
       (if any) are propagated to the returned object.
@@ -326,16 +306,15 @@
       \emph{always} ordered consistently with the original "query template",
       that is, in the order defined by walking the "query template" from the
       beginning to the end.
- 
+
       If \code{drop.D.ranges} is TRUE, then deletions (D operations
       in the CIGAR) are treated like junctions (N operations in the CIGAR),
       that is, the ranges corresponding to deletions are dropped.
 
       See Details section above for more information.
     }
-    \item{}{
-      \code{as(x, "GRanges")}, \code{as(x, "IntegerRanges")},
-      \code{as(x, "GRangesList")}, \code{as(x, "IntegerRangesList")}:
+    \item{\code{as(x, "GRanges")}, \code{as(x, "IntegerRanges")},
+      \code{as(x, "GRangesList")}, \code{as(x, "IntegerRangesList")}:}{
       Alternate ways of doing
       \code{granges(x, use.names=TRUE, use.mcols=TRUE)},
       \code{ranges(x, use.names=TRUE, use.mcols=TRUE)},
@@ -348,8 +327,7 @@
   object.
 
   \describe{
-    \item{}{
-      \code{as(from, "GAlignments")}:
+    \item{\code{as(from, "GAlignments")}:}{
       Creates a GAlignments object from a \link[GenomicRanges]{GRanges} object.
       The metadata columns are propagated. cigar values are created from the
       sequence width unless a "cigar" metadata column already exists in
@@ -362,8 +340,7 @@
   In the code snippets below, \code{x} is a GAlignments object.
 
   \describe{
-    \item{}{
-      \code{x[i]}:
+    \item{\code{x[i]}:}{
       Return a new GAlignments object made of the selected
       alignments. \code{i} can be a numeric or logical vector.
     }
@@ -372,8 +349,7 @@
 
 \section{Concatenation}{
   \describe{
-    \item{}{
-      \code{c(x, ..., ignore.mcols=FALSE)}:
+    \item{\code{c(x, ..., ignore.mcols=FALSE)}:}{
       Concatenate GAlignments object \code{x} and the GAlignments objects in
       \code{...} together.
       See \code{?\link[S4Vectors]{c}} in the \pkg{S4Vectors} package for
@@ -385,8 +361,7 @@
 \section{Other methods}{
 
   \describe{
-    \item{}{
-      \code{show(x)}:
+    \item{\code{show(x)}:}{
       By default the \code{show} method displays 5 head and 5 tail
       elements. This can be changed by setting the global options
       \code{showHeadLines} and \code{showTailLines}. If the object
