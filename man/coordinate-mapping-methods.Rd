@@ -1,5 +1,7 @@
 \name{mapToAlignments}
+
 \alias{coordinate-mapping-methods}
+\alias{coordinate-mapping}
 
 \alias{mapToAlignments}
 \alias{mapToAlignments,IntegerRanges,GAlignments-method}
