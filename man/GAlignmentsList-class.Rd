@@ -118,7 +118,7 @@
     }
     \item{\code{seqinfo(x)}, \code{seqinfo(x) <- value}:}{
       Get or set the information about the underlying sequences.
-      \code{value} must be a \link[GenomeInfoDb]{Seqinfo} object.
+      \code{value} must be a \link[Seqinfo]{Seqinfo} object.
     }
     \item{\code{seqlevels(x)}, \code{seqlevels(x) <- value}:}{
       Get or set the sequence levels of the alignments in each element
@@ -258,8 +258,8 @@
           overlaps between a GAlignmentsList object and another range-based
           object.
 
-    \item \code{\link[GenomeInfoDb]{seqinfo}} in the \pkg{GenomeInfoDb}
-          package for getting/setting/modifying the sequence information
+    \item \code{\link[Seqinfo]{seqinfo}} in the \pkg{Seqinfo} package
+          for getting/setting/modifying the sequence information
           stored in an object.
 
     \item The \link[GenomicRanges]{GRanges} and

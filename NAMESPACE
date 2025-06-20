@@ -6,7 +6,7 @@ importFrom(stats, setNames)
 import(BiocGenerics)
 import(S4Vectors)
 import(IRanges)
-import(GenomeInfoDb)
+import(Seqinfo)
 import(GenomicRanges)
 import(SummarizedExperiment)
 import(Biostrings)
@@ -80,7 +80,7 @@ exportMethods(
     coverage,
     pintersect,
 
-    ## Generics defined in GenomeInfoDb:
+    ## Generics defined in Seqinfo:
     seqinfo, "seqinfo<-",
     seqnames, "seqnames<-",
     seqlevelsInUse,

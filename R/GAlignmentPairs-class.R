@@ -244,10 +244,9 @@ setReplaceMethod("seqinfo", "GAlignmentPairs",
     {
         if (!is(value, "Seqinfo"))
             stop("the supplied 'seqinfo' must be a Seqinfo object")
-        dangling_seqlevels <- GenomeInfoDb:::getDanglingSeqlevels(x,
-                                  new2old=new2old,
-                                  pruning.mode=pruning.mode,
-                                  seqlevels(value))
+        dangling_seqlevels <- Seqinfo:::getDanglingSeqlevels(x, new2old=new2old,
+                                                   pruning.mode=pruning.mode,
+                                                   seqlevels(value))
         if (length(dangling_seqlevels) != 0L) {
             dropme_in_first <- seqnames(x@first) %in% dangling_seqlevels
             dropme_in_last <- seqnames(x@last) %in% dangling_seqlevels

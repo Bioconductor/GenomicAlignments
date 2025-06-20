@@ -197,21 +197,20 @@ set_GAlignments_seqinfo <-
                   class(x), " objects"))
     if (!is(value, "Seqinfo"))
         stop("the supplied 'seqinfo' must be a Seqinfo object")
-    dangling_seqlevels <- GenomeInfoDb:::getDanglingSeqlevels(x,
-                              new2old=new2old,
-                              pruning.mode=pruning.mode,
-                              seqlevels(value))
+    dangling_seqlevels <- Seqinfo:::getDanglingSeqlevels(x, new2old=new2old,
+                                               pruning.mode=pruning.mode,
+                                               seqlevels(value))
     if (length(dangling_seqlevels) != 0L) {
         ## Prune 'x'.
         non_dangling_range <- !(seqnames(x) %in% dangling_seqlevels)
         x <- x[non_dangling_range]
     }
     old_seqinfo <- seqinfo(x)
-    x@seqnames <- GenomeInfoDb:::makeNewSeqnames(x,
-                              new2old, seqlevels(value))
+    x@seqnames <- Seqinfo:::makeNewSeqnames(x, new2old, seqlevels(value))
     x@seqinfo <- value
-    geom_has_changed <- GenomeInfoDb:::sequenceGeometryHasChanged(
-                              seqinfo(x), old_seqinfo, new2old=new2old)
+    geom_has_changed <- Seqinfo:::sequenceGeometryHasChanged(seqinfo(x),
+                                                             old_seqinfo,
+                                                             new2old=new2old)
     if (any(geom_has_changed, na.rm=TRUE))
         validObject(x)
     x
