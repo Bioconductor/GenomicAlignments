@@ -96,7 +96,7 @@ setGeneric("njunc", function(x) standardGeneric("njunc"))
 setMethod("updateObject", "GAlignments",
     function(object, ..., verbose=FALSE)
     {
-        ## elementType slot.
+        ## 'elementType' slot.
         version <- .get_GAlignments_version(object)
         if (version == "current") {
             if (verbose)
@@ -111,6 +111,9 @@ setMethod("updateObject", "GAlignments",
                         "Updating it ...")
             object@elementType <- new(class(object))@elementType
         }
+
+        ## 'seqinfo' slot.
+        object@seqinfo <- updateObject(object@seqinfo, ..., verbose=verbose)
 
         callNextMethod()
     }
