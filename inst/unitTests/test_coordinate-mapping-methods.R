@@ -109,17 +109,17 @@ test_ref_locs_to_query_locs <- function() {
     ref <- 43425L + pos - 1L
     query <- 238L
     ans <- .Call("ref_locs_to_query_locs", ref, cigar, pos, 
-                 FALSE, PACKAGE="GenomicAlignments")
+                 FALSE, 1, PACKAGE="GenomicAlignments")
     checkIdentical(ans, query)
 
     ## out of bounds
     ans_s <- .Call("ref_locs_to_query_locs", 
                    start(x1[1]), cigar(align1[1]), 
-                   start(align1[1]), FALSE, 
+                   start(align1[1]), FALSE, 1,
                    PACKAGE="GenomicAlignments")
     ans_e <- .Call("ref_locs_to_query_locs", 
                    end(x1[1]), cigar(align1[1]), 
-                   start(align1[1]), TRUE, 
+                   start(align1[1]), TRUE, 1,
                    PACKAGE="GenomicAlignments")
 
     checkIdentical(ans_s, NA_integer_)
@@ -130,11 +130,11 @@ test_query_locs_to_ref_locs <- function() {
     ## out of bounds
     ans_s <- .Call("query_locs_to_ref_locs", 
                    start(x1[4]), cigar(align1[1]), 
-                   start(align1[1]), FALSE, 
+                   start(align1[1]), FALSE, 1,
                    PACKAGE="GenomicAlignments")
     ans_e <- .Call("query_locs_to_ref_locs", 
                    end(x1[4]), cigar(align1[1]), 
-                   start(align1[1]), TRUE, 
+                   start(align1[1]), TRUE, 1,
                    PACKAGE="GenomicAlignments")
 
     checkIdentical(ans_s, NA_integer_)
@@ -144,26 +144,26 @@ test_query_locs_to_ref_locs <- function() {
 test_map_ref_locs_to_query_locs <- function() {
     ## hit
     map <- .Call("map_ref_locs_to_query_locs", 
-                 12L, 16L, "11M", 10L)
+                 12L, 16L, "11M", 10L, 1)
     checkIdentical(unlist(map), c(3L, 7L, 1L, 1L))
 
     ## first record out of bounds
     map <- .Call("map_ref_locs_to_query_locs", 
-                 c(5L, 12L), c(16L, 16L), "11M", 10L)
+                 c(5L, 12L), c(16L, 16L), "11M", 10L, 1)
     checkIdentical(unlist(map), c(3L, 7L, 2L, 1L))
 
     ## second record out of bounds
     map <- .Call("map_ref_locs_to_query_locs", 
-                 c(12L, 5L), c(16L, 16L), "11M", 10L)
+                 c(12L, 5L), c(16L, 16L), "11M", 10L, 1)
     checkIdentical(unlist(map), c(3L, 7L, 1L, 1L))
 
     ## first alignment out of bounds
     map <- .Call("map_ref_locs_to_query_locs", 
-                 12L, 16L, c("11M", "11M"), c(20L, 10L))
+                 12L, 16L, c("11M", "11M"), c(20L, 10L), 1)
     checkIdentical(unlist(map), c(3L, 7L, 1L, 2L))
 
     ## second alignment out of bounds
     map <- .Call("map_ref_locs_to_query_locs", 
-                 12L, 16L, c("11M", "11M"), c(10L, 20L))
+                 12L, 16L, c("11M", "11M"), c(10L, 20L), 1)
     checkIdentical(unlist(map), c(3L, 7L, 1L, 1L))
 }

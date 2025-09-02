@@ -66,28 +66,32 @@ SEXP map_query_locs_to_ref_locs(
 	SEXP start,
 	SEXP end,
 	SEXP cigar,
-	SEXP pos
+	SEXP pos,
+	SEXP style
 );
 
 SEXP map_ref_locs_to_query_locs(
 	SEXP start,
 	SEXP end,
 	SEXP cigar,
-	SEXP pos
+	SEXP pos,
+	SEXP style
 );
 
 SEXP ref_locs_to_query_locs(
 	SEXP ref_locs,
 	SEXP cigar,
 	SEXP pos,
-	SEXP narrow_left
+	SEXP narrow_left,
+	SEXP style
 );
 
 SEXP query_locs_to_ref_locs(
 	SEXP query_locs,
 	SEXP cigar,
 	SEXP pos,
-	SEXP narrow_left
+	SEXP narrow_left,
+	SEXP style
 );
 
 

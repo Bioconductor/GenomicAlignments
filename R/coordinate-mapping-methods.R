@@ -31,7 +31,7 @@ setGeneric("pmapFromAlignments", signature=c("x", "alignments"),
 ### mapToAlignments() and mapFromAlignments() methods
 ###
 
-.mapFromAlignments <- function(x, alignments)
+.mapFromAlignments <- function(x, alignments, style = "mapped")
 {
     if (!length(x) && !length(alignments))
         return(GRanges(xHits=integer(), transcriptsHits=integer()))
@@ -39,6 +39,12 @@ setGeneric("pmapFromAlignments", signature=c("x", "alignments"),
         is.null(alignmentsNames <- names(alignments)))
         stop ("both 'x' and 'alignments' must have names")
 
+    style <- switch(style,
+                    mapped = 0,
+                    sequence = 1,
+                    readpos = 2,
+                    stop(paste("specified unsupported style=", style)))
+    
     ## name matching determines pairs
     match0 <- match(alignmentsNames, alignmentsNames)
     match1 <- match(xNames, alignmentsNames)
@@ -53,10 +59,10 @@ setGeneric("pmapFromAlignments", signature=c("x", "alignments"),
     alignments <- alignments[alignmentsHits]
     s <- .Call("query_locs_to_ref_locs",
                start(x), cigar(alignments), 
-               start(alignments), FALSE)
+               start(alignments), FALSE, style)
     e <- .Call("query_locs_to_ref_locs", 
                end(x), cigar(alignments), 
-               start(alignments), TRUE)
+               start(alignments), TRUE, style)
     e <- pmax(e, s - 1L)
 
     ## remove non-hits
@@ -67,17 +73,23 @@ setGeneric("pmapFromAlignments", signature=c("x", "alignments"),
             xHits=xHits[keep], alignmentsHits=alignmentsHits[keep])
 }
 
-.mapToAlignments <- function(x, alignments) 
+.mapToAlignments <- function(x, alignments, style = "sequence")
 {
     if (!length(x) && !length(alignments))
         return(GRanges(xHits=integer(), transcriptsHits=integer()))
     if (is.null(names(alignments)))
         stop ("'alignments' must have names")
 
+    style <- switch(style,
+                    mapped = 0,
+                    sequence = 1,
+                    readpos = 2,
+                    stop(paste("specified unsupported style=", style)))
+
     ## map all possible pairs; returns hits only
     map <- .Call("map_ref_locs_to_query_locs", 
                  start(x), end(x), cigar(alignments), 
-                 start(alignments))
+                 start(alignments), style)
     xHits <- map[[3]]
     alignmentsHits <-  map[[4]]
     if (length(xHits))
@@ -91,30 +103,46 @@ setGeneric("pmapFromAlignments", signature=c("x", "alignments"),
 
 setMethod("mapToAlignments", c("IntegerRanges", "GAlignments"),
     function(x, alignments, ...)
-        ranges(.mapToAlignments(x, alignments))
+        ranges(.mapToAlignments(x, alignments, ...))
 )
 
 setMethod("mapToAlignments", c("GenomicRanges", "GAlignments"),
     function(x, alignments, ...)
-        .mapToAlignments(x, alignments)
+        .mapToAlignments(x, alignments, ...)
 )
 
 setMethod("mapFromAlignments", c("IntegerRanges", "GAlignments"),
     function(x, alignments, ...)
-        ranges(.mapFromAlignments(x, alignments))
+        ranges(.mapFromAlignments(x, alignments, ...))
 )
 
 setMethod("mapFromAlignments", c("GenomicRanges", "GAlignments"),
     function(x, alignments, ...) 
-        .mapFromAlignments(x, alignments)
+        .mapFromAlignments(x, alignments, ...)
 )
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### pmapToAlignments() and pmapFromAlignments() methods
 ###
 
-.pmapAlignments <- function(x, alignments, reverse)
+.pmapAlignments <- function(x, alignments, reverse, style = "default")
 {
+    if (reverse) {
+        style <- switch(style,
+                        default = 0,
+                        mapped = 0,
+                        sequence = 1,
+                        readpos = 2,
+                        stop(paste("specified unsupported style=", style)))
+    } else {
+        style <- switch(style,
+                        default = 1,
+                        mapped = 0,
+                        sequence = 1,
+                        readpos = 2,
+                        stop(paste("specified unsupported style=", style)))
+    }
+        
     if (length(x) && length(alignments)) {
         if (length(x) != length(alignments))
             stop("'x' and 'alignments' must have the same length")
@@ -128,8 +156,8 @@ setMethod("mapFromAlignments", c("GenomicRanges", "GAlignments"),
             FUN <- "ref_locs_to_query_locs"
             seqname <- names(alignments)
         }
-        s <- .Call(FUN, start(x), cigar(alignments), start(alignments), FALSE)
-        e <- .Call(FUN, end(x), cigar(alignments), start(alignments), TRUE)
+        s <- .Call(FUN, start(x), cigar(alignments), start(alignments), FALSE, style)
+        e <- .Call(FUN, end(x), cigar(alignments), start(alignments), TRUE, style)
         e <- pmax(e, s - 1L)
 
         ## non-hits
@@ -146,20 +174,20 @@ setMethod("mapFromAlignments", c("GenomicRanges", "GAlignments"),
 
 setMethod("pmapToAlignments", c("IntegerRanges", "GAlignments"),
     function(x, alignments, ...)
-        ranges(.pmapAlignments(x, alignments, FALSE))
+        ranges(.pmapAlignments(x, alignments, FALSE, ...))
 )
 
 setMethod("pmapToAlignments", c("GenomicRanges", "GAlignments"), 
     function(x, alignments, ...) 
-        .pmapAlignments(ranges(x), alignments, FALSE)
+        .pmapAlignments(ranges(x), alignments, FALSE, ...)
 )
 
 setMethod("pmapFromAlignments", c("IntegerRanges", "GAlignments"),
     function(x, alignments, ...)
-        ranges(.pmapAlignments(x, alignments, TRUE))
+        ranges(.pmapAlignments(x, alignments, TRUE, ...))
 )
 
 setMethod("pmapFromAlignments", c("GenomicRanges", "GAlignments"), 
     function(x, alignments, ...) 
-        .pmapAlignments(ranges(x), alignments, TRUE)
+        .pmapAlignments(ranges(x), alignments, TRUE, ...)
 )
