@@ -279,7 +279,7 @@ setReplaceMethod("seqinfo", "GAlignmentPairs",
                  "with no attributes")
         return(paste(msg, collapse=""))
     }
-    if (S4Vectors:::anyMissing(x_isProperPair))
+    if (anyNA(x_isProperPair))
         return("'x@isProperPair' cannot contain NAs")
     NULL
 }

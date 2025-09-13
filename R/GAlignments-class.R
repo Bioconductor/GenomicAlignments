@@ -228,7 +228,7 @@ setReplaceMethod("seqinfo", "GAlignments", set_GAlignments_seqinfo)
 .valid.GAlignments.start <- function(x)
 {
     x_start <- start(x)
-    if (!is.integer(x_start) || !is.null(names(x_start)) || S4Vectors:::anyMissing(x_start))
+    if (!is.integer(x_start) || !is.null(names(x_start)) || anyNA(x_start))
         return("'start(x)' must be an unnamed integer vector with no NAs")
     NULL
 }
