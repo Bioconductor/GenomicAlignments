@@ -17,7 +17,7 @@ setMethod("junctions", "GAlignments",
     {
         if (!isTRUEorFALSE(use.mcols))
             stop("'use.mcols' must be TRUE or FALSE")
-        rgl <- cigarRangesAlongReferenceSpace(cigar(x), pos=start(x), ops="N")
+        rgl <- cigars_as_ranges_along_ref(cigar(x), lmmpos=start(x), ops="N")
         names(rgl) <- names(x)
         ans <- make_GRangesList_from_CompressedIRangesList(rgl,
                                 seqnames(x), strand(x), seqinfo(x))
@@ -124,10 +124,8 @@ summarizeJunctions <- function(x, with.revmap=FALSE, genome=NULL)
     if (!isTRUEorFALSE(with.revmap))
         stop("'with.revmap' must be TRUE or FALSE")
     if (!is.null(genome)) {
-        if (!requireNamespace("BSgenome", quietly=TRUE))
-            stop(wmsg("Couldn't load the BSgenome package. Please install ",
-                      "the BSgenome package in order to use the 'genome' ",
-                      "argument."))
+        S4Vectors:::load_package_gracefully("BSgenome", "when using ",
+                                            "the 'genome' argument")
         genome <- BSgenome::getBSgenome(genome)
     }
 

@@ -6,6 +6,11 @@
 \title{Lay read sequences alongside the reference space, using their CIGARs}
 
 \description{
+  WARNING: \code{sequenceLayer()} is formally deprecated in
+  \pkg{GenomicAlignments} >= 1.45.5 and replaced with the
+  \code{project_sequences()} function from the new \pkg{cigarillo}
+  package.
+
   \code{sequenceLayer} can lay strings that belong to a given space (e.g.
   the \code{"query"} space) alongside another space (e.g. the
   \code{"reference"} space) by removing/injecting substrings from/into them,
@@ -131,7 +136,7 @@ sequenceLayer(x, cigar, from="query", to="reference",
 ## ---------------------------------------------------------------------
 ## A. FROM "query" TO "reference" SPACE
 ## ---------------------------------------------------------------------
-
+\donttest{
 ## Load read sequences from a BAM file (they will be returned in a
 ## GAlignments object):
 bamfile <- system.file("extdata", "ex1.bam", package="Rsamtools")
@@ -194,11 +199,12 @@ qual_on_ref <- sequenceLayer(qual, cigar(gal))
 ## Note that since the "-" letter is a valid quality code, there is
 ## no way to distinguish it from the "-" letters inserted by
 ## sequenceLayer().
+}
 
 ## ---------------------------------------------------------------------
 ## B. FROM "query" TO "query-after-soft-clipping" SPACE
 ## ---------------------------------------------------------------------
-
+\donttest{
 ## Going from "query" to "query-after-soft-clipping" simply removes
 ## the substrings associated with soft clipping (S operations):
 qseq <- DNAStringSet(c("AAAGTTCGAA", "TTACGATTAN", "GGATAATTTT"))
@@ -212,12 +218,13 @@ sequenceLayer(clipped_qseq, cigar,
 sequenceLayer(clipped_qseq, cigar,
               from="query-after-soft-clipping", to="query",
               S.letter="-")
+}
 
 ## ---------------------------------------------------------------------
 ## C. BRING QUERY AND REFERENCE SEQUENCES TO THE "pairwise" or
 ##    "pairwise-dense" SPACE
 ## ---------------------------------------------------------------------
-
+\donttest{
 ## Load read sequences from a BAM file:
 library(RNAseqData.HNRNPC.bam.chr14)
 bamfile <- RNAseqData.HNRNPC.bam.chr14_BAMFILES[1]
@@ -286,10 +293,12 @@ rseq3[D_idx]
 ## Skipped regions were removed:
 qseq3[N_idx]
 rseq3[N_idx]
+}
 
 ## ---------------------------------------------------------------------
 ## D. SANITY CHECKS
 ## ---------------------------------------------------------------------
+\donttest{
 SPACES <- c("reference",
             "reference-N-regions-removed",
             "query",
@@ -351,6 +360,7 @@ res <- sapply(1:8, function(i) {
            })
        })
 stopifnot(all(res))
+}
 }
 
 \keyword{methods}

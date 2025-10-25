@@ -67,8 +67,8 @@
     \item{H} Hard clip on the read
     \item{P} Silent deletion from the padded reference
   }
-  \itemize{
-    \item{\code{mapToAlignments}, \code{pmapToAlignments}}{
+  \describe{
+    \item{\code{mapToAlignments}, \code{pmapToAlignments}:}{
       The CIGAR is used to map the genomic (reference) position \code{x} to 
       local coordinates. The mapped position starts at 
       \preformatted{
@@ -83,7 +83,7 @@
        or aligned region. In this direction, mapping is attempted between all 
        elements of \code{x} and all elements of \code{alignments}.
     }
-    \item{\code{mapFromAlignments}, \code{pmapFromAlignments}}{
+    \item{\code{mapFromAlignments}, \code{pmapFromAlignments}:}{
       The CIGAR is used to map the local position \code{x} to genomic
       (reference) coordinates. The mapped position starts at
       \preformatted{
@@ -101,7 +101,7 @@
       \code{x} would only be related to a subset of regions in
       \code{alignments}, which may contains gene or transcript ranges.
     }
-    \item{element-wise versions}{
+    \item{element-wise versions:}{
       \code{pmapToAlignments} and \code{pmapFromAlignments} are element-wise
       (aka `parallel`) versions of \code{mapToAlignments} and 
       \code{mapFromAlignments}. The i-th range in \code{x} is mapped to the 
@@ -114,7 +114,7 @@
       unmapped ranges so the "UNMAPPED" seqname is unique to
       \code{pmapToAlignments} and \code{pmapFromAlignments}.
     }
-    \item{strand}{
+    \item{strand:}{
       By SAM convention, the CIGAR string is reported for mapped reads on the 
       forward genomic strand. There is no need to consider strand in these
       methods. The output of these methods will always be unstranded 

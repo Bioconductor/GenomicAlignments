@@ -10,7 +10,7 @@ biocViews: Infrastructure, DataImport, Genetics, Sequencing, RNASeq, SNP,
 URL: https://bioconductor.org/packages/GenomicAlignments
 Video: https://www.youtube.com/watch?v=2KqBSbkfhRo , https://www.youtube.com/watch?v=3PK_jx44QTs
 BugReports: https://github.com/Bioconductor/GenomicAlignments/issues
-Version: 1.45.4
+Version: 1.45.5
 License: Artistic-2.0
 Encoding: UTF-8
 Authors@R: c(
@@ -24,11 +24,12 @@ Authors@R: c(
 		comment="Translated 'WorkingWithAlignedNucleotides' vignette from Sweave to RMarkdown / HTML."
 	))
 Depends: R (>= 4.0.0), methods, BiocGenerics (>= 0.37.0),
-	S4Vectors (>= 0.27.12), IRanges (>= 2.23.9), Seqinfo,
+	S4Vectors (>= 0.47.6), IRanges (>= 2.23.9), Seqinfo,
 	GenomicRanges (>= 1.61.1), SummarizedExperiment (>= 1.39.1),
 	Biostrings (>= 2.77.2), Rsamtools (>= 2.25.1)
 Imports: methods, utils, stats, BiocGenerics, S4Vectors,
-	IRanges, GenomicRanges, Biostrings, Rsamtools, BiocParallel
+	IRanges, GenomicRanges, Biostrings, Rsamtools, BiocParallel,
+	cigarillo (>= 0.99.2)
 LinkingTo: S4Vectors, IRanges
 Suggests: ShortRead, rtracklayer, BSgenome, GenomicFeatures,
 	RNAseqData.HNRNPC.bam.chr14, pasillaBamSubset,

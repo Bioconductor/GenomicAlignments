@@ -48,17 +48,14 @@
 }
 
 \details{
-  \itemize{
-    \item(){
-      \code{qnarrow} on a \link{GAlignments} object behaves like \code{narrow}
-      except that the \code{start}/\code{end}/\code{width} arguments here
-      specify the narrowing with respect to the query sequences instead of
-      the reference sequences.
+  \code{qnarrow} on a \link{GAlignments} object behaves like \code{narrow}
+  except that the \code{start}/\code{end}/\code{width} arguments here
+  specify the narrowing with respect to the query sequences instead of
+  the reference sequences.
 
-      \code{qnarrow} on a \link{GAlignmentsList} object
-      returns a \link{GAlignmentsList} object.
-    }
-  }
+  \code{qnarrow} on a \link{GAlignmentsList} object returns another
+  \link{GAlignmentsList} object where all the \link{GAlignments} elements
+  have been \code{qnarrow}-ed.
 }
 
 \value{

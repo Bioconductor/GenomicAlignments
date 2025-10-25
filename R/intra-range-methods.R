@@ -42,12 +42,19 @@ setMethod("updateCigarAndStart", "GAlignments",
 ### narrow()
 ###
 
+.narrow_GAlignments <- function(x, CIGAR_CUTTER, start, end, width)
+{
+    ans_cigar <- CIGAR_CUTTER(cigar(x), start=start, end=end, width=width)
+    ans_start <- start(x) + attr(ans_cigar, "rshift")
+    updateCigarAndStart(x, cigar=ans_cigar, start=ans_start)
+}
+
 ### The default "narrow" method calls windows() so we only need to implement
 ### a "windows" method for GAlignments objects to make narrow() work on these
 ### objects.
 setMethod("windows", "GAlignments",
     function(x, start=NA, end=NA, width=NA)
-        .narrowGAlignments(x, cigarNarrow, start, end, width)
+        .narrow_GAlignments(x, narrow_cigars_along_ref, start, end, width)
 )
 
 setMethod("narrow", "GappedReads",
@@ -70,16 +77,9 @@ setGeneric("qnarrow", signature="x",
     function(x, start=NA, end=NA, width=NA) standardGeneric("qnarrow")
 )
 
-.narrowGAlignments <- function(x, CIGAR_CUTTER, start, end, width)
-{
-    ans_cigar <- CIGAR_CUTTER(cigar(x), start=start, end=end, width=width)
-    ans_start <- start(x) + attr(ans_cigar, "rshift")
-    updateCigarAndStart(x, cigar=ans_cigar, start=ans_start)
-}
-
 setMethod("qnarrow", "GAlignments",
     function(x, start=NA, end=NA, width=NA)
-        .narrowGAlignments(x, cigarQNarrow, start, end, width)
+        .narrow_GAlignments(x, narrow_cigars_along_query, start, end, width)
 )
 
 setMethod("qnarrow", "GAlignmentsList",

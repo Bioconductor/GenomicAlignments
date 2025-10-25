@@ -96,15 +96,14 @@ findSpliceOverlaps(query, subject, ignore.strand=FALSE, ...)
   indicating if the read (query) met the criteria.
 
   \itemize{
-    \item{compatible: }{Every splice (N) in a read alignment matches
-      an intron in an annotated transcript. The read does not
-      extend into an intron or outside the transcript bounds.
-    }
-    \item{unique: }{The read is compatible with only one annotated
-      transcript.
-    }
-    \item{strandSpecific: }{The query (read) was stranded.
-    }
+    \item compatible: Every splice (N) in a read alignment matches
+          an intron in an annotated transcript. The read does not
+          extend into an intron or outside the transcript bounds.
+
+    \item unique: The read is compatible with only one annotated
+          transcript.
+
+    \item strandSpecific: The query (read) was stranded.
   }
 }
 

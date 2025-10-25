@@ -24,8 +24,8 @@
     stopifnot(is.integer(at))
 
     ops <- c("M", "=", "X")
-    ranges_on_ref <- cigarRangesAlongReferenceSpace(cigar, pos=pos, ops=ops)
-    ranges_on_query <- cigarRangesAlongQuerySpace(cigar, ops=ops)
+    ranges_on_ref <- cigars_as_ranges_along_ref(cigar, lmmpos=pos, ops=ops)
+    ranges_on_query <- cigars_as_ranges_along_query(cigar, ops=ops)
 
     ## 'ranges_on_ref' and 'ranges_on_query' are IRangesList objects parallel
     ## to 'x', 'pos', and 'cigar'. In addition, the 2 IRangesList objects

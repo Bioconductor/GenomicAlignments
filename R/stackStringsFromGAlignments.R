@@ -20,8 +20,8 @@
     what_col <- x_mcols[[what_col_idx]]
     if (what == "qual")
         what_col <- BStringSet(what_col)
-    layed_seq <- sequenceLayer(what_col, cigar(x),
-                               D.letter=D.letter, N.letter=N.letter)
+    layed_seq <- project_sequences(what_col, cigar(x),
+                                   D.letter=D.letter, N.letter=N.letter)
     ans <- stackStrings(layed_seq, from, to,
                         shift=start(x)-1L,
                         Lpadding.letter=Lpadding.letter,

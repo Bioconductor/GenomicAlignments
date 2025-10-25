@@ -24,16 +24,17 @@
 \alias{cigarNarrow}
 \alias{cigarQNarrow}
 
-\alias{queryLoc2refLoc}
-\alias{queryLocs2refLocs}
-
-
 \title{
   CIGAR utility functions
 }
 
 \description{
   Utility functions for low-level CIGAR manipulation.
+
+  WARNING: Except for \code{extractAlignmentRangesOnReference}, all
+  the functions documented in this man page are formally deprecated in
+  \pkg{GenomicAlignments} >= 1.45.5 and replaced with functions defined
+  in the new \pkg{cigarillo} package.
 }
 
 \usage{
@@ -80,17 +81,11 @@ cigarWidthAlongPairwiseSpace(cigar, flag=NULL,
 ## -=-= Narrow CIGARs =-=-
 cigarNarrow(cigar, start=NA, end=NA, width=NA)
 cigarQNarrow(cigar, start=NA, end=NA, width=NA)
-
-## -=-= Translate coordinates between query and reference spaces =-=-
-queryLoc2refLoc(qloc, cigar, pos=1L)
-queryLocs2refLocs(qlocs, cigar, pos=1L, flag=NULL)
 }
 
 \arguments{
   \item{cigar}{
     A character vector or factor containing the extended CIGAR strings.
-    It can be of arbitrary length except for \code{queryLoc2refLoc} which
-    only accepts a single CIGAR (as a character vector or factor of length 1).
   }
   \item{ops}{
     Character vector containing the extended CIGAR operations to actually
@@ -188,17 +183,6 @@ queryLocs2refLocs(qlocs, cigar, pos=1L, flag=NULL)
     "solved" according to the rules of the SEW (Start/End/Width)
     interface (see \code{?\link[IRanges]{solveUserSEW}} for the details).
   }
-  \item{qloc}{
-    An integer vector containing "query-based locations" i.e.
-    1-based locations relative to the query sequence
-    stored in the SAM/BAM file.
-  }
-  \item{qlocs}{
-    A list of the same length as \code{cigar} where each
-    element is an integer vector containing "query-based
-    locations" i.e. 1-based locations relative to the corresponding
-    query sequence stored in the SAM/BAM file.
-  }
 }
 
 \value{
@@ -259,16 +243,6 @@ queryLocs2refLocs(qlocs, cigar, pos=1L, flag=NULL)
   vector of the same length as \code{cigar}. It contains the values that
   would need to be added to the POS field of a SAM/BAM file as a
   consequence of this cigar narrowing.
-
-  For \code{queryLoc2refLoc}: An integer vector of the same length as
-  \code{qloc} containing the "reference-based locations" (i.e. the
-  1-based locations relative to the reference sequence) corresponding
-  to the "query-based locations" passed in \code{qloc}.
-
-  For \code{queryLocs2refLocs}: A list of the same length as
-  \code{qlocs} where each element is an integer vector containing
-  the "reference-based locations" corresponding to the "query-based
-  locations" passed in the corresponding element in \code{qlocs}.
 }
 
 \references{
@@ -295,6 +269,7 @@ queryLocs2refLocs(qlocs, cigar, pos=1L, flag=NULL)
 }
 
 \examples{
+\donttest{
 ## ---------------------------------------------------------------------
 ## A. CIGAR_OPS, explodeCigarOps(), explodeCigarOpLengths(),
 ##    cigarToRleList(), and cigarOpTable()
@@ -314,11 +289,12 @@ cigarToRleList(cigar2)
 
 ## Summarize CIGARs:
 cigarOpTable(cigar2)
+}
 
 ## ---------------------------------------------------------------------
 ## B. From CIGARs to ranges and to sequence lengths
 ## ---------------------------------------------------------------------
-
+\donttest{
 ## CIGAR ranges along the "reference" space:
 cigarRangesAlongReferenceSpace(cigar1, with.ops=TRUE)[[1]]
 
@@ -369,6 +345,7 @@ cigarWidthAlongQuerySpace(cigar1, before.hard.clipping=TRUE)
 ## CIGAR ranges along the "pairwise" space:
 cigarRangesAlongPairwiseSpace(cigar2, with.ops=TRUE)
 cigarRangesAlongPairwiseSpace(cigar2, dense=TRUE, with.ops=TRUE)
+}
 
 ## ---------------------------------------------------------------------
 ## C. COMPUTE THE COVERAGE OF THE READS STORED IN A BAM FILE
@@ -410,7 +387,7 @@ stopifnot(identical(cvg, cvg2))
 ## ---------------------------------------------------------------------
 ## D. cigarNarrow() and cigarQNarrow()
 ## ---------------------------------------------------------------------
-
+\donttest{
 ## cigarNarrow():
 cigarNarrow(cigar1)  # only drops the soft/hard clipping
 cigarNarrow(cigar1, start=10)
@@ -427,6 +404,7 @@ cigarQNarrow(cigar1, start=4, end=-3)
 cigarQNarrow(cigar1, start=10)
 cigarQNarrow(cigar1, start=19)
 cigarQNarrow(cigar1, start=24)
+}
 
 ## ---------------------------------------------------------------------
 ## E. PERFORMANCE

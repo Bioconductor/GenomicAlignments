@@ -51,12 +51,10 @@ setGeneric("pmapFromAlignments", signature=c("x", "alignments"),
 
     x <- x[xHits]
     alignments <- alignments[alignmentsHits]
-    s <- .Call("query_locs_to_ref_locs",
-               start(x), cigar(alignments), 
-               start(alignments), FALSE)
-    e <- .Call("query_locs_to_ref_locs", 
-               end(x), cigar(alignments), 
-               start(alignments), TRUE)
+    s <- query_pos_as_ref_pos(start(x), cigar(alignments),
+                              start(alignments), narrow.left=FALSE)
+    e <- query_pos_as_ref_pos(end(x), cigar(alignments),
+                              start(alignments), narrow.left=TRUE)
     e <- pmax(e, s - 1L)
 
     ## remove non-hits
@@ -73,11 +71,8 @@ setGeneric("pmapFromAlignments", signature=c("x", "alignments"),
         return(GRanges(xHits=integer(), transcriptsHits=integer()))
     if (is.null(names(alignments)))
         stop ("'alignments' must have names")
-
-    ## map all possible pairs; returns hits only
-    map <- .Call("map_ref_locs_to_query_locs", 
-                 start(x), end(x), cigar(alignments), 
-                 start(alignments))
+    map <- fast_map_ref_ranges_to_query(start(x), end(x),
+                                        cigar(alignments), start(alignments))
     xHits <- map[[3]]
     alignmentsHits <-  map[[4]]
     if (length(xHits))
@@ -120,16 +115,16 @@ setMethod("mapFromAlignments", c("GenomicRanges", "GAlignments"),
             stop("'x' and 'alignments' must have the same length")
 
         if (reverse) {
-            FUN <- "query_locs_to_ref_locs"
+            FUN <- query_pos_as_ref_pos
             seqname <- as.character(seqnames(alignments))
         } else {
             if (is.null(names(alignments)))
                 stop ("'alignments' must have names")
-            FUN <- "ref_locs_to_query_locs"
+            FUN <- ref_pos_as_query_pos
             seqname <- names(alignments)
         }
-        s <- .Call(FUN, start(x), cigar(alignments), start(alignments), FALSE)
-        e <- .Call(FUN, end(x), cigar(alignments), start(alignments), TRUE)
+        s <- FUN(start(x), cigar(alignments), start(alignments), FALSE)
+        e <- FUN(end(x), cigar(alignments), start(alignments), TRUE)
         e <- pmax(e, s - 1L)
 
         ## non-hits

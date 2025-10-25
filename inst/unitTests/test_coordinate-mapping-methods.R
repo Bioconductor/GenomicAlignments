@@ -1,6 +1,6 @@
 ## CIGAR ops M, =, X
 x1 <- GRanges("chr1", IRanges(c(5, 10, 20, 25), width=2, names=LETTERS[1:4]))
-align1 <- GAlignments(rep("chr1", 3), rep(10, 3), c("11M", "11=", "11X"), 
+align1 <- GAlignments(rep("chr1", 3), rep(10, 3), c("11M", "11=", "11X"),
                       Rle(strand("+"), 3), names=letters[1:3])
 
 ## CIGAR ops S, N, D, I, H, P
@@ -24,7 +24,7 @@ test_mapToAlignments <- function() {
     checkIdentical(seqlevels(ans), letters[1:3])
 
     ans <- mapToAlignments(x2, align3)
-    checkIdentical(end(ans), c(7L, 4L, 4L, 8L, 6L, 6L)) 
+    checkIdentical(end(ans), c(7L, 4L, 4L, 8L, 6L, 6L))
     checkIdentical(mcols(ans)$alignmentsHits, as.integer(1:6))
 
     ans <- mapToAlignments(x2bis, align2bis)
@@ -35,9 +35,9 @@ test_mapToAlignments <- function() {
 
 test_mapFromAlignments <- function() {
     x <- x1
-    names(x) <- rep("all", length(x)) 
+    names(x) <- rep("all", length(x))
     align <- align1
-    names(align) <- rep("all", length(align)) 
+    names(align) <- rep("all", length(align))
     ans <- mapFromAlignments(x, align)
     checkIdentical(start(ans), c(14L, 14L, 14L, 19L, 19L, 19L))
     checkIdentical(mcols(ans)$xHits, c(rep(1L, 3), rep(2L, 3)))
@@ -45,19 +45,19 @@ test_mapFromAlignments <- function() {
     checkIdentical(seqlevels(ans), "chr1")
     checkIdentical(names(ans), rep("all", 6))
 
-    names(x) <- c("hit", "hit", "blank", "blank") 
-    names(align) <- c("BLANK", "hit", "BLANK") 
+    names(x) <- c("hit", "hit", "blank", "blank")
+    names(align) <- c("BLANK", "hit", "BLANK")
     ans <- mapFromAlignments(x, align)
     checkIdentical(names(ans), c("hit", "hit"))
     checkIdentical(seqlevels(ans), "chr1")
 
     x <- x2
-    names(x) <- rep("all", length(x)) 
+    names(x) <- rep("all", length(x))
     align <- align2
-    names(align) <- rep("all", length(align)) 
+    names(align) <- rep("all", length(align))
     ans <- mapFromAlignments(x, align)
     checkIdentical(start(ans), rep(10L, 6))
-    checkIdentical(end(ans), c(15L, 17L, 17L, 13L, 15L, 15L)) 
+    checkIdentical(end(ans), c(15L, 17L, 17L, 13L, 15L, 15L))
     checkIdentical(mcols(ans)$alignmentsHits, as.integer(1:6))
 }
 
@@ -70,14 +70,14 @@ test_pmapToAlignments <- function() {
     checkIdentical(start(ans), c(0L, 1L, 0L, 0L))
     checkIdentical(end(ans), c(-1L, 2L, -1L, -1L))
     checkIdentical(names(ans), names(x))
-    checkTrue(all(seqlevels(ans) %in% c("a", "UNMAPPED"))) 
+    checkTrue(all(seqlevels(ans) %in% c("a", "UNMAPPED")))
 
     x <- rep(x2[2], length(align3))
     align <- align3
     ans <- pmapToAlignments(x, align)
     checkIdentical(width(ans), c(6L, 4L, 4L, 8L, 6L, 6L))
-    checkIdentical(start(ans), c(2L, rep(1L, 5))) 
-    checkIdentical(end(ans), c(7L, 4L, 4L, 8L, 6L, 6L)) 
+    checkIdentical(start(ans), c(2L, rep(1L, 5)))
+    checkIdentical(end(ans), c(7L, 4L, 4L, 8L, 6L, 6L))
 }
 
 test_pmapFromAlignments <- function() {
@@ -91,79 +91,72 @@ test_pmapFromAlignments <- function() {
     checkIdentical(width(ans), c(2L, 2L, 0L, 0L))
     checkIdentical(start(ans), c(14L, 19L, 0L, 0L))
     checkIdentical(names(ans), names(x))
-    checkTrue(all(seqlevels(ans) %in% c("chr1", "UNMAPPED"))) 
+    checkTrue(all(seqlevels(ans) %in% c("chr1", "UNMAPPED")))
 
     x <- rep(x2[1], length(align2))
     names(x) <- LETTERS[seq_along(x)]
     align <- align2
     ans <- pmapFromAlignments(x, align)
     checkIdentical(width(ans), c(6L, 8L, 8L, 4L, 6L, 6L))
-    checkIdentical(end(ans), c(15L, 17L, 17L, 13L, 15L, 15L)) 
+    checkIdentical(end(ans), c(15L, 17L, 17L, 13L, 15L, 15L))
     checkIdentical(names(ans), names(x))
-    checkTrue(all(seqlevels(ans) %in% "chr1")) 
+    checkTrue(all(seqlevels(ans) %in% "chr1"))
 }
 
+## TODO: Move these tests to the cigarillo package.
 test_ref_locs_to_query_locs <- function() {
+    library(cigarillo)
     cigar <- "66S42M2I20M8I18D15M43243N5M1D38M1D85M1D115M139S"
     pos <- 525842L
     ref <- 43425L + pos - 1L
     query <- 238L
-    ans <- .Call("ref_locs_to_query_locs", ref, cigar, pos, 
-                 FALSE, PACKAGE="GenomicAlignments")
+    ans <- ref_pos_as_query_pos(ref, cigar, pos, narrow.left=FALSE)
     checkIdentical(ans, query)
 
     ## out of bounds
-    ans_s <- .Call("ref_locs_to_query_locs", 
-                   start(x1[1]), cigar(align1[1]), 
-                   start(align1[1]), FALSE, 
-                   PACKAGE="GenomicAlignments")
-    ans_e <- .Call("ref_locs_to_query_locs", 
-                   end(x1[1]), cigar(align1[1]), 
-                   start(align1[1]), TRUE, 
-                   PACKAGE="GenomicAlignments")
+    ans_s <- ref_pos_as_query_pos(start(x1[1]), cigar(align1[1]),
+                                  start(align1[1]), narrow.left=FALSE)
+    ans_e <- ref_pos_as_query_pos(end(x1[1]), cigar(align1[1]),
+                                  start(align1[1]), narrow.left=TRUE)
 
     checkIdentical(ans_s, NA_integer_)
     checkIdentical(ans_e, NA_integer_)
 }
 
+## TODO: Move these tests to the cigarillo package.
 test_query_locs_to_ref_locs <- function() {
+    library(cigarillo)
     ## out of bounds
-    ans_s <- .Call("query_locs_to_ref_locs", 
-                   start(x1[4]), cigar(align1[1]), 
-                   start(align1[1]), FALSE, 
-                   PACKAGE="GenomicAlignments")
-    ans_e <- .Call("query_locs_to_ref_locs", 
-                   end(x1[4]), cigar(align1[1]), 
-                   start(align1[1]), TRUE, 
-                   PACKAGE="GenomicAlignments")
+    ans_s <- query_pos_as_ref_pos(start(x1[4]), cigar(align1[1]),
+                                  start(align1[1]), narrow.left=FALSE)
+    ans_e <- query_pos_as_ref_pos(end(x1[4]), cigar(align1[1]),
+                                  start(align1[1]), narrow.left=TRUE)
 
     checkIdentical(ans_s, NA_integer_)
     checkIdentical(ans_e, NA_integer_)
 }
 
+## TODO: Move these tests to the cigarillo package.
 test_map_ref_locs_to_query_locs <- function() {
+    library(cigarillo)
     ## hit
-    map <- .Call("map_ref_locs_to_query_locs", 
-                 12L, 16L, "11M", 10L)
-    checkIdentical(unlist(map), c(3L, 7L, 1L, 1L))
+    map <- fast_map_ref_ranges_to_query(12L, 16L, "11M", 10L)
+    checkIdentical(unlist(map), c(start=3L, end=7L, from_hit=1L, to_hit=1L))
 
     ## first record out of bounds
-    map <- .Call("map_ref_locs_to_query_locs", 
-                 c(5L, 12L), c(16L, 16L), "11M", 10L)
-    checkIdentical(unlist(map), c(3L, 7L, 2L, 1L))
+    map <- fast_map_ref_ranges_to_query(c(5L, 12L), c(16L, 16L), "11M", 10L)
+    checkIdentical(unlist(map), c(start=3L, end=7L, from_hit=2L, to_hit=1L))
 
     ## second record out of bounds
-    map <- .Call("map_ref_locs_to_query_locs", 
-                 c(12L, 5L), c(16L, 16L), "11M", 10L)
-    checkIdentical(unlist(map), c(3L, 7L, 1L, 1L))
+    map <- fast_map_ref_ranges_to_query(c(12L, 5L), c(16L, 16L), "11M", 10L)
+    checkIdentical(unlist(map), c(start=3L, end=7L, from_hit=1L, to_hit=1L))
 
     ## first alignment out of bounds
-    map <- .Call("map_ref_locs_to_query_locs", 
-                 12L, 16L, c("11M", "11M"), c(20L, 10L))
-    checkIdentical(unlist(map), c(3L, 7L, 1L, 2L))
+    map <- fast_map_ref_ranges_to_query(12L, 16L, c("11M", "11M"), c(20L, 10L))
+    checkIdentical(unlist(map), c(start=3L, end=7L, from_hit=1L, to_hit=2L))
 
     ## second alignment out of bounds
-    map <- .Call("map_ref_locs_to_query_locs", 
-                 12L, 16L, c("11M", "11M"), c(10L, 20L))
-    checkIdentical(unlist(map), c(3L, 7L, 1L, 1L))
+    map <- fast_map_ref_ranges_to_query(12L, 16L, c("11M", "11M"), c(10L, 20L))
+    checkIdentical(unlist(map), c(start=3L, end=7L, from_hit=1L, to_hit=1L))
 }
+

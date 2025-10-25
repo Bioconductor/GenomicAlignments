@@ -132,7 +132,7 @@ setMethod("rname", "GAlignments", function(x) seqnames(x))
 setMethod("cigar", "GAlignments", function(x) x@cigar)
 
 setMethod("width", "GAlignments",
-    function(x) cigarWidthAlongReferenceSpace(x@cigar)
+    function(x) cigar_extent_along_ref(x@cigar)
 )
 
 setMethod("start", "GAlignments", function(x, ...) x@start)
@@ -140,7 +140,7 @@ setMethod("start", "GAlignments", function(x, ...) x@start)
 setMethod("strand", "GAlignments", function(x) x@strand)
 
 setMethod("qwidth", "GAlignments",
-    function(x) cigarWidthAlongQuerySpace(x@cigar)
+    function(x) cigar_extent_along_query(x@cigar)
 )
 
 setMethod("njunc", "GAlignments",
@@ -238,7 +238,7 @@ setReplaceMethod("seqinfo", "GAlignments", set_GAlignments_seqinfo)
     x_cigar <- cigar(x)
     if (!is.character(x_cigar) || !is.null(names(x_cigar)) || any(is.na(x_cigar)))
         return("'cigar(x)' must be an unnamed character vector with no NAs")
-    tmp <- validCigar(x_cigar)
+    tmp <- validate_cigars(x_cigar)
     if (!is.null(tmp))
         return(paste("in 'cigar(x)':", tmp))
     NULL

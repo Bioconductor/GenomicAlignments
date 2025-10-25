@@ -36,9 +36,9 @@ setMethod("qwidth", "GappedReads", function(x) width(qseq(x)))
         return("'qseq(x)' must be an unnamed DNAStringSet instance")
     if (length(x_qseq) != length(cigar(x)))
         return("'qseq(x)' and 'cigar(x)' must have the same length")
-    if (!identical(width(x_qseq), cigarWidthAlongQuerySpace(cigar(x))))
+    if (!identical(width(x_qseq), cigar_extent_along_query(cigar(x))))
         return(paste("'width(qseq(x))' and",
-                     "'cigarWidthAlongQuerySpace(cigar(x))'",
+                     "'cigar_extent_along_query(cigar(x))'",
                      "must be identical"))
     NULL
 }
