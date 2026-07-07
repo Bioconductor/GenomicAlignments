@@ -182,7 +182,8 @@ head(sort(table(cigar(gal1)), decreasing=TRUE))
 Then a summary of the total number of insertions (I), deletions (D), andcgaps (N):
 
 ```{r}
-colSums(cigarOpTable(cigar(gal1)))
+library(cigarillo)  # for tabulate_cigar_ops()
+colSums(tabulate_cigar_ops(cigar(gal1)))
 ```
 
 This tells us that the aligner that was used supports indels (I/D) and junction reads (N).
@@ -278,8 +279,8 @@ table(njunc(first(U3.GALP)), njunc(last(U3.GALP)))
 Like for our single-end reads, the following tables indicate that indels were not allowed/supported during the alignment process:
 
 ```{r}
-colSums(cigarOpTable(cigar(first(U3.GALP))))
-colSums(cigarOpTable(cigar(last(U3.GALP))))
+colSums(tabulate_cigar_ops(cigar(first(U3.GALP))))
+colSums(tabulate_cigar_ops(cigar(last(U3.GALP))))
 ```
 
 # `sessionInfo()`

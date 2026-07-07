@@ -30,14 +30,10 @@ extractAlignmentRangesOnReference <- function(cigar, pos=1L,
 
 call_new_fun_in_cigarillo <- function(old_fun, new_fun, ...)
 {
-    S4Vectors:::load_package_gracefully("cigarillo", "in order to use ",
-                                        new_fun, "() in BioC >= 3.22")
-    msg <- c(old_fun, "() is formally deprecated in GenomicAlignments >= ",
-             "1.45.5 and replaced with the ", new_fun, "() function ",
-             "from the new cigarillo package")
-    .Deprecated(msg=wmsg(msg))
-    FUN <- base::get(new_fun, envir=asNamespace("cigarillo"), inherits=FALSE)
-    do.call(FUN, list(...))
+    msg <- c(old_fun, "() is defunct in GenomicAlignments >= 1.49.1 ",
+             "and replaced with the ", new_fun, "() function from the ",
+             "new cigarillo package")
+    .Defunct(msg=wmsg(msg))
 }
 
 validCigar <- function(cigar)

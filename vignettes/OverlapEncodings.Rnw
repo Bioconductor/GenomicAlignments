@@ -1,5 +1,5 @@
 %\VignetteIndexEntry{Overlap encodings}
-%\VignetteDepends{pasillaBamSubset, GenomicAlignments, GenomicFeatures, BSgenome.Dmelanogaster.UCSC.dm3, TxDb.Dmelanogaster.UCSC.dm3.ensGene}
+%\VignetteDepends{pasillaBamSubset, cigarillo, GenomicAlignments, GenomicFeatures, BSgenome.Dmelanogaster.UCSC.dm3, TxDb.Dmelanogaster.UCSC.dm3.ensGene}
 %\VignetteKeywords{sequence, sequencing, alignments}
 %\VignettePackage{GenomicAlignments}
 
@@ -11,7 +11,7 @@ BiocStyle::latex()
 
 \title{Overlap encodings}
 \author{Herv\'e Pag\`es}
-\date{Last modified: December 2016; Compiled: \today}
+\date{Last modified: July 2026; Compiled: \today}
 
 \begin{document}
 
@@ -150,7 +150,8 @@ Also, the following table indicates that indels were not allowed/supported
 during the alignment process (no I or D CIGAR operations):
 
 <<no-indels-in-U1.GAL>>=
-colSums(cigarOpTable(cigar(U1.GAL)))
+library(cigarillo)  # for tabulate_cigar_ops()
+colSums(tabulate_cigar_ops(cigar(U1.GAL)))
 @
 
 
@@ -239,8 +240,8 @@ Like for our single-end reads, the following tables indicate that indels were
 not allowed/supported during the alignment process:
 
 <<no-indels-in-U3.GALP>>=
-colSums(cigarOpTable(cigar(first(U3.GALP))))
-colSums(cigarOpTable(cigar(last(U3.GALP))))
+colSums(tabulate_cigar_ops(cigar(first(U3.GALP))))
+colSums(tabulate_cigar_ops(cigar(last(U3.GALP))))
 @
 
 

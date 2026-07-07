@@ -6,8 +6,8 @@
 \title{Lay read sequences alongside the reference space, using their CIGARs}
 
 \description{
-  WARNING: \code{sequenceLayer()} is formally deprecated in
-  \pkg{GenomicAlignments} >= 1.45.5 and replaced with the
+  WARNING: \code{sequenceLayer()} is defunct in
+  \pkg{GenomicAlignments} >= 1.49.1 and replaced with the
   \code{project_sequences()} function from the new \pkg{cigarillo}
   package.
 

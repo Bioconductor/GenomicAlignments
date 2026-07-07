@@ -31,10 +31,10 @@
 \description{
   Utility functions for low-level CIGAR manipulation.
 
-  WARNING: Except for \code{extractAlignmentRangesOnReference}, all
-  the functions documented in this man page are formally deprecated in
-  \pkg{GenomicAlignments} >= 1.45.5 and replaced with functions defined
-  in the new \pkg{cigarillo} package.
+  WARNING: Except for \code{extractAlignmentRangesOnReference},
+  all the functions documented in this man page are defunct in
+  \pkg{GenomicAlignments} >= 1.49.1 and replaced with functions
+  defined in the new \pkg{cigarillo} package.
 }
 
 \usage{
@@ -253,10 +253,6 @@ cigarQNarrow(cigar, start=NA, end=NA, width=NA)
 
 \seealso{
   \itemize{
-    \item The \link[GenomicAlignments]{sequenceLayer} function in the
-          \pkg{GenomicAlignments} package for laying the query sequences
-          alongside the "reference" or "pairwise" spaces.
-
     \item The \link{GAlignments} container for storing a set of genomic
           alignments.
 
