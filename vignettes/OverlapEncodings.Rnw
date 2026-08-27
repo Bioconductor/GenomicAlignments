@@ -127,7 +127,7 @@ U1.uqnames <- unique(names(U1.GAL))
 U1.GAL_qnames <- factor(names(U1.GAL), levels=U1.uqnames)
 @
 
-Note that we explicitely provide the levels of the factor to enforce their
+Note that we explicitly provide the levels of the factor to enforce their
 order. Otherwise \Rcode{factor()} would put them in lexicographic order which
 is not advisable because it depends on the locale in use.
 
