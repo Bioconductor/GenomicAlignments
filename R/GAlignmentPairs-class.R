@@ -330,11 +330,11 @@ GAlignmentPairs <- function(first, last,
 ### List methods.
 ###
 
-### TODO: Remove the "[[" method below after the definition of the
-### GAlignmentPairs class is changed to derive from CompressedList.
-### (The "[[" method for CompressedList objects should do just fine i.e. it
-### should do something like x@unlistData[x@partitioning[[i]]] and that
-### should be optimal.)
+### TODO: Remove this method after the definition of the GAlignmentPairs
+### class is changed to derive from CompressedList. The getListElement()
+### method for CompressedList objects should do just fine on a
+### GAlignmentPairs object because it's supposed to do something
+### like x@unlistData[x@partitioning[[i]]] which should be optimal.
 setMethod("getListElement", "GAlignmentPairs",
     function(x, i, exact=TRUE)
     {
