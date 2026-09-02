@@ -35,7 +35,7 @@
 \alias{seqinfo<-,GAlignmentPairs-method}
 
 % List methods:
-\alias{[[,GAlignmentPairs,ANY,ANY-method}
+\alias{getListElement,GAlignmentPairs-method}
 \alias{unlist,GAlignmentPairs-method}
 
 % Coercion:
@@ -188,7 +188,8 @@
       guaranteed to return identical character vectors on a
       GAlignmentPairs object. \code{value} must be a character vector
       with no NAs.
-      See \code{?\link{seqlevels}} for more information.
+      See \code{?\link[Seqinfo]{seqlevels}} in the \pkg{Seqinfo} package
+      for more information.
     }
     \item{\code{seqlengths(x)}, \code{seqlengths(x) <- value}:}{
       Get or set the sequence lengths.
@@ -256,8 +257,8 @@
       \code{ranges(x, use.names=TRUE, use.mcols=FALSE,
                       on.discordant.seqnames=c("error", "drop", "split"))}:}{
 
-      Return a \link{GRanges} object (for \code{granges()}) or
-      \link[IRanges]{IRanges}) object (for \code{ranges()}).
+      Return a \link[GenomicRanges]{GRanges} object (for \code{granges()})
+      or \link[IRanges]{IRanges}) object (for \code{ranges()}).
 
       If \code{x} contains no pairs with \emph{discordant seqnames}, the
       operation is guaranteed to be successful and to return an object
@@ -279,18 +280,19 @@
     }
     \item{\code{grglist(x, use.mcols=FALSE, drop.D.ranges=FALSE)}:}{
 
-      Return a \link{GRangesList} object of length \code{length(x)}
-      where the i-th element represents the ranges (with respect to the
-      reference) of the i-th alignment pair in \code{x}. The strand of
-      the returned ranges obeys the \emph{strand mode} currently set on the
-      object (see \code{strandMode(x)} above).
+      Return a \link[GenomicRanges]{GRangesList} object of length
+      \code{length(x)} where the i-th element represents the ranges (with
+      respect to the reference) of the i-th alignment pair in \code{x}.
+      The strand of the returned ranges obeys the \emph{strand mode}
+      currently set on the object (see \code{strandMode(x)} above).
 
       More precisely, if \code{grl1} and \code{grl2} are
       \code{grglist(first(x, real.strand=TRUE), order.as.in.query=TRUE)} and
       \code{grglist(last(x, real.strand=TRUE), order.as.in.query=TRUE)},
-      respectively, then the i-th element in the returned \link{GRangesList}
-      object is \code{c(grl1[[i]], grl2[[i]])} if \code{strandMode(x)} is 0
-      or 1, or \code{c(grl2[[i]], grl1[[i]])} if \code{strandMode(x)} is 2.
+      respectively, then the i-th element in the returned
+      \link[GenomicRanges]{GRangesList} object is \code{c(grl1[[i]], grl2[[i]])}
+      if \code{strandMode(x)} is 0 or 1, or \code{c(grl2[[i]], grl1[[i]])}
+      if \code{strandMode(x)} is 2.
 
       Note that, if \code{strandMode(x)} is 1 or 2, this results in the ranges
       being in consistent order with the original "query template", that is,
@@ -329,10 +331,11 @@
       \code{showHeadLines} and \code{showTailLines}. If the object
       length is less than (or equal to) the sum of these 2 options
       plus 1, then the full object is displayed.
-      Note that these options also affect the display of \link{GRanges}
-      and \link{GAlignments} objects, as well as other \link[S4Vectors]{Vector}
-      derivatives defined in the \pkg{IRanges} and \pkg{Biostrings} packages
-      (e.g. \link[IRanges]{IRanges} and \link[Biostrings]{XStringSet} objects).
+      Note that these options also affect the display of
+      \link[GenomicRanges]{GRanges} and \link{GAlignments} objects,
+      as well as other \link[S4Vectors]{Vector} derivatives defined
+      in the \pkg{IRanges} and \pkg{Biostrings} packages (e.g.
+      \link[IRanges]{IRanges} and \link[Biostrings]{DNAStringSet} objects).
     }
   }
 }

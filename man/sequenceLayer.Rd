@@ -33,8 +33,8 @@ sequenceLayer(x, cigar, from="query", to="reference",
 
 \arguments{
   \item{x}{
-    An \link{XStringSet} object containing strings that belong to a given
-    space.
+    An \link[Biostrings]{XStringSet} object containing strings that belong
+    to a given space.
   }
   \item{cigar}{
     A character vector or factor of the same length as \code{x} containing
@@ -108,7 +108,8 @@ sequenceLayer(x, cigar, from="query", to="reference",
 }
 
 \value{
-  An \link{XStringSet} object of the same class and length as \code{x}.
+  An \link[Biostrings]{XStringSet} object of the same class and length
+  as \code{x}.
 }
 
 \author{Hervé Pagès}

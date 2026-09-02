@@ -1,6 +1,6 @@
 .getCounts <- function(res)
 {
-    as.integer(assays(res)$counts)
+    as.integer(SummarizedExperiment::assays(res)$counts)
 }
 quiet <- suppressMessages
 

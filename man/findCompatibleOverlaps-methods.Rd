@@ -28,7 +28,7 @@ countCompatibleOverlaps(query, subject)
     the aligned reads.
   }
   \item{subject}{
-    A \link{GRangesList} object representing the transcripts.
+    A \link[GenomicRanges]{GRangesList} object representing the transcripts.
   }
 }
 

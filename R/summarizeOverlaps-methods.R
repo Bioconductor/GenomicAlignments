@@ -36,6 +36,8 @@ setGeneric("summarizeOverlaps", signature=c("features", "reads"),
                                ignore.strand=FALSE,
                                inter.feature=TRUE, preprocess.reads=NULL, ...)
 {
+    S4Vectors:::load_package_gracefully("SummarizedExperiment",
+                                        "by summarizeOverlaps()")
     if (!isTRUEorFALSE(ignore.strand))
         stop("'ignore.strand' must be TRUE or FALSE")
     if (!ignore.strand) {
@@ -47,14 +49,16 @@ setGeneric("summarizeOverlaps", signature=c("features", "reads"),
     }
 
     mode <- match.fun(mode)
-    counts <- .dispatchOverlaps(features, reads, mode,
-                                ignore.strand,
-                                inter.feature, preprocess.reads, ...)
+    counts <- as.matrix(.dispatchOverlaps(features, reads, mode,
+                                          ignore.strand,
+                                          inter.feature, preprocess.reads,
+                                          ...))
     colData <- DataFrame(object=class(reads),
                          records=length(reads),
                          row.names="reads")
-    SummarizedExperiment(assays=SimpleList(counts=as.matrix(counts)),
-                         rowRanges=features, colData=colData)
+    SummarizedExperiment::SummarizedExperiment(SimpleList(counts=counts),
+                                               rowRanges=features,
+                                               colData=colData)
 }
 
 setMethod("summarizeOverlaps", c("GRanges", "GAlignments"),
@@ -98,7 +102,7 @@ setMethod("summarizeOverlaps", c("GRangesList", "GRangesList"),
 )
 
 ### -------------------------------------------------------------------------
-### 'mode' functions 
+### 'mode' functions
 ###
 
 Union <- function(features, reads,
@@ -210,13 +214,15 @@ IntersectionNotEmpty <-  function(features, reads,
 
 .dispatchBamFiles <-
     function(features, reads, mode, ignore.strand,
-             count.mapped.reads=FALSE, inter.feature=TRUE, 
+             count.mapped.reads=FALSE, inter.feature=TRUE,
              singleEnd=TRUE, fragments=FALSE,
              param=ScanBamParam(), preprocess.reads=NULL, ...)
 {
+    S4Vectors:::load_package_gracefully("SummarizedExperiment",
+                                        "by summarizeOverlaps()")
     exist <- sapply(reads, function(bf) file.exists(path(bf)))
     if (!all(exist))
-        stop(paste0("file(s): ", paste(path(reads)[!exist], collapse=","), 
+        stop(paste0("file(s): ", paste(path(reads)[!exist], collapse=","),
                     " do not exist"))
     FUN <- .getReadFunction(singleEnd, fragments)
 
@@ -227,11 +233,11 @@ IntersectionNotEmpty <-  function(features, reads,
                    bf <- reads[[i]]
                    .countWithYieldSize(FUN, features, bf, mode,
                                        ignore.strand,
-                                       inter.feature, param, 
+                                       inter.feature, param,
                                        preprocess.reads, ...)
                }, FUN, reads, features, mode=match.fun(mode),
                ignore.strand=ignore.strand,
-               inter.feature=inter.feature, param=param, 
+               inter.feature=inter.feature, param=param,
                preprocess.reads=preprocess.reads, ...
            )
 
@@ -246,8 +252,9 @@ IntersectionNotEmpty <-  function(features, reads,
     } else {
         colData <- DataFrame(row.names=colnames(counts))
     }
-    SummarizedExperiment(assays=SimpleList(counts=counts),
-                         rowRanges=features, colData=colData)
+    SummarizedExperiment::SummarizedExperiment(SimpleList(counts=counts),
+                                               rowRanges=features,
+                                               colData=colData)
 }
 
 setMethod("summarizeOverlaps", c("GRanges", "BamFile"),
@@ -260,7 +267,7 @@ setMethod("summarizeOverlaps", c("GRanges", "BamFile"),
     .dispatchBamFiles(features, BamFileList(reads), mode,
                       ignore.strand,
                       inter.feature=inter.feature, singleEnd=singleEnd,
-                      fragments=fragments, param=param, 
+                      fragments=fragments, param=param,
                       preprocess.reads=preprocess.reads, ...)
 })
 
@@ -284,7 +291,6 @@ setMethod("summarizeOverlaps", c("GRangesList", "BamFile"),
              yieldSize=1000000L, inter.feature=TRUE, singleEnd=TRUE,
              fragments=FALSE, param=ScanBamParam(), preprocess.reads=NULL, ...)
 {
-    
     if (!all(file.exists(reads)))
         stop("file(s) do not exist:\n  ",
              paste(reads[!file.exists(reads)], collapse="\n  "))
@@ -322,7 +328,7 @@ setMethod("summarizeOverlaps", c("GRangesList", "character"),
     .dispatchBamFiles(features, reads, mode,
                       ignore.strand,
                       inter.feature=inter.feature, singleEnd=singleEnd,
-                      fragments=fragments, param=param, 
+                      fragments=fragments, param=param,
                       preprocess.reads=preprocess.reads, ...)
 }
 
@@ -346,8 +352,8 @@ setMethod("summarizeOverlaps", c("BamViews", "missing"),
                       inter.feature=inter.feature, singleEnd=singleEnd,
                       fragments=fragments, param=param,
                       preprocess.reads=preprocess.reads, ...)
-    colData(se)$bamSamples <- bamSamples(features)
-    colData(se)$bamIndices <- bamIndicies(features)
+    SummarizedExperiment::colData(se)$bamSamples <- bamSamples(features)
+    SummarizedExperiment::colData(se)$bamIndices <- bamIndicies(features)
     metadata(se)$bamExperiment <- bamExperiment(features)
     se
 })

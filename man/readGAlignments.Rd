@@ -50,7 +50,7 @@ readGappedReads(file, index=file, use.names=FALSE, param=NULL,
   \item{index}{
     The path to the index file of the BAM file to read.
     Must be given \emph{without} the '.bai' extension.
-    See \code{\link[Rsamtools]{scanBam}} in the \pkg{Rsamtools} packages
+    See \code{\link[Rsamtools]{scanBam}} in the \pkg{Rsamtools} package
     for more information.
   }
   \item{use.names}{
@@ -97,8 +97,8 @@ readGappedReads(file, index=file, use.names=FALSE, param=NULL,
     the range in \code{which} where each element in the returned object
     originates from. The labels used to identify the ranges are normally
     of the form \code{"seq1:12250-246500"}, that is, they're the same as
-    the names found on the outer list that \code{\link{scanBam}} would
-    return if called with the same \code{param} argument. If some ranges
+    the names found on the outer list that \code{\link[Rsamtools]{scanBam}}
+    would return if called with the same \code{param} argument. If some ranges
     are duplicated, then the labels are made unique by appending a unique
     suffix to all of them. The \code{"which_label"} metadata column is
     represented as a factor-\link[S4Vectors]{Rle}.
@@ -234,7 +234,7 @@ readGappedReads(file, index=file, use.names=FALSE, param=NULL,
   So if \code{readGAlignmentPairs} returns a \link{GAlignmentPairs} object
   of length zero, this almost always means that the BAM (or SAM) file
   contains alignments for single-end reads (although it could also mean that
-  the user-supplied \code{\linkS4class{ScanBamParam}} is filtering out
+  the user-supplied \link[Rsamtools]{ScanBamParam} object is filtering out
   everything, or that the file is empty, or that all the records in the file
   correspond to unmapped reads).
 

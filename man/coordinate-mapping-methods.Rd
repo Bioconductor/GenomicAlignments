@@ -25,8 +25,8 @@
   using the CIGAR in a \code{GAlignments} object.
  
   See \code{?\link[GenomicFeatures]{mapToTranscripts}} in the 
-  \pkg{GenomicRanges} package for mapping coordinates between features
-  in the transcriptome and genome space.
+  \pkg{GenomicFeatures} package for mapping coordinates between
+  features in the transcriptome and genome space.
 }
 
 \usage{
@@ -39,12 +39,12 @@
 
 \arguments{
   \item{x}{
-    \code{\linkS4class{GenomicRanges}} object of positions to be mapped.
-    \code{x} must have names when mapping to the genome.
+    \link[GenomicRanges]{GenomicRanges} object of positions to be
+    mapped. \code{x} must have names when mapping to the genome.
   }
   \item{alignments}{
-    A \code{\linkS4class{GAlignments}} object that represents the alignment of
-    \code{x} to the genome. The \code{aligments} object must have names. When
+    A \link{GAlignments} object that represents the alignment of \code{x}
+    to the genome. The \code{aligments} object must have names. When
     mapping to the genome names are used to determine mapping pairs and in the
     reverse direction they are used as the seqlevels of the output object.
   }

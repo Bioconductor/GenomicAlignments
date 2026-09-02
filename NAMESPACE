@@ -8,7 +8,6 @@ import(S4Vectors)
 import(IRanges)
 import(Seqinfo)
 import(GenomicRanges)
-import(SummarizedExperiment)
 import(Biostrings)
 import(Rsamtools)
 importFrom(BiocParallel, bplapply)
@@ -54,7 +53,6 @@ exportMethods(
     length,
     names, "names<-",
     c,
-    "[[",
     show,
     coerce,
     unlist,

@@ -225,7 +225,8 @@
       or to \code{levels(seqnames(x))}, those 2 expressions being
       guaranteed to return identical character vectors on a GAlignments
       object. \code{value} must be a character vector with no NAs.
-      See \code{?\link{seqlevels}} for more information.
+      See \code{?\link[Seqinfo]{seqlevels}} in the \pkg{Seqinfo} package
+      for more information.
     }
     \item{\code{seqlengths(x)}, \code{seqlengths(x) <- value}:}{
       Get or set the sequence lengths.
@@ -261,8 +262,8 @@
   \describe{
     \item{\code{granges(x, use.names=TRUE, use.mcols=FALSE)},
           \code{ranges(x, use.names=TRUE, use.mcols=FALSE)}:}{
-      Return a \link{GRanges} object (for \code{granges()}) or
-      \link[IRanges]{IRanges}) object (for \code{ranges()}) \emph{parallel}
+      Return a \link[GenomicRanges]{GRanges} object (for \code{granges()})
+      or \link[IRanges]{IRanges}) object (for \code{ranges()}) \emph{parallel}
       to \code{x} where the i-th element is the range of the genomic region
       spanned by the i-th alignment in \code{x}. All gaps in the region are
       ignored.
@@ -276,10 +277,10 @@
                         order.as.in.query=FALSE, drop.D.ranges=FALSE)},
           \code{rglist(x, use.names=TRUE, use.mcols=FALSE,
                        order.as.in.query=FALSE, drop.D.ranges=FALSE)}:}{
-      Return either a \link{GRangesList} or a \link[IRanges]{IntegerRangesList}
-      object of length \code{length(x)} where the i-th element represents
-      the ranges (with respect to the reference) of the i-th alignment in
-      \code{x}.
+      Return either a \link[GenomicRanges]{GRangesList} or a
+      \link[IRanges]{IntegerRangesList} object of length \code{length(x)}
+      where the i-th element represents the ranges (with respect to the
+      reference) of the i-th alignment in \code{x}.
 
       More precisely, the \link[IRanges]{IntegerRangesList} object returned
       by \code{rglist(x)} is a \link[IRanges]{CompressedIRangesList} object.
@@ -367,11 +368,11 @@
       \code{showHeadLines} and \code{showTailLines}. If the object
       length is less than (or equal to) the sum of these 2 options
       plus 1, then the full object is displayed.
-      Note that these options also affect the display of \link{GRanges}
-      and \link{GAlignmentPairs} objects, as well as other objects
-      defined in the \pkg{IRanges} and \pkg{Biostrings} packages
-      (e.g. \link[IRanges]{IntegerRanges} and \link[Biostrings]{DNAStringSet}
-      objects).
+      Note that these options also affect the display of
+      \link[GenomicRanges]{GRanges} and \link{GAlignmentPairs} objects,
+      as well as other \link[S4Vectors]{Vector} derivatives defined
+      in the \pkg{IRanges} and \pkg{Biostrings} packages (e.g.
+      \link[IRanges]{IRanges} and \link[Biostrings]{DNAStringSet} objects).
     }
   }
 }

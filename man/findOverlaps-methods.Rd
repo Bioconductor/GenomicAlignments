@@ -59,15 +59,15 @@
 
 \details{
   When the query or the subject (or both) is a \link{GAlignments}
-  object, it is first turned into a \link{GRangesList} object (with
-  \code{as( , "GRangesList")}) and then the rules described previously
+  object, it is first turned into a \link[GenomicRanges]{GRangesList} object
+  (with \code{as( , "GRangesList")}) and then the rules described previously
   apply. \link{GAlignmentsList} objects are coerced to \link{GAlignments}
-  then to a \link{GRangesList}. Feature indices are mapped back to the 
-  original \link{GAlignmentsList} list elements.
+  then to a \link[GenomicRanges]{GRangesList}. Feature indices are mapped
+  back to the original \link{GAlignmentsList} list elements.
 
   When the query is a \link{GAlignmentPairs} object, it is first
-  turned into a \link{GRangesList} object (with \code{as( , "GRangesList")})
-  and then the rules described previously apply.
+  turned into a \link[GenomicRanges]{GRangesList} object (with
+  \code{as( , "GRangesList")}) and then the rules described previously apply.
 }
 
 \value{
@@ -77,13 +77,16 @@
 
 \seealso{
   \itemize{
-    \item \code{\link[IRanges]{findOverlaps}}.
-    \item \link[S4Vectors]{Hits-class}.
-    \item \link{GRanges-class}.
-    \item \link{GRangesList-class}.
-    \item \link{GAlignments-class}.
-    \item \link{GAlignmentPairs-class}.
-    \item \link{GAlignmentsList-class}.
+    \item The \code{\link[IRanges]{findOverlaps}} generic function in
+          the \pkg{IRanges} package.
+
+    \item \link{GAlignments}, \link{GAlignmentPairs}, and
+          \link{GAlignmentsList} objects.
+
+    \item \link[S4Vectors]{Hits} objects in the \pkg{S4Vectors} package.
+
+    \item \link[GenomicRanges]{GRanges} and \link[GenomicRanges]{GRangesList}
+          objects in the \pkg{GenomicRanges} package.
   }
 }
 

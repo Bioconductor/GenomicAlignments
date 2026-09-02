@@ -74,11 +74,12 @@ alphabetFrequencyFromBam(file, index=file, param, what="seq", ...)
   \item{file, index}{
     The path to the BAM file containing the reads, and to its index file,
     respectively. The latter is given \emph{without} the '.bai'
-    extension. See \code{\link{scanBam}} for more information.
+    extension. See \code{?\link[Rsamtools]{scanBam}} in the \pkg{Rsamtools}
+    package for more information.
   }
   \item{param}{
-    A \link{ScanBamParam} object containing exactly 1 genomic region
-    (i.e. \code{unlist(bamWhich(param))} must have length 1).
+    A \link[Rsamtools]{ScanBamParam} object containing exactly 1 genomic
+    region (i.e. \code{unlist(bamWhich(param))} must have length 1).
     Alternatively, \code{param} can be a \link[GenomicRanges]{GRanges} or
     \link[IRanges]{IntegerRangesList} object containing exactly 1 genomic
     region (the strand will be ignored in case of a

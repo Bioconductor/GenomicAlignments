@@ -22,8 +22,9 @@
   package for a quick introduction to intra range and inter range
   transformations.
 
-  Intra range methods for \link{GRanges} and \link{GRangesList}
-  objects are defined and documented in the \pkg{GenomicRanges} package.
+  Intra range methods for \link[GenomicRanges]{GRanges} and
+  \link[GenomicRanges]{GRangesList} objects are defined and
+  documented in the \pkg{GenomicRanges} package.
 }
 
 \usage{

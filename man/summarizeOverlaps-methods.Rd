@@ -31,7 +31,9 @@
 
 \description{
   \code{summarizeOverlaps} extends \code{findOverlaps} by providing 
-  options to resolve reads that overlap multiple features. 
+  options to resolve reads that overlap multiple features.
+
+  Note that the function requires the \pkg{SummarizedExperiment} package.
 }
 
 \usage{
@@ -212,12 +214,13 @@ IntersectionNotEmpty(features, reads, ignore.strand=FALSE,
     The term \sQuote{mated pairs} refers to records paired with the algorithm
     described on the \code{?\link{readGAlignmentsList}} man page.
   }
-  \item{param}{An optional \code{\link[Rsamtools]{ScanBamParam}} instance to
+  \item{param}{An optional \link[Rsamtools]{ScanBamParam} instance to
     further influence scanning, counting, or filtering.
 
-    See \code{?\link{BamFile}} for details of how records are returned
-    when both \code{yieldSize} is specified in a \code{\link{BamFile}} and
-    \code{which} is defined in a \code{\link{ScanBamParam}}.
+    See \code{?\link[Rsamtools]{BamFile}} in the \pkg{Rsamtools} package for
+    details of how records are returned when both \code{yieldSize} is
+    specified in a \link[Rsamtools]{BamFile} object and \code{which} is
+    defined in a \link[Rsamtools]{ScanBamParam} object.
   }
 }
 
@@ -242,7 +245,8 @@ IntersectionNotEmpty(features, reads, ignore.strand=FALSE,
       The \code{BamViews}, \code{BamFile} and \code{BamFileList} methods
       summarize overlaps across one or several files. The latter uses
       \code{bplapply}; control parallel evaluation using the
-      \code{\link{register}} interface in the \pkg{BiocParallel} package.
+      \code{\link[BiocParallel]{register}} interface in the
+      \pkg{BiocParallel} package.
     }
     \item{features :}{
       A \sQuote{feature} can be any portion of a genomic region such as a gene, 
@@ -348,6 +352,8 @@ names(grl) <- LETTERS[seq_along(grl)]
 ## ---------------------------------------------------------------------
 ## Counting modes. 
 ## ---------------------------------------------------------------------
+
+library(SummarizedExperiment)  # required by summarizeOverlaps()
 
 ## First count with a GRanges as the 'features'. 'Union' is the
 ## most conservative counting mode followed by 'IntersectionStrict' 

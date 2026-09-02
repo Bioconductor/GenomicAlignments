@@ -335,18 +335,11 @@ GAlignmentPairs <- function(first, last,
 ### (The "[[" method for CompressedList objects should do just fine i.e. it
 ### should do something like x@unlistData[x@partitioning[[i]]] and that
 ### should be optimal.)
-.GAlignmentPairs.getElement <- function(x, i)
-{
-    c(x@first[i], x@last[i])
-}
-
-setMethod("[[", "GAlignmentPairs",
-    function(x, i, j, ... , drop=TRUE)
+setMethod("getListElement", "GAlignmentPairs",
+    function(x, i, exact=TRUE)
     {
-        if (missing(i) || !missing(j) || length(list(...)) > 0L)
-            stop("invalid subsetting")
-        i <- normalizeDoubleBracketSubscript(i, x)
-        .GAlignmentPairs.getElement(x, i)
+        i <- normalizeDoubleBracketSubscript(i, x, exact=exact)
+        c(extractROWS(x@first, i), extractROWS(x@last, i))
     }
 )
 

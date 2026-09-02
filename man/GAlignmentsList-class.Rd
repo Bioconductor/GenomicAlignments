@@ -153,10 +153,11 @@
     \item{\code{granges(x, use.names=TRUE, use.mcols=FALSE, ignore.strand=FALSE)}, 
       \code{ranges(x, use.names=TRUE, use.mcols=FALSE)}:}{
 
-      Return either a \link{GRanges} or a \link[IRanges]{IRanges}
-      object of length \code{length(x)}. Note this coercion IGNORES 
-      the cigar information. The resulting ranges span the entire
-      range, including any junctions or spaces between paired-end reads.
+      Return either a \link[GenomicRanges]{GRanges} or a
+      \link[IRanges]{IRanges} object of length \code{length(x)}. Note
+      this coercion IGNORES  the cigar information. The resulting ranges
+      span the entire range, including any junctions or spaces between
+      paired-end reads.
 
       If \code{use.names} is TRUE, then the names on \code{x}
       (if any) are propagated to the returned object.
@@ -170,10 +171,11 @@
     \item{\code{grglist(x, use.names=TRUE, use.mcols=FALSE, ignore.strand=FALSE)}, 
       \code{rglist(x, use.names=TRUE, use.mcols=FALSE)}:}{
 
-      Return either a \link{GRangesList} or an \link[IRanges]{IRangesList}
-      object of length \code{length(x)}. This coercion RESPECTS the cigar 
-      information. The resulting ranges are fragments of the original ranges 
-      that do not include junctions or spaces between paired-end reads.
+      Return either a \link[GenomicRanges]{GRangesList} or an
+      \link[IRanges]{IRangesList} object of length \code{length(x)}. This
+      coercion RESPECTS the cigar information. The resulting ranges are
+      fragments of the original ranges that do not include junctions or
+      spaces between paired-end reads.
  
       If \code{use.names} is TRUE, then the names on \code{x}
       (if any) are propagated to the returned object.
