@@ -111,7 +111,7 @@ Union <- function(features, reads,
     ov <- findOverlaps(features, reads,
                        ignore.strand=ignore.strand)
     if (inter.feature) {
-        ## Remove ambigous reads.
+        ## Remove ambiguous reads.
         reads_to_keep <- which(countSubjectHits(ov) == 1L)
         ov <- ov[subjectHits(ov) %in% reads_to_keep]
     }
@@ -124,7 +124,7 @@ IntersectionStrict <- function(features, reads,
     ov <- findOverlaps(reads, features, type="within",
                        ignore.strand=ignore.strand)
     if (inter.feature) {
-        ## Remove ambigous reads.
+        ## Remove ambiguous reads.
         reads_to_keep <- which(countQueryHits(ov) == 1L)
         ov <- ov[queryHits(ov) %in% reads_to_keep]
     }
